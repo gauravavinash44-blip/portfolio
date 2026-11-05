@@ -938,7 +938,7 @@
             ". Hosted on ",
             e("a", {
               className: "ga-site-credit-gh",
-              href: "https://github.com/gauravavinash44-blip/gauravavinash44-Portfolio",
+              href: "https://github.com/gauravavinash44-blip/portfolio",
               target: "_blank",
               rel: "noreferrer",
             },
