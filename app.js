@@ -739,7 +739,7 @@
   ];
   const CRAFT_WP_KEY = "ga-craft-wallpaper";
   const CRAFT_WP_HINT_KEY = "ga-craft-wp-hint";
-  const CRAFT_WP_INTERVAL = 20000; /* auto shuffle, like macOS dynamic wallpapers */
+  const CRAFT_WP_INTERVAL = 15000; /* auto shuffle, like macOS dynamic wallpapers */
   /* Taps on these never change the wallpaper */
   const CRAFT_WP_IGNORE = "button, a, input, label, [role='dialog'], .cr-card, .cr-orb-slot, .cr-notice, .cr-seg, .cr-dock, .cr-stack, .cr-wp-picker, .cr-topbar-left, .cr-wp-hint";
 
