@@ -29,9 +29,18 @@
     download: "M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14",
     arrow: "M7 17L17 7M9 7h8v8",
     grid: "M5 5h6v6H5zM13 5h6v6h-6zM5 13h6v6H5zM13 13h6v6h-6z",
-    image: "M4 5.5h16v13H4zM4 15l4.5-4.5 4 4 2.5-2.5 5 5M15.5 9.5a1.2 1.2 0 1 0 0-.01"
+    image: "M4 5.5h16v13H4zM4 15l4.5-4.5 4 4 2.5-2.5 5 5M15.5 9.5a1.2 1.2 0 1 0 0-.01",
+    camera: "M3.5 7.5h11v9h-11zM14.5 10.5l5-2.5v8l-5-2.5"
   };
   function Icon(props) {
+    if (props.name === "dropper") {
+      /* Filled dropper with sparkle dots, as on the reference's edit button */
+      return h("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", focusable: "false", className: props.className },
+        h("rect", { x: 9.2, y: 2.6, width: 5.6, height: 17, rx: 2.8, transform: "rotate(45 12 11.1)", fill: "currentColor" }),
+        h("circle", { cx: 18.6, cy: 15.4, r: 1.1, fill: "currentColor" }),
+        h("circle", { cx: 20.6, cy: 13.2, r: 0.9, fill: "currentColor" }),
+        h("circle", { cx: 20.4, cy: 17.4, r: 0.8, fill: "currentColor" }));
+    }
     return h("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: props.stroke || 1.5, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true", focusable: "false", className: props.className },
       h("path", { d: ICONS[props.name] || "" }));
   }
@@ -166,8 +175,8 @@
     var _s = useState(true), open = _s[0], setOpen = _s[1];
     if (!open) return null;
     return h("div", { className: "cr-notice", role: "status", "data-cr-enter": props.enter ? "" : undefined },
-      h("span", { className: "cr-notice-bar", "aria-hidden": "true" }),
-      props.avatar ? h(Avatar, { src: props.avatar, size: 40 }) : null,
+      h("span", { className: "cr-notice-bar", "aria-hidden": "true" }, h("i"), h("i")),
+      props.avatar ? h(Avatar, { src: props.avatar, size: 36 }) : null,
       h("span", { className: "cr-notice-text" }, h("b", null, props.title), h("span", null, props.subtitle)),
       props.meta ? (props.href ? h("a", { className: "cr-chip cr-chip--sub", href: props.href }, props.meta) : h(Chip, { variant: "sub" }, props.meta)) : null,
       h("button", { type: "button", className: "cr-notice-close", "aria-label": "Dismiss", onClick: function () { setOpen(false); if (props.onClose) props.onClose(); } },
@@ -196,23 +205,30 @@
     return h("article", { className: cx("cr-card cr-glass cr-agenda", props.className), "data-cr-enter": "", "aria-label": props.label },
       h("div", { className: "cr-agenda-top" },
         h("span", { className: "cr-agenda-meta" }, props.meta),
-        props.avatar ? h(Avatar, { src: props.avatar, size: 52 }) : null),
+        props.avatar ? h(Avatar, { src: props.avatar, size: 48 }) : null),
       h("div", { className: "cr-agenda-body" }, h("p", null, props.day), h("p", null, props.time)),
       h("p", { className: "cr-agenda-label" }, props.label));
   }
 
   function FolderRow(props) {
     var r = props.row;
+    var linkLabel = "Open " + r.title + " case study";
     return h("li", { className: "cr-row", draggable: props.draggable ? "true" : undefined,
       onDragStart: props.draggable ? function (ev) { ev.dataTransfer.setData("text/plain", r.title); } : undefined },
-      h("img", { className: "cr-row-thumb", src: r.thumb, alt: "" }),
+      h("span", { className: "cr-row-av" },
+        h("img", { className: "cr-row-thumb", src: r.thumb, alt: "" }),
+        r.badge ? h("i", { className: "cr-row-badge", "aria-hidden": "true" }, h("b"), h("b"), h("b")) : null),
       h("button", { type: "button", className: "cr-row-text", onClick: function () { if (props.onOpen) props.onOpen(r); } },
         h("b", null, r.title), h("span", null, r.sub)),
       r.locked
         ? h(IconButton, { icon: "lock", label: r.title + " is under NDA" })
-        : r.href
-          ? h("a", { className: "cr-iconbtn cr-iconbtn--well", href: r.href, "aria-label": "Open " + r.title + " case study", title: "Open case study" }, h(Icon, { name: "arrow" }))
-          : h(Toggle, { defaultChecked: r.open !== false, label: "Show " + r.title }));
+        : r.href && r.pill
+          /* Link drawn as the reference's "on" toggle: blue track, glyph left, knob right */
+          ? h("a", { className: "cr-row-pill", href: r.href, "aria-label": linkLabel, title: "Open case study" },
+              h(Icon, { name: "arrow", stroke: 2 }), h("span", { className: "cr-row-pill-knob" }))
+          : r.href
+            ? h("a", { className: "cr-iconbtn cr-iconbtn--well", href: r.href, "aria-label": linkLabel, title: "Open case study" }, h(Icon, { name: "arrow" }))
+            : h(Toggle, { defaultChecked: r.open !== false, label: "Show " + r.title }));
   }
 
   function FolderListCard(props) {
@@ -242,9 +258,10 @@
     var style = Object.assign({ left: props.x, top: props.y }, props.style || {});
     if (props.wander && !reduced()) style.animation = "crWander" + (props.wander) + " " + (props.speed || 7) + "s ease-in-out infinite alternate";
     return h("span", { className: "cr-cursor", style: style, "aria-hidden": "true" },
-      h("svg", { viewBox: "0 0 16 16" }, h("path", { d: "M2 1.5l11 5.2-4.6 1.4-1.9 4.6z", fill: props.color, stroke: "#fff", strokeWidth: 1.2, strokeLinejoin: "round" })),
-      h("span", { className: "cr-cursor-tag", style: { background: props.color } },
-        props.avatar ? h("img", { src: props.avatar, alt: "" }) : null, props.name));
+      h("svg", { viewBox: "0 0 16 16" }, h("path", { d: "M2 1.5l11 5.2-4.6 1.4-1.9 4.6z", fill: props.color, strokeLinejoin: "round" })),
+      h("span", { className: "cr-cursor-av", style: { boxShadow: "0 0 0 2px " + props.color } },
+        props.avatar ? h("img", { src: props.avatar, alt: "" }) : h("span", { style: { color: props.color } }, (props.name || "?").charAt(0))),
+      h("span", { className: "cr-cursor-tag", style: { background: props.color } }, props.name));
   }
 
   function PreviewCard(props) {
@@ -252,13 +269,22 @@
       h("div", { className: "cr-preview-chips" },
         h(Chip, { variant: "label" }, props.label || "Live preview"),
         props.timer ? h(Chip, { variant: "timer", live: true }, props.timer) : null),
-      h(props.href ? "a" : "div", { className: "cr-preview-shot", href: props.href, "aria-label": props.href ? "Open " + props.title + " case study" : undefined },
-        h("img", { src: props.image, alt: props.alt || "" }),
+      h(props.href ? "a" : "div", { className: cx("cr-preview-shot", props.slides && "cr-preview-shot--strip"), href: props.href, "aria-label": props.href ? "Open " + props.title + " case study" : undefined },
+        props.slides
+          /* Three-slide strip like the reference: partial left, main, partial right, tiny labels above */
+          ? h("span", { className: "cr-strip", "aria-hidden": "true" },
+              props.slides.map(function (sl, i) {
+                return h("span", { key: i, className: "cr-strip-slide cr-strip-slide--" + ["left", "main", "right"][i] },
+                  sl.label ? h("span", { className: "cr-strip-label" }, sl.label) : null,
+                  h("img", { src: sl.image, alt: "" }));
+              }))
+          : h("img", { src: props.image, alt: props.alt || "" }),
         (props.cursors || []).map(function (c, i) { return h(CursorChip, Object.assign({ key: c.name, wander: (i % 2) + 1 }, c)); })),
       h("div", { className: "cr-preview-foot" },
-        props.avatar ? h(Avatar, { src: props.avatar, size: 52 }) : h("span"),
+        props.avatar ? h(Avatar, { src: props.avatar, size: 50 }) : h("span"),
         h("span", { className: "cr-row-text" }, h("b", null, props.title), h("span", null, props.subtitle)),
-        props.count != null ? h(Chip, { variant: "count" }, String(props.count)) : null),
+        props.count != null ? h(Chip, { variant: "count" }, String(props.count))
+          : props.countIcon ? h("span", { className: "cr-chip cr-chip--count", "aria-hidden": "true" }, h(Icon, { name: props.countIcon })) : null),
       h("style", null, "@keyframes crWander1{0%{transform:translate(0,0)}50%{transform:translate(18px,-10px)}100%{transform:translate(-8px,12px)}}@keyframes crWander2{0%{transform:translate(0,0)}50%{transform:translate(-16px,8px)}100%{transform:translate(10px,-14px)}}"));
   }
 
@@ -278,7 +304,7 @@
           ? h("span", { className: "cr-orb-figure" }, h("img", { className: "cr-orb-avatar", src: props.image, alt: "", decoding: "async" }))
           : h("img", { className: "cr-orb-photo", src: props.image, alt: "" }),
         props.name ? h("span", { className: "cr-orb-name" }, props.name) : null),
-      props.onEdit ? h("span", { className: "cr-orb-edit" }, h(IconButton, { variant: "solid", icon: "pen", label: "Edit profile", onClick: props.onEdit })) : null);
+      props.onEdit ? h("span", { className: "cr-orb-edit" }, h(IconButton, { variant: "solid", icon: props.editIcon || "pen", label: props.editLabel || "Edit profile", onClick: props.onEdit })) : null);
   }
 
   function useCountUp(to, decimals, run) {
@@ -308,9 +334,11 @@
         props.link ? h("a", { className: "cr-stat-link", href: props.href || "#", onClick: props.onLink ? function (ev) { ev.preventDefault(); props.onLink(); } : undefined }, props.link, h(Icon, { name: "chevron", stroke: 2 })) : null),
       h("p", { className: "cr-stat-value cr-t-xl" }, val, h("span", null, props.unit || "")),
       h("div", { className: "cr-stat-legs" },
-        segs.map(function (s) {
+        segs.map(function (s, i) {
           var left = (acc / total) * 100; acc += s.value;
-          return h("span", { key: s.label, className: "cr-stat-leg", style: { left: left + "%" } }, h("span", null, s.caption || ""));
+          /* Captions step down 22px each, ticks run from under the caption to just above the bar */
+          return h("span", { key: s.label, className: "cr-stat-leg", style: { left: left + "%", top: (i * 22) + "px" } },
+            h("span", null, s.caption || ""), h("i", { className: "cr-stat-tick" }));
         })),
       h("div", { className: "cr-stat-bars", "aria-hidden": "true" },
         segs.map(function (s, i) {
@@ -596,7 +624,7 @@
     } catch (e) { day = "Monday"; date = "27 April"; }
     var rows = [
       { title: "Contextual Chat", sub: "AI search", thumb: img.chat },
-      { title: "Deal Room", sub: "B2B SaaS", thumb: img.dealRoom },
+      { title: "Deal Room", sub: "B2B SaaS", thumb: img.dealRoom, pill: true, badge: true },
       { title: "White Label", sub: "Fintech", thumb: img.whiteLabel }
     ];
     return {
@@ -610,11 +638,17 @@
       folder: { title: "Case studies", sub: "4 shipped, 1 concept, 3 explorations" },
       drop: { title: "Open a folder", hint: "Drag a case study here" },
       preview: {
-        image: img.chat, label: "Featured case study", timer: null,
-        cursors: [
-          { name: "Gaurav", color: "#e96635", avatar: face, x: "54%", y: "18%" }
+        image: img.chat, label: "Featured", timer: "<30s",
+        slides: [
+          { image: img.dealRoom },
+          { image: img.chat, label: "Contextual Chat" },
+          { image: img.whiteLabel, label: "Next" }
         ],
-        avatar: face, title: "Contextual Chat", subtitle: "30–40 min → under 30s", count: null
+        cursors: [
+          { name: "Gaurav", color: "#ec6533", avatar: face, x: 175, y: 2 },
+          { name: "You", color: "#e42a9e", x: 69, y: 92 }
+        ],
+        avatar: face, title: "Contextual Chat", subtitle: "AI search", count: null, countIcon: "arrow"
       },
       profile: { image: img.avatarHero || img.profile, cutout: !!img.avatarHero, name: "Gaurav Avinash" },
       stat: {

@@ -812,20 +812,22 @@
           el.style.removeProperty("--cr-scale");
           return;
         }
-        // Desktop: original centred fit, untouched.
+        // Desktop: the reference dashboard is a 1280 x 853 canvas, so the board
+        // scales with the smaller of the two ratios and CSS places it like the
+        // reference (68% of the free height above the grid).
         if (w >= 1100 && h >= 700) {
           delete el.dataset.crFit;
           delete el.dataset.crCols;
           el.style.removeProperty("--cr-stage-h");
           el.style.removeProperty("--cr-board-top");
-          const scale = Math.min(1.12, (w - 64) / 912, (h - 220) / 600);
+          const scale = Math.min(1.15, w / 1280, h / 853);
           el.style.setProperty("--cr-scale", Math.max(0.55, scale).toFixed(3));
           return;
         }
         // Tablet or short screens: fit between the top bar and the corners,
         // 2 columns in portrait, and scroll instead of shrinking past 0.68.
         const cols = w < 1100 && h > w ? 2 : 3;
-        const bw = cols === 2 ? 600 : 912, bh = cols === 2 ? 912 : 600;
+        const bw = cols === 2 ? 605 : 919, bh = cols === 2 ? 919 : 605;
         const top = w < 1100 ? 168 : 104, bottom = 112;
         let scale = Math.min(1.12, (w - 64) / bw, (h - top - bottom) / bh);
         scale = Math.max(Math.min(0.68, (w - 64) / bw), scale);
@@ -954,6 +956,9 @@
           e("div", { className: "cr-dim" }, e(C.PreviewCard, data.preview)),
           e("div", { className: "cr-dim" }, e(C.ProfileOrb, Object.assign({}, data.profile, {
             onOpen: () => setSheet({ kind: "profile" }),
+            onEdit: () => setSheet({ kind: "profile" }),
+            editIcon: "dropper",
+            editLabel: "Open profile card",
           }))),
           e("div", { className: "cr-dim" }, e(C.StatCard, data.stat))
         ),
