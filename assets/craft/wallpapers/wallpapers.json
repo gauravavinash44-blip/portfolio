@@ -1,0 +1,299 @@
+{
+  "wallpapers": [
+    {
+      "id": "fuji",
+      "label": "Fuji dawn",
+      "thumb": "fuji-1440.jpg",
+      "dominant": [
+        [
+          "#c7cfd1",
+          0.265
+        ],
+        [
+          "#382424",
+          0.247
+        ],
+        [
+          "#849aa5",
+          0.213
+        ],
+        [
+          "#614536",
+          0.185
+        ],
+        [
+          "#393f35",
+          0.09
+        ]
+      ],
+      "vars": {
+        "--wp-glass": "rgba(104, 73, 88, 0.42)",
+        "--wp-glass-light": "rgba(214, 196, 205, 0.30)",
+        "--wp-glass-strong": "rgba(92, 64, 78, 0.62)",
+        "--wp-topbar-ink": "#0a0a0a",
+        "--wp-pos": "48% 30%",
+        "--wp-accent": "#86292d"
+      },
+      "contrast": {
+        "saliency_centroid": [
+          0.57,
+          0.34
+        ],
+        "grid_avg": "#827c76",
+        "grid_bright_p90": "#d7dad8",
+        "white_on_glass_avg": 5.33,
+        "white_on_glass_bright": 2.61,
+        "white_on_strong_avg": 6.66,
+        "white_on_strong_bright": 4.0,
+        "topbar_white_avg": 3.32,
+        "topbar_white_worst": 2.95,
+        "topbar_dark_avg": 5.96,
+        "topbar_dark_worst": 5.29,
+        "topbar_ink_on_glass_light": 7.38
+      },
+      "files": {
+        "fuji-2560.jpg": 427523,
+        "fuji-2560.webp": 236286,
+        "fuji-1440.jpg": 148323,
+        "fuji-1440.webp": 86502,
+        "fuji-blur.jpg": 573
+      }
+    },
+    {
+      "id": "dike",
+      "label": "Dike road",
+      "thumb": "dike-blur.jpg",
+      "dominant": [
+        [
+          "#4e5229",
+          0.346
+        ],
+        [
+          "#2a321c",
+          0.246
+        ],
+        [
+          "#6a98ba",
+          0.233
+        ],
+        [
+          "#abb3bf",
+          0.109
+        ],
+        [
+          "#5e7b6a",
+          0.066
+        ]
+      ],
+      "vars": {
+        "--wp-glass": "rgba(102, 127, 87, 0.42)",
+        "--wp-glass-light": "rgba(111, 138, 95, 0.26)",
+        "--wp-glass-strong": "rgba(75, 93, 64, 0.62)",
+        "--wp-topbar-ink": "#fff",
+        "--wp-pos": "52% 45%",
+        "--wp-accent": "#3b8fca"
+      },
+      "contrast": {
+        "saliency_centroid": [
+          0.33,
+          0.31
+        ],
+        "grid_avg": "#627160",
+        "grid_bright_p90": "#bbbdc6",
+        "white_on_glass_avg": 4.82,
+        "white_on_glass_bright": 2.61,
+        "white_on_strong_avg": 6.27,
+        "white_on_strong_bright": 4.03,
+        "topbar_white_avg": 5.24,
+        "topbar_white_worst": 2.56,
+        "topbar_dark_avg": 3.78,
+        "topbar_dark_worst": 1.68,
+        "topbar_ink_on_glass_light": 4.84
+      },
+      "files": {
+        "dike-2560.jpg": 419374,
+        "dike-2560.webp": 383822,
+        "dike-1440.jpg": 301119,
+        "dike-1440.webp": 248628,
+        "dike-blur.jpg": 650
+      }
+    },
+    {
+      "id": "barley",
+      "label": "Barley sky",
+      "thumb": "barley-blur.jpg",
+      "dominant": [
+        [
+          "#657425",
+          0.262
+        ],
+        [
+          "#89943e",
+          0.245
+        ],
+        [
+          "#c0c8b2",
+          0.211
+        ],
+        [
+          "#374e39",
+          0.159
+        ],
+        [
+          "#45675b",
+          0.123
+        ]
+      ],
+      "vars": {
+        "--wp-glass": "rgba(92, 112, 43, 0.42)",
+        "--wp-glass-light": "rgba(113, 138, 53, 0.26)",
+        "--wp-glass-strong": "rgba(78, 95, 36, 0.62)",
+        "--wp-topbar-ink": "#fff",
+        "--wp-pos": "50% 35%",
+        "--wp-accent": "#2358bb"
+      },
+      "contrast": {
+        "saliency_centroid": [
+          0.49,
+          0.32
+        ],
+        "grid_avg": "#7f8e52",
+        "grid_bright_p90": "#b4c1c2",
+        "white_on_glass_avg": 4.24,
+        "white_on_glass_bright": 2.81,
+        "white_on_strong_avg": 5.35,
+        "white_on_strong_bright": 4.01,
+        "topbar_white_avg": 5.89,
+        "topbar_white_worst": 2.23,
+        "topbar_dark_avg": 3.36,
+        "topbar_dark_worst": 2.29,
+        "topbar_ink_on_glass_light": 5.44
+      },
+      "files": {
+        "barley-2560.jpg": 337027,
+        "barley-2560.webp": 179764,
+        "barley-1440.jpg": 185409,
+        "barley-1440.webp": 107348,
+        "barley-blur.jpg": 655
+      }
+    },
+    {
+      "id": "kirkjufell",
+      "label": "Kirkjufell falls",
+      "thumb": "kirkjufell-blur.jpg",
+      "dominant": [
+        [
+          "#162519",
+          0.267
+        ],
+        [
+          "#6d7141",
+          0.233
+        ],
+        [
+          "#dfdee2",
+          0.197
+        ],
+        [
+          "#cbcfd5",
+          0.157
+        ],
+        [
+          "#e4e4e5",
+          0.146
+        ]
+      ],
+      "vars": {
+        "--wp-glass": "rgba(65, 75, 83, 0.48)",
+        "--wp-glass-light": "rgba(205, 213, 219, 0.30)",
+        "--wp-glass-strong": "rgba(65, 75, 83, 0.66)",
+        "--wp-topbar-ink": "#0a0a0a",
+        "--wp-pos": "42% 60%",
+        "--wp-accent": "#2a5b6a"
+      },
+      "contrast": {
+        "saliency_centroid": [
+          0.42,
+          0.63
+        ],
+        "grid_avg": "#96977f",
+        "grid_bright_p90": "#e3e4e4",
+        "white_on_glass_avg": 4.86,
+        "white_on_glass_bright": 2.81,
+        "white_on_strong_avg": 5.95,
+        "white_on_strong_bright": 4.04,
+        "topbar_white_avg": 1.37,
+        "topbar_white_worst": 1.32,
+        "topbar_dark_avg": 14.42,
+        "topbar_dark_worst": 13.97,
+        "topbar_ink_on_glass_light": 14.1
+      },
+      "files": {
+        "kirkjufell-2560.jpg": 441240,
+        "kirkjufell-2560.webp": 306330,
+        "kirkjufell-1440.jpg": 175071,
+        "kirkjufell-1440.webp": 121612,
+        "kirkjufell-blur.jpg": 609
+      }
+    },
+    {
+      "id": "rows",
+      "label": "Seedling rows",
+      "thumb": "rows-blur.jpg",
+      "dominant": [
+        [
+          "#747039",
+          0.272
+        ],
+        [
+          "#484f48",
+          0.227
+        ],
+        [
+          "#918f2d",
+          0.215
+        ],
+        [
+          "#aaa925",
+          0.17
+        ],
+        [
+          "#c2c421",
+          0.117
+        ]
+      ],
+      "vars": {
+        "--wp-glass": "rgba(84, 153, 119, 0.42)",
+        "--wp-glass-light": "rgba(76, 138, 107, 0.26)",
+        "--wp-glass-strong": "rgba(61, 110, 85, 0.62)",
+        "--wp-topbar-ink": "#fff",
+        "--wp-pos": "50% 25%",
+        "--wp-accent": "#b8bd0f"
+      },
+      "contrast": {
+        "saliency_centroid": [
+          0.53,
+          0.81
+        ],
+        "grid_avg": "#8a8738",
+        "grid_bright_p90": "#b3b321",
+        "white_on_glass_avg": 3.64,
+        "white_on_glass_bright": 2.68,
+        "white_on_strong_avg": 4.99,
+        "white_on_strong_bright": 4.01,
+        "topbar_white_avg": 9.87,
+        "topbar_white_worst": 8.76,
+        "topbar_dark_avg": 2.01,
+        "topbar_dark_worst": 1.78,
+        "topbar_ink_on_glass_light": 7.76
+      },
+      "files": {
+        "rows-2560.jpg": 437350,
+        "rows-2560.webp": 371654,
+        "rows-1440.jpg": 341714,
+        "rows-1440.webp": 293430,
+        "rows-blur.jpg": 611
+      }
+    }
+  ]
+}

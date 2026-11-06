@@ -1,0 +1,83 @@
+/* Craft mode wallpapers. Generated from the source photos; values measured per photo.
+   --wp-glass: white 22px+ text reaches >=3:1 on the blurred grid area.
+   --wp-glass-strong: white 15px text reaches >=4.5:1. */
+
+/* Fuji dawn */
+.craft-wp--fuji {
+  --wp-glass: rgba(104, 73, 88, 0.42);
+  --wp-glass-light: rgba(214, 196, 205, 0.30);
+  --wp-glass-strong: rgba(92, 64, 78, 0.62);
+  --wp-topbar-ink: #0a0a0a;
+  --wp-pos: 48% 30%;
+  --wp-accent: #86292d;
+}
+.craft-wp--fuji .cr-wp-photo { background-image: url("./fuji-1440.jpg"); background-image: image-set(url("./fuji-1440.webp") type("image/webp"), url("./fuji-1440.jpg") type("image/jpeg")); }
+@media (min-width: 1600px), (min-resolution: 1.5dppx) {
+  .craft-wp--fuji .cr-wp-photo { background-image: url("./fuji-2560.jpg"); background-image: image-set(url("./fuji-2560.webp") type("image/webp"), url("./fuji-2560.jpg") type("image/jpeg")); }
+}
+.craft-wp--fuji .cr-wp-blur { background-image: url("./fuji-blur.jpg"); }
+.cr-wp-thumb.craft-wp--fuji { background-image: url("./fuji-1440.jpg"); }
+
+/* Dike road */
+.craft-wp--dike {
+  --wp-glass: rgba(102, 127, 87, 0.42);
+  --wp-glass-light: rgba(111, 138, 95, 0.26);
+  --wp-glass-strong: rgba(75, 93, 64, 0.62);
+  --wp-topbar-ink: #fff;
+  --wp-pos: 52% 45%;
+  --wp-accent: #3b8fca;
+}
+.craft-wp--dike .cr-wp-photo { background-image: url("./dike-1440.jpg"); background-image: image-set(url("./dike-1440.webp") type("image/webp"), url("./dike-1440.jpg") type("image/jpeg")); }
+@media (min-width: 1600px), (min-resolution: 1.5dppx) {
+  .craft-wp--dike .cr-wp-photo { background-image: url("./dike-2560.jpg"); background-image: image-set(url("./dike-2560.webp") type("image/webp"), url("./dike-2560.jpg") type("image/jpeg")); }
+}
+.craft-wp--dike .cr-wp-blur { background-image: url("./dike-blur.jpg"); }
+.cr-wp-thumb.craft-wp--dike { background-image: url("./dike-blur.jpg"); }
+
+/* Barley sky */
+.craft-wp--barley {
+  --wp-glass: rgba(92, 112, 43, 0.42);
+  --wp-glass-light: rgba(113, 138, 53, 0.26);
+  --wp-glass-strong: rgba(78, 95, 36, 0.62);
+  --wp-topbar-ink: #fff;
+  --wp-pos: 50% 35%;
+  --wp-accent: #2358bb;
+}
+.craft-wp--barley .cr-wp-photo { background-image: url("./barley-1440.jpg"); background-image: image-set(url("./barley-1440.webp") type("image/webp"), url("./barley-1440.jpg") type("image/jpeg")); }
+@media (min-width: 1600px), (min-resolution: 1.5dppx) {
+  .craft-wp--barley .cr-wp-photo { background-image: url("./barley-2560.jpg"); background-image: image-set(url("./barley-2560.webp") type("image/webp"), url("./barley-2560.jpg") type("image/jpeg")); }
+}
+.craft-wp--barley .cr-wp-blur { background-image: url("./barley-blur.jpg"); }
+.cr-wp-thumb.craft-wp--barley { background-image: url("./barley-blur.jpg"); }
+
+/* Kirkjufell falls */
+.craft-wp--kirkjufell {
+  --wp-glass: rgba(65, 75, 83, 0.48);
+  --wp-glass-light: rgba(205, 213, 219, 0.30);
+  --wp-glass-strong: rgba(65, 75, 83, 0.66);
+  --wp-topbar-ink: #0a0a0a;
+  --wp-pos: 42% 60%;
+  --wp-accent: #2a5b6a;
+}
+.craft-wp--kirkjufell .cr-wp-photo { background-image: url("./kirkjufell-1440.jpg"); background-image: image-set(url("./kirkjufell-1440.webp") type("image/webp"), url("./kirkjufell-1440.jpg") type("image/jpeg")); }
+@media (min-width: 1600px), (min-resolution: 1.5dppx) {
+  .craft-wp--kirkjufell .cr-wp-photo { background-image: url("./kirkjufell-2560.jpg"); background-image: image-set(url("./kirkjufell-2560.webp") type("image/webp"), url("./kirkjufell-2560.jpg") type("image/jpeg")); }
+}
+.craft-wp--kirkjufell .cr-wp-blur { background-image: url("./kirkjufell-blur.jpg"); }
+.cr-wp-thumb.craft-wp--kirkjufell { background-image: url("./kirkjufell-blur.jpg"); }
+
+/* Seedling rows */
+.craft-wp--rows {
+  --wp-glass: rgba(84, 153, 119, 0.42);
+  --wp-glass-light: rgba(76, 138, 107, 0.26);
+  --wp-glass-strong: rgba(61, 110, 85, 0.62);
+  --wp-topbar-ink: #fff;
+  --wp-pos: 50% 25%;
+  --wp-accent: #b8bd0f;
+}
+.craft-wp--rows .cr-wp-photo { background-image: url("./rows-1440.jpg"); background-image: image-set(url("./rows-1440.webp") type("image/webp"), url("./rows-1440.jpg") type("image/jpeg")); }
+@media (min-width: 1600px), (min-resolution: 1.5dppx) {
+  .craft-wp--rows .cr-wp-photo { background-image: url("./rows-2560.jpg"); background-image: image-set(url("./rows-2560.webp") type("image/webp"), url("./rows-2560.jpg") type("image/jpeg")); }
+}
+.craft-wp--rows .cr-wp-blur { background-image: url("./rows-blur.jpg"); }
+.cr-wp-thumb.craft-wp--rows { background-image: url("./rows-blur.jpg"); }
