@@ -772,6 +772,8 @@
     });
     S.profile = Object.assign({}, S.profile, { image: "./assets/craft/avatar/gaurav-3d-visor.webp", cutout: true, head: null });
     S.topbar = Object.assign({}, S.topbar, { avatar: ASSETS.logo });
+    S.agenda = Object.assign({}, S.agenda, { avatar: null });
+    S.preview = Object.assign({}, S.preview, { avatar: null });
     const hrefs = {
       "Contextual Chat": "./craft-contextual-chat.html",
       "Deal Room": "./deal-room-short.html",

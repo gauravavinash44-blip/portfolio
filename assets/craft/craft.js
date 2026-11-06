@@ -280,8 +280,8 @@
               }))
           : h("img", { src: props.image, alt: props.alt || "" }),
         (props.cursors || []).map(function (c, i) { return h(CursorChip, Object.assign({ key: c.name, wander: (i % 2) + 1 }, c)); })),
-      h("div", { className: "cr-preview-foot" },
-        props.avatar ? h(Avatar, { src: props.avatar, size: 50 }) : h("span"),
+      h("div", { className: "cr-preview-foot" + (props.avatar ? "" : " cr-preview-foot--noavatar") },
+        props.avatar ? h(Avatar, { src: props.avatar, size: 50 }) : null,
         h("span", { className: "cr-row-text" }, h("b", null, props.title), h("span", null, props.subtitle)),
         props.count != null ? h(Chip, { variant: "count" }, String(props.count))
           : props.countIcon ? h("span", { className: "cr-chip cr-chip--count", "aria-hidden": "true" }, h(Icon, { name: props.countIcon })) : null),

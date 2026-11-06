@@ -1083,3 +1083,6 @@ html.ga-craft .craft-switch {
 .cr-head-orb:active { cursor: pointer; }
 .cr-head-tilt { position: absolute; inset: 0; transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1); transform-style: preserve-3d; }
 .cr-liquid { transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1); }
+
+/* Cards without a profile picture */
+.cr-preview-foot.cr-preview-foot--noavatar { grid-template-columns: minmax(0, 1fr) 50px; padding-left: 24px; }
