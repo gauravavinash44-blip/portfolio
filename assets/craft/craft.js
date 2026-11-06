@@ -274,7 +274,9 @@
     return h("div", { className: cx("cr-orb-slot", props.className), "data-cr-enter": "", "data-cr-orb": "" },
       h("button", { type: "button", className: "cr-orb cr-glass", ref: ref, onMouseMove: onMove, onMouseLeave: onLeave,
         onClick: props.onOpen, "aria-label": "Open profile of " + (props.name || "") },
-        h("img", { className: "cr-orb-photo", src: props.image, alt: "" }),
+        props.cutout
+          ? h("span", { className: "cr-orb-figure" }, h("img", { className: "cr-orb-avatar", src: props.image, alt: "", decoding: "async" }))
+          : h("img", { className: "cr-orb-photo", src: props.image, alt: "" }),
         props.name ? h("span", { className: "cr-orb-name" }, props.name) : null),
       props.onEdit ? h("span", { className: "cr-orb-edit" }, h(IconButton, { variant: "solid", icon: "pen", label: "Edit profile", onClick: props.onEdit })) : null);
   }
@@ -585,6 +587,7 @@
 
   /* Portfolio sample content. img = { profile, logo, chat, dealRoom, easyeat, whiteLabel, resonance, nomad, health, swaply, splitly } */
   function sample(img) {
+    var face = img.avatar || img.profile;
     var now = new Date();
     var day, date;
     try {
@@ -598,22 +601,22 @@
     ];
     return {
       topbar: {
-        avatar: img.profile, title: "Gaurav Avinash", subtitle: "Product Designer",
+        avatar: face, title: "Gaurav Avinash", subtitle: "Product Designer",
         notice: { avatar: img.chat, title: "Latest case study", subtitle: "Contextual Chat", meta: "Open", seconds: 14 },
         tabs: ["Board", "Folders"]
       },
-      agenda: { meta: date, avatar: img.profile, day: day, time: "Available", label: "Open to new roles" },
+      agenda: { meta: date, avatar: face, day: day, time: "Available", label: "Open to new roles" },
       folders: { title: "Case studies", count: "All 5", rows: rows },
       folder: { title: "Case studies", sub: "4 shipped, 1 concept, 3 explorations" },
       drop: { title: "Open a folder", hint: "Drag a case study here" },
       preview: {
         image: img.chat, label: "Featured case study", timer: null,
         cursors: [
-          { name: "Gaurav", color: "#e96635", avatar: img.profile, x: "54%", y: "18%" }
+          { name: "Gaurav", color: "#e96635", avatar: face, x: "54%", y: "18%" }
         ],
-        avatar: img.profile, title: "Contextual Chat", subtitle: "30–40 min → under 30s", count: null
+        avatar: face, title: "Contextual Chat", subtitle: "30–40 min → under 30s", count: null
       },
-      profile: { image: img.profile, name: "Gaurav Avinash" },
+      profile: { image: img.avatarHero || img.profile, cutout: !!img.avatarHero, name: "Gaurav Avinash" },
       stat: {
         title: "Experience", link: "View all", value: 5, unit: "+ yrs", decimals: 0,
         segments: [

@@ -768,6 +768,8 @@
       profile: ASSETS.profile, logo: ASSETS.logo, chat: ASSETS.chat, dealRoom: ASSETS.dealRoom,
       easyeat: ASSETS.easyeat, whiteLabel: ASSETS.whiteLabel, resonance: ASSETS.resonance,
       nomad: ASSETS.nomad, health: ASSETS.health, swaply: ASSETS.swaply, splitly: ASSETS.splitly,
+      avatar: "./assets/craft/avatar/gaurav-3d-face.webp",
+      avatarHero: "./assets/craft/avatar/gaurav-3d-visor.webp",
     });
     const hrefs = {
       "Contextual Chat": "./contextual-chat-short.html",
