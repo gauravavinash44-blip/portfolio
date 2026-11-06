@@ -857,7 +857,10 @@
     const [hint, setHint] = useState(false);
     const swallowTap = useRef(false); /* the tap that closes the picker shouldn't also change the wallpaper */
     const [shuffleTick, setShuffleTick] = useState(0); /* bumps to restart the timer after a manual change */
+    const [playground, setPlayground] = useState(false); /* Design Playground gallery open */
+    const pgOpener = useRef(null);
     const data = React.useMemo(() => craftData(onExit), [onExit]);
+    const CP = window.CraftPlayground;
 
     useBoardScale(stageRef);
     useEffect(() => { C.motion.enter(stageRef.current, { delay: 300 }); }, []);
@@ -866,16 +869,16 @@
       preloadWallpaper(nextWallpaper(wallpaper));
     }, [wallpaper]);
 
-    /* Auto shuffle: every 20s, paused while a sheet or the picker is open, the tab is hidden, or reduced motion is on */
+    /* Auto shuffle: every 15s, paused while a sheet, the picker or the playground is open, the tab is hidden, or reduced motion is on */
     useEffect(() => {
-      if (sheet || picker) return undefined;
+      if (sheet || picker || playground) return undefined;
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;
       const id = setInterval(() => {
         if (document.hidden) return;
         setWallpaper((w) => nextWallpaper(w));
       }, CRAFT_WP_INTERVAL);
       return () => clearInterval(id);
-    }, [sheet, picker, shuffleTick]);
+    }, [sheet, picker, playground, shuffleTick]);
 
     /* One-time hint that the wallpaper is tappable */
     useEffect(() => {
@@ -896,7 +899,7 @@
 
     const onStageClick = (ev) => {
       if (swallowTap.current) { swallowTap.current = false; return; }
-      if (sheet || picker) return;
+      if (sheet || picker || playground) return;
       if (ev.target.closest && ev.target.closest(CRAFT_WP_IGNORE)) return;
       changeWallpaper(nextWallpaper(wallpaper));
     };
@@ -920,6 +923,22 @@
     }, [sheet]);
 
     const openFolder = (from) => setSheet({ kind: "folder", from: from || "list" });
+    useEffect(() => { if (CP) CP.preload(); }, []);
+    const openPlayground = () => {
+      if (!CP || playground) return;
+      pgOpener.current = document.activeElement;
+      setPicker(false);
+      setSheet(null);
+      setPlayground(true);
+    };
+    const closePlayground = useCallback((then) => {
+      setPlayground(false);
+      requestAnimationFrame(() => {
+        const back = stageRef.current && stageRef.current.querySelector("[data-pg-card]");
+        if (then === "folders") { openFolder("list"); return; }
+        if (back) back.focus({ preventScroll: true });
+      });
+    }, []);
     const topbar = Object.assign({}, data.topbar, {
       tab: sheet && sheet.kind === "folder" ? 1 : 0,
       onTab: (i) => (i === 1 ? openFolder("list") : setSheet(null)),
@@ -934,7 +953,7 @@
       ],
     };
 
-    return e(C.Stage, {
+    const stage = e(C.Stage, {
       className: "cr-hero craft-wp--" + wallpaper,
       wallpaper,
       stageRef,
@@ -952,10 +971,17 @@
             draggable: true,
             onOpen: () => openFolder("list"),
           }))),
-          e("div", { className: "cr-dim", "data-cr-drop": "" }, e(C.DropZoneCard, Object.assign({}, data.drop, {
-            onDrop: () => openFolder("drop"),
-            onClick: () => openFolder("drop"),
-          }))),
+          e("div", { className: "cr-dim", "data-cr-drop": "" }, CP
+            ? e(CP.PlaygroundCard, {
+              thumbs: [ASSETS.nomad, ASSETS.spaceBetweenPoster, ASSETS.health],
+              count: 8,
+              onOpen: openPlayground,
+              onDrop: () => openFolder("drop"),
+            })
+            : e(C.DropZoneCard, Object.assign({}, data.drop, {
+              onDrop: () => openFolder("drop"),
+              onClick: () => openFolder("drop"),
+            }))),
           e("div", { className: "cr-dim" }, e(C.PreviewCard, data.preview)),
           e("div", { className: "cr-dim" }, e(C.ProfileOrb, Object.assign({}, data.profile, {
             onOpen: () => setSheet({ kind: "profile" }),
@@ -974,7 +1000,7 @@
         }, data.profileSheet)) : null
       ),
       e("div", { className: "cr-corners" },
-      e("div", { className: "cr-corner cr-corner--left" }, e(C.AvatarStack, data.stack)),
+      e("div", { className: "cr-corner cr-corner--left" }, e(C.AvatarStack, CP ? Object.assign({}, data.stack, { onClick: openPlayground }) : data.stack)),
       e("div", { className: "cr-corner cr-corner--right cr-dock-wrap" },
         picker ? e("div", { className: "cr-wp-picker cr-glass-light", role: "group", "aria-label": "Wallpapers" },
           CRAFT_WALLPAPERS.map((w) => e("button", {
@@ -989,6 +1015,17 @@
         ) : null,
         e(C.Dock, dock)
       ))
+    );
+
+    return e(React.Fragment, null,
+      stage,
+      playground && CP ? e(CP.PlaygroundView, {
+        stageRef,
+        wallpaper,
+        resumeHref: ASSETS.resume,
+        onAssistant: openAssistant,
+        onClose: closePlayground,
+      }) : null
     );
   }
 

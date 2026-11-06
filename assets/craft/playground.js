@@ -1,0 +1,769 @@
+/* Craft mode: Design Playground.
+   The home board slides down into a bottom sheet, a dark gallery of explorations
+   opens behind it, and a card grows into a story viewer.
+   Exposes window.CraftPlayground = { PlaygroundCard, PlaygroundView, preload }. */
+(function () {
+  var React = window.React;
+  var h = React.createElement;
+  var useState = React.useState, useEffect = React.useEffect, useRef = React.useRef,
+    useLayoutEffect = React.useLayoutEffect, useCallback = React.useCallback;
+
+  var EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
+  var EASE_IN = "cubic-bezier(0.55, 0, 0.75, 0.2)";
+  var DATA_URL = "./assets/design-playground/playground-data.json?v=2";
+  var FACE = "./assets/craft/avatar/head/face.webp";
+  var DIR = "./assets/design-playground/";
+
+  function reduced() { return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); }
+  function cx() { return Array.prototype.filter.call(arguments, Boolean).join(" "); }
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+
+  /* ───────── Content ─────────
+     Grid order follows the reference: image, number, video, image / image, image, type, number.
+     stops: x centres (0..1) of the phones in each mockup, used to pan the story in frames. */
+  var LAYOUT = [
+    { id: "nomad", look: "image", label: "Interface", focus: 0.5, stops: [0.276, 0.5, 0.73] },
+    { id: "loading-range", look: "duration", label: "Motion", objpos: "30% 50%" },
+    { id: "space-between", look: "video", label: "Motion", crop: { x: 0.555, y: 0.06, w: 0.22, h: 0.32, vw: 1264, vh: 908, poster: "./assets/craft/playground/space-between-frame.jpg?v=1" } },
+    { id: "health-karma", look: "image", label: "Interface", focus: 0.66, stops: [0.21, 0.4, 0.6, 0.79] },
+    { id: "swaply", look: "image", label: "Interface", focus: 0.33, stops: [0.157, 0.387, 0.61, 0.84] },
+    { id: "moov", look: "image", label: "Interface", focus: 0.95, stops: [0.16, 0.41, 0.76] },
+    { id: "craft-mode", look: "type", label: "This page", stops: [0.27, 0.5, 0.73] },
+    { id: "splitly", look: "live", label: "Live prototype", focus: 0.5, stops: [0.27, 0.5, 0.72] }
+  ];
+
+  /* Used until (or if) playground-data.json loads */
+  var FALLBACK = {
+    nomad: { title: "Nomad", kind: "interface", preview: { src: DIR + "nomad-mobile-mockup.png", width: 1024, height: 665 } },
+    "health-karma": { title: "Health Karma", kind: "interface", preview: { src: DIR + "health-karma-mockup.png", width: 1024, height: 576 } },
+    swaply: { title: "Swaply", kind: "interface", preview: { src: DIR + "swaply-mockup.png", width: 1024, height: 576 } },
+    splitly: { title: "Splitly", kind: "interface", prototype: "https://splitmate-blue-five.vercel.app/", preview: { src: DIR + "splitly-expense-mockup.png", width: 1024, height: 576 } },
+    moov: { title: "moov", kind: "interface", preview: { src: DIR + "moov-payment-plan-mockup.png", width: 1024, height: 674 } },
+    "space-between": { title: "Space Between", kind: "motion", preview: { src: DIR + "space-between-poster.png", width: 556, height: 556 }, media: { type: "video", src: DIR + "space-between.mp4", poster: DIR + "space-between-poster.png" } },
+    "loading-range": { title: "Loading Range", kind: "motion", preview: { src: DIR + "loading-range-poster.png", width: 1280, height: 720 }, media: { type: "video", src: DIR + "loading-range.mp4", poster: DIR + "loading-range-poster.png" } }
+  };
+
+  /* The 8th card is this page. No invented project. */
+  var CRAFT_ITEM = {
+    id: "craft-mode", title: "Craft mode", kind: "prototype", category: "This page",
+    description: "The board you just came from. Glass widgets on photo wallpapers that change every 15 seconds, and this playground sliding out from under it.",
+    objective: "",
+    tools: ["React 18, no build step", "CSS backdrop-filter", "Web Animations API"],
+    preview: { src: "./assets/craft/playground/craft-board.webp?v=1", width: 1440, height: 900, alt: "The Craft mode board: glass cards over a photo wallpaper" }
+  };
+
+  var DURATIONS = { "loading-range": 7.8, "space-between": 4.0 };
+
+  var dataPromise = null;
+  function preload() {
+    if (!dataPromise) {
+      dataPromise = fetch(DATA_URL).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+    }
+    return dataPromise;
+  }
+
+  function buildItems(json) {
+    var byId = {};
+    Object.keys(FALLBACK).forEach(function (k) { byId[k] = Object.assign({ id: k }, FALLBACK[k]); });
+    if (json) {
+      (json.interface || []).forEach(function (p) { byId[p.id] = Object.assign({}, byId[p.id], p, { kind: "interface" }); });
+      (json.motion || []).forEach(function (p) { byId[p.id] = Object.assign({}, byId[p.id], p, { kind: "motion" }); });
+    }
+    byId["craft-mode"] = CRAFT_ITEM;
+    return LAYOUT.map(function (l) {
+      var it = Object.assign({}, byId[l.id] || { id: l.id, title: l.id }, l);
+      var vid = it.media && it.media.type === "video";
+      it.video = vid ? it.media.src : null;
+      it.poster = vid ? it.media.poster : (it.preview && it.preview.src);
+      it.image = it.preview && it.preview.src;
+      it.ratio = it.preview ? it.preview.width / it.preview.height : 1.6;
+      it.duration = DURATIONS[it.id] || null;
+      it.meta = it.duration ? fmtTime(it.duration) : it.look === "live" ? "Live" : it.id === "craft-mode" ? "Now" : "Concept";
+      it.frames = vid ? 1 : (it.stops || [0.5]).length;
+      it.alt = (it.preview && it.preview.alt) || it.title;
+      return it;
+    });
+  }
+
+  function fmtTime(s) { s = Math.round(s); return Math.floor(s / 60) + ":" + (s % 60 < 10 ? "0" : "") + (s % 60); }
+
+  var FILTERS = [
+    { id: "all", label: "All" },
+    { id: "interface", label: "Interface", icon: "phone" },
+    { id: "motion", label: "Motion", icon: "play" },
+    { id: "prototype", label: "Prototype", icon: "cursor" }
+  ];
+  function matches(it, f) {
+    if (f === "all") return true;
+    if (f === "prototype") return !!it.prototype || it.id === "craft-mode";
+    return it.kind === f;
+  }
+
+  /* ───────── Icons ───────── */
+  var PATHS = {
+    back: "M14.5 6l-6 6 6 6",
+    grid: "M5 5h5.5v5.5H5zM13.5 5H19v5.5h-5.5zM5 13.5h5.5V19H5zM13.5 13.5H19V19h-5.5z",
+    folder: "M3.5 7.5a2 2 0 0 1 2-2h4l2 2h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z",
+    download: "M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14",
+    chat: "M5 5.5h14v10H10l-4 3v-3H5z",
+    plus: "M12 5v14M5 12h14",
+    search: "M11 4a7 7 0 1 1 0 14 7 7 0 0 1 0-14zM20 20l-3.5-3.5",
+    phone: "M8 3.5h8a1.5 1.5 0 0 1 1.5 1.5v14a1.5 1.5 0 0 1-1.5 1.5H8A1.5 1.5 0 0 1 6.5 19V5A1.5 1.5 0 0 1 8 3.5zM11 17.5h2",
+    play: "M8 5.5v13l10.5-6.5z",
+    pause: "M8 5.5v13M16 5.5v13",
+    cursor: "M5 4l13 5.5-5.6 1.8L10.6 17z",
+    open: "M7 17L17 7M9 7h8v8",
+    up: "M12 19V5M6 11l6-6 6 6",
+    down: "M12 5v14M6 13l6 6 6-6",
+    share: "M14 5l6 6-6 6M20 11H10a6 6 0 0 0-6 6v1",
+    home: "M4 11l8-6.5 8 6.5M6.5 9.5V19h11V9.5"
+  };
+  function Icon(props) {
+    return h("svg", { viewBox: "0 0 24 24", width: props.size || 20, height: props.size || 20, fill: props.fill ? "currentColor" : "none", stroke: props.fill ? "none" : "currentColor", strokeWidth: props.stroke || 1.7, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true", focusable: "false" },
+      h("path", { d: PATHS[props.name] || "" }));
+  }
+
+  /* Decorative waveform, seeded so it never jumps between renders */
+  function Wave(props) {
+    var n = props.bars || 38, out = [];
+    for (var i = 0; i < n; i++) {
+      var v = Math.abs(Math.sin(i * 1.7 + (props.seed || 1)) * 0.6 + Math.sin(i * 0.43) * 0.4);
+      out.push(h("i", { key: i, style: { height: Math.round(10 + v * 90) + "%" } }));
+    }
+    return h("span", { className: "cpg-wave", "aria-hidden": "true" }, out);
+  }
+
+  /* ───────── Board card: Design Playground (replaces "Open a folder") ───────── */
+  function PlaygroundCard(props) {
+    var _o = useState(false), over = _o[0], setOver = _o[1];
+    var thumbs = props.thumbs || [];
+    return h("button", {
+      type: "button",
+      className: cx("cr-card cr-glass cr-drop cpg-boardcard", over && "is-over"),
+      "data-cr-enter": "", "data-pg-card": "",
+      "aria-label": "Open Design Playground, " + (props.count || 8) + " explorations",
+      onClick: props.onOpen,
+      onDragOver: function (ev) { ev.preventDefault(); setOver(true); },
+      onDragLeave: function () { setOver(false); },
+      onDrop: function (ev) { ev.preventDefault(); setOver(false); if (props.onDrop) props.onDrop(ev.dataTransfer.getData("text/plain")); }
+    },
+      h("span", { className: "cpg-boardcard-fan", "aria-hidden": "true" },
+        thumbs.slice(0, 3).map(function (src, i) {
+          return h("span", { key: i, className: "cpg-fan cpg-fan--" + i }, h("img", { src: src, alt: "", decoding: "async", draggable: false }));
+        })),
+      h("span", { className: "cpg-boardcard-text" },
+        h("span", { className: "cpg-boardcard-title" }, "Design Playground"),
+        h("span", { className: "cpg-boardcard-hint" }, over ? "Drop to open its folder" : (props.count || 8) + " explorations")));
+  }
+
+  /* ───────── Grid card faces ───────── */
+  function CardHead(props) {
+    return h("span", { className: "cpg-card-head" },
+      h("img", { className: "cpg-card-av", src: FACE, alt: "", decoding: "async" }),
+      h("span", { className: "cpg-card-name" }, props.item.title),
+      h("span", { className: "cpg-card-meta" }, props.item.meta));
+  }
+  function Segs(props) {
+    var out = [];
+    for (var i = 0; i < props.n; i++) out.push(h("i", { key: i }));
+    return h("span", { className: "cpg-card-segs", "aria-hidden": "true" }, out);
+  }
+
+  function CardFace(props) {
+    var it = props.item;
+    if (it.look === "duration") {
+      return h(React.Fragment, null,
+        h(CardHead, { item: it }),
+        h("span", { className: "cpg-num" }, it.meta),
+        h(Wave, { seed: 2 }),
+        h("span", { className: "cpg-dur-row", "aria-hidden": "true" },
+          h("span", { className: "cpg-mini" }, h(Icon, { name: "download", size: 14 })),
+          h("span", { className: "cpg-playbtn" }, h(Icon, { name: "play", fill: true, size: 22 })),
+          h("span", { className: "cpg-mini cpg-mini--txt" }, "Aa")));
+    }
+    if (it.look === "live") {
+      return h(React.Fragment, null,
+        h(CardHead, { item: it }),
+        h("span", { className: "cpg-num cpg-num--live" }, h("i", { className: "cpg-live-dot", "aria-hidden": "true" }), "Live"),
+        h("span", { className: "cpg-live-url" }, "splitmate prototype"),
+        h(Wave, { seed: 5, bars: 34 }));
+    }
+    if (it.look === "type") {
+      return h(React.Fragment, null,
+        h("span", { className: "cpg-type-bg cr-wp-thumb craft-wp--" + (props.wallpaper || "fuji"), "aria-hidden": "true" }),
+        h(CardHead, { item: it }),
+        h("span", { className: "cpg-type-poster", "aria-hidden": "true" },
+          h("span", { className: "cpg-type-cap" }, "Inter, the Craft face"),
+          h("span", { className: "cpg-type-abc" }, "ABCD", h("br"), "EFGHIJK", h("br"), "LMNOP", h("br"), "QRSTUV", h("br"), "WXYZ")),
+        h(Segs, { n: 3 }));
+    }
+    var media = it.video
+      ? h("video", { className: "cpg-card-media", src: it.video, poster: it.crop ? it.crop.poster : it.poster, muted: true, loop: true, playsInline: true, preload: "auto", "aria-hidden": "true", ref: props.videoRef, style: it.crop ? cropCss(it.crop) : null })
+      : h("img", { className: "cpg-card-media", src: it.image, alt: "", decoding: "async", draggable: false, style: { objectPosition: Math.round((it.focus != null ? it.focus : 0.5) * 100) + "% 50%" } });
+    return h(React.Fragment, null, media, h("span", { className: "cpg-card-shade", "aria-hidden": "true" }), h(CardHead, { item: it }), h(Segs, { n: it.frames > 1 ? 3 : 3 }));
+  }
+
+  /* Video crop: fit a region of the frame (contain) inside a box. Box in px, or CSS lengths for the grid. */
+  function cropStyle(c, W, H) {
+    var k = Math.min(W / (c.w * c.vw), H / (c.h * c.vh));
+    var vw = c.vw * k, vh = c.vh * k;
+    return { position: "absolute", inset: "auto", width: vw + "px", height: vh + "px", left: (W / 2 - (c.x + c.w / 2) * vw) + "px", top: (H / 2 - (c.y + c.h / 2) * vh) + "px", maxWidth: "none", objectFit: "fill" };
+  }
+  function cropCss(c) {
+    var k = "min(var(--cw) / " + (c.w * c.vw).toFixed(2) + ", var(--ch) / " + (c.h * c.vh).toFixed(2) + ")";
+    return {
+      position: "absolute", inset: "auto", maxWidth: "none", objectFit: "fill",
+      width: "calc(" + k + " * " + c.vw + ")", height: "calc(" + k + " * " + c.vh + ")",
+      left: "calc(var(--cw) / 2 - " + k + " * " + ((c.x + c.w / 2) * c.vw).toFixed(2) + ")",
+      top: "calc(var(--ch) / 2 - " + k + " * " + ((c.y + c.h / 2) * c.vh).toFixed(2) + ")"
+    };
+  }
+
+  /* ───────── Story layout (px, from the viewport) ───────── */
+  function storyLayout(W, H) {
+    if (W <= 700) return { mobile: true, compact: true, left: 0, top: 0, w: W, h: H, r: 0, pitch: H };
+    var railR = 104, padR = 28, act = 54 + 20, gap = 32;
+    var panelW = W >= 1200 ? 320 : 280;
+    var hgt = Math.min(710, H - 150), w = Math.round(hgt * 456 / 710);
+    var compact = false;
+    if (act + w + gap + panelW > W - railR - padR) {
+      var w2 = W - railR - padR - act - gap - panelW;
+      if (w2 >= 340) { w = w2; hgt = Math.round(w * 710 / 456); }
+      else { compact = true; panelW = 0; gap = 0; w = Math.min(w, W - railR - padR - act); hgt = Math.round(w * 710 / 456); }
+    }
+    var left = Math.round(W / 2 - w / 2);
+    if (left - act < railR) left = railR + act;
+    if (!compact && left + w + gap + panelW > W - padR) left = W - padR - panelW - gap - w;
+    var top = Math.round(clamp((H - hgt) / 2 - 40, 16, 40));
+    return { mobile: false, compact: compact, left: left, top: top, w: w, h: hgt, r: Math.max(28, Math.round(40 * w / 456)), pitch: hgt + 44, panelW: panelW, gap: gap };
+  }
+
+  /* Frame pan for an image inside a box */
+  function panX(it, seg, boxW, boxH, center) {
+    var imgW = boxH * it.ratio;
+    if (imgW <= boxW) return { imgW: boxW, x: 0, fit: true };
+    var f = boxW / imgW;
+    var c = center != null ? center : (it.stops ? it.stops[seg] : 0.5);
+    var p = clamp((c - f / 2) / (1 - f), 0, 1);
+    return { imgW: imgW, x: Math.round(p * (imgW - boxW)) };
+  }
+
+  function SlideMedia(props) {
+    var it = props.item, L = props.L;
+    if (it.video) {
+      if (props.active) {
+        return h("video", {
+          className: "cpg-slide-video", src: it.video, poster: it.crop ? it.crop.poster : it.poster, muted: true, loop: true, playsInline: true,
+          autoPlay: !props.still, preload: "auto", ref: props.videoRef, "aria-label": it.title + " motion study",
+          style: it.crop ? cropStyle(it.crop, L.w, L.h) : it.objpos ? { objectPosition: it.objpos } : null
+        });
+      }
+      return h("img", { className: "cpg-slide-video", src: it.poster, alt: "", decoding: "async", style: it.objpos ? { objectPosition: it.objpos } : null });
+    }
+    var src = it.image;
+    var pan = panX(it, props.seg, L.w, L.h, props.active ? null : (it.focus != null ? it.focus : 0.5));
+    return h("img", {
+      className: "cpg-pan", src: src, alt: props.active ? it.alt : "", decoding: "async", draggable: false,
+      style: { width: Math.ceil(pan.imgW) + "px", transform: "translate3d(" + (-pan.x) + "px,0,0)" }
+    });
+  }
+
+  /* ───────── Home sheet motion (the Craft stage itself moves) ───────── */
+  function stageGeom(stage) {
+    var prev = stage.style.transform;
+    stage.style.transform = "none";
+    var base = stage.getBoundingClientRect().top;
+    stage.style.transform = prev;
+    return base;
+  }
+  function stagePose(name, base) {
+    var W = window.innerWidth, H = window.innerHeight;
+    var bar = W <= 700 ? 84 : 96, s = W <= 700 ? 0.94 : 0.96;
+    if (name === "home") return { t: "translate3d(0,0,0) scale(1)", r: "0px" };
+    if (name === "mid") { var m = 0.94; return { t: "translate3d(0," + ((H / 2 - base) * (1 - m)).toFixed(1) + "px,0) scale(" + m + ")", r: "38px" }; }
+    if (name === "sheet") return { t: "translate3d(0," + (H - bar - base).toFixed(1) + "px,0) scale(" + s + ")", r: "36px" };
+    return { t: "translate3d(0," + (H + 40 - base).toFixed(1) + "px,0) scale(" + s + ")", r: "36px" }; /* away */
+  }
+  function moveStage(stage, base, from, to, opts) {
+    opts = opts || {};
+    var a = stagePose(from, base), b = stagePose(to, base);
+    var frames;
+    if (reduced()) {
+      stage.style.transform = b.t; stage.style.borderRadius = b.r;
+      return stage.animate([{ opacity: 0.4 }, { opacity: 1 }], { duration: 180 }).finished.catch(function () {});
+    }
+    if (opts.via) {
+      var m = stagePose(opts.via, base);
+      frames = [
+        { transform: a.t, borderRadius: a.r, easing: opts.firstEase || "cubic-bezier(0.3, 0.7, 0.2, 1)" },
+        { transform: m.t, borderRadius: m.r, offset: opts.at || 0.28, easing: opts.secondEase || EASE },
+        { transform: b.t, borderRadius: b.r }
+      ];
+    } else {
+      frames = [{ transform: a.t, borderRadius: a.r }, { transform: b.t, borderRadius: b.r }];
+    }
+    stage.style.transform = b.t; stage.style.borderRadius = b.r;
+    var anim = stage.animate(frames, { duration: opts.duration || 700, easing: opts.via ? "linear" : (opts.easing || EASE) });
+    return anim.finished.catch(function () {});
+  }
+
+  /* ───────── Gallery view ───────── */
+  function PlaygroundView(props) {
+    var _i = useState(function () { return buildItems(null); }), items = _i[0], setItems = _i[1];
+    var _v = useState("grid"), view = _v[0], setView = _v[1];
+    var _x = useState(0), index = _x[0], setIndex = _x[1];
+    var _f = useState("all"), filter = _f[0], setFilter = _f[1];
+    var _s = useState(0), seg = _s[0], setSeg = _s[1];
+    var _p = useState(false), paused = _p[0], setPaused = _p[1];
+    var _m = useState(false), more = _m[0], setMore = _m[1];
+    var _in = useState(false), storyIn = _in[0], setStoryIn = _in[1];
+    var _vp = useState({ W: window.innerWidth, H: window.innerHeight }), vp = _vp[0], setVp = _vp[1];
+    var _c = useState(false), closing = _c[0], setClosing = _c[1];
+
+    var rootRef = useRef(null), galleryRef = useRef(null), scrollRef = useRef(null), storyRef = useRef(null);
+    var cardRefs = useRef({}), gridVideos = useRef({}), storyVideo = useRef(null);
+    var stageBase = useRef(0), stageState = useRef("home");
+    var busy = useRef(true), pending = useRef(null), rects = useRef({}), cardAnims = useRef([]);
+    var wheelAcc = useRef(0), lastNav = useRef(0), touchY = useRef(null);
+    var still = reduced();
+
+    var list = items.filter(function (it) { return matches(it, filter); });
+    var cur = list[index] || list[0];
+    var L = storyLayout(vp.W, vp.H);
+
+    useEffect(function () { preload().then(function (j) { if (j) setItems(buildItems(j)); }); }, []);
+    useEffect(function () {
+      var on = function () { setVp({ W: window.innerWidth, H: window.innerHeight }); };
+      window.addEventListener("resize", on);
+      return function () { window.removeEventListener("resize", on); };
+    }, []);
+    /* Keep the home sheet glued to the bottom when the window changes */
+    useEffect(function () {
+      var stage = props.stageRef.current;
+      if (!stage || busy.current) return;
+      stageBase.current = stageGeom(stage);
+      var pose = stagePose(stageState.current, stageBase.current);
+      stage.style.transform = pose.t;
+    }, [vp.W, vp.H]);
+
+    /* ── Enter: board shrinks, slides down to a bar; cards burst out of the Playground card ── */
+    useLayoutEffect(function () {
+      var stage = props.stageRef.current;
+      var root = document.documentElement;
+      root.classList.add("ga-pg-open");
+      if (!stage) { busy.current = false; return undefined; }
+      var src = stage.querySelector("[data-pg-card]");
+      var sr = (src || stage).getBoundingClientRect();
+      stageBase.current = stageGeom(stage);
+      stage.style.setProperty("--pg-scroll", Math.max(0, -stageBase.current) + "px");
+      stage.classList.add("is-pg");
+      stage.setAttribute("inert", "");
+      stage.style.transformOrigin = "50% 0";
+      stageState.current = "sheet";
+      moveStage(stage, stageBase.current, "home", "sheet", { via: "mid", duration: 900, at: 0.27 }).then(function () { busy.current = false; });
+
+      var cards = Array.prototype.slice.call(galleryRef.current.querySelectorAll(".cpg-cell"));
+      cards.forEach(function (el, i) {
+        var r = el.getBoundingClientRect();
+        if (still) { el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, delay: 80 + i * 20, fill: "backwards" }); return; }
+        var dx = sr.left + sr.width / 2 - (r.left + r.width / 2), dy = sr.top + sr.height / 2 - (r.top + r.height / 2);
+        var rot = (i % 2 ? 1 : -1) * (6 + (i * 5) % 9);
+        el.animate([
+          { opacity: 0, transform: "translate3d(" + dx + "px," + dy + "px,0) scale(0.22) rotate(" + rot + "deg)" },
+          { opacity: 1, transform: "translate3d(" + dx * 0.3 + "px," + (dy * 0.3 - 30) + "px,0) scale(0.8) rotate(" + rot / 3 + "deg)", offset: 0.45 },
+          { opacity: 1, transform: "none" }
+        ], { duration: 780, delay: 260 + i * 50, easing: EASE, fill: "backwards" });
+      });
+      Array.prototype.slice.call(galleryRef.current.querySelectorAll("[data-cpg-chrome]")).forEach(function (el, i) {
+        el.animate([{ opacity: 0, transform: "translateY(-8px)" }, { opacity: 1, transform: "none" }], { duration: still ? 160 : 520, delay: still ? 0 : 300 + i * 40, easing: EASE, fill: "backwards" });
+      });
+      var t = setTimeout(function () {
+        var first = galleryRef.current && galleryRef.current.querySelector(".cpg-card");
+        if (first) first.focus({ preventScroll: true });
+      }, 60);
+      return function () {
+        clearTimeout(t);
+        root.classList.remove("ga-pg-open");
+        resetStage(stage);
+      };
+    }, []);
+
+    function resetStage(stage) {
+      if (!stage) return;
+      stage.getAnimations().forEach(function (a) { a.cancel(); });
+      stage.classList.remove("is-pg");
+      stage.removeAttribute("inert");
+      ["transform", "border-radius", "transform-origin", "--pg-scroll"].forEach(function (p) { stage.style.removeProperty(p); });
+    }
+
+    /* ── Back to the board ── */
+    var closeHome = useCallback(function (then) {
+      if (busy.current && stageState.current !== "sheet" && stageState.current !== "away") return;
+      busy.current = true;
+      setClosing(true);
+      setStoryIn(false);
+      var stage = props.stageRef.current;
+      var g = galleryRef.current;
+      var from = stageState.current;
+      stageState.current = "home";
+      if (g) {
+        Array.prototype.slice.call(g.querySelectorAll(".cpg-cell, [data-cpg-chrome], .cpg-story")).forEach(function (el) {
+          el.animate([{ opacity: 1 }, { opacity: 0, transform: "translateY(-14px) scale(0.97)" }], { duration: still ? 120 : 420, easing: EASE, fill: "forwards" });
+        });
+      }
+      Object.keys(gridVideos.current).forEach(function (k) { var v = gridVideos.current[k]; if (v) v.pause(); });
+      var done = function () {
+        if (rootRef.current) rootRef.current.style.display = "none";
+        resetStage(stage);
+        document.documentElement.classList.remove("ga-pg-open");
+        props.onClose(then);
+      };
+      if (!stage) { done(); return; }
+      moveStage(stage, stageBase.current, from, "home", { via: "mid", at: 0.7, duration: 860, firstEase: EASE, secondEase: "cubic-bezier(0.3, 0.7, 0.2, 1)" }).then(done);
+    }, [props.onClose]);
+
+    /* ── Open a card into the story viewer ── */
+    function openStory(i) {
+      if (busy.current) return;
+      busy.current = true;
+      var map = {};
+      list.forEach(function (it) { var el = cardRefs.current[it.id]; if (el) map[it.id] = el.getBoundingClientRect(); });
+      rects.current = map;
+      pending.current = { id: list[i].id };
+      setSeg(0); setPaused(false); setMore(false);
+      setIndex(i);
+      setView("story");
+    }
+
+    useLayoutEffect(function () {
+      if (view !== "story" || !pending.current) return;
+      var id = pending.current.id; pending.current = null;
+      var src = rects.current[id];
+      var slide = storyRef.current && storyRef.current.querySelector(".cpg-slide.is-current");
+      var stage = props.stageRef.current;
+      Object.keys(gridVideos.current).forEach(function (k) { var v = gridVideos.current[k]; if (v) v.pause(); });
+      if (stage) { stageState.current = "away"; moveStage(stage, stageBase.current, "sheet", "away", { duration: 520, easing: EASE_IN }); }
+      var srcCard = cardRefs.current[id];
+      var c0 = src ? { x: src.left + src.width / 2, y: src.top + src.height / 2 } : { x: 0, y: 0 };
+      cardAnims.current.forEach(function (a) { a.cancel(); });
+      cardAnims.current = [];
+      list.forEach(function (it) {
+        var el = cardRefs.current[it.id];
+        if (!el) return;
+        var cell = el.parentNode;
+        if (it.id === id) { cardAnims.current.push(cell.animate([{ opacity: 0 }, { opacity: 0 }], { duration: 10, fill: "forwards" })); return; }
+        var r = rects.current[it.id] || el.getBoundingClientRect();
+        var dx = r.left + r.width / 2 - c0.x, dy = r.top + r.height / 2 - c0.y, d = Math.hypot(dx, dy) || 1;
+        var push = still ? 0 : 140;
+        cardAnims.current.push(cell.animate([
+          { opacity: 1, transform: "none" },
+          { opacity: 0.85, transform: "translate3d(" + (dx / d * push * 0.6) + "px," + (dy / d * push * 0.6) + "px,0) scale(0.9)", offset: 0.45 },
+          { opacity: 0, transform: "translate3d(" + (dx / d * push) + "px," + (dy / d * push) + "px,0) scale(0.8)" }
+        ], { duration: still ? 160 : 620, easing: EASE, fill: "forwards" }));
+      });
+      if (slide && src && !still) {
+        var r = slide.getBoundingClientRect();
+        slide.animate([
+          { transformOrigin: "0 0", transform: "translate3d(" + (src.left - r.left) + "px," + (src.top - r.top) + "px,0) scale(" + (src.width / r.width) + "," + (src.height / r.height) + ")", borderRadius: (30 * r.width / src.width).toFixed(1) + "px" },
+          { transformOrigin: "0 0", transform: "none", borderRadius: L.r + "px" }
+        ], { duration: 560, easing: EASE });
+      } else if (slide) {
+        slide.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 180 });
+      }
+      requestAnimationFrame(function () { setStoryIn(true); });
+      setTimeout(function () {
+        busy.current = false;
+        var back = galleryRef.current && galleryRef.current.querySelector(".cpg-back");
+        if (back && !rootRef.current.contains(document.activeElement)) back.focus({ preventScroll: true });
+        else if (back && document.activeElement && document.activeElement.classList.contains("cpg-card")) back.focus({ preventScroll: true });
+      }, still ? 200 : 580);
+      if (srcCard && srcCard === document.activeElement) srcCard.blur();
+    }, [view]);
+
+    /* ── Story back to the grid ── */
+    function closeStory() {
+      if (busy.current || view !== "story") return;
+      busy.current = true;
+      var it = cur;
+      var el = cardRefs.current[it.id];
+      var sc = scrollRef.current;
+      var target = rects.current[it.id] || (el && el.getBoundingClientRect());
+      /* Bring the card into view first so the story has somewhere visible to land */
+      if (target && sc) {
+        var bar = vp.W <= 700 ? 84 : 96;
+        var topSafe = vp.W <= 700 ? 80 : 110;
+        var delta = 0;
+        if (target.bottom > vp.H - bar - 16) delta = target.bottom - (vp.H - bar - 16);
+        if (target.top - delta < topSafe) delta = target.top - topSafe;
+        if (delta) {
+          var before = sc.scrollTop;
+          sc.scrollTop = before + delta;
+          var moved = sc.scrollTop - before;
+          Object.keys(rects.current).forEach(function (k) {
+            var q = rects.current[k];
+            rects.current[k] = { left: q.left, top: q.top - moved, width: q.width, height: q.height, bottom: q.bottom - moved, right: q.right };
+          });
+          target = rects.current[it.id];
+        }
+      }
+      setStoryIn(false);
+      var slide = storyRef.current && storyRef.current.querySelector(".cpg-slide.is-current");
+      var stage = props.stageRef.current;
+      if (stage) { stageState.current = "sheet"; moveStage(stage, stageBase.current, "away", "sheet", { duration: 640 }); }
+      var anims = [];
+      if (slide && target && !still) {
+        var r = slide.getBoundingClientRect();
+        /* Pan the frame back to the crop the grid card shows, so the landing has no jump */
+        var pan = slide.querySelector(".cpg-pan");
+        if (pan && it.focus != null) {
+          var px = panX(it, 0, L.w, L.h, it.focus);
+          pan.style.transition = "transform 520ms " + EASE;
+          pan.style.transform = "translate3d(" + (-px.x) + "px,0,0)";
+        }
+        anims.push(slide.animate([
+          { transformOrigin: "0 0", transform: "none", borderRadius: L.r + "px" },
+          { transformOrigin: "0 0", transform: "translate3d(" + (target.left - r.left) + "px," + (target.top - r.top) + "px,0) scale(" + (target.width / r.width) + "," + (target.height / r.height) + ")", borderRadius: (30 * r.width / target.width).toFixed(1) + "px" }
+        ], { duration: 520, easing: EASE, fill: "forwards" }).finished);
+      }
+      var outs = cardAnims.current; cardAnims.current = [];
+      outs.forEach(function (a) { a.cancel(); });
+      list.forEach(function (x, i) {
+        var c = cardRefs.current[x.id];
+        if (!c) return;
+        var cell = c.parentNode;
+        if (x.id === it.id) { cell.animate([{ opacity: 0 }, { opacity: 0, offset: 0.92 }, { opacity: 1 }], { duration: still ? 160 : 540 }); return; }
+        var q = rects.current[x.id], t0 = target || q;
+        var dx = q && t0 ? q.left + q.width / 2 - (t0.left + t0.width / 2) : 0, dy = q && t0 ? q.top + q.height / 2 - (t0.top + t0.height / 2) : 0;
+        var d = Math.hypot(dx, dy) || 1, push = still ? 0 : 140;
+        cell.animate([
+          { opacity: 0, transform: "translate3d(" + (dx / d * push) + "px," + (dy / d * push) + "px,0) scale(0.82)" },
+          { opacity: 1, transform: "none" }
+        ], { duration: still ? 160 : 600, delay: still ? 0 : 60 + (i % 4) * 30, easing: EASE, fill: "backwards" });
+      });
+      var wait = new Promise(function (res) { setTimeout(res, still ? 170 : 540); });
+      Promise.all(anims.concat([wait])).then(function () {
+        setView("grid");
+        busy.current = false;
+        var resume = function () {
+          var c = cardRefs.current[it.id];
+          if (c) c.focus({ preventScroll: true });
+          playVisible();
+        };
+        requestAnimationFrame(resume);
+      });
+    }
+
+    function go(d) {
+      if (view !== "story" || busy.current) return;
+      var ni = clamp(index + d, 0, list.length - 1);
+      if (ni === index) return;
+      lastNav.current = Date.now();
+      setSeg(0); setPaused(false); setMore(false);
+      setIndex(ni);
+    }
+
+    /* ── Videos in the grid only play while visible ── */
+    var visible = useRef({});
+    function playVisible() {
+      if (still) return;
+      Object.keys(gridVideos.current).forEach(function (k) {
+        var v = gridVideos.current[k];
+        if (v && visible.current[k]) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+      });
+    }
+    useEffect(function () {
+      if (!("IntersectionObserver" in window)) return undefined;
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          var id = en.target.getAttribute("data-id");
+          visible.current[id] = en.isIntersecting;
+          var v = gridVideos.current[id];
+          if (!v) return;
+          if (en.isIntersecting && view === "grid" && !closing && !still) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+          else v.pause();
+        });
+      }, { root: scrollRef.current, threshold: 0.2 });
+      Object.keys(gridVideos.current).forEach(function (k) { var v = gridVideos.current[k]; if (v) io.observe(v.closest(".cpg-cell")); });
+      return function () { io.disconnect(); };
+    }, [view, filter, items, closing]);
+
+    /* Filter change: re-stagger the cards in */
+    var firstFilter = useRef(true);
+    useLayoutEffect(function () {
+      if (firstFilter.current) { firstFilter.current = false; return; }
+      if (scrollRef.current) scrollRef.current.scrollTop = 0;
+      Array.prototype.slice.call(galleryRef.current.querySelectorAll(".cpg-cell")).forEach(function (el, i) {
+        el.animate(still ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: "translateY(18px) scale(0.94)" }, { opacity: 1, transform: "none" }], { duration: still ? 160 : 520, delay: i * 45, easing: EASE, fill: "backwards" });
+      });
+    }, [filter]);
+
+    /* Story frames advance on their own (not under reduced motion, not when paused) */
+    function onSegEnd() {
+      if (!cur || cur.video) return;
+      if (seg < cur.frames - 1) setSeg(seg + 1);
+    }
+    useEffect(function () {
+      var v = storyVideo.current;
+      if (!v) return;
+      if (paused || still) v.pause(); else { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+    }, [paused, index, view]);
+
+    /* ── Keyboard: focus trap, Escape, arrows ── */
+    function onKeyDown(ev) {
+      if (ev.key === "Tab") {
+        var nodes = Array.prototype.slice.call(rootRef.current.querySelectorAll("button:not([disabled]), a[href], [tabindex]:not([tabindex='-1'])"))
+          .filter(function (n) { return !n.closest("[inert]") && !n.closest("[aria-hidden='true']") && n.getClientRects().length > 0 && getComputedStyle(n).visibility !== "hidden"; });
+        if (!nodes.length) return;
+        var first = nodes[0], last = nodes[nodes.length - 1];
+        if (ev.shiftKey && (document.activeElement === first || !rootRef.current.contains(document.activeElement))) { ev.preventDefault(); last.focus(); }
+        else if (!ev.shiftKey && document.activeElement === last) { ev.preventDefault(); first.focus(); }
+        return;
+      }
+      if (ev.key === "Escape") { ev.preventDefault(); ev.stopPropagation(); if (view === "story") closeStory(); else closeHome(); return; }
+      if (view !== "story") return;
+      if (ev.key === "ArrowDown" || ev.key === "ArrowRight" || ev.key === "PageDown") { ev.preventDefault(); go(1); }
+      else if (ev.key === "ArrowUp" || ev.key === "ArrowLeft" || ev.key === "PageUp") { ev.preventDefault(); go(-1); }
+    }
+    function inScrollablePanel(t) {
+      var p = t && t.closest && t.closest(".cpg-panel-body");
+      return p && p.scrollHeight > p.clientHeight + 2;
+    }
+    function onWheel(ev) {
+      if (view !== "story" || inScrollablePanel(ev.target)) return;
+      if (Date.now() - lastNav.current < 700) { wheelAcc.current = 0; return; }
+      wheelAcc.current += ev.deltaY;
+      if (Math.abs(wheelAcc.current) > 60) { var d = wheelAcc.current > 0 ? 1 : -1; wheelAcc.current = 0; go(d); }
+    }
+    function onTouchStart(ev) { if (view === "story" && !inScrollablePanel(ev.target)) touchY.current = ev.touches[0].clientY; }
+    function onTouchEnd(ev) {
+      if (touchY.current == null) return;
+      var dy = ev.changedTouches[0].clientY - touchY.current; touchY.current = null;
+      if (Math.abs(dy) > 50) go(dy < 0 ? 1 : -1);
+    }
+
+    /* ── Render ── */
+    var isStory = view === "story";
+    function roundBtn(o) {
+      var cls = cx("cpg-round", o.className);
+      var inner = h(Icon, { name: o.icon, size: o.size || 20, fill: o.fill });
+      if (o.href) return h("a", { key: o.key || o.label, className: cls, href: o.href, target: o.external ? "_blank" : undefined, rel: o.external ? "noopener" : undefined, "aria-label": o.label, title: o.label, "data-cpg-chrome": o.chrome ? "" : undefined }, inner);
+      return h("button", { key: o.key || o.label, type: "button", className: cls, "aria-label": o.label, title: o.label, onClick: o.onClick, disabled: o.disabled, "aria-current": o.current ? "page" : undefined, "aria-pressed": o.pressed, "data-cpg-chrome": o.chrome ? "" : undefined }, inner);
+    }
+
+    var grid = h("div", { className: "cpg-scroll", ref: scrollRef, inert: isStory ? "" : undefined, "aria-hidden": isStory ? "true" : undefined },
+      h("ul", { className: "cpg-grid", "aria-label": "Explorations" },
+        list.map(function (it, i) {
+          return h("li", { key: it.id, className: "cpg-cell cpg-cell--" + it.look, "data-id": it.id },
+            h("span", { className: "cpg-date", "aria-hidden": "true" }, it.label),
+            h("button", {
+              type: "button", className: "cpg-card cpg-card--" + it.look,
+              ref: function (n) { cardRefs.current[it.id] = n; },
+              "aria-label": it.title + ", " + it.label + (it.video ? ", video" : "") + ". Open",
+              onClick: function () { openStory(i); }
+            }, h(CardFace, { item: it, wallpaper: props.wallpaper, videoRef: it.video ? function (n) { gridVideos.current[it.id] = n; } : undefined })));
+        })));
+
+    var story = null;
+    if (isStory && cur) {
+      var segs = [];
+      for (var s = 0; s < cur.frames; s++) {
+        var state = s < seg ? "is-done" : s === seg ? "is-on" : "";
+        segs.push(h("i", { key: cur.id + s, className: state },
+          h("b", {
+            style: s === seg ? { animationDuration: (cur.video ? (cur.duration || 6) : 3.8) + "s", animationIterationCount: cur.video ? "infinite" : 1, animationPlayState: paused || still ? "paused" : "running" } : null,
+            onAnimationEnd: s === seg ? onSegEnd : undefined
+          })));
+      }
+      var panelKids = [
+        h("p", { key: "k", className: "cpg-panel-kicker" }, cur.label + " · " + (index + 1) + " of " + list.length),
+        h("h3", { key: "t", className: "cpg-panel-title", id: "cpgStoryTitle" }, cur.title),
+        h("div", { key: "b", className: cx("cpg-panel-body", L.compact && !more && "is-clamped") },
+          cur.description ? h("p", null, cur.description) : h("p", null, "A short motion study, no write-up yet."),
+          cur.objective ? h(React.Fragment, null, h("h4", null, "Objective"), h("p", null, cur.objective)) : null,
+          cur.tools && cur.tools.length ? h("ul", { className: "cpg-tools-list", "aria-label": "Tools" }, cur.tools.map(function (t) { return h("li", { key: t }, t); })) : null),
+        L.compact ? h("button", { key: "m", type: "button", className: "cpg-more", "aria-expanded": more ? "true" : "false", onClick: function () { setMore(!more); } }, more ? "Less" : "More") : null,
+        cur.prototype ? h("a", { key: "p", className: "cpg-proto", href: cur.prototype, target: "_blank", rel: "noopener" }, "Open live prototype", h(Icon, { name: "open", size: 16 })) : null
+      ];
+      var third = cur.prototype
+        ? { icon: "share", label: "Open the " + cur.title + " live prototype", href: cur.prototype, external: true, className: "cpg-round--white" }
+        : cur.id === "craft-mode"
+          ? { icon: "home", label: "Back to the board", onClick: function () { closeHome(); }, className: "cpg-round--white" }
+          : cur.video
+            ? { icon: paused ? "play" : "pause", fill: paused, label: paused ? "Play video" : "Pause video", onClick: function () { setPaused(!paused); }, className: "cpg-round--white", pressed: paused ? "true" : "false" }
+            : { icon: "chat", label: "Ask the assistant about " + cur.title, onClick: props.onAssistant, className: "cpg-round--white" };
+
+      var actLeft = L.mobile ? null : L.left - 74;
+      story = h("section", {
+        className: cx("cpg-story", storyIn && "is-in", L.compact && "is-compact", L.mobile && "is-mobile"),
+        ref: storyRef, "aria-roledescription": "story viewer", "aria-labelledby": "cpgStoryTitle",
+        onWheel: onWheel, onTouchStart: onTouchStart, onTouchEnd: onTouchEnd
+      },
+        h("div", { className: "cpg-track", style: { transform: "translate3d(0," + (-index * L.pitch) + "px,0)" } },
+          list.map(function (it, i) {
+            if (Math.abs(i - index) > 1) return null;
+            var current = i === index, next = i === index + 1;
+            var style = { top: L.top + i * L.pitch, left: L.left, width: L.w, height: L.h, borderRadius: L.r };
+            var media = h(SlideMedia, { item: it, L: L, active: current, seg: current ? seg : 0, still: still || paused, videoRef: current ? storyVideo : undefined });
+            if (current) {
+              return h("div", { key: it.id, className: cx("cpg-slide is-current", it.video && "is-video"), style: style },
+                media,
+                h("span", { className: "cpg-slide-shade", "aria-hidden": "true" }),
+                cur.frames > 1 ? h("button", { type: "button", className: "cpg-tap cpg-tap--prev", "aria-label": "Previous frame", disabled: seg === 0, onClick: function () { setSeg(Math.max(0, seg - 1)); } }) : null,
+                cur.frames > 1 ? h("button", { type: "button", className: "cpg-tap cpg-tap--next", "aria-label": "Next frame", disabled: seg >= cur.frames - 1, onClick: function () { setSeg(Math.min(cur.frames - 1, seg + 1)); } }) : null,
+                h("span", { className: "cpg-segs", role: "progressbar", "aria-label": "Frame", "aria-valuemin": 1, "aria-valuemax": cur.frames, "aria-valuenow": seg + 1 }, segs));
+            }
+            if (next) {
+              return h("button", { key: it.id, type: "button", className: "cpg-slide cpg-slide--peek", style: style, "aria-label": "Next: " + it.title, onClick: function () { go(1); } }, media);
+            }
+            return h("div", { key: it.id, className: "cpg-slide", style: style, "aria-hidden": "true" }, media);
+          })),
+        h("div", { className: "cpg-actions", style: L.mobile ? null : { left: actLeft, top: L.top + 26 } },
+          h("img", { className: "cpg-actions-av", src: FACE, alt: "Gaurav Avinash", decoding: "async" }),
+          roundBtn({ icon: "open", label: "Open " + (cur.video ? "video" : "image") + " in a new tab", href: cur.video || cur.image, external: true }),
+          roundBtn(third)),
+        h("div", {
+          className: "cpg-panel", key: "panel-" + cur.id,
+          style: L.compact
+            ? (L.mobile ? null : { left: L.left, width: L.w, top: L.top + L.h, "--pg-r": L.r + "px" })
+            : { left: L.left + L.w + L.gap, width: L.panelW, top: L.top + L.h, maxHeight: Math.min(L.h, L.top + L.h - (vp.W < 1100 ? 120 : 136)) }
+        }, panelKids),
+        h("div", { className: "cpg-nav" },
+          roundBtn({ icon: "up", label: "Previous project", onClick: function () { go(-1); }, disabled: index === 0 }),
+          roundBtn({ icon: "down", label: "Next project", onClick: function () { go(1); }, disabled: index >= list.length - 1 })),
+        L.mobile ? null : h("button", { type: "button", className: "cpg-pip", "aria-label": "Back to the board", title: "Back to the board", onClick: function () { closeHome(); } },
+          h("span", { className: "cpg-pip-photo cr-wp-thumb craft-wp--" + (props.wallpaper || "fuji"), "aria-hidden": "true" }),
+          h("span", { className: "cpg-pip-label", "aria-hidden": "true" }, h(Icon, { name: "home", size: 14 }), "Board")),
+        h("p", { className: "cr-visually-hidden", "aria-live": "polite" }, cur.title + ", " + (index + 1) + " of " + list.length));
+    }
+
+    return h("div", {
+      className: cx("cpg", isStory && "is-story", closing && "is-closing"), ref: rootRef,
+      role: "dialog", "aria-modal": "true", "aria-label": "Design Playground", onKeyDown: onKeyDown
+    },
+      h("div", { className: "cpg-gallery", ref: galleryRef },
+        h("h2", { className: "cr-visually-hidden" }, "Design Playground"),
+        roundBtn({ icon: "back", label: isStory ? "Back to all explorations" : "Back to the board", className: "cpg-back", chrome: true, onClick: function () { if (isStory) closeStory(); else closeHome(); } }),
+        h("nav", { className: "cpg-rail", "aria-label": "Craft mode", "data-cpg-chrome": "" },
+          roundBtn({ icon: "grid", label: "Design Playground", current: true, onClick: function () { if (isStory) closeStory(); } }),
+          roundBtn({ icon: "folder", label: "Case studies", onClick: function () { closeHome("folders"); } }),
+          roundBtn({ icon: "download", label: "Download resume", href: props.resumeHref, external: true }),
+          roundBtn({ icon: "chat", label: "Ask the portfolio assistant", onClick: props.onAssistant })),
+        h("div", { className: "cpg-filter", role: "group", "aria-label": "Filter explorations", "data-cpg-chrome": "", inert: isStory ? "" : undefined },
+          FILTERS.map(function (f) {
+            return h("button", {
+              key: f.id, type: "button", className: cx("cpg-filter-btn", f.icon && "cpg-filter-btn--icon"),
+              "aria-pressed": filter === f.id ? "true" : "false", "aria-label": f.icon ? f.label : undefined, title: f.label,
+              onClick: function () { if (filter !== f.id) { setFilter(f.id); setIndex(0); } }
+            }, f.icon ? h(Icon, { name: f.icon, size: 18 }) : f.label);
+          })),
+        h("div", { className: "cpg-tools", "data-cpg-chrome": "", inert: isStory ? "" : undefined },
+          roundBtn({ icon: "plus", label: "Suggest an exploration by email", href: "mailto:gauravavinash3@gmail.com?subject=Design%20Playground%20idea", className: "cpg-round--blue" }),
+          roundBtn({ icon: "search", label: "Ask the portfolio assistant", onClick: props.onAssistant, className: "cpg-tools-search" })),
+        grid,
+        story),
+      h("button", { type: "button", className: "cpg-homebar", "aria-label": "Back to the board", title: "Back to the board", onClick: function () { closeHome(); }, tabIndex: isStory ? -1 : 0 },
+        h("span", { className: "cr-visually-hidden" }, "Back to the board")));
+  }
+
+  window.CraftPlayground = { PlaygroundCard: PlaygroundCard, PlaygroundView: PlaygroundView, preload: preload, items: function () { return buildItems(null); } };
+})();
