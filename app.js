@@ -772,7 +772,7 @@
       avatarHero: "./assets/craft/avatar/gaurav-3d-visor.webp",
     });
     const hrefs = {
-      "Contextual Chat": "./contextual-chat-short.html",
+      "Contextual Chat": "./craft-contextual-chat.html",
       "Deal Room": "./deal-room-short.html",
       "White Label": "./white-label-short.html",
       "White Label Setup": "./white-label-short.html",
