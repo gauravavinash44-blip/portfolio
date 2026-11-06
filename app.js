@@ -774,9 +774,6 @@
     S.profile = Object.assign({}, S.profile, {
       head: {
         front: HEAD + "front.webp", front2x: HEAD + "front@2x.webp",
-        a000: HEAD + "a000.webp", a045: HEAD + "a045.webp", a090: HEAD + "a090.webp", a135: HEAD + "a135.webp",
-        a180: HEAD + "a180.webp", a225: HEAD + "a225.webp", a270: HEAD + "a270.webp", a315: HEAD + "a315.webp",
-        top: HEAD + "top.webp", bottom: HEAD + "bottom.webp",
       },
     });
     S.topbar = Object.assign({}, S.topbar, { avatar: ASSETS.logo });

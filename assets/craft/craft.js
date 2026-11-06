@@ -288,83 +288,33 @@
       h("style", null, "@keyframes crWander1{0%{transform:translate(0,0)}50%{transform:translate(18px,-10px)}100%{transform:translate(-8px,12px)}}@keyframes crWander2{0%{transform:translate(0,0)}50%{transform:translate(-16px,8px)}100%{transform:translate(10px,-14px)}}"));
   }
 
-  /* Interactive head: drag to turn it through 8 angles (and top/bottom); chrome droplets orbit on their own */
-  var HEAD_ORDER = ["a000", "a045", "a090", "a135", "a180", "a225", "a270", "a315"];
-  var HEAD_LABELS = ["front", "front right", "right", "back right", "back", "back left", "left", "front left"];
-
+  /* 3D head: one front view with a gentle 3D tilt toward the pointer; chrome droplets orbit on their own */
   function HeadOrb(props) {
     var head = props.head;
-    var _v = useState("front"), view = _v[0], setView = _v[1];
     var _p = useState(false), paused = _p[0], setPaused = _p[1];
-    var drag = useRef(null), back = useRef(null), btn = useRef(null);
-
-    function scheduleBack() {
-      clearTimeout(back.current);
-      back.current = setTimeout(function () { setView("front"); }, 2600);
-    }
-    useEffect(function () { return function () { clearTimeout(back.current); }; }, []);
-
-    function viewFor(dx, dy) {
-      if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 46) return dy < 0 ? "bottom" : "top";
-      var step = Math.round(-dx / 34);
-      var i = ((step % 8) + 8) % 8;
-      return i === 0 && Math.abs(dx) < 17 ? "front" : HEAD_ORDER[i];
-    }
-    function onDown(ev) {
-      if (ev.button !== undefined && ev.button !== 0) return;
-      clearTimeout(back.current);
-      drag.current = { x: ev.clientX, y: ev.clientY, moved: false, id: ev.pointerId };
-      try { ev.currentTarget.setPointerCapture(ev.pointerId); } catch (e) { /* ignore */ }
-    }
+    var tilt = useRef(null), back = useRef(null), front = useRef(null);
     function onMove(ev) {
-      var d = drag.current;
-      if (!d) return;
-      var dx = ev.clientX - d.x, dy = ev.clientY - d.y;
-      if (!d.moved && Math.abs(dx) + Math.abs(dy) > 6) d.moved = true;
-      if (d.moved) setView(viewFor(dx, dy));
+      if (reduced() || !tilt.current) return;
+      var r = ev.currentTarget.getBoundingClientRect();
+      var x = (ev.clientX - r.left) / r.width - 0.5, y = (ev.clientY - r.top) / r.height - 0.5;
+      tilt.current.style.transform = "rotateY(" + (x * 18).toFixed(2) + "deg) rotateX(" + (-y * 14).toFixed(2) + "deg) scale(1.03)";
+      if (front.current) front.current.style.transform = "translate(" + (x * 10).toFixed(1) + "px," + (y * 8).toFixed(1) + "px)";
+      if (back.current) back.current.style.transform = "translate(" + (-x * 8).toFixed(1) + "px," + (-y * 6).toFixed(1) + "px)";
     }
-    function onUp() {
-      var d = drag.current;
-      drag.current = null;
-      if (!d) return;
-      if (d.moved) { scheduleBack(); btn.current && (btn.current.dataset.dragged = "1"); }
+    function onLeave() {
+      [tilt.current, front.current, back.current].forEach(function (n) { if (n) n.style.transform = ""; });
     }
-    function onClick(ev) {
-      if (btn.current && btn.current.dataset.dragged === "1") { btn.current.dataset.dragged = ""; ev.preventDefault(); return; }
-      if (props.onOpen) props.onOpen();
-    }
-    function onKey(ev) {
-      var i = HEAD_ORDER.indexOf(view === "front" ? "a000" : view);
-      if (ev.key === "ArrowLeft" || ev.key === "ArrowRight") {
-        ev.preventDefault();
-        if (i < 0) i = 0;
-        i = (i + (ev.key === "ArrowLeft" ? 1 : -1) + 8) % 8;
-        setView(i === 0 ? "front" : HEAD_ORDER[i]); scheduleBack();
-      } else if (ev.key === "ArrowUp" || ev.key === "ArrowDown") {
-        ev.preventDefault(); setView(ev.key === "ArrowUp" ? "bottom" : "top"); scheduleBack();
-      }
-    }
-    var label = view === "front" ? "front" : view === "top" ? "top" : view === "bottom" ? "bottom" : HEAD_LABELS[HEAD_ORDER.indexOf(view)];
-    var frames = [["front", head.front, head.front2x]].concat(HEAD_ORDER.map(function (k) { return [k, head[k]]; }), [["top", head.top], ["bottom", head.bottom]]);
-
     return h("div", { className: cx("cr-orb-slot cr-head-slot", paused && "is-paused", props.className), "data-cr-enter": "", "data-cr-orb": "" },
       h("button", {
-        type: "button", ref: btn, className: "cr-orb cr-glass cr-head-orb" + (view !== "front" ? " is-turned" : ""),
-        "aria-label": "3D head of " + (props.name || "") + ", showing " + label + ". Drag or use arrow keys to rotate. Press Enter to open the profile.",
-        onPointerDown: onDown, onPointerMove: onMove, onPointerUp: onUp, onPointerCancel: onUp,
-        onClick: onClick, onKeyDown: onKey
+        type: "button", className: "cr-orb cr-glass cr-head-orb",
+        "aria-label": "Open profile of " + (props.name || ""),
+        onMouseMove: onMove, onMouseLeave: onLeave, onClick: props.onOpen
       },
-        h("span", { className: "cr-liquid cr-liquid--back", "aria-hidden": "true" }, h("i"), h("i")),
+        h("span", { className: "cr-liquid cr-liquid--back", ref: back, "aria-hidden": "true" }, h("i"), h("i")),
         h("span", { className: "cr-head-stack", "aria-hidden": "true" },
-          frames.map(function (f) {
-            return h("img", {
-              key: f[0], className: "cr-head-frame" + (view === f[0] ? " is-on" : ""),
-              src: f[1], srcSet: f[2] ? f[1] + " 1x, " + f[2] + " 2x" : undefined,
-              alt: "", draggable: false, decoding: "async"
-            });
-          })),
-        h("span", { className: "cr-liquid cr-liquid--front", "aria-hidden": "true" }, h("i"), h("i"), h("i")),
-        h("span", { className: "cr-head-hint", "aria-hidden": "true" }, "Drag to rotate")),
+          h("span", { className: "cr-head-tilt", ref: tilt },
+            h("img", { className: "cr-head-frame is-on", src: head.front, srcSet: head.front2x ? head.front + " 1x, " + head.front2x + " 2x" : undefined, alt: "", draggable: false, decoding: "async" }))),
+        h("span", { className: "cr-liquid cr-liquid--front", ref: front, "aria-hidden": "true" }, h("i"), h("i"), h("i"))),
       props.onEdit ? h("span", { className: "cr-orb-edit" }, h(IconButton, { variant: "solid", icon: props.editIcon || "pen", label: props.editLabel || "Edit profile", onClick: props.onEdit })) : null,
       h("button", { type: "button", className: "cr-liquid-toggle", "aria-pressed": paused ? "true" : "false",
         "aria-label": paused ? "Resume the liquid animation" : "Pause the liquid animation", title: paused ? "Resume liquid" : "Pause liquid",

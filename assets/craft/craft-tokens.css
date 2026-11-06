@@ -69,15 +69,17 @@
   --stagger: 70ms;
   /* Reference glass, sampled from the 1280px dashboard (each surface has its own value).
      Fixed colours at 0.9 alpha so every wallpaper shows the reference tones; ~10% of the photo bleeds through the blur. */
-  --g-date: linear-gradient(180deg, rgba(171, 163, 171, 0.9), rgba(182, 176, 178, 0.9));
-  --g-create: linear-gradient(180deg, rgba(182, 174, 176, 0.9), rgba(188, 182, 181, 0.9));
-  --g-head: rgba(192, 187, 190, 0.9);
-  --g-seg: rgba(164, 156, 167, 0.9);
-  --g-search: rgba(166, 156, 166, 0.9);
-  --g-dock: rgba(164, 149, 157, 0.9);
-  --g-dock-ghost: rgba(255, 255, 255, 0.14);
-  --g-stack: rgba(182, 179, 181, 0.9);
-  --g-blur: blur(30px) saturate(1.1);
+  /* Liquid glass: see-through, blurred, a faint sheen on top and a light darkening so white text stays readable */
+  --g-sheen: linear-gradient(155deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.06) 42%, rgba(255, 255, 255, 0.02) 100%);
+  --g-date: var(--g-sheen), linear-gradient(rgba(64, 52, 64, 0.20), rgba(64, 52, 64, 0.26));
+  --g-create: var(--g-sheen), linear-gradient(rgba(64, 52, 64, 0.12), rgba(64, 52, 64, 0.18));
+  --g-head: var(--g-sheen), linear-gradient(rgba(64, 52, 64, 0.10), rgba(64, 52, 64, 0.14));
+  --g-seg: rgba(60, 48, 60, 0.22);
+  --g-search: rgba(60, 48, 60, 0.22);
+  --g-dock: rgba(60, 48, 60, 0.24);
+  --g-dock-ghost: rgba(255, 255, 255, 0.16);
+  --g-stack: rgba(60, 48, 60, 0.18);
+  --g-blur: blur(28px) saturate(1.6);
   --font-ui: "Inter", "Neue Montreal", "Helvetica Now Text", system-ui, sans-serif;
   --font-editorial: "Inter Tight", "Helvetica Now Display", "Inter", sans-serif;
 }
