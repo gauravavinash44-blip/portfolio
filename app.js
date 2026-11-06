@@ -770,12 +770,7 @@
       nomad: ASSETS.nomad, health: ASSETS.health, swaply: ASSETS.swaply, splitly: ASSETS.splitly,
       avatar: "./assets/craft/avatar/head/face.webp",
     });
-    const HEAD = "./assets/craft/avatar/head/";
-    S.profile = Object.assign({}, S.profile, {
-      head: {
-        front: HEAD + "front.webp", front2x: HEAD + "front@2x.webp",
-      },
-    });
+    S.profile = Object.assign({}, S.profile, { image: "./assets/craft/avatar/gaurav-3d-visor.webp", cutout: true, head: null });
     S.topbar = Object.assign({}, S.topbar, { avatar: ASSETS.logo });
     const hrefs = {
       "Contextual Chat": "./craft-contextual-chat.html",
