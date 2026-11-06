@@ -977,3 +977,77 @@ html.ga-craft .craft-switch { --g-search: rgba(166, 156, 166, 0.9); }
     linear-gradient(0deg, rgba(20, 14, 24, 0.18) 0%, rgba(20, 14, 24, 0) 20%),
     linear-gradient(180deg, rgba(214, 202, 216, 0) 8%, rgba(220, 210, 220, 0.22) 30%, rgba(232, 225, 226, 0.26) 60%, rgba(222, 215, 224, 0.14) 100%);
 }
+
+/* ═════════════ Interactive 3D head ═════════════ */
+.cr-head-orb { touch-action: none; cursor: grab; overflow: visible; -webkit-user-select: none; user-select: none; }
+.cr-head-orb:active { cursor: grabbing; }
+.cr-head-stack { position: absolute; inset: -14% -14% -8%; pointer-events: none; }
+.cr-head-frame {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain;
+  opacity: 0; transition: opacity 110ms linear;
+  filter: drop-shadow(0 16px 22px rgba(20, 12, 20, 0.28));
+}
+.cr-head-frame.is-on { opacity: 1; }
+@media (prefers-reduced-motion: no-preference) {
+  .cr-head-stack { animation: crHeadFloat 6s ease-in-out infinite; }
+}
+@keyframes crHeadFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2.5%); } }
+
+/* Live chrome droplets: orbit independently of the head (back layer passes behind, front layer in front) */
+.cr-liquid { position: absolute; inset: 0; pointer-events: none; }
+.cr-liquid i {
+  position: absolute; left: 50%; top: 50%;
+  width: 24px; height: 24px; margin: -12px 0 0 -12px; border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, #ffffff 0 12%, #e9e9ee 22%, #9a9aa3 48%, #3d3d44 72%, #c9c9d0 92%);
+  box-shadow: 0 4px 10px rgba(20, 12, 20, 0.3), inset -2px -3px 4px rgba(0, 0, 0, 0.25);
+}
+.cr-liquid--back i:nth-child(1) { width: 14px; height: 14px; margin: -7px 0 0 -7px; }
+.cr-liquid--front i:nth-child(2) { width: 32px; height: 32px; margin: -16px 0 0 -16px; }
+.cr-liquid--front i:nth-child(3) { width: 14px; height: 14px; margin: -7px 0 0 -7px; }
+@media (prefers-reduced-motion: no-preference) {
+  .cr-liquid--front i:nth-child(1) { animation: crOrbitA 9s linear infinite; }
+  .cr-liquid--front i:nth-child(2) { animation: crOrbitB 13s linear infinite; }
+  .cr-liquid--front i:nth-child(3) { animation: crOrbitC 7s linear infinite reverse; }
+  .cr-liquid--back i:nth-child(1) { animation: crOrbitBack 11s linear infinite; }
+  .cr-liquid--back i:nth-child(2) { animation: crOrbitBack 16s linear infinite reverse; animation-delay: -5s; }
+}
+/* front layer: visible on the near half of the orbit, fades when it passes behind */
+@keyframes crOrbitA {
+  0% { transform: rotate(0deg) translateX(118px) rotate(0deg) scale(1); opacity: 1; }
+  45% { opacity: 1; } 50% { transform: rotate(180deg) translateX(118px) rotate(-180deg) scale(0.7); opacity: 0; }
+  95% { opacity: 0; } 100% { transform: rotate(360deg) translateX(118px) rotate(-360deg) scale(1); opacity: 1; }
+}
+@keyframes crOrbitB {
+  0% { transform: rotate(40deg) translateX(132px) translateY(-18px) scale(1); opacity: 1; }
+  40% { opacity: 1; } 50% { transform: rotate(220deg) translateX(132px) translateY(-18px) scale(0.6); opacity: 0; }
+  92% { opacity: 0; } 100% { transform: rotate(400deg) translateX(132px) translateY(-18px) scale(1); opacity: 1; }
+}
+@keyframes crOrbitC {
+  0% { transform: rotate(200deg) translateX(104px) translateY(30px); opacity: 1; }
+  50% { transform: rotate(380deg) translateX(104px) translateY(30px); opacity: 1; }
+  100% { transform: rotate(560deg) translateX(104px) translateY(30px); opacity: 1; }
+}
+@keyframes crOrbitBack {
+  0% { transform: rotate(0deg) translateX(122px) scale(0.75); opacity: 0.85; }
+  100% { transform: rotate(-360deg) translateX(122px) scale(0.75); opacity: 0.85; }
+}
+.cr-head-slot.is-paused .cr-liquid i, .cr-head-slot.is-paused .cr-head-stack { animation-play-state: paused; }
+
+.cr-head-hint {
+  position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%);
+  padding: 5px 12px; border-radius: 999px; background: rgba(255, 255, 255, 0.88); color: #0a0a0a;
+  font-size: 12px; white-space: nowrap; opacity: 0; transition: opacity 240ms ease; pointer-events: none;
+}
+.cr-head-orb:hover .cr-head-hint, .cr-head-orb:focus-visible .cr-head-hint { opacity: 1; }
+.cr-head-orb.is-turned .cr-head-hint { opacity: 0; }
+.cr-liquid-toggle {
+  position: absolute; right: 18px; bottom: 18px; z-index: 3;
+  width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center;
+  background: rgba(255, 255, 255, 0.9); color: #0a0a0a; box-shadow: 0 4px 12px rgba(20, 12, 20, 0.16);
+  opacity: 0; transition: opacity 200ms ease;
+}
+.cr-head-slot:hover .cr-liquid-toggle, .cr-liquid-toggle:focus-visible, .cr-head-slot.is-paused .cr-liquid-toggle { opacity: 1; }
+@media (hover: none) { .cr-liquid-toggle { opacity: 1; } .cr-head-hint { opacity: 1; } }
+
+/* GK logo in the top-left orb */
+.cr-brandorb img[src*="logo"] { object-fit: contain; padding: 22%; background: #fff; }
