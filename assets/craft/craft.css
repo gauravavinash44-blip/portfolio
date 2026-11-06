@@ -458,8 +458,17 @@ html.ga-craft .ga-brand { box-shadow: 0 8px 24px rgba(30, 20, 30, 0.16); }
 }
 .cr-wp-blur { filter: blur(24px); transform: scale(1.06); }
 /* Photo urls live in wallpapers/wallpapers.css so they resolve relative to that file. */
-.cr-wp.is-entering { animation: crWpIn 900ms cubic-bezier(0.16, 1, 0.3, 1) both; }
-@keyframes crWpIn { from { opacity: 0; transform: scale(1.04); } to { opacity: 1; transform: none; } }
+/* Wallpaper change: a slow dissolve with a gentle settle, like macOS */
+.cr-wp.is-entering { animation: crWpIn 1800ms cubic-bezier(0.4, 0, 0.2, 1) both; }
+@keyframes crWpIn {
+  from { opacity: 0; transform: scale(1.035); filter: blur(10px) saturate(1.1); }
+  60% { filter: blur(0) saturate(1); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cr-wp.is-entering { animation: crWpFade 400ms ease both; }
+  @keyframes crWpFade { from { opacity: 0; } to { opacity: 1; } }
+}
 @media (prefers-reduced-motion: no-preference) {
   .cr-wp-photo { animation: crWpDrift 40s ease-in-out infinite alternate; }
 }
@@ -702,3 +711,21 @@ html.ga-craft:has(.cr-hero[data-cr-fit="flow"]) body { overflow: visible; }
 @media (hover: none) { .cr-drop-hint { visibility: hidden; } }
 .cr-row { grid-template-columns: 48px minmax(0,1fr) auto; gap: 10px; }
 .cr-row .cr-iconbtn { width: 38px; height: 38px; }
+
+/* Tap-to-change hint */
+.cr-wp-hint {
+  position: absolute; left: 50%; bottom: var(--space-8); z-index: 4; margin: 0;
+  transform: translateX(-50%);
+  height: 40px; padding: 0 16px; display: inline-flex; align-items: center;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.9); color: var(--ink);
+  font-size: 13px; white-space: nowrap; pointer-events: none;
+  box-shadow: var(--shadow-float);
+  animation: crHintIn 600ms var(--ease-arrive) both;
+}
+@keyframes crHintIn { from { opacity: 0; transform: translate(-50%, 8px); } to { opacity: 1; transform: translate(-50%, 0); } }
+@media (max-width: 700px) { .cr-wp-hint { bottom: 96px; } }
+
+/* Glass tint and top-bar ink follow the wallpaper with the same slow dissolve */
+.cr-hero .cr-glass, .cr-hero .cr-glass-light, .cr-hero .cr-sheet { transition: background-color 1.6s cubic-bezier(0.4, 0, 0.2, 1); }
+.cr-hero .cr-topbar-left { transition: color 1.6s cubic-bezier(0.4, 0, 0.2, 1); }

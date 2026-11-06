@@ -738,6 +738,21 @@
     { id: "rows", label: "Seedling rows" },
   ];
   const CRAFT_WP_KEY = "ga-craft-wallpaper";
+  const CRAFT_WP_HINT_KEY = "ga-craft-wp-hint";
+  const CRAFT_WP_INTERVAL = 20000; /* auto shuffle, like macOS dynamic wallpapers */
+  /* Taps on these never change the wallpaper */
+  const CRAFT_WP_IGNORE = "button, a, input, label, [role='dialog'], .cr-card, .cr-orb-slot, .cr-notice, .cr-seg, .cr-dock, .cr-stack, .cr-wp-picker, .cr-topbar-left, .cr-wp-hint";
+
+  function nextWallpaper(id) {
+    const i = CRAFT_WALLPAPERS.findIndex((w) => w.id === id);
+    return CRAFT_WALLPAPERS[(i + 1) % CRAFT_WALLPAPERS.length].id;
+  }
+
+  function preloadWallpaper(id) {
+    const img = new Image();
+    img.decoding = "async";
+    img.src = "./assets/craft/wallpapers/" + id + (window.innerWidth >= 1600 || window.devicePixelRatio >= 1.5 ? "-2560" : "-1440") + ".webp";
+  }
 
   function readWallpaper() {
     try {
@@ -832,17 +847,56 @@
     const [sheet, setSheet] = useState(null);
     const [wallpaper, setWallpaper] = useState(readWallpaper);
     const [picker, setPicker] = useState(false);
+    const [hint, setHint] = useState(false);
+    const swallowTap = useRef(false); /* the tap that closes the picker shouldn't also change the wallpaper */
+    const [shuffleTick, setShuffleTick] = useState(0); /* bumps to restart the timer after a manual change */
     const data = React.useMemo(() => craftData(onExit), [onExit]);
 
     useBoardScale(stageRef);
     useEffect(() => { C.motion.enter(stageRef.current, { delay: 300 }); }, []);
     useEffect(() => {
       try { window.localStorage.setItem(CRAFT_WP_KEY, wallpaper); } catch (err) { /* ignore */ }
+      preloadWallpaper(nextWallpaper(wallpaper));
     }, [wallpaper]);
+
+    /* Auto shuffle: every 20s, paused while a sheet or the picker is open, the tab is hidden, or reduced motion is on */
+    useEffect(() => {
+      if (sheet || picker) return undefined;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;
+      const id = setInterval(() => {
+        if (document.hidden) return;
+        setWallpaper((w) => nextWallpaper(w));
+      }, CRAFT_WP_INTERVAL);
+      return () => clearInterval(id);
+    }, [sheet, picker, shuffleTick]);
+
+    /* One-time hint that the wallpaper is tappable */
+    useEffect(() => {
+      let seen = false;
+      try { seen = window.localStorage.getItem(CRAFT_WP_HINT_KEY) === "1"; } catch (err) { /* ignore */ }
+      if (seen) return undefined;
+      const show = setTimeout(() => setHint(true), 2600);
+      const hide = setTimeout(() => setHint(false), 8600);
+      return () => { clearTimeout(show); clearTimeout(hide); };
+    }, []);
+
+    const changeWallpaper = (id) => {
+      setWallpaper(id);
+      setShuffleTick((t) => t + 1);
+      if (hint) setHint(false);
+      try { window.localStorage.setItem(CRAFT_WP_HINT_KEY, "1"); } catch (err) { /* ignore */ }
+    };
+
+    const onStageClick = (ev) => {
+      if (swallowTap.current) { swallowTap.current = false; return; }
+      if (sheet || picker) return;
+      if (ev.target.closest && ev.target.closest(CRAFT_WP_IGNORE)) return;
+      changeWallpaper(nextWallpaper(wallpaper));
+    };
     useEffect(() => {
       if (!picker) return undefined;
       const onKey = (ev) => { if (ev.key === "Escape") setPicker(false); };
-      const onDown = (ev) => { if (!ev.target.closest(".cr-dock-wrap")) setPicker(false); };
+      const onDown = (ev) => { if (!ev.target.closest(".cr-dock-wrap")) { swallowTap.current = true; setPicker(false); } };
       window.addEventListener("keydown", onKey);
       document.addEventListener("pointerdown", onDown);
       return () => { window.removeEventListener("keydown", onKey); document.removeEventListener("pointerdown", onDown); };
@@ -879,7 +933,9 @@
       stageRef,
       width: "100vw",
       height: "100vh",
+      onClick: onStageClick,
     },
+      hint ? e("p", { className: "cr-wp-hint", role: "status" }, "Tap the wallpaper to change it") : null,
       e("h1", { className: "cr-visually-hidden" }, "Gaurav Avinash, Product Designer"),
       e(C.TopBar, topbar),
       e("div", { className: "cr-board" },
@@ -918,7 +974,7 @@
             "aria-label": w.label,
             "aria-pressed": wallpaper === w.id ? "true" : "false",
             title: w.label,
-            onClick: () => setWallpaper(w.id),
+            onClick: () => changeWallpaper(w.id),
           }))
         ) : null,
         e(C.Dock, dock)

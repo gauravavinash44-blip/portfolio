@@ -96,7 +96,7 @@
 
   function Stage(props) {
     var style = Object.assign({ width: props.width || "100%", height: props.height || 400 }, props.style || {});
-    return h("div", { className: cx("cr", "cr-stage", props.className), style: style, ref: props.stageRef },
+    return h("div", { className: cx("cr", "cr-stage", props.className), style: style, ref: props.stageRef, onClick: props.onClick },
       h(Backdrop, { wallpaper: props.wallpaper }), props.children);
   }
 
