@@ -100,6 +100,15 @@
 .cr-t-cap { font-size: 14px; line-height: 1.28; }
 .cr-t-micro { font-size: 12px; line-height: 1.2; font-weight: 500; }
 
+/* Switch responsive (green and Craft) */
+@media (max-width: 1024px) {
+  .craft-switch { top: 1rem; right: calc(1rem + 65px); height: 48px; }
+}
+@media (max-width: 640px) {
+  .craft-switch { right: 1rem; padding: 0 8px 0 12px; }
+  .craft-switch-label { display: none; }
+}
+
 /* ── Stage + backdrop ── */
 .cr-stage {
   position: relative;
@@ -253,7 +262,7 @@
   color: var(--ink);
 }
 .cr-notice-bar { width: 3px; height: 18px; border-radius: 2px; background: var(--blue); }
-.cr-notice-text { display: flex; flex-direction: column; font-size: 14px; line-height: 1.15; min-width: 0; }
+.cr-notice-text { display: flex; flex-direction: column; font-size: 14px; line-height: 1.15; min-width: 0; white-space: nowrap; }
 .cr-notice-text b { font-weight: 400; }
 .cr-notice-close { position: relative; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--hairline); }
 .cr-notice-close svg.cr-ring { position: absolute; inset: -1px; width: 44px; height: 44px; transform: rotate(-90deg); }
@@ -294,9 +303,7 @@
 .cr-row-thumb { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; background: var(--well); }
 .cr-row-text { display: flex; flex-direction: column; min-width: 0; text-align: left; }
 .cr-row-text b {
-  font-weight: 400; font-size: 17px; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden;
-  -webkit-mask-image: linear-gradient(90deg, #000 72%, transparent);
-          mask-image: linear-gradient(90deg, #000 72%, transparent);
+  font-weight: 400; font-size: 17px; letter-spacing: -0.015em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .cr-row-text span { font-size: 14px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cr-row[draggable="true"] { cursor: grab; }
@@ -316,7 +323,8 @@
 .cr-preview-shot { position: relative; overflow: hidden; background: #f3eef2; }
 .cr-preview-shot img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
 .cr-preview-foot { display: grid; grid-template-columns: 52px minmax(0,1fr) auto; gap: var(--space-3); align-items: center; padding: var(--space-3) var(--space-6) var(--space-6) 18px; }
-.cr-preview-foot .cr-row-text b { font-size: 19px; -webkit-mask-image: none; mask-image: none; }
+.cr-preview-foot .cr-row-text b { font-size: 18px; }
+.cr-preview-foot .cr-row-text span { font-size: 13px; }
 
 /* ── Cursor chip ── */
 .cr-cursor { position: absolute; display: flex; align-items: flex-start; gap: 0; pointer-events: none; }
@@ -466,6 +474,8 @@ html.ga-craft .ga-brand { box-shadow: 0 8px 24px rgba(30, 20, 30, 0.16); }
 .cr-hero .cr-topbar { top: 1.15rem; left: 1.4rem; right: calc(1.15rem + 236px); }
 .cr-hero .cr-topbar-left { color: var(--wp-topbar-ink, #fff); }
 .cr-hero .cr-clock { margin-left: 28px; }
+@media (min-width: 1100px) and (max-width: 1360px) { .cr-hero .cr-topbar-id { display: none; } }
+@media (min-width: 1100px) and (max-width: 1260px) { .cr-hero .cr-topbar-right .cr-iconbtn { display: none; } .cr-hero .cr-notice .cr-avatar { display: none; } }
 .craft-wp--dike .cr-topbar-left, .craft-wp--barley .cr-topbar-left, .craft-wp--rows .cr-topbar-left { text-shadow: 0 1px 12px rgba(0, 0, 0, 0.28); }
 .cr-hero .cr-topbar-id { border-left-color: currentColor; white-space: nowrap; }
 @media (max-width: 1350px) { .cr-hero .cr-clock { margin-left: 12px; } .cr-hero .cr-topbar-left { gap: 16px; } }
@@ -685,3 +695,10 @@ html.ga-craft:has(.cr-hero[data-cr-fit="flow"]) body { overflow: visible; }
   .cr-hero .cr-fact { padding: 10px 14px; border-radius: 18px; }
   .cr-hero .cr-fact b { font-size: 22px; }
 }
+
+/* QA fixes */
+.cr-dock .cr-iconbtn:focus-visible, .cr-stack:focus-visible { outline-color: #fff; }
+@media (max-width: 380px) { .cr-hero .cr-notice { max-width: calc(100vw - 32px); } .cr-hero .cr-notice .cr-avatar, .cr-hero .cr-notice .cr-chip--sub { display: none; } }
+@media (hover: none) { .cr-drop-hint { visibility: hidden; } }
+.cr-row { grid-template-columns: 48px minmax(0,1fr) auto; gap: 10px; }
+.cr-row .cr-iconbtn { width: 38px; height: 38px; }

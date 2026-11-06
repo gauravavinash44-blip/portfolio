@@ -840,6 +840,18 @@
       try { window.localStorage.setItem(CRAFT_WP_KEY, wallpaper); } catch (err) { /* ignore */ }
     }, [wallpaper]);
     useEffect(() => {
+      if (!picker) return undefined;
+      const onKey = (ev) => { if (ev.key === "Escape") setPicker(false); };
+      const onDown = (ev) => { if (!ev.target.closest(".cr-dock-wrap")) setPicker(false); };
+      window.addEventListener("keydown", onKey);
+      document.addEventListener("pointerdown", onDown);
+      return () => { window.removeEventListener("keydown", onKey); document.removeEventListener("pointerdown", onDown); };
+    }, [picker]);
+    useEffect(() => {
+      const t = document.querySelector(".cr-hero [aria-label='Change wallpaper']");
+      if (t) t.setAttribute("aria-expanded", picker ? "true" : "false");
+    }, [picker]);
+    useEffect(() => {
       if (!sheet) return undefined;
       const onKey = (ev) => { if (ev.key === "Escape") setSheet(null); };
       window.addEventListener("keydown", onKey);
@@ -943,7 +955,14 @@
       }
     }, [craft]);
 
-    const toggleCraft = useCallback(() => setCraft((c) => !c), []);
+    const refocusSwitch = useRef(false);
+    const toggleCraft = useCallback(() => { refocusSwitch.current = true; setCraft((c) => !c); }, []);
+    useEffect(() => {
+      if (!refocusSwitch.current) return;
+      refocusSwitch.current = false;
+      const sw = document.querySelector(".craft-switch");
+      if (sw) sw.focus({ preventScroll: true });
+    }, [craft]);
     const exitCraft = useCallback((targetId) => {
       pendingScroll.current = targetId || null;
       setCraft(false);

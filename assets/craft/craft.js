@@ -210,7 +210,9 @@
         h("b", null, r.title), h("span", null, r.sub)),
       r.locked
         ? h(IconButton, { icon: "lock", label: r.title + " is under NDA" })
-        : h(Toggle, { defaultChecked: r.open !== false, label: "Show " + r.title }));
+        : r.href
+          ? h("a", { className: "cr-iconbtn cr-iconbtn--well", href: r.href, "aria-label": "Open " + r.title + " case study", title: "Open case study" }, h(Icon, { name: "arrow" }))
+          : h(Toggle, { defaultChecked: r.open !== false, label: "Show " + r.title }));
   }
 
   function FolderListCard(props) {
@@ -274,7 +276,7 @@
         onClick: props.onOpen, "aria-label": "Open profile of " + (props.name || "") },
         h("img", { className: "cr-orb-photo", src: props.image, alt: "" }),
         props.name ? h("span", { className: "cr-orb-name" }, props.name) : null),
-      h("span", { className: "cr-orb-edit" }, h(IconButton, { variant: "solid", icon: "pen", label: "Edit profile" })));
+      props.onEdit ? h("span", { className: "cr-orb-edit" }, h(IconButton, { variant: "solid", icon: "pen", label: "Edit profile", onClick: props.onEdit })) : null);
   }
 
   function useCountUp(to, decimals, run) {
@@ -451,8 +453,23 @@
       props.replay !== false ? h("button", { type: "button", className: "cr-replay", onClick: replay }, "Replay entry") : null);
   }
 
+  function useDialogFocus(ref) {
+    useEffect(function () {
+      var prev = document.activeElement;
+      var t = setTimeout(function () {
+        var btn = ref.current && ref.current.querySelector("button[aria-label^='Close']");
+        if (btn) btn.focus({ preventScroll: true });
+      }, 60);
+      return function () {
+        clearTimeout(t);
+        if (prev && prev.isConnected && prev.focus) prev.focus({ preventScroll: true });
+      };
+    }, []);
+  }
+
   function FolderSheet(props) {
     var ref = useRef(null);
+    useDialogFocus(ref);
     useLayoutEffect(function () {
       var stage = props.stageRef.current, sheet = ref.current;
       if (!stage || !sheet) return;
@@ -461,7 +478,7 @@
       expandFrom(sheet, sr, stage.getBoundingClientRect());
       var items = Array.prototype.slice.call(sheet.querySelectorAll(".cr-file"));
       burst(sr, items, { delay: 180 });
-      Array.prototype.slice.call(sheet.querySelectorAll(".cr-sheet-head > *")).forEach(function (n, i) {
+      if (!reduced()) Array.prototype.slice.call(sheet.querySelectorAll(".cr-sheet-head > *")).forEach(function (n, i) {
         n.animate([{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "none" }], { duration: 500, delay: 260 + i * 60, easing: EASE_ARRIVE, fill: "both" });
       });
     }, []);
@@ -471,7 +488,7 @@
       sheet.animate([{ opacity: 1, transform: "scale(1)" }, { opacity: 0, transform: "scale(0.94)" }], { duration: 260, easing: EASE_LEAVE, fill: "both" }).finished.then(props.onClose);
     }
     var row = props.folder || props.row || {};
-    return h("section", { className: "cr-sheet", ref: ref, role: "dialog", "aria-label": row.title,
+    return h("section", { className: "cr-sheet", ref: ref, role: "dialog", "aria-modal": "true", "aria-label": row.title,
       style: props.style || { left: 184, right: 184, top: 172, height: 600 } },
       h("header", { className: "cr-sheet-head" },
         h("div", null, h("p", { className: "cr-sheet-title" }, row.title), h("p", { className: "cr-sheet-sub" }, row.sub)),
@@ -487,6 +504,7 @@
 
   function ProfileSheet(props) {
     var ref = useRef(null);
+    useDialogFocus(ref);
     useLayoutEffect(function () {
       var stage = props.stageRef.current, sheet = ref.current;
       if (!stage || !sheet) return;
@@ -507,7 +525,7 @@
       if (!sheet || reduced()) { props.onClose(); return; }
       sheet.animate([{ opacity: 1 }, { opacity: 0, transform: "scale(0.96)" }], { duration: 240, easing: EASE_LEAVE, fill: "both" }).finished.then(props.onClose);
     }
-    return h("section", { className: "cr-sheet cr-profile-sheet", ref: ref, role: "dialog", "aria-label": props.name,
+    return h("section", { className: "cr-sheet cr-profile-sheet", ref: ref, role: "dialog", "aria-modal": "true", "aria-label": props.name,
       style: props.style || { left: 184, right: 184, top: 172, height: 600 } },
       h("div", { className: "cr-profile-photo" }, h("img", { src: props.image, alt: props.name })),
       h("div", { className: "cr-profile-body" },
@@ -574,35 +592,34 @@
       date = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", timeZone: "Asia/Kolkata" }).format(now);
     } catch (e) { day = "Monday"; date = "27 April"; }
     var rows = [
-      { title: "Contextual Chat", sub: "Systematic · AI search", thumb: img.chat, open: true },
-      { title: "Deal Room", sub: "Systematic · B2B SaaS", thumb: img.dealRoom, open: true },
-      { title: "White Label Setup", sub: "Systematic · Fintech", thumb: img.whiteLabel, locked: true }
+      { title: "Contextual Chat", sub: "AI search", thumb: img.chat },
+      { title: "Deal Room", sub: "B2B SaaS", thumb: img.dealRoom },
+      { title: "White Label", sub: "Fintech", thumb: img.whiteLabel }
     ];
     return {
       topbar: {
         avatar: img.profile, title: "Gaurav Avinash", subtitle: "Product Designer",
-        notice: { avatar: img.chat, title: "New case study", subtitle: "Contextual Chat is live", meta: "Open", seconds: 14 },
+        notice: { avatar: img.chat, title: "Latest case study", subtitle: "Contextual Chat", meta: "Open", seconds: 14 },
         tabs: ["Board", "Folders"]
       },
       agenda: { meta: date, avatar: img.profile, day: day, time: "Available", label: "Open to new roles" },
-      folders: { title: "Case studies", count: "All 6", rows: rows },
-      folder: { title: "Case studies", sub: "5 shipped projects and 3 explorations" },
+      folders: { title: "Case studies", count: "All 5", rows: rows },
+      folder: { title: "Case studies", sub: "4 shipped, 1 concept, 3 explorations" },
       drop: { title: "Open a folder", hint: "Drag a case study here" },
       preview: {
-        image: img.chat, label: "Live preview", timer: "0:20",
+        image: img.chat, label: "Featured case study", timer: null,
         cursors: [
-          { name: "Gaurav", color: "#e96635", avatar: img.profile, x: "54%", y: "18%" },
-          { name: "PM", color: "#e534ae", x: "20%", y: "58%" }
+          { name: "Gaurav", color: "#e96635", avatar: img.profile, x: "54%", y: "18%" }
         ],
-        avatar: img.profile, title: "Contextual Chat", subtitle: "30 min → 30 sec", count: 8
+        avatar: img.profile, title: "Contextual Chat", subtitle: "30–40 min → under 30s", count: null
       },
       profile: { image: img.profile, name: "Gaurav Avinash" },
       stat: {
-        title: "Experience", link: "View all", value: 5.2, unit: "y", decimals: 1,
+        title: "Experience", link: "View all", value: 5, unit: "+ yrs", decimals: 0,
         segments: [
-          { label: "Fintech", value: 45, color: "#ec7756", caption: "2.4 yrs" },
-          { label: "AI SaaS", value: 33, color: "#2b55f6", caption: "1.7 yrs" },
-          { label: "Food", value: 22, color: "#e4e4e4", caption: "1.1 yrs" }
+          { label: "Fintech AI", value: 3.7, color: "#ec7756", caption: "3.7 yrs" },
+          { label: "Food, Health", value: 1, color: "#2b55f6", caption: "1 yr" },
+          { label: "Visual", value: 1, color: "#e4e4e4", caption: "1 yr" }
         ]
       },
       stack: { images: [img.nomad, img.health, img.swaply, img.splitly], label: "Open Design Playground" },
@@ -620,7 +637,7 @@
       profileSheet: {
         image: img.profile, name: "Gaurav Avinash", role: "Product Designer · Delhi, India", status: "Open to work",
         bio: "I design products that make complex things feel simple. AI search, deal workflows and fintech setup flows, end to end.",
-        facts: [{ value: "5+", label: "years designing" }, { value: "+25%", label: "engagement, Contextual Chat" }, { value: "+32%", label: "adoption, Deal Room" }, { value: "3", label: "domains shipped" }]
+        facts: [{ value: "5+", label: "years designing" }, { value: "+25%", label: "engagement, Contextual Chat" }, { value: "+32%", label: "adoption, Deal Room" }, { value: "4", label: "industries: fintech, AI, food, health" }]
       }
     };
   }
