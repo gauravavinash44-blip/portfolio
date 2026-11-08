@@ -1,0 +1,83 @@
+/* White Label Setup case study. Page-only additions on top of case.css.
+   Loaded before art/art.css, so product art there wins over the fallback below. */
+
+/* ── Fallback backgrounds for the product art classes ──
+   Pink/magenta over neutral. Replaced when assets/craft/case/art/art.css defines these. */
+.cc-art--white-label-cover,
+.cc-art--white-label-band,
+.cc-art--white-label-stage,
+.cc-art--white-label-dark {
+  --wp-glass: rgba(98, 40, 80, 0.42);
+  --wp-glass-light: rgba(214, 190, 206, 0.30);
+  --wp-glass-strong: rgba(84, 30, 66, 0.62);
+  --wp-pos: 50% 40%;
+}
+.cc-art--white-label-cover .cr-wp-photo {
+  background-color: #8a3a6e;
+  background-image:
+    radial-gradient(70% 60% at 82% 18%, rgba(255, 196, 228, 0.85) 0%, rgba(255, 196, 228, 0) 70%),
+    radial-gradient(60% 70% at 12% 88%, rgba(196, 34, 132, 0.9) 0%, rgba(196, 34, 132, 0) 70%),
+    linear-gradient(165deg, #d9d2d8 0%, #b99bb0 30%, #a24a84 62%, #5b1d4a 100%);
+}
+.cc-art--white-label-band .cr-wp-photo {
+  background-color: #6f2a5a;
+  background-image:
+    radial-gradient(55% 80% at 88% 10%, rgba(240, 120, 190, 0.75) 0%, rgba(240, 120, 190, 0) 70%),
+    radial-gradient(70% 60% at 0% 100%, rgba(40, 18, 40, 0.8) 0%, rgba(40, 18, 40, 0) 70%),
+    linear-gradient(180deg, #c9b9c4 0%, #a3578a 45%, #6a2357 100%);
+}
+.cc-art--white-label-stage .cr-wp-photo {
+  background-color: #b07a9c;
+  background-image:
+    radial-gradient(60% 70% at 15% 20%, rgba(250, 236, 244, 0.9) 0%, rgba(250, 236, 244, 0) 70%),
+    radial-gradient(70% 70% at 90% 85%, rgba(200, 40, 140, 0.7) 0%, rgba(200, 40, 140, 0) 70%),
+    linear-gradient(150deg, #e6e1e4 0%, #c7a6bb 45%, #a55488 100%);
+}
+.cc-art--white-label-dark .cr-wp-photo {
+  background-color: #2a1226;
+  background-image:
+    radial-gradient(60% 60% at 85% 0%, rgba(214, 48, 150, 0.55) 0%, rgba(214, 48, 150, 0) 70%),
+    radial-gradient(70% 60% at 0% 100%, rgba(120, 100, 115, 0.45) 0%, rgba(120, 100, 115, 0) 70%),
+    linear-gradient(180deg, #4a1d40 0%, #2a1226 60%, #1b0c19 100%);
+}
+
+/* ── Chips ── */
+.wl .cc-chip--pink { background: #c2187f; color: #fff; }
+.wl .cc-chip--green { background: #dcf3e6; color: #17663a; }
+
+/* ── Before screens and dialog pairs ── */
+.wl-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: clamp(16px, 2vw, 32px); }
+.wl-pair figure { background: rgba(255, 255, 255, 0.1); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16); border-radius: 28px; padding: 10px 10px 18px; height: 100%; }
+.wl-pair img { width: 100%; aspect-ratio: 1.47; object-fit: cover; object-position: 0 0; border-radius: 18px; background: #fff; }
+.wl-pair figcaption { font-size: 14px; line-height: 1.35; padding: 14px 8px 0; color: rgba(255, 255, 255, 0.86); }
+.wl-pair b { display: block; color: #fff; font-weight: 500; margin-bottom: 4px; }
+.wl-pair--light { margin-top: clamp(40px, 5vw, 80px); }
+.wl-pair--light figure { background: var(--well); -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none; }
+.wl-pair--light img { aspect-ratio: 2; }
+.wl-pair--light figcaption { color: var(--ink-2); }
+.wl-pair--light b { color: var(--ink); }
+
+/* Dialog screenshots: show the whole dialog, never crop the buttons. */
+.wl .wl-fit img { object-fit: contain; object-position: 50% 50%; background: #fff; padding: clamp(8px, 1.2vw, 20px); }
+
+/* ── Sender state strips ── */
+.wl-strip { width: 100%; height: auto; border-radius: 18px; background: #fff; margin-top: 6px; }
+
+/* ── Before and after cards ── */
+.wl-ba-v { font-size: clamp(30px, 2.8vw, 44px); font-weight: 400; line-height: 1.04; letter-spacing: -0.04em; margin-top: auto; padding-top: 24px; }
+.wl-ba-was { font-size: 14px; line-height: 1.35; color: var(--ink-2); border-top: 1px solid var(--hairline); padding-top: 12px; margin-top: 16px; }
+.wl-ba-was span { display: block; color: var(--ink); font-weight: 500; margin-bottom: 4px; }
+
+@media (max-width: 900px) {
+  .wl-ba-v { margin-top: 12px; }
+}
+@media (max-width: 700px) {
+  .wl-pair { grid-template-columns: 1fr; }
+}
+
+/* Dusk layers: warm plum instead of the default violet, so the plum art keeps its colour. */
+.wl .cc-dusk { background: linear-gradient(180deg, rgba(58, 18, 46, 0.5) 0%, rgba(66, 20, 52, 0.38) 60%, rgba(74, 22, 58, 0.2) 100%); }
+.wl .cc-dusk--soft { background: linear-gradient(180deg, rgba(66, 20, 52, 0.18) 0%, rgba(66, 20, 52, 0.06) 60%, rgba(52, 16, 42, 0.12) 100%); }
+.wl .cc-dusk--band { background: linear-gradient(180deg, rgba(56, 16, 44, 0.42) 0%, rgba(52, 14, 40, 0.46) 50%, rgba(40, 10, 32, 0.58) 100%); }
+.wl .cc-dusk--deep { background: linear-gradient(180deg, rgba(36, 10, 30, 0.56) 0%, rgba(26, 8, 22, 0.7) 100%); }
+.wl .cc-meta--light { text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35); }

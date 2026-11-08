@@ -337,6 +337,7 @@ body.cc {
   .cc-pill { height: 42px; }
   .cc-pill-label { display: none; }
   .cc-band-side { display: none; }
-  .cc-band-type { justify-content: flex-start; gap: 0.25em; }
+  .cc-band-type { justify-content: flex-start; gap: calc(var(--bfs) * 0.22); }
   .cc-band { --bfs: clamp(44px, 14vw, 120px); }
 }
+.cc main [id] { scroll-margin-top: 88px; }

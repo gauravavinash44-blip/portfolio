@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Deal Room cover</title>
+<style>
+@font-face { font-family: "Inter"; src: url("../fonts/inter-latin-400-normal.woff2") format("woff2"); font-weight: 400; }
+@font-face { font-family: "Inter"; src: url("../fonts/inter-latin-500-normal.woff2") format("woff2"); font-weight: 500; }
+@font-face { font-family: "Inter"; src: url("../fonts/inter-latin-600-normal.woff2") format("woff2"); font-weight: 600; }
+@font-face { font-family: "JBM"; src: url("../fonts/jetbrains-mono-latin-400-normal.woff2") format("woff2"); font-weight: 400; }
+@font-face { font-family: "JBM"; src: url("../fonts/jetbrains-mono-latin-500-normal.woff2") format("woff2"); font-weight: 500; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 2560px; height: 1440px; overflow: hidden; background: var(--bg0); }
+body { font-family: "Inter", system-ui, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11", "tnum"; }
+.scene { position: absolute; inset: 0; overflow: hidden; }
+.abs { position: absolute; }
+.mono { font-family: "JBM", ui-monospace, monospace; }
+.fill { position: absolute; inset: 0; }
+.persp { position: absolute; inset: 0; perspective: 3200px; transform-style: preserve-3d; }
+.p3 { position: absolute; transform-style: preserve-3d; }
+.glass { background: linear-gradient(180deg, var(--glass-top), var(--glass-bot)); border: 1.5px solid var(--glass-line); border-radius: 30px;
+  -webkit-backdrop-filter: blur(28px) saturate(1.2); backdrop-filter: blur(28px) saturate(1.2);
+  box-shadow: 0 60px 140px var(--shadow), inset 0 1.5px 0 var(--glass-hi); }
+.solid { background: var(--card); border-radius: 30px; box-shadow: 0 60px 140px var(--shadow), 0 0 0 1.5px var(--card-line); color: var(--card-ink); }
+.tag { display: inline-flex; align-items: center; gap: 12px; height: 46px; padding: 0 20px; border-radius: 999px; font: 500 20px/1 "JBM", monospace; letter-spacing: .02em;
+  color: var(--tag-ink); background: var(--tag-bg); box-shadow: inset 0 0 0 1.5px var(--tag-line); white-space: nowrap; }
+.tag i { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 16px var(--accent); }
+.bar { height: 14px; border-radius: 999px; background: var(--skel); }
+.code { font: 400 23px/1.62 "JBM", monospace; color: var(--code-ink); white-space: pre; letter-spacing: 0; }
+.code .k { color: var(--code-k); } .code .s { color: var(--code-s); } .code .c { color: var(--code-c); } .code .n { color: var(--code-n); } .code .p { color: var(--code-p); }
+.code .ln { color: var(--code-c); opacity: .55; display: inline-block; width: 52px; }
+.chrome { display: flex; gap: 12px; padding: 26px 30px 0; }
+.chrome b { width: 14px; height: 14px; border-radius: 50%; background: var(--chrome-dot); }
+.grain { position: absolute; inset: 0; pointer-events: none; }
+
+:root { 
+--bg0:#151312; --ink:#fff; --accent:#ec7755;
+--glass-top:rgba(36,32,30,.80); --glass-bot:rgba(36,32,30,.66);
+--glass-line:rgba(255,255,255,.12); --glass-hi:rgba(255,255,255,.10);
+--shadow:rgba(0,0,0,.45); --card:#fff; --card-line:rgba(0,0,0,.06); --card-ink:#0a0a0a;
+--tag-ink:rgba(255,255,255,.86); --tag-bg:rgba(255,255,255,.06); --tag-line:rgba(255,255,255,.16);
+--skel:rgba(255,255,255,.14); --chrome-dot:rgba(255,255,255,.18);
+--code-ink:rgba(236,236,245,.86); --code-k:#ffb08f; --code-s:#e9d8a6; --code-c:rgba(255,255,255,.36);
+--code-n:#f6a37f; --code-p:rgba(255,255,255,.5);
+ }
+
+</style></head>
+<body><div class="scene">
+<div class="fill" style="background:radial-gradient(80% 90% at 74% 22%,#3a2a22 0%,#1d1a18 55%,#121110 100%)"></div><div class="abs" style="left:930px;top:-460.0px;width:1640px;height:1640.0px;opacity:1.0;border-radius:50%;background:radial-gradient(closest-side,rgba(236,119,85,.40),transparent)"></div><div class="abs" style="left:-200px;top:700.0px;width:1400px;height:1400.0px;opacity:1.0;border-radius:50%;background:radial-gradient(closest-side,rgba(233,102,53,.12),transparent)"></div><div class="abs" style="left:0;top:820px;width:2560px;height:1440px;perspective:900px;perspective-origin:50% 0%;opacity:1">
+  <div class="abs" style="left:-1200px;top:0;width:4960px;height:2400px;transform-origin:50% 0%;transform:rotateX(74deg);
+    background-image:linear-gradient(rgba(255,190,160,.08) 1.5px,transparent 1.5px),linear-gradient(90deg,rgba(255,190,160,.08) 1.5px,transparent 1.5px);background-size:120px 120px;
+    -webkit-mask-image:linear-gradient(180deg,black 0%,black 30%,transparent 92%);mask-image:linear-gradient(180deg,black 0%,black 30%,transparent 92%)"></div></div><div class="abs" style="left:1480px;top:40px;width:1040px;height:640px;opacity:1;transform:perspective(2600px) rotateY(-18deg) rotateX(7deg) rotateZ(1.5deg);border-radius:22px;overflow:hidden;background:#fff;box-shadow:0 80px 160px rgba(0,0,0,.5),0 0 0 1.5px rgba(255,255,255,.14)"><div style="height:38px;display:flex;align-items:center;gap:10px;padding:0 18px;background:rgba(246,246,248,.96);border-bottom:1px solid rgba(0,0,0,.06)"><b style="width:11px;height:11px;border-radius:50%;background:#e2e2e6"></b><b style="width:11px;height:11px;border-radius:50%;background:#e2e2e6"></b><b style="width:11px;height:11px;border-radius:50%;background:#e2e2e6"></b></div><img src="../../../../../deal-room-dashboard-insights.png" style="display:block;width:100%;height:602px;object-fit:cover;object-position:0 0"><div class="fill" style="background:rgba(0,0,0,0.05)"></div></div><div class="abs glass" style="left:1240px;top:410px;width:900px;opacity:1;transform:perspective(2600px) rotateY(-12deg) rotateX(5deg);z-index:3;overflow:hidden"><div class="chrome"><b></b><b></b><b></b><span class="mono" style="margin-left:18px;font-size:19px;color:var(--code-c);line-height:14px">state.ts</span></div><div style="padding:28px 36px 36px"><div class="code"><span class="ln">1</span><span class="c">// deal-room/state.ts</span>
+<span class="ln">2</span><span class="k">const</span> dealRoom <span class="p">=</span> createMachine<span class="p">(</span><span class="p">{</span>
+<span class="ln">3</span>  initial<span class="p">:</span> <span class="s">"setup"</span><span class="p">,</span>
+<span class="ln">4</span>  states<span class="p">:</span> <span class="p">{</span>
+<span class="ln">5</span>    setup<span class="p">:</span>       <span class="p">{</span> on<span class="p">:</span> <span class="p">{</span> CREATE_FROM_PROFILE<span class="p">:</span> <span class="s">"nda"</span> <span class="p">}</span> <span class="p">}</span><span class="p">,</span>
+<span class="ln">6</span>    nda<span class="p">:</span>         <span class="p">{</span> on<span class="p">:</span> <span class="p">{</span> SIGNED<span class="p">:</span> <span class="s">"commitments"</span> <span class="p">}</span> <span class="p">}</span><span class="p">,</span>
+<span class="ln">7</span>    commitments<span class="p">:</span> <span class="p">{</span> on<span class="p">:</span> <span class="p">{</span> REVOKE<span class="p">:</span> <span class="s">"nda"</span> <span class="p">}</span> <span class="p">}</span><span class="p">,</span>
+<span class="ln">8</span>  <span class="p">}</span><span class="p">,</span>
+<span class="ln">9</span><span class="p">}</span><span class="p">)</span></div></div></div><div class="abs tag" style="left:1280px;top:340px;opacity:1;transform:none"><i></i>NDA required</div><div class="fill" style="background:linear-gradient(90deg,rgba(18,16,15,.9) 0%,rgba(18,16,15,.6) 38%,rgba(18,16,15,0) 50%)"></div><div class="fill" style="background:linear-gradient(0deg,rgba(18,16,15,.5) 0%,rgba(18,16,15,0) 40%)"></div>
+</div></body></html>

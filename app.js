@@ -776,11 +776,11 @@
     S.preview = Object.assign({}, S.preview, { avatar: null });
     const hrefs = {
       "Contextual Chat": "./craft-contextual-chat.html",
-      "Deal Room": "./deal-room-short.html",
-      "White Label": "./white-label-short.html",
-      "White Label Setup": "./white-label-short.html",
-      "EasyEat": "./easyeat-case-study.html",
-      "Resonance": "./resonance-short.html",
+      "Deal Room": "./craft-deal-room.html",
+      "White Label": "./craft-white-label.html",
+      "White Label Setup": "./craft-white-label.html",
+      "EasyEat": "./craft-easyeat.html",
+      "Resonance": "./craft-resonance.html",
     };
     S.files = S.files.map((f) => (hrefs[f.title]
       ? Object.assign({}, f, { href: hrefs[f.title] })
@@ -798,7 +798,7 @@
         domain: "Fintech", year: "2025", summary: "A firm starts empty, then looks live once URL, logo and sender are set.",
         metric: { value: "3", label: "steps to live: URL, logo, sender" } },
       { id: "easyeat", title: "EasyEat", href: hrefs["EasyEat"], image: ASSETS.easyeat, icon: "bowl", tone: "orange",
-        domain: "FoodTech", summary: "Customization and monetisation flows for a multi-country launch.",
+        domain: "FoodTech", summary: "Every dish option on one screen that counts for you.",
         metric: { value: "+8.3%", label: "QR adoption in 3 weeks" } },
       { id: "resonance", title: "Spotify Resonance", href: hrefs["Resonance"], image: ASSETS.resonance, icon: "wave", tone: "blue",
         domain: "AI, Music", summary: "Playback that starts songs closer to the part you want to hear.",

@@ -1,0 +1,73 @@
+/* EasyEat case page only. Sits on top of case.css; does not change shared rules. */
+
+/* Art fallback until art/art.css lands. Zero specificity so art.css wins. */
+:where(.cc-art--easyeat-cover, .cc-art--easyeat-band, .cc-art--easyeat-stage, .cc-art--easyeat-dark) > .cr-wp-photo {
+  background-color: #c9402f;
+  background-image:
+    radial-gradient(120% 90% at 85% 10%, rgba(255, 236, 214, 0.55) 0%, rgba(255, 236, 214, 0) 55%),
+    radial-gradient(90% 80% at 10% 100%, rgba(140, 28, 20, 0.7) 0%, rgba(140, 28, 20, 0) 60%),
+    linear-gradient(160deg, #f6e7d4 0%, #ec9a7c 30%, #d9513c 62%, #a8261b 100%);
+}
+:where(.cc-art--easyeat-stage) > .cr-wp-photo {
+  background-image:
+    radial-gradient(110% 80% at 20% 0%, rgba(255, 244, 230, 0.9) 0%, rgba(255, 244, 230, 0) 60%),
+    linear-gradient(170deg, #f8eadb 0%, #f0b597 45%, #de6a4f 100%);
+}
+:where(.cc-art--easyeat-dark) > .cr-wp-photo {
+  background-image:
+    radial-gradient(90% 70% at 80% 0%, rgba(236, 120, 90, 0.45) 0%, rgba(236, 120, 90, 0) 60%),
+    linear-gradient(170deg, #6e1a14 0%, #3e0f0c 100%);
+}
+
+/* Warm the dusk layers so white type reads on red, not purple. */
+.ee .cc-dusk { background: linear-gradient(180deg, rgba(110, 30, 22, 0.62) 0%, rgba(120, 34, 24, 0.5) 45%, rgba(130, 40, 28, 0.36) 75%, rgba(150, 60, 40, 0.12) 100%); }
+.ee .cc-dusk--soft { background: linear-gradient(180deg, rgba(120, 40, 28, 0.18) 0%, rgba(120, 40, 28, 0.06) 60%, rgba(80, 20, 14, 0.12) 100%); }
+.ee .cc-dusk--band { background: linear-gradient(180deg, rgba(104, 26, 20, 0.6) 0%, rgba(92, 22, 16, 0.62) 50%, rgba(60, 14, 10, 0.7) 100%); }
+.ee .cc-dusk--deep { background: linear-gradient(180deg, rgba(48, 12, 10, 0.55) 0%, rgba(36, 10, 8, 0.7) 100%); }
+.ee .cc-chip--glass { background: rgba(70, 18, 12, 0.26); }
+.ee .cc-card--glass { background: rgba(90, 24, 16, 0.32); }
+
+/* Phones */
+.ee-phones { display: flex; justify-content: center; align-items: flex-start; gap: clamp(12px, 3vw, 56px); max-width: 1240px; margin: 0 auto; }
+.ee-phone { position: relative; flex: 0 0 auto; width: clamp(96px, 20vw, 290px); background: #0c0c0e; padding: clamp(5px, 0.7vw, 10px);
+  border-radius: clamp(20px, 3vw, 46px); box-shadow: 0 30px 60px rgba(70, 20, 12, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.1); }
+.ee-phone-screen { border-radius: clamp(15px, 2.3vw, 36px); overflow: hidden; background: #fff; aspect-ratio: 375 / 760; }
+.ee-phone-screen img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 0; }
+.ee-phone--lead { width: clamp(110px, 24vw, 340px); }
+
+.ee-phones--cover { align-items: center; }
+.ee-phones--cover .ee-phone:not(.ee-phone--lead) { margin-top: 8%; }
+.ee-phones--flow { gap: clamp(10px, 2.2vw, 40px); }
+.ee-phones--flow .ee-phone { width: clamp(80px, 17vw, 250px); }
+.ee-phones--flow .ee-phone:nth-child(even) { margin-top: clamp(24px, 4vw, 64px); }
+
+.ee-phones--states { align-items: center; padding-bottom: 64px; }
+.ee-phones--states figcaption { position: absolute; left: 50%; bottom: calc(-1 * clamp(44px, 4vw, 56px)); transform: translateX(-50%); width: max-content; max-width: 130%;
+  background: #fff; color: var(--ink); font-size: 13px; line-height: 1.3; padding: 9px 14px; border-radius: 999px; box-shadow: var(--shadow-float); text-align: center; }
+
+/* Iterations: portrait screens */
+.ee-iter img { aspect-ratio: 0.8; object-fit: cover; object-position: 50% 0; }
+.ee-iter img.ee-contain { object-fit: contain; object-position: 50% 50%; }
+
+/* Two persona cards */
+.ee-cards2 { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 1000px; }
+
+.ee-outcome-note { max-width: 560px; margin-top: clamp(28px, 3vw, 48px); color: var(--ink-2); }
+
+@media (max-width: 900px) {
+  .ee-cards2 { grid-template-columns: 1fr; max-width: 560px; }
+  .ee-phones--states { flex-direction: column; align-items: center; gap: 88px; }
+  .ee-phones--states .ee-phone, .ee-phones--states .ee-phone--lead { width: min(64vw, 280px); }
+  .ee-phones--states figcaption { max-width: 86vw; white-space: normal; width: max-content; }
+}
+@media (max-width: 700px) {
+  .ee-phones--flow { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; max-width: 360px; }
+  .ee-phones--flow .ee-phone { width: 100%; }
+  .ee-phones--flow .ee-phone:nth-child(even) { margin-top: 24px; }
+  .ee-phones--cover { gap: 10px; }
+  .ee-phones--cover .ee-phone { width: 28vw; }
+  .ee-phones--cover .ee-phone--lead { width: 33vw; }
+}
+
+/* Wireframes: show the bottom, where the max-limit message and cart bar live. */
+.ee-iter img.ee-bottom { object-position: 50% 100%; }

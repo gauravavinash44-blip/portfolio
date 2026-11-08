@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Deal Room band</title>
+<style>
+@font-face { font-family: "Inter"; src: url("../fonts/inter-latin-400-normal.woff2") format("woff2"); font-weight: 400; }
+@font-face { font-family: "Inter"; src: url("../fonts/inter-latin-500-normal.woff2") format("woff2"); font-weight: 500; }
+@font-face { font-family: "Inter"; src: url("../fonts/inter-latin-600-normal.woff2") format("woff2"); font-weight: 600; }
+@font-face { font-family: "JBM"; src: url("../fonts/jetbrains-mono-latin-400-normal.woff2") format("woff2"); font-weight: 400; }
+@font-face { font-family: "JBM"; src: url("../fonts/jetbrains-mono-latin-500-normal.woff2") format("woff2"); font-weight: 500; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 2560px; height: 1440px; overflow: hidden; background: var(--bg0); }
+body { font-family: "Inter", system-ui, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11", "tnum"; }
+.scene { position: absolute; inset: 0; overflow: hidden; }
+.abs { position: absolute; }
+.mono { font-family: "JBM", ui-monospace, monospace; }
+.fill { position: absolute; inset: 0; }
+.persp { position: absolute; inset: 0; perspective: 3200px; transform-style: preserve-3d; }
+.p3 { position: absolute; transform-style: preserve-3d; }
+.glass { background: linear-gradient(180deg, var(--glass-top), var(--glass-bot)); border: 1.5px solid var(--glass-line); border-radius: 30px;
+  -webkit-backdrop-filter: blur(28px) saturate(1.2); backdrop-filter: blur(28px) saturate(1.2);
+  box-shadow: 0 60px 140px var(--shadow), inset 0 1.5px 0 var(--glass-hi); }
+.solid { background: var(--card); border-radius: 30px; box-shadow: 0 60px 140px var(--shadow), 0 0 0 1.5px var(--card-line); color: var(--card-ink); }
+.tag { display: inline-flex; align-items: center; gap: 12px; height: 46px; padding: 0 20px; border-radius: 999px; font: 500 20px/1 "JBM", monospace; letter-spacing: .02em;
+  color: var(--tag-ink); background: var(--tag-bg); box-shadow: inset 0 0 0 1.5px var(--tag-line); white-space: nowrap; }
+.tag i { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 16px var(--accent); }
+.bar { height: 14px; border-radius: 999px; background: var(--skel); }
+.code { font: 400 23px/1.62 "JBM", monospace; color: var(--code-ink); white-space: pre; letter-spacing: 0; }
+.code .k { color: var(--code-k); } .code .s { color: var(--code-s); } .code .c { color: var(--code-c); } .code .n { color: var(--code-n); } .code .p { color: var(--code-p); }
+.code .ln { color: var(--code-c); opacity: .55; display: inline-block; width: 52px; }
+.chrome { display: flex; gap: 12px; padding: 26px 30px 0; }
+.chrome b { width: 14px; height: 14px; border-radius: 50%; background: var(--chrome-dot); }
+.grain { position: absolute; inset: 0; pointer-events: none; }
+
+:root { 
+--bg0:#151312; --ink:#fff; --accent:#ec7755;
+--glass-top:rgba(36,32,30,.80); --glass-bot:rgba(36,32,30,.66);
+--glass-line:rgba(255,255,255,.12); --glass-hi:rgba(255,255,255,.10);
+--shadow:rgba(0,0,0,.45); --card:#fff; --card-line:rgba(0,0,0,.06); --card-ink:#0a0a0a;
+--tag-ink:rgba(255,255,255,.86); --tag-bg:rgba(255,255,255,.06); --tag-line:rgba(255,255,255,.16);
+--skel:rgba(255,255,255,.14); --chrome-dot:rgba(255,255,255,.18);
+--code-ink:rgba(236,236,245,.86); --code-k:#ffb08f; --code-s:#e9d8a6; --code-c:rgba(255,255,255,.36);
+--code-n:#f6a37f; --code-p:rgba(255,255,255,.5);
+ }
+
+</style></head>
+<body><div class="scene">
+<div class="fill" style="background:radial-gradient(70% 100% at 85% 55%,#3b2a22 0%,#1f1c1a 60%,#141312 100%)"></div><div class="abs" style="left:1340px;top:-60.0px;width:1520px;height:1520.0px;opacity:1.0;border-radius:50%;background:radial-gradient(closest-side,rgba(236,119,85,.30),transparent)"></div><div class="abs" style="left:0px;top:0px;width:2560px;height:1440px;background-image:radial-gradient(rgba(255,255,255,.07) 1.3px,transparent 1.9px);background-size:36px 36px;-webkit-mask-image:radial-gradient(50% 70% at 78% 50%,black,transparent);mask-image:radial-gradient(50% 70% at 78% 50%,black,transparent)"></div><svg class="abs" style="left:1880px;top:430px;width:120px;height:560px;opacity:1;overflow:visible" viewBox="0 0 120 560" xmlns="http://www.w3.org/2000/svg" ><path d="M48,104 L48,186" stroke="#ec7755" stroke-opacity=".6" stroke-width="2.5" stroke-dasharray="2 11" stroke-linecap="round"/><circle cx="48" cy="145.0" r="6" fill="#ffb08f"/><circle cx="48" cy="145.0" r="20" fill="#ec7755" fill-opacity=".18"/><path d="M48,294 L48,376" stroke="#ec7755" stroke-opacity=".6" stroke-width="2.5" stroke-dasharray="2 11" stroke-linecap="round"/><circle cx="48" cy="335.0" r="6" fill="#ffb08f"/><circle cx="48" cy="335.0" r="20" fill="#ec7755" fill-opacity=".18"/></svg><div class="abs glass" style="left:1880px;top:430px;width:470px;height:100px;opacity:1;border-radius:24px"><div style="height:100%;display:flex;align-items:center;gap:22px;padding:0 26px"><span style="font:500 18px/1 JBM;color:rgba(255,255,255,.45)">01</span><span style="font:500 26px/1 Inter;color:#fff">Setup</span><span style="margin-left:auto;font:400 17px/1 JBM;color:rgba(255,255,255,.45)">create from profile</span></div></div><div class="abs glass" style="left:1880px;top:620px;width:470px;height:100px;opacity:1;border-radius:24px;box-shadow:0 0 0 2px rgba(236,119,85,.75),0 40px 90px rgba(0,0,0,.4)"><div style="height:100%;display:flex;align-items:center;gap:22px;padding:0 26px"><span style="font:500 18px/1 JBM;color:#ffb08f">02</span><span style="font:500 26px/1 Inter;color:#fff">NDA</span><span style="margin-left:auto;font:400 17px/1 JBM;color:rgba(255,255,255,.45)">gate inside the product</span></div></div><div class="abs glass" style="left:1880px;top:810px;width:470px;height:100px;opacity:1;border-radius:24px"><div style="height:100%;display:flex;align-items:center;gap:22px;padding:0 26px"><span style="font:500 18px/1 JBM;color:rgba(255,255,255,.45)">03</span><span style="font:500 26px/1 Inter;color:#fff">Commitments</span><span style="margin-left:auto;font:400 17px/1 JBM;color:rgba(255,255,255,.45)">docs · access · interest</span></div></div><div class="fill" style="background:linear-gradient(90deg,rgba(20,18,17,.85) 0%,rgba(20,18,17,.5) 48%,rgba(20,18,17,0) 66%)"></div>
+</div></body></html>

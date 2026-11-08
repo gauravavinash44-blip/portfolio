@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resonance · Craft · Gaurav Avinash</title>
+  <meta name="description" content="Resonance: a speculative, personal playback idea for Spotify that starts songs closer to the moment you actually want to hear. Live prototype inside.">
+  <link rel="icon" href="./assets/logo-ga.svg" type="image/svg+xml">
+  <script>document.documentElement.classList.add("js");</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..600&family=Inter+Tight:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="./assets/craft/craft-tokens.css?v=1">
+  <link rel="stylesheet" href="./assets/craft/case/case.css?v=1">
+  <link rel="stylesheet" href="./assets/craft/case/resonance.css?v=1">
+  <link rel="stylesheet" href="./assets/craft/case/art/art.css?v=1">
+</head>
+<body class="cr cc rs">
+  <a class="cc-skip" href="#main">Skip to the story</a>
+
+  <nav class="cc-nav" aria-label="Case study">
+    <a class="cc-pill cc-pill--back" href="./index.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+      <span>Back to board</span>
+    </a>
+    <a class="cc-pill cc-pill--craft" href="./index.html" aria-label="Craft mode is on. Go to the Craft board">
+      <svg class="cc-glyph" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><rect class="b" x="6.5" y="3.5" width="10" height="10" rx="2.5"/><rect class="f" x="3.5" y="6.5" width="10" height="10" rx="2.5"/></svg>
+      <span class="cc-pill-label">Craft</span>
+      <span class="cc-track" aria-hidden="true"><span class="cc-thumb"></span></span>
+    </a>
+  </nav>
+
+  <main id="main">
+    <!-- ───────── Cover ───────── -->
+    <header class="cc-cover">
+      <div class="cc-cover-photo cc-art--resonance-cover" aria-hidden="true"><div class="cr-wp-photo"></div><div class="cc-dusk"></div></div>
+      <div class="cc-cover-white" aria-hidden="true"></div>
+
+      <div class="cc-meta cc-meta--cover cc-wrap">
+        <span>Personal project</span><span>For Spotify</span><span>Case study 05</span>
+      </div>
+
+      <div class="cc-cover-type cc-wrap">
+        <h1 class="cc-title">
+          <span class="cc-title-a cc-rv">Spotify</span>
+          <span class="cc-title-b cc-rv" style="--i:1">Resonance</span>
+        </h1>
+        <p class="cc-note cc-note--a cc-rv" style="--i:2">A playback idea<br>that starts at<br>your moment</p>
+        <ul class="cc-note cc-note--b cc-rv" style="--i:3" aria-label="Tags">
+          <li class="cc-chip cc-chip--glass">AI</li>
+          <li class="cc-chip cc-chip--glass">Music experience</li>
+          <li class="cc-chip cc-chip--glass">Product design</li>
+        </ul>
+      </div>
+
+      <div class="cc-cover-body cc-wrap">
+        <p class="cc-lede cc-rv" style="--i:3">On a weekend trip I kept watching friends drag the scrubber to the part of the song everyone knew. Resonance is my answer to that: one smarter play inside Spotify's Now Playing. It's a personal, speculative project. Spotify didn't ask for it and it hasn't shipped.</p>
+        <dl class="cc-facts cc-rv" style="--i:4">
+          <div><dt>Context</dt><dd>For Spotify, personal</dd></div>
+          <div><dt>Type</dt><dd>Speculative product</dd></div>
+          <div><dt>Prototype</dt><dd>Medium, live in the browser</dd></div>
+        </dl>
+      </div>
+
+      <figure class="cc-frame cc-frame--cover cc-wrap">
+        <div class="cc-meta cc-meta--light cc-rv" style="--i:4"><span>Now Playing with Resonance on</span><span>iPhone</span><span>Concept cover</span></div>
+        <div class="cc-laptop rs-board cc-rv" style="--i:5">
+          <div class="cc-laptop-screen">
+            <img src="./assets/resonance/resonance-cover.png?v=20260905" alt="Concept cover: an iPhone showing Now Playing for There She Goes by The La's, with the green Resonance icon beside the title and two small moment dots on the timeline" width="3840" height="2160" decoding="async">
+          </div>
+        </div>
+        <figcaption class="cc-sr">Resonance lives inside the Now Playing screen people already use.</figcaption>
+      </figure>
+    </header>
+
+    <!-- ───────── 01 Problem ───────── -->
+    <section class="cc-sec cc-white cc-slide" id="problem" aria-labelledby="h-problem">
+      <div class="cc-wrap">
+        <div class="cc-meta cc-rv"><span>01 · Problem</span><span>Now Playing</span><span>Before Resonance</span></div>
+        <div class="cc-split">
+          <p class="cc-body cc-rv" style="--i:1">Weekend trip. Friends. Someone picks a track, waits through the intro, then drags the scrubber to the bit everyone already knows. Same move, song after song.</p>
+          <h2 class="cc-statement cc-rv" id="h-problem" style="--i:2">People don't always love the whole song. They love a&nbsp;moment.</h2>
+        </div>
+      </div>
+    </section>
+
+    <section class="cc-band" aria-label="What people actually wait for">
+      <div class="cc-band-type cc-wrap" aria-hidden="true">
+        <span class="cc-band-a cc-rv">No best</span><span class="cc-band-b cc-rv" style="--i:1">part</span>
+      </div>
+      <div class="cc-band-photo cc-art--resonance-band"><div class="cr-wp-photo"></div><div class="cc-dusk cc-dusk--band"></div>
+        <div class="cc-wrap cc-band-inner">
+          <p class="cc-band-c cc-rv" aria-hidden="true" style="--i:2">just yours</p>
+          <div class="cc-nums">
+            <div class="cc-num cc-rv" style="--i:2"><p class="cc-num-v">Lyric</p><p class="cc-num-c">A lyric or a bassline you wait for.</p></div>
+            <div class="cc-num cc-rv" style="--i:3"><p class="cc-num-v">Drop</p><p class="cc-num-c">A drop. A vocal run.</p></div>
+            <div class="cc-num cc-rv" style="--i:4"><p class="cc-num-v">Build</p><p class="cc-num-c">A build they always replay.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cc-sec cc-research cc-art--resonance-dark" aria-labelledby="h-research">
+      <div class="cr-wp-photo" aria-hidden="true"></div><div class="cc-dusk cc-dusk--deep" aria-hidden="true"></div>
+      <div class="cc-wrap">
+        <div class="cc-ledger cc-rv">
+          <div class="cc-ledger-src">
+            <h2 class="cc-ledger-h" id="h-research">What I noticed</h2>
+            <p>One weekend trip<br>Friends picking tracks<br>The same scrub, every song</p>
+          </div>
+          <ol class="cc-ledger-rows cc-ledger-rows--plain">
+            <li><span class="k">A.</span><span>Different listeners can want completely different seconds of the same track.</span></li>
+            <li><span class="k">B.</span><span>There's no universal "best part". There can be a best moment for one listener.</span></li>
+            <li><span class="k">C.</span><span>The friction isn't discovery. It's dragging the timeline again when you already know where you're going.</span></li>
+          </ol>
+          <div class="cc-ledger-src"><h3 class="cc-ledger-h">What Spotify already learns from</h3></div>
+          <ol class="cc-ledger-rows cc-ledger-rows--plain">
+            <li><span class="k">1.</span><span>Skips</span></li>
+            <li><span class="k">2.</span><span>Seeks</span></li>
+            <li><span class="k">3.</span><span>Replays</span></li>
+            <li><span class="k">4.</span><span>Saves and returns</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── 02 Opportunity ───────── -->
+    <section class="cc-sec cc-white" id="opportunity" aria-labelledby="h-opportunity">
+      <div class="cc-wrap">
+        <div class="cc-meta cc-rv"><span>02 · Opportunity</span><span>Inside the track</span><span>3 signals</span></div>
+        <div class="cc-split cc-split--top">
+          <h2 class="cc-h2 cc-rv" id="h-opportunity">From songs you like to moments you respond to.</h2>
+          <p class="cc-body cc-rv" style="--i:1">Spotify already learns which songs you like. I wanted to push that learning one layer down, into time inside the song.</p>
+        </div>
+      </div>
+      <div class="cc-stage cc-art--resonance-stage">
+        <div class="cr-wp-photo" aria-hidden="true"></div><div class="cc-dusk cc-dusk--soft" aria-hidden="true"></div>
+        <div class="cc-wrap">
+          <div class="cc-cards3">
+            <article class="cc-card cc-card--white cc-rv">
+              <span class="cc-chip">The song</span>
+              <h3 class="cc-card-t">Song understanding</h3>
+              <p class="cc-card-s">What's actually happening inside the track.</p>
+              <ul class="cc-ticks"><li>Lyrics and vocals</li><li>Beat, bass and energy</li><li>Structure</li></ul>
+            </article>
+            <article class="cc-card cc-card--glass cc-rv" style="--i:1">
+              <span class="cc-chip cc-chip--glass">The listener</span>
+              <h3 class="cc-card-t">How you behave</h3>
+              <p class="cc-card-s">The signals Spotify already collects, read at the level of seconds.</p>
+              <ul class="cc-ticks"><li>Skips and seeks</li><li>Replays</li><li>Saves and returns</li></ul>
+            </article>
+            <article class="cc-card cc-card--white cc-rv" style="--i:2">
+              <span class="cc-chip">Everyone else</span>
+              <h3 class="cc-card-t">Collective signals</h3>
+              <p class="cc-card-s">Useful as a hint, never as the truth.</p>
+              <ul class="cc-ticks"><li>"2.5K listeners started here"</li><li>"Most replayed"</li><li>Never pretends it's everyone's favourite</li></ul>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cc-band cc-band--insight" aria-labelledby="h-insight">
+      <h2 class="cc-sr" id="h-insight">The idea: song plus listener plus moment equals personalised playback.</h2>
+      <div class="cc-band-type cc-wrap" aria-hidden="true">
+        <span class="cc-band-a cc-rv">Song +</span><span class="cc-band-side cc-rv" style="--i:1">The whole idea</span>
+      </div>
+      <div class="cc-band-photo cc-art--resonance-band" aria-hidden="true"><div class="cr-wp-photo"></div><div class="cc-dusk cc-dusk--band"></div>
+        <div class="cc-wrap cc-band-inner">
+          <span class="cc-band-b cc-band-b--left cc-rv" style="--i:1">listener +</span>
+          <span class="cc-band-b cc-band-b--right cc-rv" style="--i:2">moment.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── 03 Principles ───────── -->
+    <section class="cc-sec cc-white cc-slide" id="principles" aria-labelledby="h-principles">
+      <div class="cc-wrap">
+        <div class="cc-meta cc-rv"><span>03 · Principles and decisions</span><span>Now Playing</span><span>1 capability</span></div>
+        <div class="cc-split">
+          <p class="cc-body cc-rv" style="--i:1">The easy versions were a new feed, a chatbot or a separate place to go. I didn't want any of them. Just one capability on play, in the screen people already use.</p>
+          <h2 class="cc-statement cc-rv" id="h-principles" style="--i:2">Spotify, with one smarter play. Not a new&nbsp;app.</h2>
+        </div>
+
+        <div class="cc-cards3 cc-cards3--tight">
+          <article class="cc-card cc-card--well cc-rv">
+            <span class="cc-chip cc-chip--outline">Ruled out</span>
+            <h3 class="cc-card-t">A new feed</h3>
+            <p class="cc-card-s">Another place to find songs.</p>
+            <p class="cc-decision">The friction isn't discovery. People already know the song.</p>
+          </article>
+          <article class="cc-card cc-card--well cc-rv" style="--i:1">
+            <span class="cc-chip cc-chip--outline">Ruled out</span>
+            <h3 class="cc-card-t">A chatbot</h3>
+            <p class="cc-card-s">Ask for the part you want.</p>
+            <p class="cc-decision">The AI should stay quiet. Behaviour over branding.</p>
+          </article>
+          <article class="cc-card cc-card--ink cc-rv" style="--i:2">
+            <span class="cc-chip rs-chip--green">Chosen</span>
+            <h3 class="cc-card-t">One option on play</h3>
+            <p class="cc-card-s">An orbit icon beside the title and the add button in Now Playing.</p>
+            <p class="cc-decision">Not inside shuffle. Not a new tab.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cc-sec cc-stage-sec cc-art--resonance-stage" aria-labelledby="h-rules">
+      <div class="cr-wp-photo" aria-hidden="true"></div><div class="cc-dusk cc-dusk--band" aria-hidden="true"></div>
+      <div class="cc-wrap">
+        <div class="cc-meta cc-meta--light cc-rv"><span>Principles</span><span>4 rules</span><span>Every screen</span></div>
+        <h2 class="cc-h2 cc-h2--light cc-rv" id="h-rules">Four rules kept it feeling like Spotify.</h2>
+        <div class="cc-feat">
+          <article class="cc-card cc-card--glass cc-rv"><p class="cc-card-n">01</p><h3 class="cc-card-t">Inside Now Playing</h3><p class="cc-card-s">Orbit icon beside the title and add. Not inside shuffle. Not a new tab.</p></article>
+          <article class="cc-card cc-card--white cc-rv" style="--i:1"><p class="cc-card-n">02</p><h3 class="cc-card-t">AI stays quiet</h3><p class="cc-card-s">Say "understands how you listen", not "AI is analysing your music".</p></article>
+          <article class="cc-card cc-card--glass cc-rv" style="--i:2"><p class="cc-card-n">03</p><h3 class="cc-card-t">Personal vs popular</h3><p class="cc-card-s">"Your moment." "Most replayed." No P1, P2, P3 in the UI.</p></article>
+          <article class="cc-card cc-card--white cc-rv" style="--i:3"><p class="cc-card-n">04</p><h3 class="cc-card-t">Listener decides</h3><p class="cc-card-s">On, off, skip, seek, start from zero. Suggest, don't take over.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cc-sec cc-white" aria-labelledby="h-trade">
+      <div class="cc-wrap">
+        <div class="cc-meta cc-rv"><span>Trade-offs</span><span>What the UI says</span><span>And what it doesn't</span></div>
+        <h2 class="cc-h2 cc-rv" id="h-trade">What I kept out of the interface.</h2>
+        <div class="cc-trade">
+          <ul class="cc-trade-list cc-rv" style="--i:1">
+            <li><span class="cc-chip">Quiet over clever</span><p>No sparkles, no bounce, no AI badge. It just starts in a better place.</p></li>
+            <li><span class="cc-chip">Honest over confident</span><p>Every start says what it is: your moment, a popular moment, or just explore.</p></li>
+            <li><span class="cc-chip">Suggest over control</span><p>Seek, skip or start from zero at any time. Resonance never locks the timeline.</p></li>
+          </ul>
+          <div class="cc-stats3">
+            <div class="cc-stat cc-rv" style="--i:2"><p class="cc-stat-h">Unit</p><p class="cc-stat-v">Moment</p><p class="cc-stat-c">inside the song, not the song itself.</p></div>
+            <div class="cc-stat cc-rv" style="--i:3"><p class="cc-stat-h">AI</p><p class="cc-stat-v">Quiet</p><p class="cc-stat-c">behaviour over branding.</p></div>
+            <div class="cc-stat cc-rv" style="--i:4"><p class="cc-stat-h">Control</p><p class="cc-stat-v">Yours</p><p class="cc-stat-c">on, off, seek, skip.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cc-sec cc-white cc-sec--flush" aria-labelledby="h-flow">
+      <div class="cc-wrap">
+        <div class="cc-meta cc-rv"><span>Core flow</span><span>6 steps</span><span>First open</span></div>
+        <h2 class="cc-h2 cc-rv" id="h-flow">A short path from first open to a moment start.</h2>
+        <ol class="rs-flow">
+          <li class="cc-rv"><span class="rs-flow-n">01</span><span class="rs-flow-t">Splash</span></li>
+          <li class="cc-rv" style="--i:1"><span class="rs-flow-n">02</span><span class="rs-flow-t">Home</span></li>
+          <li class="cc-rv" style="--i:2"><span class="rs-flow-n">03</span><span class="rs-flow-t">Bottom-sheet intro</span></li>
+          <li class="cc-rv" style="--i:3"><span class="rs-flow-n">04</span><span class="rs-flow-t">Now Playing</span></li>
+          <li class="cc-rv" style="--i:4"><span class="rs-flow-n">05</span><span class="rs-flow-t">Icon on</span></li>
+          <li class="cc-rv is-last" style="--i:5"><span class="rs-flow-n">06</span><span class="rs-flow-t">Moment start</span></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ───────── 04 Solution ───────── -->
+    <section class="cc-sec cc-white cc-slide cc-sec--short" id="solution" aria-labelledby="h-solution">
+      <div class="cc-wrap">
+        <div class="cc-meta cc-rv"><span>04 · The solution</span><span>390 px</span><span>Live prototype</span></div>
+        <div class="cc-split">
+          <p class="cc-body cc-rv" style="--i:1">Turn on the orbit icon in Now Playing and the song starts at your moment. Small dots on the timeline mark the moments that matter. Tap one to see why it's there.</p>
+          <h2 class="cc-statement cc-rv" id="h-solution" style="--i:2">Everything stays Spotify. Only the start gets&nbsp;smarter.</h2>
+        </div>
+      </div>
+    </section>
+
+    <section class="cc-showcase cc-art--resonance-stage" aria-labelledby="h-proto">
+      <div class="cr-wp-photo" aria-hidden="true"></div><div class="cc-dusk cc-dusk--soft" aria-hidden="true"></div>
+      <figure class="cc-frame cc-wrap rs-proto">
+        <div class="cc-meta cc-meta--light cc-rv"><span>Live Resonance build</span><span>390 px</span><span>Try it in the phone</span></div>
+        <h2 class="cc-sr" id="h-proto">Live prototype</h2>
+        <div class="rs-phone cc-rv" style="--i:1">
+          <div class="rs-phone-shell">
+            <div class="rs-phone-screen" id="rs-screen" data-status="idle">
+              <iframe id="rs-proto-frame" title="Resonance live prototype" allow="autoplay; encrypted-media" referrerpolicy="no-referrer-when-downgrade" loading="lazy" tabindex="-1" aria-hidden="true"></iframe>
+              <div class="rs-poster" id="rs-poster">
+                <img class="rs-poster-bg" src="./assets/resonance/np-art-lg.jpg" alt="" width="480" height="480" loading="lazy" decoding="async">
+                <div class="rs-poster-np" aria-hidden="true">
+                  <img src="./assets/resonance/np-art-lg.jpg" alt="" width="480" height="480" loading="lazy" decoding="async">
+                  <b>Resonance</b>
+                  <span><i class="rs-dot"></i>For Spotify · Personal project</span>
+                  <span class="rs-track"><i></i><i></i><i></i></span>
+                </div>
+                <button type="button" class="rs-start" id="rs-start">
+                  <img src="./assets/resonance/icons/resonance-active.svg" alt="" width="29" height="30">
+                  <span>Start the prototype</span>
+                </button>
+                <p class="rs-state rs-state--loading" role="status"><i class="rs-spin" aria-hidden="true"></i>Loading prototype</p>
+                <div class="rs-state rs-state--failed" role="status">
+                  <p>The prototype didn't load here.</p>
+                  <a class="rs-state-link" href="https://drop-mode.vercel.app/?fresh=1" target="_blank" rel="noreferrer" data-rs-full>Open full screen <span aria-hidden="true">↗</span></a>
+                </div>
+              </div>
+            </div>
+            <img class="rs-phone-frame" src="./assets/resonance/mockup/iphone-frame.png" alt="" width="1294" height="2656" loading="lazy" decoding="async" aria-hidden="true">
+          </div>
+        </div>
+        <p class="cc-float cc-float--a cc-rv" style="--i:2" aria-hidden="true"><span class="cc-dot rs-dot"></span>Your moment on the timeline</p>
+        <p class="cc-float cc-float--b cc-rv" style="--i:3" aria-hidden="true"><span class="cc-dot rs-dot rs-dot--white"></span>Popular moments, labelled honestly</p>
+        <figcaption class="rs-proto-cap cc-rv" style="--i:2">Splash, first-time education, then Now Playing with Resonance. <a href="https://drop-mode.vercel.app/?fresh=1" target="_blank" rel="noreferrer" data-rs-full>Open full screen <span aria-hidden="true">↗</span></a></figcaption>
+      </figure>
+    </section>
+
+    <section class="cc-sec cc-white" aria-labelledby="h-built">
+      <div class="cc-wrap">
+        <h2 class="cc-h2 cc-rv" id="h-built">What's in the build</h2>
+        <div class="cc-feat">
+          <article class="cc-card cc-card--well cc-rv"><p class="cc-card-n">01</p><h3 class="cc-card-t">First-time education</h3><p class="cc-card-s">A home sheet: Resonance, a short benefit, Got it. Now Playing only gets a small tooltip on the icon, not another sheet.</p></article>
+          <article class="cc-card cc-card--well cc-rv" style="--i:1"><p class="cc-card-n">02</p><h3 class="cc-card-t">Activation motion</h3><p class="cc-card-s">The dot merges into the ring and the icon goes Spotify green. About 500 ms. No sparkles, no bounce.</p></article>
+          <article class="cc-card cc-card--well cc-rv" style="--i:2"><p class="cc-card-n">03</p><h3 class="cc-card-t">Timeline markers</h3><p class="cc-card-s">Subtle dots for meaningful moments. Tap for plain labels: your moment, popular, listener counts.</p></article>
+          <article class="cc-card cc-card--well cc-rv" style="--i:3"><p class="cc-card-n">04</p><h3 class="cc-card-t">Preference and skip nudge</h3><p class="cc-card-s">An optional "what do you wait for?" multi-select. Repeated skips can ask: Looking for a moment?</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cc-devices cc-art--resonance-stage" aria-label="Now Playing screen and the Resonance icon states">
+      <div class="cr-wp-photo" aria-hidden="true"></div><div class="cc-dusk cc-dusk--soft" aria-hidden="true"></div>
+      <div class="cc-wrap">
+        <div class="cc-meta cc-meta--light cc-rv"><span>Now Playing and icon</span><span>iPhone</span><span>Final design</span></div>
+        <div class="rs-devices-row">
+          <figure class="rs-shot cc-rv" style="--i:1">
+            <div class="rs-shot-screen"><img src="./assets/resonance/resonance-featured.png?v=1" alt="Now Playing for There She Goes by The La's. The Resonance icon sits green beside the title, and two green dots mark moments on the timeline" loading="lazy" width="1580" height="1936"></div>
+            <figcaption>The icon sits beside the title and add. Nothing else moves.</figcaption>
+          </figure>
+          <figure class="rs-icons cc-rv" style="--i:2">
+            <div class="rs-icons-pair">
+              <div class="rs-icon"><img src="./assets/resonance/icons/resonance-inactive.svg" alt="Resonance icon, off: a white ring with a play arrow and a separate dot" width="29" height="30" loading="lazy"><span>Off</span></div>
+              <span class="rs-icons-arrow" aria-hidden="true"><i></i></span>
+              <div class="rs-icon"><img src="./assets/resonance/icons/resonance-active.svg" alt="Resonance icon, on: the same ring and dot in Spotify green" width="29" height="30" loading="lazy"><span>On</span></div>
+            </div>
+            <figcaption>The dot merges into the ring. About 500 ms.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── 05 Outcome ───────── -->
+    <section class="cc-sec cc-white cc-outcome" id="outcome" aria-labelledby="h-outcome">
+      <div class="cc-wrap">
+        <div class="cc-meta cc-rv"><span>05 · Where it landed</span><span>Not shipped</span><span>Personal project</span></div>
+        <h2 class="cc-sr" id="h-outcome">Where it landed</h2>
+        <div class="cc-big">
+          <div class="cc-big-item cc-rv"><p class="cc-big-v">1</p><p class="cc-big-c">live prototype. You can try it in the phone above.</p></div>
+          <div class="cc-big-item cc-rv" style="--i:1"><p class="cc-big-v">6</p><p class="cc-big-c">steps from first open to a song starting at your moment.</p></div>
+          <div class="cc-big-item cc-rv" style="--i:2"><p class="cc-big-v">None</p><p class="cc-big-c">metrics. It's speculative and never shipped, so I'm not claiming any.</p></div>
+        </div>
+      </div>
+      <div class="cc-stage cc-art--resonance-stage">
+        <div class="cr-wp-photo" aria-hidden="true"></div><div class="cc-dusk cc-dusk--soft" aria-hidden="true"></div>
+        <div class="cc-wrap">
+          <div class="cc-meta cc-meta--light cc-rv"><span>What it argues for</span><span>3 points</span><span>Song, listener, moment</span></div>
+          <div class="cc-cards3">
+            <article class="cc-card cc-card--white cc-rv" style="--i:1"><p class="cc-card-n">01</p><h3 class="cc-card-t">Time inside the song</h3><p class="cc-card-s">Personalisation can go one layer deeper than the track list.</p></article>
+            <article class="cc-card cc-card--glass cc-rv" style="--i:2"><p class="cc-card-n">02</p><h3 class="cc-card-t">Honest confidence</h3><p class="cc-card-s">Your moment, a popular moment, or just explore. Say which one it is.</p></article>
+            <article class="cc-card cc-card--white cc-rv" style="--i:3"><p class="cc-card-n">03</p><h3 class="cc-card-t">Familiar first</h3><p class="cc-card-s">The hard part isn't the model. It's keeping Spotify familiar while the start quietly gets smarter.</p></article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── Credits ───────── -->
+    <section class="cc-credits" aria-labelledby="h-credits">
+      <div class="cc-wrap">
+        <h2 class="cc-credits-h cc-rv" id="h-credits">Credits</h2>
+        <dl class="cc-credits-grid">
+          <div class="cc-rv"><dt>Work</dt><dd>Concept, product design and the live prototype.</dd></div>
+          <div class="cc-rv" style="--i:1"><dt>Context</dt><dd>For Spotify, as a personal project. Not affiliated with Spotify.</dd></div>
+          <div class="cc-rv" style="--i:2"><dt>Type</dt><dd>Speculative product. Medium prototype.</dd></div>
+          <div class="cc-rv" style="--i:3"><dt>Focus</dt><dd>Playback intelligence, moment signals, subtle AI, listener control</dd></div>
+          <div class="cc-rv" style="--i:4"><dt>Surface</dt><dd>Now Playing. Not a new tab.</dd></div>
+          <div class="cc-rv" style="--i:5"><dt>Prototype</dt><dd>Live in the browser. <a class="rs-credit-link" href="https://drop-mode.vercel.app/?fresh=1" target="_blank" rel="noreferrer" data-rs-full>Open full screen</a></dd></div>
+        </dl>
+        <div class="cc-meta cc-meta--dark"><span>Resonance</span><span>Gaurav Avinash</span><span>2026</span></div>
+      </div>
+    </section>
+
+    <section class="cc-next cc-art--resonance-dark" aria-labelledby="h-next">
+      <div class="cr-wp-photo" aria-hidden="true"></div><div class="cc-dusk cc-dusk--soft" aria-hidden="true"></div>
+      <div class="cc-wrap">
+        <a class="cc-next-card cc-rv" href="./craft-contextual-chat.html" aria-label="Next project: Contextual Chat case study">
+          <span class="cc-next-meta"><span>Next project</span><span>01</span></span>
+          <h2 class="cc-next-t" id="h-next">Contextual Chat</h2>
+          <span class="cc-next-s">An AI assistant for investor research. Search went from 30 to 40 minutes to under 30 seconds.</span>
+          <span class="cc-next-img"><img src="./assets/contextual-chat-assistant-showcase.png" alt="" loading="lazy" width="1024" height="759"></span>
+          <span class="cc-next-go">Read the Contextual Chat case <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <script src="./assets/craft/case/case.js?v=1" defer></script>
+  <script>
+    /* Live prototype: same host rule as resonance-short.html. Nothing loads until the visitor taps Start. */
+    (function () {
+      "use strict";
+      var onGitHubPages = /\.github\.io$/i.test(location.hostname);
+      var base = onGitHubPages ? "https://gauravavinash44-blip.github.io/drop-mode/" : "https://drop-mode.vercel.app/";
+      var full = base + "?fresh=1";
+      [].forEach.call(document.querySelectorAll("[data-rs-full]"), function (a) { a.href = full; });
+
+      var screen = document.getElementById("rs-screen");
+      var frame = document.getElementById("rs-proto-frame");
+      var start = document.getElementById("rs-start");
+      if (!screen || !frame || !start) return;
+
+      function set(state) { screen.setAttribute("data-status", state); }
+      start.addEventListener("click", function () {
+        if (screen.getAttribute("data-status") !== "idle") return;
+        set("loading");
+        var url = base + "?fresh=1&embed=1&t=" + Date.now();
+        var loaded = false, probe = "pending", done = false;
+        function settle() {
+          if (done) return;
+          if (probe === "fail") { done = true; set("failed"); var l = screen.querySelector(".rs-state-link"); if (l) l.focus({ preventScroll: true }); }
+          else if (loaded && probe === "ok") {
+            done = true; set("ready");
+            frame.removeAttribute("aria-hidden"); frame.removeAttribute("tabindex");
+            frame.focus({ preventScroll: true });
+          }
+        }
+        frame.addEventListener("load", function () { loaded = true; settle(); }, { once: true });
+        /* A cross-origin frame fires load even on an error page, so a no-cors probe decides. */
+        try {
+          fetch(url, { mode: "no-cors", cache: "no-store", credentials: "omit" })
+            .then(function () { probe = "ok"; settle(); }, function () { probe = "fail"; settle(); });
+        } catch (err) { probe = "ok"; }
+        setTimeout(function () { if (!done) { probe = "fail"; settle(); } }, 9000);
+        frame.loading = "eager";
+        frame.src = url;
+      });
+    })();
+  </script>
+</body>
+</html>

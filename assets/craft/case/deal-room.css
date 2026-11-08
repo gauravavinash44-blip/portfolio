@@ -1,0 +1,59 @@
+/* Deal Room case study: page-only styles on top of case.css.
+   Art fallback uses :where() (zero specificity) so assets/craft/case/art/art.css wins whenever it loads. */
+
+/* ── Art fallback: dark graphite with a warm orange glow ── */
+:where(.cc-art--deal-room-cover, .cc-art--deal-room-band, .cc-art--deal-room-stage, .cc-art--deal-room-dark) {
+  --wp-glass: rgba(58, 46, 40, 0.46);
+  --wp-glass-light: rgba(150, 120, 104, 0.26);
+  --wp-glass-strong: rgba(44, 36, 32, 0.66);
+  background-color: #1c1a19;
+}
+:where(.cc-art--deal-room-cover) {
+  background-image:
+    radial-gradient(120% 80% at 78% 18%, rgba(236, 119, 85, 0.55) 0%, rgba(236, 119, 85, 0) 58%),
+    radial-gradient(90% 70% at 10% 100%, rgba(233, 102, 53, 0.28) 0%, rgba(233, 102, 53, 0) 60%),
+    linear-gradient(180deg, #2a2624 0%, #1c1a19 55%, #141312 100%);
+}
+:where(.cc-art--deal-room-band) {
+  background-image:
+    radial-gradient(80% 90% at 88% 100%, rgba(236, 119, 85, 0.42) 0%, rgba(236, 119, 85, 0) 62%),
+    linear-gradient(180deg, #2b2725 0%, #1d1b1a 100%);
+}
+:where(.cc-art--deal-room-stage) {
+  background-image:
+    radial-gradient(70% 60% at 20% 0%, rgba(236, 119, 85, 0.36) 0%, rgba(236, 119, 85, 0) 65%),
+    radial-gradient(70% 70% at 90% 100%, rgba(233, 102, 53, 0.26) 0%, rgba(233, 102, 53, 0) 60%),
+    linear-gradient(180deg, #34302d 0%, #262321 100%);
+}
+:where(.cc-art--deal-room-dark) {
+  background-image:
+    radial-gradient(60% 60% at 100% 0%, rgba(236, 119, 85, 0.24) 0%, rgba(236, 119, 85, 0) 62%),
+    linear-gradient(180deg, #1d1b1a 0%, #121110 100%);
+}
+
+/* Dusk layers: neutral graphite instead of the violet sky tint. */
+.dr .cc-dusk { background: linear-gradient(180deg, rgba(24, 22, 21, 0.5) 0%, rgba(24, 22, 21, 0.38) 60%, rgba(24, 22, 21, 0.2) 100%); }
+.dr .cc-dusk--soft { background: linear-gradient(180deg, rgba(24, 22, 21, 0.18) 0%, rgba(24, 22, 21, 0.06) 60%, rgba(24, 22, 21, 0.12) 100%); }
+.dr .cc-dusk--band { background: linear-gradient(180deg, rgba(22, 20, 19, 0.42) 0%, rgba(22, 20, 19, 0.46) 50%, rgba(18, 16, 15, 0.58) 100%); }
+.dr .cc-dusk--deep { background: linear-gradient(180deg, rgba(18, 16, 15, 0.56) 0%, rgba(14, 13, 12, 0.7) 100%); }
+.dr .cc-meta--light { text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35); }
+
+/* ── White frames for flat screens on a stage ── */
+.dr-shot { position: relative; background: #fff; border-radius: 28px; padding: clamp(8px, 0.9vw, 12px) clamp(8px, 0.9vw, 12px) 0; box-shadow: 0 2px 4px rgba(20, 14, 10, 0.08), 0 30px 60px rgba(20, 14, 10, 0.28); }
+.dr-shot img { width: 100%; border-radius: 18px; background: #fff; }
+.dr-shot figcaption { font-size: 14px; line-height: 1.35; color: var(--ink-2); padding: 14px 8px 18px; }
+.dr-shot figcaption b { display: block; color: var(--ink); font-weight: 500; margin-bottom: 4px; }
+.dr-shot--map { max-width: 1240px; margin: 0 auto; }
+.dr-shot--map img { aspect-ratio: 2; object-fit: cover; }
+.dr-shots { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: clamp(16px, 2vw, 32px); align-items: start; max-width: 1360px; margin: 0 auto; }
+.dr-shots .dr-shot:nth-child(2) { margin-top: clamp(32px, 6vw, 112px); }
+.dr-stage-h { margin-bottom: clamp(32px, 4vw, 56px); }
+
+/* NDA screens are modals of different shapes: show them whole. */
+.dr .cc-iter img { object-fit: contain; object-position: 50% 50%; }
+
+@media (max-width: 900px) {
+  .dr-shots { grid-template-columns: 1fr; max-width: 640px; }
+  .dr-shots .dr-shot:nth-child(2) { margin-top: 0; }
+  .dr-shot--map img { aspect-ratio: auto; }
+}

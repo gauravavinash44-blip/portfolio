@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>EasyEat dark</title>
+<style>
+@font-face { font-family: "Inter"; src: url("../fonts/inter-latin-400-normal.woff2") format("woff2"); font-weight: 400; }
+@font-face { font-family: "Inter"; src: url("../fonts/inter-latin-500-normal.woff2") format("woff2"); font-weight: 500; }
+@font-face { font-family: "Inter"; src: url("../fonts/inter-latin-600-normal.woff2") format("woff2"); font-weight: 600; }
+@font-face { font-family: "JBM"; src: url("../fonts/jetbrains-mono-latin-400-normal.woff2") format("woff2"); font-weight: 400; }
+@font-face { font-family: "JBM"; src: url("../fonts/jetbrains-mono-latin-500-normal.woff2") format("woff2"); font-weight: 500; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 2560px; height: 1440px; overflow: hidden; background: var(--bg0); }
+body { font-family: "Inter", system-ui, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11", "tnum"; }
+.scene { position: absolute; inset: 0; overflow: hidden; }
+.abs { position: absolute; }
+.mono { font-family: "JBM", ui-monospace, monospace; }
+.fill { position: absolute; inset: 0; }
+.persp { position: absolute; inset: 0; perspective: 3200px; transform-style: preserve-3d; }
+.p3 { position: absolute; transform-style: preserve-3d; }
+.glass { background: linear-gradient(180deg, var(--glass-top), var(--glass-bot)); border: 1.5px solid var(--glass-line); border-radius: 30px;
+  -webkit-backdrop-filter: blur(28px) saturate(1.2); backdrop-filter: blur(28px) saturate(1.2);
+  box-shadow: 0 60px 140px var(--shadow), inset 0 1.5px 0 var(--glass-hi); }
+.solid { background: var(--card); border-radius: 30px; box-shadow: 0 60px 140px var(--shadow), 0 0 0 1.5px var(--card-line); color: var(--card-ink); }
+.tag { display: inline-flex; align-items: center; gap: 12px; height: 46px; padding: 0 20px; border-radius: 999px; font: 500 20px/1 "JBM", monospace; letter-spacing: .02em;
+  color: var(--tag-ink); background: var(--tag-bg); box-shadow: inset 0 0 0 1.5px var(--tag-line); white-space: nowrap; }
+.tag i { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 16px var(--accent); }
+.bar { height: 14px; border-radius: 999px; background: var(--skel); }
+.code { font: 400 23px/1.62 "JBM", monospace; color: var(--code-ink); white-space: pre; letter-spacing: 0; }
+.code .k { color: var(--code-k); } .code .s { color: var(--code-s); } .code .c { color: var(--code-c); } .code .n { color: var(--code-n); } .code .p { color: var(--code-p); }
+.code .ln { color: var(--code-c); opacity: .55; display: inline-block; width: 52px; }
+.chrome { display: flex; gap: 12px; padding: 26px 30px 0; }
+.chrome b { width: 14px; height: 14px; border-radius: 50%; background: var(--chrome-dot); }
+.grain { position: absolute; inset: 0; pointer-events: none; }
+
+:root { 
+--bg0:#2a0d09; --ink:#fff; --accent:#ff8a5c;
+--glass-top:rgba(64,22,16,.80); --glass-bot:rgba(64,22,16,.66);
+--glass-line:rgba(255,255,255,.12); --glass-hi:rgba(255,255,255,.10);
+--shadow:rgba(0,0,0,.45); --card:#fff; --card-line:rgba(0,0,0,.06); --card-ink:#0a0a0a;
+--tag-ink:rgba(255,255,255,.86); --tag-bg:rgba(255,255,255,.06); --tag-line:rgba(255,255,255,.16);
+--skel:rgba(255,255,255,.14); --chrome-dot:rgba(255,255,255,.18);
+--code-ink:rgba(236,236,245,.86); --code-k:#ffb38c; --code-s:#ffe3a8; --code-c:rgba(255,255,255,.36);
+--code-n:#ffd0b0; --code-p:rgba(255,255,255,.5);
+ }
+
+</style></head>
+<body><div class="scene">
+<div class="fill" style="background:linear-gradient(180deg,#3e100b 0%,#240806 100%)"></div><div class="abs" style="left:1400px;top:-560.0px;width:1600px;height:1600.0px;opacity:1.0;border-radius:50%;background:radial-gradient(closest-side,rgba(255,140,100,.22),transparent)"></div><div class="abs glass" style="left:1440px;top:200px;width:1080px;opacity:0.55;transform:perspective(2600px) rotateY(-14deg) rotateX(6deg);overflow:hidden"><div class="chrome"><b></b><b></b><b></b><span class="mono" style="margin-left:18px;font-size:19px;color:var(--code-c);line-height:14px">customize.ts</span></div><div style="padding:28px 36px 36px"><div class="code"><span class="ln">1</span><span class="c">// menu/customize.ts</span>
+<span class="ln">2</span><span class="k">const</span> diySalad <span class="p">=</span> <span class="p">{</span>
+<span class="ln">3</span>  groups<span class="p">:</span> <span class="p">[</span>
+<span class="ln">4</span>    <span class="p">{</span> name<span class="p">:</span> <span class="s">"Base"</span><span class="p">,</span>   min<span class="p">:</span> <span class="n">1</span><span class="p">,</span> max<span class="p">:</span> <span class="n">1</span><span class="p">,</span> required<span class="p">:</span> <span class="k">true</span> <span class="p">}</span><span class="p">,</span>
+<span class="ln">5</span>    <span class="p">{</span> name<span class="p">:</span> <span class="s">"Main"</span><span class="p">,</span>   min<span class="p">:</span> <span class="n">1</span><span class="p">,</span> max<span class="p">:</span> <span class="n">3</span><span class="p">,</span> required<span class="p">:</span> <span class="k">true</span> <span class="p">}</span><span class="p">,</span>
+<span class="ln">6</span>    <span class="p">{</span> name<span class="p">:</span> <span class="s">"Add On"</span><span class="p">,</span> min<span class="p">:</span> <span class="n">0</span><span class="p">,</span> max<span class="p">:</span> <span class="n">3</span> <span class="p">}</span><span class="p">,</span>
+<span class="ln">7</span>  <span class="p">]</span><span class="p">,</span>
+<span class="ln">8</span><span class="p">}</span>
+<span class="ln">9</span>
+<span class="ln">10</span><span class="c">// one screen that counts for you</span>
+<span class="ln">11</span><span class="k">function</span> canAddToCart<span class="p">(</span>item<span class="p">,</span> picks<span class="p">)</span> <span class="p">{</span>
+<span class="ln">12</span>  <span class="k">return</span> item.groups.every<span class="p">(</span>g <span class="p">=</span><span class="p">&gt;</span> count<span class="p">(</span>picks<span class="p">,</span> g<span class="p">)</span> <span class="p">&gt;</span><span class="p">=</span> g.min<span class="p">)</span>
+<span class="ln">13</span><span class="p">}</span></div></div></div><div class="abs " style="left:2080px;top:900px;width:420px;opacity:0.5;transform:perspective(2600px) rotateY(-14deg) rotateZ(4deg);background:#fbf3ea;border-radius:18px;box-shadow:0 70px 140px rgba(40,6,2,.5)"><div style="padding:30px 32px 24px;font:500 20px/1 JBM;color:#3a1c14;letter-spacing:.06em">ORDER · TABLE QR</div><div style="margin:0 32px;border-top:2px dashed rgba(58,28,20,.25)"></div><div style="padding:18px 32px 30px"><div style="display:flex;gap:20px;white-space:nowrap;font:500 21px/1.9 JBM;color:#2a120c"><span style="width:34px">1x</span><span>DIY Salad</span></div><div style="display:flex;gap:20px;white-space:nowrap;font:400 21px/1.9 JBM;color:rgba(42,18,12,.6)"><span style="width:34px"></span><span>Main · Beetroot</span></div><div style="display:flex;gap:20px;white-space:nowrap;font:400 21px/1.9 JBM;color:rgba(42,18,12,.6)"><span style="width:34px"></span><span>Main · Celery</span></div><div style="display:flex;gap:20px;white-space:nowrap;font:400 21px/1.9 JBM;color:rgba(42,18,12,.6)"><span style="width:34px"></span><span>Main · Masala Chickpeas</span></div><div style="display:flex;gap:20px;white-space:nowrap;font:500 21px/1.9 JBM;color:#2a120c"><span style="width:34px">1x</span><span>Rabbit Salad</span></div></div><div style="margin:0 32px 28px;height:40px;border-radius:999px;background:#e5533c;color:#fff;font:500 18px/40px JBM;text-align:center">sent to kitchen</div></div><div class="fill" style="background:linear-gradient(90deg,rgba(32,8,6,.85) 0%,rgba(32,8,6,.5) 50%,rgba(32,8,6,.1) 100%)"></div>
+</div></body></html>

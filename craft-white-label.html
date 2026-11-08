@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>White Label Setup · Craft · Gaurav Avinash</title>
+  <meta name="description" content="White Label Setup: the Settings page where an investor firm sets its URL, logo and sender. The old page looked live before anything was set. I redesigned it so a firm starts empty, then looks live.">
+  <link rel="icon" href="./assets/logo-ga.svg" type="image/svg+xml">
+  <script>document.documentElement.classList.add("js");</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..600&family=Inter+Tight:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="./assets/craft/craft-tokens.css?v=1">
+  <link rel="stylesheet" href="./assets/craft/case/case.css?v=1">
+  <link rel="stylesheet" href="./assets/craft/case/white-label.css?v=1">
+  <link rel="stylesheet" href="./assets/craft/case/art/art.css?v=1">
+</head>
+<body class="cr cc wl">
+  <a class="cc-skip" href="#main">Skip to the story</a>
+
+  <nav class="cc-nav" aria-label="Case study">
+    <a class="cc-pill cc-pill--back" href="./index.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+      <span>Back to board</span>
+    </a>
+    <a class="cc-pill cc-pill--craft" href="./index.html" aria-label="Craft mode is on. Go to the Craft board">
+      <svg class="cc-glyph" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><rect class="b" x="6.5" y="3.5" width="10" height="10" rx="2.5"/><rect class="f" x="3.5" y="6.5" width="10" height="10" rx="2.5"/></svg>
+      <span class="cc-pill-label">Craft</span>
+      <span class="cc-track" aria-hidden="true"><span class="cc-thumb"></span></span>
+    </a>
+  </nav>
+
+  <main id="main">
+    <!-- ───────── Cover ───────── -->
+    <header class="cc-cover">
+      <div class="cc-cover-photo cc-art--white-label-cover" aria-hidden="true"><div class="cr-wp-photo"></div><div class="cc-dusk"></div></div>
+      <div class="cc-cover-white" aria-hidden="true"></div>
+
+      <div class="cc-meta cc-meta--cover cc-wrap">
+        <span>2025</span><span>Systematic</span><span>Case study 03</span>
+      </div>
+
+      <div class="cc-cover-type cc-wrap">
+        <h1 class="cc-title">
+          <span class="cc-title-a cc-rv">White</span>
+          <span class="cc-title-b cc-rv" style="--i:1">Label</span>
+          <span class="cc-sr"> Setup</span>
+        </h1>
+        <p class="cc-note cc-note--a cc-rv" style="--i:2">URL, logo<br>and sender<br>for investor firms</p>
+        <ul class="cc-note cc-note--b cc-rv" style="--i:3" aria-label="Tags">
+          <li class="cc-chip cc-chip--glass">B2B SaaS</li>
+          <li class="cc-chip cc-chip--glass">Fintech</li>
+          <li class="cc-chip cc-chip--glass">Design System</li>
+        </ul>
+      </div>
+
+      <div class="cc-cover-body cc-wrap">
+        <p class="cc-lede cc-rv" style="--i:3">Investors set a URL, a logo and a sender in Settings. The old page looked live before anything was set. I redesigned it so a firm starts empty, and only looks live after a URL, a logo and a verified sender.</p>
+        <dl class="cc-facts cc-rv" style="--i:4">
+          <div><dt>Role</dt><dd>Product Designer II</dd></div>
+          <div><dt>Scope</dt><dd>Settings hub</dd></div>
+          <div><dt>Shipped in</dt><dd>1 month</dd></div>
+        </dl>
+      </div>
+
+      <figure class="cc-frame cc-frame--cover cc-wrap">
+        <div class="cc-meta cc-meta--light cc-rv" style="--i:4"><span>White Label Setup</span><span>1440 px</span><span>Live state</span></div>
+        <div class="cc-laptop cc-rv" style="--i:5">
+          <div class="cc-laptop-screen">
+            <img src="./assets/white-label/screens/new-live-verified.png" alt="White Label Setup live, with the firm URL, the Goldman Sachs logo and a verified sender" width="1440" height="978">
+          </div>
+          <div class="cc-laptop-base" aria-hidden="true"></div>
+        </div>
+        <figcaption class="cc-sr">The hub after setup: a live URL, a logo and a verified sender.</figcaption>
+      </figure>
+    </header>
+
+    <!-- ───────── 01 Problem ───────── -->
+    <section class="cc-sec cc-white cc-slide" id="problem" aria-labelledby="h-problem">
+      <div class="cc-wrap">
+        <div class="cc-meta cc-rv"><span>01 · Problem</span><span>1440 px</span><span>Before the redesign</span></div>
+        <div class="cc-split">
+          <p class="cc-body cc-rv" style="--i:1">v1 had shipped as a packed form. Domain radios. Upload Logo with no URL. A sender row that said Verified on first visit. An admin with nothing configured still looked like a firm that was done.</p>
+          <h2 class="cc-statement cc-rv" id="h-problem" style="--i:2">The page looked live before anything was&nbsp;set.</h2>
+        </div>
+      </div>
+    </section>
+
+    <section class="cc-band" aria-label="What a guest sees">
+      <div class="cc-band-type cc-wrap" aria-hidden="true">
+        <span class="cc-band-a cc-rv">Looked</span><span class="cc-band-b cc-rv" style="--i:1">live</span>
+      </div>
+      <div class="cc-band-photo cc-art--white-label-band"><div class="cr-wp-photo"></div><div class="cc-dusk cc-dusk--band"></div>
+        <div class="cc-wrap cc-band-inner">
+          <p class="cc-band-c cc-rv" aria-hidden="true" style="--i:2">on day one</p>
+          <div class="cc-nums">
+            <div class="cc-num cc-rv" style="--i:2"><p class="cc-num-v">3</p><p class="cc-num-c">things a guest gets from the firm: its URL, its logo and its mail</p></div>
+            <div class="cc-num cc-rv" style="--i:3"><p class="cc-num-v">0</p><p class="cc-num-c">create paths in v1. Radios and a logo slot, nothing to set up</p></div>
+            <div class="cc-num cc-rv" style="--i:4"><p class="cc-num-v">1</p><p class="cc-num-c">sender row marked Verified on first visit. No pending. No resend.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cc-sec cc-research cc-art--white-label-dark" aria-labelledby="h-research">
+      <div class="cr-wp-photo" aria-hidden="true"></div><div class="cc-dusk cc-dusk--deep" aria-hidden="true"></div>
+      <div class="cc-wrap">
+        <div class="cc-ledger cc-rv">
+          <div class="cc-ledger-src">
+            <h2 class="cc-ledger-h" id="h-research">What v1 showed</h2>
+            <p>First open<br>Nothing configured<br>Settings, investor side</p>
+          </div>
+          <ol class="cc-ledger-rows cc-ledger-rows--plain">
+            <li><span class="k">1.</span><span>Domain radios, with no way to create one</span></li>
+            <li><span class="k">2.</span><span>An Upload Logo slot before any URL existed</span></li>
+            <li><span class="k">3.</span><span>A sender already marked Verified</span></li>
+            <li><span class="k">4.</span><span>Guests would have seen that as the firm</span></li>
+          </ol>
+        </div>
+        <ul class="wl-pair">
+          <li class="cc-rv"><figure><img src="./assets/white-label/screens/old-packed-settings.png" alt="Old White Label Setup with domain radios, an Upload Logo slot and a sender marked Verified" loading="lazy" width="1440" height="978"><figcaption><b>Before</b> Domain radios and a logo slot, with no create path.</figcaption></figure></li>
+          <li class="cc-rv" style="--i:1"><figure><img src="./assets/white-label/screens/old-logo-replace.png" alt="Old White Label Setup with the sender already Verified on first visit" loading="lazy" width="1440" height="978"><figcaption><b>Before</b> Sender already Verified. No pending. No resend.</figcaption></figure></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ───────── 02 Users ───────── -->
+    <section class="cc-sec cc-white" id="users" aria-labelledby="h-users">
+      <div class="cc-wrap">
+        <div class="cc-meta cc-rv"><span>02 · Who this is for</span><span>3 roles</span><span>1 page</span></div>
+        <div class="cc-split cc-split--top">
+          <h2 class="cc-h2 cc-rv" id="h-users">One person sets it. Everyone else just sees it.</h2>
+          <p class="cc-body cc-rv" style="--i:1">An investor invites a company in. That guest lands on the investor's URL, sees the firm logo, and gets mail from the firm. This page is what makes those three things real.</p>
+        </div>
+      </div>
+      <div class="cc-stage cc-art--white-label-stage">
+        <div class="cr-wp-photo" aria-hidden="true"></div><div class="cc-dusk cc-dusk--soft" aria-hidden="true"></div>
+        <div class="cc-wrap">
+          <div class="cc-cards3">
+            <article class="cc-card cc-card--white cc-rv">
+              <span class="cc-chip">Primary</span>
+              <h3 class="cc-card-t">Investor or firm admin</h3>
+              <p class="cc-card-s">Opens Settings. Sets a prefix, a logo and a sender.</p>
+              <ul class="cc-ticks"><li>Changing the prefix breaks old invite links</li><li>Needs to see that before saving</li></ul>
+            </article>
+            <article class="cc-card cc-card--glass cc-rv" style="--i:1">
+              <span class="cc-chip cc-chip--glass">Affected</span>
+              <h3 class="cc-card-t">Invited company or co-investor</h3>
+              <p class="cc-card-s">Never opens this page. Gets an invite, lands on the firm URL, reads mail from the firm.</p>
+              <ul class="cc-ticks"><li>If the hub is fake, they see the fake</li></ul>
+            </article>
+            <article class="cc-card cc-card--white cc-rv" style="--i:2">
+              <span class="cc-chip">Internal</span>
+              <h3 class="cc-card-t">Product and engineering</h3>
+              <p class="cc-card-s">DNS for the subdomain, file storage for the logo, a verification wait for the sender.</p>
+              <ul class="cc-ticks"><li>The UI has to hold empty, pending and verified</li><li>Not one pretty row</li></ul>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cc-band cc-band--insight" aria-labelledby="h-insight">
+      <h2 class="cc-sr" id="h-insight">The point of view: live is a result, not a skin.</h2>
+      <div class="cc-band-type cc-wrap" aria-hidden="true">
+        <span class="cc-band-a cc-rv">Live is</span><span class="cc-band-side cc-rv" style="--i:1">Design point of view</span>
+      </div>
+      <div class="cc-band-photo cc-art--white-label-band" aria-hidden="true"><div class="cr-wp-photo"></div><div class="cc-dusk cc-dusk--band"></div>
+        <div class="cc-wrap cc-band-inner">
+          <span class="cc-band-b cc-band-b--left cc-rv" style="--i:1">a result,</span>
+          <span class="cc-band-b cc-band-b--right cc-rv" style="--i:2">not a skin.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── 03 Decisions ───────── -->
+    <section class="cc-sec cc-white cc-slide" id="process" aria-labelledby="h-process">
+      <div class="cc-wrap">
+        <div class="cc-meta cc-rv"><span>03 · Decisions</span><span>1 month</span><span>3 calls</span></div>
+        <div class="cc-split">
+          <p class="cc-body cc-rv" style="--i:1">I didn't reopen login or mail templates. I picked three fights on this page. The packed form was faster to leave alone. It also told a lie on day one.</p>
+          <h2 class="cc-statement cc-rv" id="h-process" style="--i:2">Three calls. The rest of the page follows&nbsp;them.</h2>
+        </div>
+
+        <div class="cc-cards3 cc-cards3--tight">
+          <article class="cc-card cc-card--well cc-rv">
+            <span class="cc-chip cc-chip--outline">Call 01</span>
+            <h3 class="cc-card-t">Empty first</h3>
+            <p class="cc-card-s">Keeping v1 was faster. Admins still had no create path, and guests still saw a finished firm.</p>
+            <p class="cc-decision">Two create buttons. Create Subdomain. Create Sender.</p>
+          </article>
+          <article class="cc-card cc-card--well cc-rv" style="--i:1">
+            <span class="cc-chip cc-chip--outline">Call 02</span>
+            <h3 class="cc-card-t">Logo only after a URL</h3>
+            <p class="cc-card-s">A logo with no domain is a sticker. Upload on the empty page looks complete, then saves a logo no invite can point at.</p>
+            <p class="cc-decision">Hide Upload Logo until the subdomain exists.</p>
+          </article>
+          <article class="cc-card cc-card--ink cc-rv" style="--i:2">
+            <span class="cc-chip cc-chip--pink">Call 03</span>
+            <h3 class="cc-card-t">Sender has its own states</h3>
+            <p class="cc-card-s">A Verified badge on an empty row skips the wait engineering actually has. Pretty. False.</p>
+            <p class="cc-decision">Empty, pending, resend, verified. The row is honest about where the address is.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cc-sec cc-stage-sec cc-art--white-label-band" aria-labelledby="h-limits">
+      <div class="cr-wp-photo" aria-hidden="true"></div><div class="cc-dusk cc-dusk--band" aria-hidden="true"></div>
+      <div class="cc-wrap">
+        <div class="cc-meta cc-meta--light cc-rv"><span>Constraints</span><span>4 weeks</span><span>Hub only</span></div>
+        <h2 class="cc-h2 cc-h2--light cc-rv" id="h-limits">One month. Settings hub only.</h2>
+        <div class="cc-cards3">
+          <article class="cc-card cc-card--glass cc-rv"><p class="cc-card-n">01</p><h3 class="cc-card-t">Time</h3><p class="cc-card-s">Four weeks. Login, signup and email templates stay as they are.</p></article>
+          <article class="cc-card cc-card--white cc-rv" style="--i:1"><p class="cc-card-n">02</p><h3 class="cc-card-t">Logo</h3><p class="cc-card-s">No URL, no Upload Logo. SVG, PNG, JPEG or HEIC. Up to 5MB.</p></article>
+          <article class="cc-card cc-card--glass cc-rv" style="--i:2"><p class="cc-card-n">03</p><h3 class="cc-card-t">URL and mail</h3><p class="cc-card-s">Change the prefix and old invite links die. A new sender email has to verify again.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cc-sec cc-white" aria-labelledby="h-trade">
+      <div class="cc-wrap">
+        <div class="cc-meta cc-rv"><span>Scope and limits</span><span>v1 already live</span><span>Same components</span></div>
+        <h2 class="cc-h2 cc-rv" id="h-trade">I wasn't rebuilding identity. I was making one page tell the truth.</h2>
+        <div class="cc-trade">
+          <ul class="cc-trade-list cc-rv" style="--i:1">
+            <li><span class="cc-chip">Hub only</span><p>Login, signup and email templates were already there. I left them alone.</p></li>
+            <li><span class="cc-chip">Same system</span><p>Settings components. Not a one-off kit.</p></li>
+            <li><span class="cc-chip">Danger in the dialog</span><p>Delete lives in the edit dialog, not on the page.</p></li>
+          </ul>
+          <div class="cc-stats3">
+            <div class="cc-stat cc-rv" style="--i:2"><p class="cc-stat-h">Time</p><p class="cc-stat-v">4 wks</p><p class="cc-stat-c">for the hub. Subdomain, logo and sender.</p></div>
+            <div class="cc-stat cc-rv" style="--i:3"><p class="cc-stat-h">Logo limit</p><p class="cc-stat-v">5MB</p><p class="cc-stat-c">SVG, PNG, JPEG or HEIC. Only after the URL exists.</p></div>
+            <div class="cc-stat cc-rv" style="--i:4"><p class="cc-stat-h">Steps to live</p><p class="cc-stat-v">3</p><p class="cc-stat-c">URL, logo, sender. Nothing looks live until all three are done.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cc-sec cc-white cc-sec--flush" aria-labelledby="h-flow">
+      <div class="cc-wrap">
+        <div class="cc-meta cc-rv"><span>The flow</span><span>4 steps</span><span>Empty to live</span></div>
+        <h2 class="cc-h2 cc-rv" id="h-flow">Empty start. Live end.</h2>
+        <ol class="cc-iter">
+          <li class="cc-rv"><figure><img src="./assets/white-label/screens/new-empty-hub.png" alt="Step 1: the empty hub with Create Subdomain and Create Sender buttons" loading="lazy" width="1440" height="978"><figcaption><b>01 Empty hub</b> Two create buttons. Logo is locked until a URL exists.</figcaption></figure></li>
+          <li class="cc-rv" style="--i:1"><figure class="wl-fit"><img src="./assets/white-label/screens/new-create-subdomain.png" alt="Step 2: Create Custom Subdomain dialog with the Hve prefix and a locked suffix" loading="lazy" width="672" height="313"><figcaption><b>02 Create subdomain</b> Type a prefix. The suffix stays locked. Save.</figcaption></figure></li>
+          <li class="cc-rv" style="--i:2"><figure><img src="./assets/white-label/screens/new-identity-branding.png" alt="Step 3: the hub after save, with a live URL, Upload Logo and Create Sender" loading="lazy" width="1440" height="978"><figcaption><b>03 URL and logo slot</b> Live URL with Edit. Upload Logo is on. Sender is still empty.</figcaption></figure></li>
+          <li class="cc-rv" style="--i:3"><figure><img src="./assets/white-label/screens/new-live-verified.png" alt="Step 4: the hub live with the Goldman Sachs logo and a verified sender" loading="lazy" width="1440" height="978"><figcaption><b>04 Live</b> Logo on the page. Sender Verified. Edit stays on both.</figcaption></figure></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ───────── 04 Solution ───────── -->
+    <section class="cc-sec cc-white cc-slide cc-sec--short" id="solution" aria-labelledby="h-solution">
+      <div class="cc-wrap">
+        <div class="cc-meta cc-rv"><span>04 · The solution</span><span>1440 px</span><span>Shipped</span></div>
+        <div class="cc-split">
+          <p class="cc-body cc-rv" style="--i:1">The admin path is a line. Create a subdomain, then a logo slot opens under the live URL, then a sender that has to verify. The company path is what that line produces.</p>
+          <h2 class="cc-statement cc-rv" id="h-solution" style="--i:2">Nothing on the page looks live until the work is&nbsp;done.</h2>
+        </div>
+      </div>
+    </section>
+
+    <section class="cc-showcase cc-art--white-label-stage" aria-label="The hub halfway through setup">
+      <div class="cr-wp-photo" aria-hidden="true"></div><div class="cc-dusk cc-dusk--soft" aria-hidden="true"></div>
+      <figure class="cc-frame cc-wrap">
+        <div class="cc-meta cc-rv"><span>White Label Setup</span><span>1440 px</span><span>Step 03 of 04</span></div>
+        <div class="cc-laptop cc-laptop--xl cc-rv" style="--i:1">
+          <div class="cc-laptop-screen">
+            <img src="./assets/white-label/screens/new-identity-branding.png" alt="The hub after the subdomain is saved: the live URL with Edit, an Upload Logo slot, and Create Sender still waiting" loading="lazy" width="1440" height="978">
+          </div>
+          <div class="cc-laptop-base" aria-hidden="true"></div>
+        </div>
+        <figcaption class="cc-float cc-float--a cc-rv" style="--i:2"><span class="cc-dot"></span>Upload Logo opens after the URL</figcaption>
+        <p class="cc-float cc-float--b cc-rv" style="--i:3" aria-hidden="true"><span class="cc-dot cc-dot--pink"></span>Sender still empty</p>
+      </figure>
+    </section>
+
+    <section class="cc-sec cc-white" aria-labelledby="h-shipped">
+      <div class="cc-wrap">
+        <h2 class="cc-h2 cc-rv" id="h-shipped">What shipped</h2>
+        <div class="cc-feat">
+          <article class="cc-card cc-card--well cc-rv"><p class="cc-card-n">01</p><h3 class="cc-card-t">Empty start</h3><p class="cc-card-s">Two create buttons. The page doesn't pretend.</p></article>
+          <article class="cc-card cc-card--well cc-rv" style="--i:1"><p class="cc-card-n">02</p><h3 class="cc-card-t">Logo after the URL</h3><p class="cc-card-s">Upload Logo sits under the live URL, only once it exists.</p></article>
+          <article class="cc-card cc-card--well cc-rv" style="--i:2"><p class="cc-card-n">03</p><h3 class="cc-card-t">Sender states</h3><p class="cc-card-s">Empty, pending, resend, verified. Edit on every one of them.</p></article>
+          <article class="cc-card cc-card--well cc-rv" style="--i:3"><p class="cc-card-n">04</p><h3 class="cc-card-t">Edit dialogs</h3><p class="cc-card-s">Delete, the old-links warning and re-verify email live here, not on the hub.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cc-sec cc-white cc-sec--flush" aria-labelledby="h-subdomain">
+      <div class="cc-wrap">
+        <div class="cc-meta cc-rv"><span>Subdomain</span><span>2 dialogs</span><span>Create, then edit</span></div>
+        <div class="cc-split cc-split--top">
+          <h2 class="cc-h2 cc-rv" id="h-subdomain">The prefix is theirs. The suffix is ours.</h2>
+          <p class="cc-body cc-rv" style="--i:1">The suffix stays locked: .systematicventures.com. Changing the prefix kills old invite links, so the edit dialog says that, and it adds Delete. Create does not.</p>
+        </div>
+        <ul class="wl-pair wl-pair--light">
+          <li class="cc-rv"><figure class="wl-fit"><img src="./assets/white-label/screens/new-create-subdomain.png" alt="Create Custom Subdomain dialog: a prefix field, the locked suffix, Cancel and Save" loading="lazy" width="672" height="313"><figcaption><b>Create</b> Prefix in. Suffix locked. Save.</figcaption></figure></li>
+          <li class="cc-rv" style="--i:1"><figure class="wl-fit"><img src="./assets/white-label/screens/new-edit-subdomain.png" alt="Edit Custom Subdomain dialog with an old links warning, Delete and Save" loading="lazy" width="672" height="322"><figcaption><b>Edit</b> Old links warning. Delete or Save.</figcaption></figure></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="cc-sec cc-white" aria-labelledby="h-sender">
+      <div class="cc-wrap">
+        <div class="cc-meta cc-rv"><span>Sender</span><span>4 states</span><span>Edit on every one</span></div>
+        <div class="cc-split cc-split--top">
+          <h2 class="cc-h2 cc-rv" id="h-sender">The row has to wait on a real inbox.</h2>
+          <p class="cc-body cc-rv" style="--i:1">Mail from the firm is the third thing guests see. Edit stays on every state, so an admin can fix a typo without losing the sender.</p>
+        </div>
+        <ol class="cc-finds">
+          <li class="cc-find cc-rv"><span class="cc-chip">01 · Empty</span><h3>Create sender</h3><p>Nothing here yet. Create Sender is the only action.</p><img class="wl-strip" src="./assets/white-label/screens/sender-empty.png" alt="Custom Sender row, empty, with a Create Sender button" loading="lazy" width="760" height="145"></li>
+          <li class="cc-find cc-rv" style="--i:1"><span class="cc-chip cc-chip--orange">02 · Pending</span><h3>Waiting on the inbox</h3><p>Resend sits on a 60s clock. Edit is already there.</p><img class="wl-strip" src="./assets/white-label/screens/sender-pending-resend.png" alt="Custom Sender row marked Pending Verification, with Resend on a 60 second timer and Edit" loading="lazy" width="760" height="145"></li>
+          <li class="cc-find cc-rv" style="--i:2"><span class="cc-chip cc-chip--orange">03 · Resend ready</span><h3>The clock is done</h3><p>Resend is live. The row is still pending.</p><img class="wl-strip" src="./assets/white-label/screens/sender-resent.png" alt="Custom Sender row still pending, with Resend ready and Edit" loading="lazy" width="760" height="145"></li>
+          <li class="cc-find cc-rv" style="--i:3"><span class="cc-chip cc-chip--green">04 · Verified</span><h3>Verified</h3><p>Edit stays, in case they change the address later.</p><img class="wl-strip" src="./assets/white-label/screens/sender-verified.png" alt="Custom Sender row marked Verified, with Edit" loading="lazy" width="760" height="145"></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="cc-devices cc-art--white-label-stage" aria-label="Sender form screens">
+      <div class="cr-wp-photo" aria-hidden="true"></div><div class="cc-dusk cc-dusk--soft" aria-hidden="true"></div>
+      <div class="cc-wrap">
+        <div class="cc-meta cc-rv"><span>Sender form</span><span>2 dialogs</span><span>Create, then edit</span></div>
+        <div class="cc-devices-row">
+          <figure class="cc-tablet cc-rv" style="--i:1">
+            <div class="cc-tablet-screen wl-fit"><img src="./assets/white-label/screens/new-create-sender.png" alt="Create Custom Sender dialog with an invalid email error and Submit turned off" loading="lazy" width="786" height="594"></div>
+            <figcaption>A bad email keeps Submit off.</figcaption>
+          </figure>
+          <figure class="cc-tablet cc-tablet--sm cc-rv" style="--i:2">
+            <div class="cc-tablet-screen wl-fit"><img src="./assets/white-label/screens/new-edit-sender.png" alt="Edit Custom Sender dialog with a note that a new email must verify again, and Delete" loading="lazy" width="784" height="594"></div>
+            <figcaption>New email means verify again.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── 05 Outcome ───────── -->
+    <section class="cc-sec cc-white cc-outcome" id="outcome" aria-labelledby="h-outcome">
+      <div class="cc-wrap">
+        <div class="cc-meta cc-rv"><span>05 · Outcome</span><span>Shipped</span><span>No number yet</span></div>
+        <h2 class="cc-sr" id="h-outcome">Outcome</h2>
+        <div class="cc-big">
+          <div class="cc-big-item cc-rv"><p class="cc-big-v">3</p><p class="cc-big-c">steps to live: URL, logo, sender.</p></div>
+          <div class="cc-big-item cc-rv" style="--i:1"><p class="cc-big-v">4</p><p class="cc-big-c">sender states: empty, pending, resend, verified.</p></div>
+          <div class="cc-big-item cc-rv" style="--i:2"><p class="cc-big-v">TBD</p><p class="cc-big-c">completion rate. I don't have completion or drop-off numbers yet, so I'm not inventing one.</p></div>
+        </div>
+      </div>
+      <div class="cc-stage cc-art--white-label-stage">
+        <div class="cr-wp-photo" aria-hidden="true"></div><div class="cc-dusk cc-dusk--soft" aria-hidden="true"></div>
+        <div class="cc-wrap">
+          <div class="cc-meta cc-rv"><span>Before and after</span><span>Same page</span><span>Different first visit</span></div>
+          <div class="cc-stats3 cc-stats3--glass">
+            <div class="cc-stat cc-rv" style="--i:1"><p class="cc-stat-h">Subdomain</p><p class="wl-ba-v">Create Subdomain</p><p class="cc-stat-c">Empty first. Then a live URL.</p><p class="wl-ba-was"><span>Before</span>Domain radios. No create path.</p></div>
+            <div class="cc-stat cc-rv" style="--i:2"><p class="cc-stat-h">Logo</p><p class="wl-ba-v">After the URL</p><p class="cc-stat-c">Upload Logo only once the URL exists.</p><p class="wl-ba-was"><span>Before</span>Logo slot from the start, before a subdomain.</p></div>
+            <div class="cc-stat cc-rv" style="--i:3"><p class="cc-stat-h">Sender</p><p class="wl-ba-v">Real states</p><p class="cc-stat-c">Empty, pending, verified. Edit stays.</p><p class="wl-ba-was"><span>Before</span>Already Verified. No pending. No resend.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── 06 Reflection ───────── -->
+    <section class="cc-sec cc-white cc-slide" id="learned" aria-labelledby="h-learned">
+      <div class="cc-wrap">
+        <div class="cc-meta cc-rv"><span>06 · Reflection</span><span>Looking back</span><span>And next</span></div>
+        <div class="cc-split">
+          <p class="cc-body cc-rv" style="--i:1">The hub is in the product. First visit is empty. After the work, guests can get a real URL, a real logo, and mail from a verified sender. This case is the hub. The invite landing and the mail itself are the next pass. I didn't fake that screen.</p>
+          <h2 class="cc-statement cc-rv" id="h-learned" style="--i:2">What I'd keep. What I'd still&nbsp;open.</h2>
+        </div>
+        <div class="cc-learn">
+          <div class="cc-learn-col cc-rv">
+            <h3 class="cc-learn-h">Keep</h3>
+            <ul><li>Empty start. Two create buttons. Logo after the URL.</li><li>Sender states. Edit on every one of them.</li><li>Edit dialogs. The dangerous stuff is in the dialog, not on the hub.</li></ul>
+          </div>
+          <div class="cc-learn-col cc-rv" style="--i:1">
+            <h3 class="cc-learn-h">Still open</h3>
+            <ul><li>Drop-off. Who stops after the URL, who never uploads a logo, who never verifies mail.</li><li>Preview. Show the logo on the live URL, still inside Settings.</li><li>Guest side. The invite landing and the mail.</li></ul>
+          </div>
+          <div class="cc-learn-col cc-rv" style="--i:2">
+            <h3 class="cc-learn-h">Next</h3>
+            <ul class="cc-chips"><li class="cc-chip">Track drop-off between subdomain, logo and sender</li><li class="cc-chip">Logo preview inside Settings</li><li class="cc-chip">Invite landing and mail</li><li class="cc-chip">Add the number when we have it</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── Credits ───────── -->
+    <section class="cc-credits" aria-labelledby="h-credits">
+      <div class="cc-wrap">
+        <h2 class="cc-credits-h cc-rv" id="h-credits">Credits</h2>
+        <dl class="cc-credits-grid">
+          <div class="cc-rv"><dt>Role</dt><dd>Product Designer II. I owned the Settings hub.</dd></div>
+          <div class="cc-rv" style="--i:1"><dt>Scope</dt><dd>Subdomain, custom logo, sender, settings hub</dd></div>
+          <div class="cc-rv" style="--i:2"><dt>Already there</dt><dd>Login, signup and email templates</dd></div>
+          <div class="cc-rv" style="--i:3"><dt>Built with</dt><dd>The components Settings already uses</dd></div>
+          <div class="cc-rv" style="--i:4"><dt>Timeline</dt><dd>1 month, 2025</dd></div>
+          <div class="cc-rv" style="--i:5"><dt>Company</dt><dd>Systematic, US fintech. Remote.</dd></div>
+        </dl>
+        <div class="cc-meta cc-meta--dark"><span>White Label Setup</span><span>Gaurav Avinash</span><span>2026</span></div>
+      </div>
+    </section>
+
+    <section class="cc-next cc-art--white-label-dark" aria-labelledby="h-next">
+      <div class="cr-wp-photo" aria-hidden="true"></div><div class="cc-dusk cc-dusk--soft" aria-hidden="true"></div>
+      <div class="cc-wrap">
+        <a class="cc-next-card cc-rv" href="./craft-easyeat.html" aria-label="Next project: EasyEat case study">
+          <span class="cc-next-meta"><span>Next project</span><span>04</span></span>
+          <h2 class="cc-next-t" id="h-next">EasyEat</h2>
+          <span class="cc-next-s">Every dish option on one screen that counts for you. +8.3% QR adoption in three weeks.</span>
+          <span class="cc-next-img"><img src="./assets/easyeat-customization-showcase.png" alt="" loading="lazy" width="835" height="1024"></span>
+          <span class="cc-next-go">Read the EasyEat case <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <script src="./assets/craft/case/case.js?v=1" defer></script>
+</body>
+</html>

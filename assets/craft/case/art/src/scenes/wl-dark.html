@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>White Label dark</title>
+<style>
+@font-face { font-family: "Inter"; src: url("../fonts/inter-latin-400-normal.woff2") format("woff2"); font-weight: 400; }
+@font-face { font-family: "Inter"; src: url("../fonts/inter-latin-500-normal.woff2") format("woff2"); font-weight: 500; }
+@font-face { font-family: "Inter"; src: url("../fonts/inter-latin-600-normal.woff2") format("woff2"); font-weight: 600; }
+@font-face { font-family: "JBM"; src: url("../fonts/jetbrains-mono-latin-400-normal.woff2") format("woff2"); font-weight: 400; }
+@font-face { font-family: "JBM"; src: url("../fonts/jetbrains-mono-latin-500-normal.woff2") format("woff2"); font-weight: 500; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 2560px; height: 1440px; overflow: hidden; background: var(--bg0); }
+body { font-family: "Inter", system-ui, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11", "tnum"; }
+.scene { position: absolute; inset: 0; overflow: hidden; }
+.abs { position: absolute; }
+.mono { font-family: "JBM", ui-monospace, monospace; }
+.fill { position: absolute; inset: 0; }
+.persp { position: absolute; inset: 0; perspective: 3200px; transform-style: preserve-3d; }
+.p3 { position: absolute; transform-style: preserve-3d; }
+.glass { background: linear-gradient(180deg, var(--glass-top), var(--glass-bot)); border: 1.5px solid var(--glass-line); border-radius: 30px;
+  -webkit-backdrop-filter: blur(28px) saturate(1.2); backdrop-filter: blur(28px) saturate(1.2);
+  box-shadow: 0 60px 140px var(--shadow), inset 0 1.5px 0 var(--glass-hi); }
+.solid { background: var(--card); border-radius: 30px; box-shadow: 0 60px 140px var(--shadow), 0 0 0 1.5px var(--card-line); color: var(--card-ink); }
+.tag { display: inline-flex; align-items: center; gap: 12px; height: 46px; padding: 0 20px; border-radius: 999px; font: 500 20px/1 "JBM", monospace; letter-spacing: .02em;
+  color: var(--tag-ink); background: var(--tag-bg); box-shadow: inset 0 0 0 1.5px var(--tag-line); white-space: nowrap; }
+.tag i { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 16px var(--accent); }
+.bar { height: 14px; border-radius: 999px; background: var(--skel); }
+.code { font: 400 23px/1.62 "JBM", monospace; color: var(--code-ink); white-space: pre; letter-spacing: 0; }
+.code .k { color: var(--code-k); } .code .s { color: var(--code-s); } .code .c { color: var(--code-c); } .code .n { color: var(--code-n); } .code .p { color: var(--code-p); }
+.code .ln { color: var(--code-c); opacity: .55; display: inline-block; width: 52px; }
+.chrome { display: flex; gap: 12px; padding: 26px 30px 0; }
+.chrome b { width: 14px; height: 14px; border-radius: 50%; background: var(--chrome-dot); }
+.grain { position: absolute; inset: 0; pointer-events: none; }
+
+:root { 
+--bg0:#1f0c1a; --ink:#fff; --accent:#f078be;
+--glass-top:rgba(56,22,46,.80); --glass-bot:rgba(56,22,46,.66);
+--glass-line:rgba(255,255,255,.12); --glass-hi:rgba(255,255,255,.10);
+--shadow:rgba(0,0,0,.45); --card:#fff; --card-line:rgba(0,0,0,.06); --card-ink:#0a0a0a;
+--tag-ink:rgba(255,255,255,.86); --tag-bg:rgba(255,255,255,.06); --tag-line:rgba(255,255,255,.16);
+--skel:rgba(255,255,255,.14); --chrome-dot:rgba(255,255,255,.18);
+--code-ink:rgba(236,236,245,.86); --code-k:#ff9fd2; --code-s:#f2d3a3; --code-c:rgba(255,255,255,.36);
+--code-n:#c7b3ff; --code-p:rgba(255,255,255,.5);
+ }
+
+</style></head>
+<body><div class="scene">
+<div class="fill" style="background:linear-gradient(180deg,#240c20 0%,#140611 100%)"></div><div class="abs" style="left:1400px;top:-560.0px;width:1600px;height:1600.0px;opacity:1.0;border-radius:50%;background:radial-gradient(closest-side,rgba(240,120,190,.2),transparent)"></div><div class="abs glass" style="left:1600px;top:160px;width:940px;opacity:0.55;transform:perspective(2600px) rotateY(-14deg) rotateX(8deg);"><div style="padding:30px 34px 10px;font:500 26px/1 Inter;color:#fff">White Label Setup</div><div style="display:flex;justify-content:space-between;align-items:center;padding:26px 34px;border-top:1px solid rgba(255,255,255,.08)"><div><div style="font:500 22px/1.2 Inter;color:rgba(255,255,255,.9)">Custom Subdomain</div><div style="font:400 19px/1.2 JBM;color:rgba(255,255,255,.45);margin-top:10px">yourfirm.systematicventures.com</div></div><span style="display:inline-flex;align-items:center;gap:10px;height:40px;padding:0 16px;border-radius:999px;font:500 18px/1 JBM;color:#7ee2a1;background:rgba(126,226,161,.14)"><i style="width:8px;height:8px;border-radius:50%;background:#7ee2a1"></i>Live</span></div><div style="display:flex;justify-content:space-between;align-items:center;padding:26px 34px;border-top:1px solid rgba(255,255,255,.08)"><div><div style="font:500 22px/1.2 Inter;color:rgba(255,255,255,.9)">Your Logo</div><div style="font:400 19px/1.2 JBM;color:rgba(255,255,255,.45);margin-top:10px">firm-logo.svg</div></div><span style="display:inline-flex;align-items:center;gap:10px;height:40px;padding:0 16px;border-radius:999px;font:500 18px/1 JBM;color:#7ee2a1;background:rgba(126,226,161,.14)"><i style="width:8px;height:8px;border-radius:50%;background:#7ee2a1"></i>Uploaded</span></div><div style="display:flex;justify-content:space-between;align-items:center;padding:26px 34px;border-top:1px solid rgba(255,255,255,.08)"><div><div style="font:500 22px/1.2 Inter;color:rgba(255,255,255,.9)">Custom Sender</div><div style="font:400 19px/1.2 JBM;color:rgba(255,255,255,.45);margin-top:10px">deals@yourfirm.com</div></div><span style="display:inline-flex;align-items:center;gap:10px;height:40px;padding:0 16px;border-radius:999px;font:500 18px/1 JBM;color:#f6c177;background:rgba(246,193,119,.14)"><i style="width:8px;height:8px;border-radius:50%;background:#f6c177"></i>Pending verification</span></div></div><div class="abs glass" style="left:1480px;top:820px;width:1000px;opacity:0.5;transform:perspective(2600px) rotateY(-14deg) rotateX(6deg);overflow:hidden"><div class="chrome"><b></b><b></b><b></b><span class="mono" style="margin-left:18px;font-size:19px;color:var(--code-c);line-height:14px">live.ts</span></div><div style="padding:28px 36px 36px"><div class="code"><span class="ln">1</span>type SenderState <span class="p">=</span> <span class="s">"empty"</span> | <span class="s">"pending"</span> | <span class="s">"resent"</span> | <span class="s">"verified"</span>
+<span class="ln">2</span>
+<span class="ln">3</span><span class="c">// live is a result, not a skin</span>
+<span class="ln">4</span><span class="k">function</span> isLive<span class="p">(</span>firm<span class="p">)</span> <span class="p">{</span>
+<span class="ln">5</span>  <span class="k">return</span> Boolean<span class="p">(</span>firm.subdomain<span class="p">)</span>
+<span class="ln">6</span>    &amp;&amp; Boolean<span class="p">(</span>firm.logo<span class="p">)</span>
+<span class="ln">7</span>    &amp;&amp; firm.sender.status <span class="p">=</span><span class="p">=</span><span class="p">=</span> <span class="s">"verified"</span>
+<span class="ln">8</span><span class="p">}</span></div></div></div><div class="fill" style="background:linear-gradient(90deg,rgba(20,6,17,.85) 0%,rgba(20,6,17,.5) 50%,rgba(20,6,17,.1) 100%)"></div>
+</div></body></html>

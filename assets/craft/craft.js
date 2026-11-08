@@ -870,9 +870,10 @@
   }
 
   /* ───────── Now Playing pill + Resonance prototype sheet ─────────
-     The pill is a quiet loop of the product idea: the line creeps from the start,
-     then skips ahead to "your moment". All of its motion is CSS on one 12s clock,
-     so play/pause just flips animation-play-state and everything stays in sync. */
+     The pill plays a short original track (assets/craft/audio, made for this board).
+     It starts paused. On the first play the line starts at 0, then jumps to just before
+     the drop: the product idea, start at the moment you want. The line follows the audio
+     clock, the bars follow real levels (AnalyserNode), and it loops back to the drop. */
   var NP_ART = "./assets/resonance/np-art.jpg";
   var NP_POSTER = "./assets/resonance/np-art-lg.jpg";
   var NP_FRAME = "./assets/resonance/mockup/iphone-frame.png";
@@ -886,16 +887,207 @@
     pause: "M7 5h3.4v14H7zM13.6 5H17v14h-3.4z"
   };
 
+  var NP_AUDIO = [
+    { src: "./assets/craft/audio/resonance-demo.mp3", type: "audio/mpeg" },
+    { src: "./assets/craft/audio/resonance-demo.ogg", type: 'audio/ogg; codecs="vorbis"' }
+  ];
+  var NP_DUR = 52;          /* seconds, used for layout until the file reports its own */
+  var NP_DROP = 16;         /* the drop, found by energy analysis of the track */
+  var NP_JUMP_AT = 2.5;     /* first play: let the intro run this long, then skip */
+  var NP_JUMP_TO = NP_DROP - 1.5; /* land on the snare roll so the drop hits a beat later */
+  var NP_FADE = 250;
+  /* Every mounted pill, so the Resonance popup can pause them (the live prototype has its own sound) */
+  var npPlayers = [];
+  function npPauseAll() { npPlayers.forEach(function (p) { p.pause(); }); }
+
   function NowPlayingPill(props) {
-    var _p = useState(true), playing = _p[0], setPlaying = _p[1];
-    var ref = useRef(null);
+    var _p = useState(false), playing = _p[0], setPlaying = _p[1];
+    var _m = useState(false), moment = _m[0], setMoment = _m[1];
+    var _j = useState(false), jumping = _j[0], setJumping = _j[1];
+    var _u = useState(false), pulse = _u[0], setPulse = _u[1];
+    var _c = useState(false), cssEq = _c[0], setCssEq = _c[1];
+    var ref = useRef(null), fillRef = useRef(null), eqRef = useRef(null);
+    var api = useRef(null);
+
+    useEffect(function () {
+      var audio = null, ctx = null, gain = null, analyser = null, bins = null;
+      var raf = 0, fadeRaf = 0, jumped = false, want = false, alive = true;
+      var timers = [];
+      function later(fn, ms) { var t = setTimeout(fn, ms); timers.push(t); return t; }
+      function clearTimers() { timers.forEach(clearTimeout); timers = []; }
+      function dur() { return audio && isFinite(audio.duration) && audio.duration > 0 ? audio.duration : NP_DUR; }
+
+      function ensureAudio() {
+        if (audio) return audio;
+        audio = document.createElement("audio");
+        audio.preload = "none";
+        var pick = NP_AUDIO.filter(function (s) { return audio.canPlayType(s.type); })[0] || NP_AUDIO[NP_AUDIO.length - 1];
+        audio.src = pick.src;
+        audio.addEventListener("ended", function () { if (want) loopBack(); });
+        audio.addEventListener("error", function () { stop(true); });
+        /* paused from outside (headphones out, OS controls): follow it */
+        audio.addEventListener("pause", function () { if (want && !audio.ended) stop(true); });
+        /* Real levels for the bars; the audio still plays without it */
+        try {
+          var AC = window.AudioContext || window.webkitAudioContext;
+          if (AC) {
+            ctx = new AC();
+            var srcNode = ctx.createMediaElementSource(audio);
+            gain = ctx.createGain(); gain.gain.value = 0;
+            analyser = ctx.createAnalyser(); analyser.fftSize = 64; analyser.smoothingTimeConstant = 0.72;
+            bins = new Uint8Array(analyser.frequencyBinCount);
+            srcNode.connect(gain); gain.connect(analyser); analyser.connect(ctx.destination);
+          }
+        } catch (err) { ctx = null; gain = null; analyser = null; }
+        if (!analyser && alive) setCssEq(true);
+        return audio;
+      }
+
+      /* Volume ramps: a GainNode when we have one, element volume otherwise */
+      function ramp(to, ms, then) {
+        cancelAnimationFrame(fadeRaf);
+        if (gain && ctx) {
+          var now = ctx.currentTime;
+          gain.gain.cancelScheduledValues(now);
+          gain.gain.setValueAtTime(gain.gain.value, now);
+          gain.gain.linearRampToValueAtTime(to, now + ms / 1000);
+          if (then) later(then, ms);
+          return;
+        }
+        var from = audio.volume, t0 = performance.now();
+        (function step(t) {
+          var k = Math.min(1, (t - t0) / ms);
+          try { audio.volume = from + (to - from) * k; } catch (err) { /* iOS: volume is read-only */ }
+          if (k < 1) fadeRaf = requestAnimationFrame(step); else if (then) then();
+        })(t0);
+      }
+
+      function paint() {
+        if (!audio) return;
+        var k = Math.max(0, Math.min(1, audio.currentTime / dur()));
+        if (fillRef.current) fillRef.current.style.transform = "scaleX(" + k.toFixed(4) + ")";
+        var bars = eqRef.current ? eqRef.current.children : [];
+        if (analyser && bars.length && !reduced()) {
+          analyser.getByteFrequencyData(bins);
+          /* four bands across the low and mid range, where this track lives */
+          var bands = [[1, 2], [3, 5], [6, 9], [10, 16]];
+          for (var i = 0; i < bars.length; i++) {
+            var a = bands[i][0], b = bands[i][1], sum = 0;
+            for (var j = a; j <= b; j++) sum += bins[j];
+            var v = sum / ((b - a + 1) * 255);
+            bars[i].style.transform = "scaleY(" + Math.max(0.18, Math.min(1, v * 1.35)).toFixed(3) + ")";
+          }
+        }
+      }
+      function loop() {
+        /* don't wait for "ended": some decoders report a longer duration than the audio holds */
+        if (want && audio && !audio.seeking && audio.currentTime >= Math.min(dur(), NP_DUR) - 0.3) loopBack();
+        paint(); raf = requestAnimationFrame(loop);
+      }
+
+      function showMoment() {
+        if (!alive) return;
+        setMoment(true);
+        if (!reduced()) { setPulse(false); requestAnimationFrame(function () { if (alive) setPulse(true); }); }
+        later(function () { if (alive) { setMoment(false); setPulse(false); } }, 4200);
+      }
+      function jumpTo(t) {
+        if (!audio || !want) return;
+        if (!reduced()) { setJumping(true); later(function () { if (alive) setJumping(false); }, 520); }
+        /* dip the volume across the seek so the skip doesn't click */
+        ramp(0, 90, function () {
+          if (!audio || !want) return;
+          try { audio.currentTime = t; } catch (err) { /* not seekable yet */ }
+          paint();
+          ramp(1, NP_FADE);
+          showMoment();
+        });
+      }
+      function loopBack() {
+        try { audio.currentTime = NP_JUMP_TO; } catch (err) { /* ignore */ }
+        if (!audio.paused) { showMoment(); return; }
+        var pr = audio.play();
+        if (pr && pr.catch) pr.catch(function () { stop(true); });
+        showMoment();
+      }
+
+      function play() {
+        if (want) return;
+        ensureAudio();
+        want = true; setPlaying(true);
+        if (ctx && ctx.state === "suspended") ctx.resume().catch(function () {});
+        if (!gain) { try { audio.volume = 0; } catch (err) { /* ignore */ } }
+        var pr;
+        try { pr = audio.play(); } catch (err) { stop(true); return; }
+        var started = function () {
+          if (!want) return;
+          ramp(1, NP_FADE);
+          cancelAnimationFrame(raf); loop();
+          if (!jumped) {
+            jumped = true;
+            later(function () { if (audio.currentTime < NP_JUMP_TO) jumpTo(NP_JUMP_TO); }, Math.max(0, (NP_JUMP_AT - audio.currentTime) * 1000));
+          }
+        };
+        if (pr && pr.then) pr.then(started, function () { stop(true); });
+        else started();
+        setMediaSession();
+      }
+      /* hard = no fade (error, autoplay refused, unmount) */
+      function stop(hard) {
+        var was = want;
+        want = false;
+        clearTimers();
+        if (alive) { setPlaying(false); setMoment(false); setPulse(false); setJumping(false); }
+        if (!audio) return;
+        /* a jump scheduled but not yet taken happens on the next play */
+        if (audio.currentTime < NP_JUMP_TO) jumped = false;
+        var finish = function () { if (want) return; cancelAnimationFrame(raf); audio.pause(); paint(); };
+        if (hard || !was) { cancelAnimationFrame(fadeRaf); if (gain) gain.gain.value = 0; finish(); }
+        else ramp(0, NP_FADE, finish);
+        if (navigator.mediaSession) try { navigator.mediaSession.playbackState = "paused"; } catch (err) { /* ignore */ }
+      }
+      function setMediaSession() {
+        var ms = navigator.mediaSession;
+        if (!ms) return;
+        try {
+          if (window.MediaMetadata) ms.metadata = new MediaMetadata({
+            title: "Resonance demo", artist: "Gaurav Avinash", album: "Resonance",
+            artwork: [{ src: new URL(NP_POSTER, location.href).href, sizes: "512x512", type: "image/jpeg" }]
+          });
+          ms.setActionHandler("play", function () { play(); });
+          ms.setActionHandler("pause", function () { stop(false); });
+          ms.playbackState = "playing";
+        } catch (err) { /* older browsers */ }
+      }
+      function onVis() { if (document.hidden && want) stop(true); }
+      document.addEventListener("visibilitychange", onVis);
+
+      var player = { play: play, pause: function () { if (want) stop(false); }, toggle: function () { if (want) stop(false); else play(); } };
+      api.current = player;
+      npPlayers.push(player);
+      return function () {
+        alive = false;
+        document.removeEventListener("visibilitychange", onVis);
+        npPlayers = npPlayers.filter(function (p) { return p !== player; });
+        stop(true);
+        cancelAnimationFrame(fadeRaf);
+        if (audio) { audio.removeAttribute("src"); try { audio.load(); } catch (err) { /* ignore */ } }
+        if (ctx && ctx.close) ctx.close().catch(function () {});
+        var ms = navigator.mediaSession;
+        if (ms) try { ms.setActionHandler("play", null); ms.setActionHandler("pause", null); ms.metadata = null; } catch (err) { /* ignore */ }
+      };
+    }, []);
+
     function open(ev) {
       if (ev) ev.stopPropagation(); /* the stage treats bare taps as "change wallpaper" */
       if (ev && ev.target.closest && ev.target.closest(".cr-np-play")) return;
+      npPauseAll();
       if (props.onOpen) props.onOpen(ref.current);
     }
     var title = props.title || "Resonance";
-    return h("div", { className: cx("cr-np", playing ? "is-playing" : "is-paused"), ref: ref, onClick: open, "data-cr-enter": "", "data-np-pill": "" },
+    var markLeft = (NP_DROP / NP_DUR * 100).toFixed(2) + "%";
+    return h("div", { className: cx("cr-np", playing ? "is-playing" : "is-paused", moment && "is-moment", jumping && "is-jumping", pulse && "is-pulse", cssEq && "is-eq-css"),
+        ref: ref, onClick: open, "data-cr-enter": "", "data-np-pill": "", "data-drop": NP_DROP },
       h("button", { type: "button", className: "cr-np-open", "aria-haspopup": "dialog",
         "aria-label": props.label || (title + " for Spotify. Open the live prototype") },
         h("span", { className: "cr-np-art", "aria-hidden": "true" }, h("img", { src: props.art || NP_ART, alt: "", decoding: "async" })),
@@ -905,11 +1097,11 @@
             h("span", { className: "cr-np-sub-a" }, h("i", { className: "cr-np-dot" }), props.sub || "For Spotify"),
             h("span", { className: "cr-np-sub-b" }, props.moment || "Your moment")),
           h("span", { className: "cr-np-track" },
-            h("i", { className: "cr-np-fill" }),
-            h("i", { className: "cr-np-mark" }))),
-        h("span", { className: "cr-np-eq", "aria-hidden": "true" }, h("i"), h("i"), h("i"), h("i"))),
-      h("button", { type: "button", className: "cr-np-play", "aria-label": playing ? "Pause preview" : "Play preview", "aria-pressed": playing ? "false" : "true",
-        onClick: function (ev) { ev.stopPropagation(); setPlaying(!playing); } },
+            h("i", { className: "cr-np-fill", ref: fillRef }),
+            h("i", { className: "cr-np-mark", style: { left: markLeft } }))),
+        h("span", { className: "cr-np-eq", ref: eqRef, "aria-hidden": "true" }, h("i"), h("i"), h("i"), h("i"))),
+      h("button", { type: "button", className: "cr-np-play", "aria-label": playing ? "Pause preview" : "Play preview", "aria-pressed": playing ? "true" : "false",
+        onClick: function (ev) { ev.stopPropagation(); if (api.current) api.current.toggle(); } },
         h("svg", { viewBox: "0 0 24 24", width: 16, height: 16, "aria-hidden": "true", fill: "currentColor" },
           h("path", { d: playing ? NP_ICON.pause : NP_ICON.play }))));
   }
@@ -938,6 +1130,7 @@
           n.animate([{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "none" }], { duration: 520, delay: 120 + i * 50, easing: EASE_ARRIVE, fill: "backwards" });
         });
       }
+      npPauseAll(); /* the live prototype may make its own sound */
       var t = setTimeout(function () {
         var btn = sheet.querySelector(".cr-np-close");
         if (btn) btn.focus({ preventScroll: true });
@@ -1062,7 +1255,7 @@
           h("p", { className: "cr-np-note", "data-np-chrome": "" }, "Live Resonance build. Try it in the phone. Prefer full screen on a real phone if you want more room."),
           h("div", { className: "cr-np-actions", "data-np-chrome": "" },
             h("a", { className: "cr-np-btn cr-np-btn--primary", href: full, target: "_blank", rel: "noreferrer" }, "Open full screen", h(Icon, { name: "arrow", stroke: 1.8 })),
-            h("a", { className: "cr-np-btn", href: props.caseHref || "./resonance-short.html" }, "Read the case study")))));
+            h("a", { className: "cr-np-btn", href: props.caseHref || "./craft-resonance.html" }, "Read the case study")))));
   }
 
   window.Craft = {

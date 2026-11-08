@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>EasyEat band</title>
+<style>
+@font-face { font-family: "Inter"; src: url("../fonts/inter-latin-400-normal.woff2") format("woff2"); font-weight: 400; }
+@font-face { font-family: "Inter"; src: url("../fonts/inter-latin-500-normal.woff2") format("woff2"); font-weight: 500; }
+@font-face { font-family: "Inter"; src: url("../fonts/inter-latin-600-normal.woff2") format("woff2"); font-weight: 600; }
+@font-face { font-family: "JBM"; src: url("../fonts/jetbrains-mono-latin-400-normal.woff2") format("woff2"); font-weight: 400; }
+@font-face { font-family: "JBM"; src: url("../fonts/jetbrains-mono-latin-500-normal.woff2") format("woff2"); font-weight: 500; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 2560px; height: 1440px; overflow: hidden; background: var(--bg0); }
+body { font-family: "Inter", system-ui, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11", "tnum"; }
+.scene { position: absolute; inset: 0; overflow: hidden; }
+.abs { position: absolute; }
+.mono { font-family: "JBM", ui-monospace, monospace; }
+.fill { position: absolute; inset: 0; }
+.persp { position: absolute; inset: 0; perspective: 3200px; transform-style: preserve-3d; }
+.p3 { position: absolute; transform-style: preserve-3d; }
+.glass { background: linear-gradient(180deg, var(--glass-top), var(--glass-bot)); border: 1.5px solid var(--glass-line); border-radius: 30px;
+  -webkit-backdrop-filter: blur(28px) saturate(1.2); backdrop-filter: blur(28px) saturate(1.2);
+  box-shadow: 0 60px 140px var(--shadow), inset 0 1.5px 0 var(--glass-hi); }
+.solid { background: var(--card); border-radius: 30px; box-shadow: 0 60px 140px var(--shadow), 0 0 0 1.5px var(--card-line); color: var(--card-ink); }
+.tag { display: inline-flex; align-items: center; gap: 12px; height: 46px; padding: 0 20px; border-radius: 999px; font: 500 20px/1 "JBM", monospace; letter-spacing: .02em;
+  color: var(--tag-ink); background: var(--tag-bg); box-shadow: inset 0 0 0 1.5px var(--tag-line); white-space: nowrap; }
+.tag i { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 16px var(--accent); }
+.bar { height: 14px; border-radius: 999px; background: var(--skel); }
+.code { font: 400 23px/1.62 "JBM", monospace; color: var(--code-ink); white-space: pre; letter-spacing: 0; }
+.code .k { color: var(--code-k); } .code .s { color: var(--code-s); } .code .c { color: var(--code-c); } .code .n { color: var(--code-n); } .code .p { color: var(--code-p); }
+.code .ln { color: var(--code-c); opacity: .55; display: inline-block; width: 52px; }
+.chrome { display: flex; gap: 12px; padding: 26px 30px 0; }
+.chrome b { width: 14px; height: 14px; border-radius: 50%; background: var(--chrome-dot); }
+.grain { position: absolute; inset: 0; pointer-events: none; }
+
+:root { 
+--bg0:#2a0d09; --ink:#fff; --accent:#ff8a5c;
+--glass-top:rgba(64,22,16,.80); --glass-bot:rgba(64,22,16,.66);
+--glass-line:rgba(255,255,255,.12); --glass-hi:rgba(255,255,255,.10);
+--shadow:rgba(0,0,0,.45); --card:#fff; --card-line:rgba(0,0,0,.06); --card-ink:#0a0a0a;
+--tag-ink:rgba(255,255,255,.86); --tag-bg:rgba(255,255,255,.06); --tag-line:rgba(255,255,255,.16);
+--skel:rgba(255,255,255,.14); --chrome-dot:rgba(255,255,255,.18);
+--code-ink:rgba(236,236,245,.86); --code-k:#ffb38c; --code-s:#ffe3a8; --code-c:rgba(255,255,255,.36);
+--code-n:#ffd0b0; --code-p:rgba(255,255,255,.5);
+ }
+
+</style></head>
+<body><div class="scene">
+<div class="fill" style="background:radial-gradient(70% 100% at 82% 55%,#6e1f15 0%,#43110c 60%,#2a0a07 100%)"></div><div class="abs" style="left:1340px;top:-60.0px;width:1520px;height:1520.0px;opacity:1.0;border-radius:50%;background:radial-gradient(closest-side,rgba(255,140,100,.28),transparent)"></div><div class="abs" style="left:0px;top:0px;width:2560px;height:1440px;background-image:radial-gradient(rgba(255,230,210,.07) 1.3px,transparent 1.9px);background-size:36px 36px;-webkit-mask-image:radial-gradient(50% 70% at 78% 50%,black,transparent);mask-image:radial-gradient(50% 70% at 78% 50%,black,transparent)"></div><div class="abs glass" style="left:1500px;top:420px;width:760px;opacity:0.5;transform:perspective(2600px) rotateY(-12deg) rotateX(6deg);overflow:hidden"><div class="chrome"><b></b><b></b><b></b><span class="mono" style="margin-left:18px;font-size:19px;color:var(--code-c);line-height:14px">order.json</span></div><div style="padding:28px 36px 36px"><div class="code"><span class="ln">1</span><span class="p">{</span>
+<span class="ln">2</span>  <span class="s">"item"</span><span class="p">:</span> <span class="s">"DIY Salad"</span><span class="p">,</span>
+<span class="ln">3</span>  <span class="s">"picks"</span><span class="p">:</span> <span class="p">{</span>
+<span class="ln">4</span>    <span class="s">"Base"</span><span class="p">:</span> <span class="p">[</span><span class="s">"Romaine"</span><span class="p">]</span><span class="p">,</span>
+<span class="ln">5</span>    <span class="s">"Main"</span><span class="p">:</span> <span class="p">[</span><span class="s">"Beetroot"</span><span class="p">,</span> <span class="s">"Celery"</span><span class="p">,</span> <span class="s">"Masala Chickpeas"</span><span class="p">]</span>
+<span class="ln">6</span>  <span class="p">}</span><span class="p">,</span>
+<span class="ln">7</span>  <span class="s">"status"</span><span class="p">:</span> <span class="s">"sent_to_kitchen"</span>
+<span class="ln">8</span><span class="p">}</span></div></div></div><div class="abs glass" style="left:2060px;top:380px;width:300px;height:84px;opacity:1;border-radius:999px"><div style="height:100%;display:flex;align-items:center;gap:16px;padding:0 28px;font:500 22px/1 Inter;color:rgba(255,255,255,.78)"><span style="font:500 16px/1 JBM;color:rgba(255,255,255,.4)">01</span>Scan QR</div></div><div class="abs glass" style="left:2060px;top:514px;width:300px;height:84px;opacity:1;border-radius:999px"><div style="height:100%;display:flex;align-items:center;gap:16px;padding:0 28px;font:500 22px/1 Inter;color:rgba(255,255,255,.78)"><span style="font:500 16px/1 JBM;color:rgba(255,255,255,.4)">02</span>Menu</div></div><div class="abs glass" style="left:2060px;top:648px;width:300px;height:84px;opacity:1;border-radius:999px;box-shadow:0 0 0 2px rgba(255,160,120,.8),0 40px 90px rgba(0,0,0,.35)"><div style="height:100%;display:flex;align-items:center;gap:16px;padding:0 28px;font:500 22px/1 Inter;color:#fff"><span style="font:500 16px/1 JBM;color:#ffd0b0">03</span>Customize</div></div><div class="abs glass" style="left:2060px;top:782px;width:300px;height:84px;opacity:1;border-radius:999px"><div style="height:100%;display:flex;align-items:center;gap:16px;padding:0 28px;font:500 22px/1 Inter;color:rgba(255,255,255,.78)"><span style="font:500 16px/1 JBM;color:rgba(255,255,255,.4)">04</span>Cart</div></div><div class="abs glass" style="left:2060px;top:916px;width:300px;height:84px;opacity:1;border-radius:999px"><div style="height:100%;display:flex;align-items:center;gap:16px;padding:0 28px;font:500 22px/1 Inter;color:rgba(255,255,255,.78)"><span style="font:500 16px/1 JBM;color:rgba(255,255,255,.4)">05</span>Kitchen</div></div><svg class="abs" style="left:2060px;top:380px;width:300px;height:620px;opacity:1;overflow:visible" viewBox="0 0 300 620" xmlns="http://www.w3.org/2000/svg" ><path d="M40,90 L40,128" stroke="#ffb38c" stroke-opacity=".7" stroke-width="2.5" stroke-linecap="round"/><circle cx="40" cy="128" r="4.5" fill="#ffd0b0"/><path d="M40,224 L40,262" stroke="#ffb38c" stroke-opacity=".7" stroke-width="2.5" stroke-linecap="round"/><circle cx="40" cy="262" r="4.5" fill="#ffd0b0"/><path d="M40,358 L40,396" stroke="#ffb38c" stroke-opacity=".7" stroke-width="2.5" stroke-linecap="round"/><circle cx="40" cy="396" r="4.5" fill="#ffd0b0"/><path d="M40,492 L40,530" stroke="#ffb38c" stroke-opacity=".7" stroke-width="2.5" stroke-linecap="round"/><circle cx="40" cy="530" r="4.5" fill="#ffd0b0"/></svg><div class="fill" style="background:linear-gradient(90deg,rgba(40,10,7,.85) 0%,rgba(40,10,7,.5) 48%,rgba(40,10,7,0) 66%)"></div>
+</div></body></html>

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EasyEat · Craft · Gaurav Avinash</title>
+  <meta name="description" content="EasyEat order customization: every variant and add-on on one screen that counts for you. QR adoption went up 8.3% in three weeks.">
+  <link rel="icon" href="./assets/logo-ga.svg" type="image/svg+xml">
+  <script>document.documentElement.classList.add("js");</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..600&family=Inter+Tight:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="./assets/craft/craft-tokens.css?v=1">
+  <link rel="stylesheet" href="./assets/craft/case/case.css?v=1">
+  <link rel="stylesheet" href="./assets/craft/case/easyeat.css?v=1">
+  <link rel="stylesheet" href="./assets/craft/case/art/art.css?v=1">
+</head>
+<body class="cr cc ee">
+  <a class="cc-skip" href="#main">Skip to the story</a>
+
+  <nav class="cc-nav" aria-label="Case study">
+    <a class="cc-pill cc-pill--back" href="./index.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+      <span>Back to board</span>
+    </a>
+    <a class="cc-pill cc-pill--craft" href="./index.html" aria-label="Craft mode is on. Go to the Craft board">
+      <svg class="cc-glyph" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><rect class="b" x="6.5" y="3.5" width="10" height="10" rx="2.5"/><rect class="f" x="3.5" y="6.5" width="10" height="10" rx="2.5"/></svg>
+      <span class="cc-pill-label">Craft</span>
+      <span class="cc-track" aria-hidden="true"><span class="cc-thumb"></span></span>
+    </a>
+  </nav>
+
+  <main id="main">
+    <!-- ───────── Cover ───────── -->
+    <header class="cc-cover">
+      <div class="cc-cover-photo cc-art--easyeat-cover" aria-hidden="true"><div class="cr-wp-photo"></div><div class="cc-dusk"></div></div>
+      <div class="cc-cover-white" aria-hidden="true"></div>
+
+      <div class="cc-meta cc-meta--cover cc-wrap">
+        <span>2021 to 2022</span><span>Easy Eat</span><span>Case study 04</span>
+      </div>
+
+      <div class="cc-cover-type cc-wrap">
+        <h1 class="cc-title">
+          <span class="cc-title-a cc-rv">Easy</span>
+          <span class="cc-title-b cc-rv" style="--i:1">Eat</span>
+        </h1>
+        <p class="cc-note cc-note--a cc-rv" style="--i:2">Order<br>customization<br>for diners</p>
+        <ul class="cc-note cc-note--b cc-rv" style="--i:3" aria-label="Tags">
+          <li class="cc-chip cc-chip--glass">FoodTech</li>
+          <li class="cc-chip cc-chip--glass">Mobile UX</li>
+          <li class="cc-chip cc-chip--glass">QR ordering</li>
+        </ul>
+      </div>
+
+      <div class="cc-cover-body cc-wrap">
+        <p class="cc-lede cc-rv" style="--i:3">Easy Eat lets people order at a restaurant table from their phone. Customizing a dish meant pop-up after pop-up, and guessing how many options you were allowed. I put every option on one screen that counts for you. QR adoption went up 8.3% in three weeks.</p>
+        <dl class="cc-facts cc-rv" style="--i:4">
+          <div><dt>Role</dt><dd>UI/UX Designer</dd></div>
+          <div><dt>Team</dt><dd>PM, researcher, developers</dd></div>
+          <div><dt>At Easy Eat</dt><dd>Dec 2021 to Aug 2022</dd></div>
+        </dl>
+      </div>
+
+      <figure class="cc-frame cc-frame--cover cc-wrap">
+        <div class="cc-meta cc-meta--light cc-rv" style="--i:4"><span>Menu to customization</span><span>375 px</span><span>Final design</span></div>
+        <div class="ee-phones ee-phones--cover">
+          <div class="ee-phone cc-rv" style="--i:5"><div class="ee-phone-screen"><img src="./assets/easyeat/menu-top.png" alt="Restaurant menu for The Manhattan Fish with dine-in table, offers and a customisable DIY Salad" width="375" height="812"></div></div>
+          <div class="ee-phone ee-phone--lead cc-rv" style="--i:6"><div class="ee-phone-screen"><img src="./assets/easyeat/customization-top.png" alt="DIY Salad customization screen with required Size and Base sections and an Add to cart button" width="375" height="812"></div></div>
+          <div class="ee-phone cc-rv" style="--i:7"><div class="ee-phone-screen"><img src="./assets/easyeat/main-complete.png" alt="Main section showing 3 of 3 picked with a green tick, and the next section waiting below" width="375" height="720"></div></div>
+        </div>
+        <figcaption class="cc-sr">The menu, the customization screen, and a finished section with its green tick.</figcaption>
+      </figure>
+    </header>
+
+    <!-- ───────── 01 Problem ───────── -->
+    <section class="cc-sec cc-white cc-slide" id="problem" aria-labelledby="h-problem">
+      <div class="cc-wrap">
+        <div class="cc-meta cc-rv"><span>01 · Problem</span><span>375 px</span><span>Old flow</span></div>
+        <div class="cc-split">
+          <p class="cc-body cc-rv" style="--i:1">Easy Eat is a contactless way to order in restaurants. Dishes with variants and add-ons opened a chain of pop-ups. Add to cart went grey with no reason given. People had to count their own picks.</p>
+          <h2 class="cc-statement cc-rv" id="h-problem" style="--i:2">Ordering a salad shouldn't need a calculator.</h2>
+        </div>
+      </div>
+    </section>
+
+    <section class="cc-band" aria-label="What the old flow was costing">
+      <div class="cc-band-type cc-wrap" aria-hidden="true">
+        <span class="cc-band-a cc-rv">Too</span><span class="cc-band-b cc-rv" style="--i:1">many</span>
+      </div>
+      <div class="cc-band-photo cc-art--easyeat-band"><div class="cr-wp-photo"></div><div class="cc-dusk cc-dusk--band"></div>
+        <div class="cc-wrap cc-band-inner">
+          <p class="cc-band-c cc-rv" aria-hidden="true" style="--i:2">pop-ups</p>
+          <div class="cc-nums">
+            <div class="cc-num cc-rv" style="--i:2"><p class="cc-num-v">30+</p><p class="cc-num-c">user statements collected from diners and restaurant partners</p></div>
+            <div class="cc-num cc-rv" style="--i:3"><p class="cc-num-v">8</p><p class="cc-num-c">problems I listed in the old customization flow</p></div>
+            <div class="cc-num cc-rv" style="--i:4"><p class="cc-num-v">3</p><p class="cc-num-c">apps I studied end to end: Grab, Zomato and Swiggy</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cc-sec cc-research cc-art--easyeat-dark" aria-labelledby="h-research">
+      <div class="cr-wp-photo" aria-hidden="true"></div><div class="cc-dusk cc-dusk--deep" aria-hidden="true"></div>
+      <div class="cc-wrap">
+        <div class="cc-ledger cc-rv">
+          <div class="cc-ledger-src">
+            <h2 class="cc-ledger-h" id="h-research">What I heard</h2>
+            <p>1on1 calls with restaurant partners<br>1on1 video calls with users<br>30+ user statements</p>
+          </div>
+          <ol class="cc-ledger-rows">
+            <li><span class="k">A.</span><q>I have to tap multiple times.</q><span class="w">Diner</span></li>
+            <li><span class="k">B.</span><q>I don't understand the communication (select option).</q><span class="w">Diner</span></li>
+            <li><span class="k">C.</span><q>I have to tap on a small box to select the variant.</q><span class="w">Diner</span></li>
+          </ol>
+          <div class="cc-ledger-src"><h3 class="cc-ledger-h">What the audit showed</h3></div>
+          <ol class="cc-ledger-rows cc-ledger-rows--plain">
+            <li><span class="k">1.</span><span>Options split across multiple pop-ups</span></li>
+            <li><span class="k">2.</span><span>Pick past the max and the button just went grey</span></li>
+            <li><span class="k">3.</span><span>A tap even when there was only one option</span></li>
+            <li><span class="k">4.</span><span>Tapping the option name did nothing. Only the box worked</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── 02 Users & insight ───────── -->
+    <section class="cc-sec cc-white" id="users" aria-labelledby="h-users">
+      <div class="cc-wrap">
+        <div class="cc-meta cc-rv"><span>02 · Users and insight</span><span>2 personas</span><span>Both sides of the table</span></div>
+        <div class="cc-split cc-split--top">
+          <h2 class="cc-h2 cc-rv" id="h-users">One orders. One explains the order.</h2>
+          <p class="cc-body cc-rv" style="--i:1">I wanted goals and frustrations from both sides: the person ordering, and the person serving. When the screen didn't explain itself, the server had to.</p>
+        </div>
+      </div>
+      <div class="cc-stage cc-art--easyeat-stage">
+        <div class="cr-wp-photo" aria-hidden="true"></div><div class="cc-dusk cc-dusk--soft" aria-hidden="true"></div>
+        <div class="cc-wrap">
+          <div class="cc-cards3 ee-cards2">
+            <article class="cc-card cc-card--white cc-rv">
+              <span class="cc-chip">Diner</span>
+              <h3 class="cc-card-t">Fatimah, 26</h3>
+              <p class="cc-card-s">Graphic designer in Subang Jaya. Wants to customize her own dish and order fast.</p>
+              <ul class="cc-ticks"><li>Repetitive tapping to customize an order</li><li>Confused when several customizing screens appear</li></ul>
+            </article>
+            <article class="cc-card cc-card--glass cc-rv" style="--i:1">
+              <span class="cc-chip cc-chip--glass">Server</span>
+              <h3 class="cc-card-t">Hafiz, 21</h3>
+              <p class="cc-card-s">Part-time restaurant server, paid RM 8 an hour. Working to pay for his studies.</p>
+              <ul class="cc-ticks"><li>Called over by customers again and again to explain customization</li><li>Not comfortable explaining in English</li></ul>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cc-band cc-band--insight" aria-labelledby="h-insight">
+      <h2 class="cc-sr" id="h-insight">The insight: the screen made people do the counting.</h2>
+      <div class="cc-band-type cc-wrap" aria-hidden="true">
+        <span class="cc-band-a cc-rv">The screen</span><span class="cc-band-side cc-rv" style="--i:1">Design point of view</span>
+      </div>
+      <div class="cc-band-photo cc-art--easyeat-band" aria-hidden="true"><div class="cr-wp-photo"></div><div class="cc-dusk cc-dusk--band"></div>
+        <div class="cc-wrap cc-band-inner">
+          <span class="cc-band-b cc-band-b--left cc-rv" style="--i:1">made people</span>
+          <span class="cc-band-b cc-band-b--right cc-rv" style="--i:2">count.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── 03 Process ───────── -->
+    <section class="cc-sec cc-white cc-slide" id="process" aria-labelledby="h-process">
+      <div class="cc-wrap">
+        <div class="cc-meta cc-rv"><span>03 · Process and decisions</span><span>Secondary research</span><span>3 apps</span></div>
+        <div class="cc-split">
+          <p class="cc-body cc-rv" style="--i:1">Customization is common in food tech. So before drawing anything I went through Grab, Zomato and Swiggy end to end, to see how they keep people moving through a long list of choices.</p>
+          <h2 class="cc-statement cc-rv" id="h-process" style="--i:2">I didn't need a new pattern. I needed the old one to explain itself.</h2>
+        </div>
+
+        <div class="cc-cards3 cc-cards3--tight">
+          <article class="cc-card cc-card--well cc-rv">
+            <span class="cc-chip cc-chip--outline">Grab</span>
+            <h3 class="cc-card-t">Shows the food</h3>
+            <p class="cc-card-s">A big photo and item detail up top, so you know what you're building before you pick.</p>
+            <p class="cc-decision">Visual and detail help people understand the item.</p>
+          </article>
+          <article class="cc-card cc-card--well cc-rv" style="--i:1">
+            <span class="cc-chip cc-chip--outline">Zomato</span>
+            <h3 class="cc-card-t">Keeps choices quiet</h3>
+            <p class="cc-card-s">Minimal selection rows. Colour contrast carries the hierarchy.</p>
+            <p class="cc-decision">Less on the row, more you can scan.</p>
+          </article>
+          <article class="cc-card cc-card--ink cc-rv" style="--i:2">
+            <span class="cc-chip cc-chip--blue">Swiggy</span>
+            <h3 class="cc-card-t">Shows progress</h3>
+            <p class="cc-card-s">You can see how far through the choices you are.</p>
+            <p class="cc-decision">Visible progress keeps people engaged to the end.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cc-sec cc-stage-sec cc-art--easyeat-band" aria-labelledby="h-context">
+      <div class="cr-wp-photo" aria-hidden="true"></div><div class="cc-dusk cc-dusk--band" aria-hidden="true"></div>
+      <div class="cc-wrap">
+        <div class="cc-meta cc-meta--light cc-rv"><span>Before any screens</span><span>3 conversations</span><span>Briefing</span></div>
+        <h2 class="cc-h2 cc-h2--light cc-rv" id="h-context">I talked to three people first.</h2>
+        <div class="cc-cards3">
+          <article class="cc-card cc-card--glass cc-rv"><p class="cc-card-n">01</p><h3 class="cc-card-t">Design head and manager</h3><p class="cc-card-s">Focus on what users need. This should help the business and restaurant partners both.</p></article>
+          <article class="cc-card cc-card--white cc-rv" style="--i:1"><p class="cc-card-n">02</p><h3 class="cc-card-t">Product manager</h3><p class="cc-card-s">What's the timeline? When can developers pick it up? What does the business need? What are we trying to get out of this?</p></article>
+          <article class="cc-card cc-card--glass cc-rv" style="--i:2"><p class="cc-card-n">03</p><h3 class="cc-card-t">Design researcher</h3><p class="cc-card-s">All variants and add-ons on one screen. Auto-scroll on each pick. Cart value updates as you go.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cc-sec cc-white" aria-labelledby="h-trade">
+      <div class="cc-wrap">
+        <div class="cc-meta cc-rv"><span>Rules and limits</span><span>10 solutions</span><span>Brainstorm</span></div>
+        <h2 class="cc-h2 cc-rv" id="h-trade">The rules I wrote before the screens.</h2>
+        <div class="cc-trade">
+          <ul class="cc-trade-list cc-rv" style="--i:1">
+            <li><span class="cc-chip">One screen over pop-ups</span><p>Every variant and add-on lives on the same page.</p></li>
+            <li><span class="cc-chip">Required before optional</span><p>Required sections sit at the top. Optional ones follow.</p></li>
+            <li><span class="cc-chip">Say it, don't grey it</span><p>"Select any 3 options" instead of a dead button.</p></li>
+          </ul>
+          <div class="cc-stats3">
+            <div class="cc-stat cc-rv" style="--i:2"><p class="cc-stat-h">Goal</p><p class="cc-stat-v">2x</p><p class="cc-stat-c">lead conversion on customization. That was the target we set out with.</p></div>
+            <div class="cc-stat cc-rv" style="--i:3"><p class="cc-stat-h">Optional sections</p><p class="cc-stat-v">5</p><p class="cc-stat-c">options shown up front. More and less to expand or collapse the rest.</p></div>
+            <div class="cc-stat cc-rv" style="--i:4"><p class="cc-stat-h">Counter</p><p class="cc-stat-v">0/3</p><p class="cc-stat-c">picked out of allowed, in the section tag. It doesn't work for min and max sections, where there's no fixed upper limit.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cc-sec cc-white cc-sec--flush" aria-labelledby="h-iter">
+      <div class="cc-wrap">
+        <div class="cc-meta cc-rv"><span>Iterations</span><span>Old to system</span><span>Customization</span></div>
+        <h2 class="cc-h2 cc-rv" id="h-iter">From pop-ups to a system.</h2>
+        <ol class="cc-iter ee-iter">
+          <li class="cc-rv"><figure><img src="./assets/easyeat/old-rabbit-salad.png" alt="Old design: a Rabbit Salad pop-up asking to select at least 6 and at max 6 options, with Back and Next buttons" loading="lazy" width="858" height="1124"><figcaption><b>Before</b> A pop-up per step, and "select at least 6 and at max 6" in small print.</figcaption></figure></li>
+          <li class="cc-rv" style="--i:1"><figure><img src="./assets/easyeat/wireframe-1.png" class="ee-bottom" alt="Wireframe: dish photo on top with required sections and a sticky quantity and Add to cart bar" loading="lazy" width="375" height="667"><figcaption><b>Wireframe 1</b> One scrolling page. Set the direction with the team and the PM.</figcaption></figure></li>
+          <li class="cc-rv" style="--i:2"><figure><img src="./assets/easyeat/wireframe-2.png" class="ee-bottom" alt="Wireframe: a dark message saying you have reached the maximum limit for this section" loading="lazy" width="375" height="667"><figcaption><b>Wireframe 2</b> A plain message when you hit the max for a section.</figcaption></figure></li>
+          <li class="cc-rv" style="--i:3"><figure><img src="./assets/easyeat/design-system.png" class="ee-contain" alt="Design system sheet: primary and secondary buttons, stepper, selected and unselected states, green tick, Required and Optional tags, popover" loading="lazy" width="911" height="723"><figcaption><b>System</b> Buttons, stepper, selected states, green tick, Required and Optional tags.</figcaption></figure></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ───────── 04 Solution ───────── -->
+    <section class="cc-sec cc-white cc-slide cc-sec--short" id="solution" aria-labelledby="h-solution">
+      <div class="cc-wrap">
+        <div class="cc-meta cc-rv"><span>04 · The solution</span><span>375 px</span><span>Shipped</span></div>
+        <div class="cc-split">
+          <p class="cc-body cc-rv" style="--i:1">Tap a customisable dish on the menu and you land on one page. Pick from the first required section and it scrolls you to the next. The price updates as you go.</p>
+          <h2 class="cc-statement cc-rv" id="h-solution" style="--i:2">The screen does the counting and the scrolling. You just pick.</h2>
+        </div>
+      </div>
+    </section>
+
+    <section class="cc-showcase cc-art--easyeat-stage" aria-label="Customization flow screens">
+      <div class="cr-wp-photo" aria-hidden="true"></div><div class="cc-dusk cc-dusk--soft" aria-hidden="true"></div>
+      <figure class="cc-frame cc-wrap">
+        <div class="cc-meta cc-rv"><span>Order customization</span><span>375 px</span><span>4 steps</span></div>
+        <div class="ee-phones ee-phones--flow">
+          <div class="ee-phone cc-rv" style="--i:1"><div class="ee-phone-screen"><img src="./assets/easyeat/menu-top.png" alt="Step 1: the menu, with a customisable DIY Salad and its Add button" loading="lazy" width="375" height="812"></div></div>
+          <div class="ee-phone cc-rv" style="--i:2"><div class="ee-phone-screen"><img src="./assets/easyeat/autoscroll-base.png" alt="Step 2: Size picked and marked with a green tick, Base is next" loading="lazy" width="375" height="720"></div></div>
+          <div class="ee-phone cc-rv" style="--i:3"><div class="ee-phone-screen"><img src="./assets/easyeat/main-complete.png" alt="Step 3: Main shows 3 of 3 picked, with a green tick" loading="lazy" width="375" height="720"></div></div>
+          <div class="ee-phone cc-rv" style="--i:4"><div class="ee-phone-screen"><img src="./assets/easyeat/addons-prime.png" alt="Step 4: Prime says you can add 1 more, and add-ons use a stepper with a max" loading="lazy" width="375" height="853"></div></div>
+        </div>
+        <figcaption class="cc-float cc-float--a cc-rv" style="--i:5"><span class="cc-dot"></span>Auto-scroll to the next required section</figcaption>
+        <p class="cc-float cc-float--b cc-rv" style="--i:6" aria-hidden="true"><span class="cc-dot cc-dot--pink"></span>Green tick when a section is done</p>
+      </figure>
+    </section>
+
+    <section class="cc-sec cc-white" aria-labelledby="h-shipped">
+      <div class="cc-wrap">
+        <h2 class="cc-h2 cc-rv" id="h-shipped">What shipped</h2>
+        <div class="cc-feat">
+          <article class="cc-card cc-card--well cc-rv"><p class="cc-card-n">01</p><h3 class="cc-card-t">Whole row taps</h3><p class="cc-card-s">The whole row is the tap area, not just the small checkbox.</p></article>
+          <article class="cc-card cc-card--well cc-rv" style="--i:1"><p class="cc-card-n">02</p><h3 class="cc-card-t">Count in the tag</h3><p class="cc-card-s">"Main (0/3)" goes up as you pick, and the price moves with it.</p></article>
+          <article class="cc-card cc-card--well cc-rv" style="--i:2"><p class="cc-card-n">03</p><h3 class="cc-card-t">Green tick</h3><p class="cc-card-s">Each required section ticks itself off when it's done.</p></article>
+          <article class="cc-card cc-card--well cc-rv" style="--i:3"><p class="cc-card-n">04</p><h3 class="cc-card-t">Add-on steppers</h3><p class="cc-card-s">Fixed amounts per add-on. At the max, the plus greys out and you're told why.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cc-devices cc-art--easyeat-band" aria-label="Error and limit states">
+      <div class="cr-wp-photo" aria-hidden="true"></div><div class="cc-dusk cc-dusk--soft" aria-hidden="true"></div>
+      <div class="cc-wrap">
+        <div class="cc-meta cc-meta--light cc-rv"><span>Errors and limits</span><span>375 px</span><span>Final design</span></div>
+        <div class="ee-phones ee-phones--states">
+          <figure class="ee-phone cc-rv" style="--i:1">
+            <div class="ee-phone-screen"><img src="./assets/easyeat/required-error.png" alt="Main section highlighted in red with the message Select Any 3 Options" loading="lazy" width="375" height="696"></div>
+            <figcaption>Missed a required section? It scrolls you there and buzzes.</figcaption>
+          </figure>
+          <figure class="ee-phone ee-phone--lead cc-rv" style="--i:2">
+            <div class="ee-phone-screen"><img src="./assets/easyeat/max-limit.png" alt="Red banner: You have reached the maximum limit for this section" loading="lazy" width="375" height="720"></div>
+            <figcaption>A fourth pick at 3/3 shows this for 5 seconds.</figcaption>
+          </figure>
+          <figure class="ee-phone cc-rv" style="--i:3">
+            <div class="ee-phone-screen"><img src="./assets/easyeat/addons-prime.png" alt="Prime section with two picks and the note You can add 1 more" loading="lazy" width="375" height="853"></div>
+            <figcaption>Hit the minimum and it tells you one more is allowed.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="cc-sec cc-white" aria-labelledby="h-tests">
+      <div class="cc-wrap">
+        <div class="cc-meta cc-rv"><span>Problem to fix</span><span>4 of 8</span><span>Old vs new</span></div>
+        <div class="cc-split cc-split--top">
+          <h2 class="cc-h2 cc-rv" id="h-tests">Each problem got its own answer.</h2>
+          <p class="cc-body cc-rv" style="--i:1">I wrote the problems down first, then matched each one to a change. These four mattered most.</p>
+        </div>
+        <ol class="cc-finds">
+          <li class="cc-find cc-rv"><span class="cc-chip cc-chip--orange">Old flow</span><h3>Options were spread over pop-ups</h3><p>People got confused when one customizing screen led to another.</p><p class="cc-find-fix"><b>Changed:</b> every variant and add-on on one screen, required first.</p></li>
+          <li class="cc-find cc-rv" style="--i:1"><span class="cc-chip">Old flow</span><h3>Add to cart was dead with no reason</h3><p>People tapped it, nothing happened, and they got confused.</p><p class="cc-find-fix"><b>Changed:</b> tapping it scrolls to the missing required section, highlights it and vibrates.</p></li>
+          <li class="cc-find cc-rv" style="--i:2"><span class="cc-chip">Old flow</span><h3>People counted on their fingers</h3><p>No way to tell how many were picked or how many were left.</p><p class="cc-find-fix"><b>Changed:</b> the count sits in the section tag, with a green tick when it's done.</p></li>
+          <li class="cc-find cc-rv" style="--i:3"><span class="cc-chip">Old flow</span><h3>Going past the max did nothing</h3><p>Pick one too many and the button went grey. Nothing said why.</p><p class="cc-find-fix"><b>Changed:</b> a message for 5 seconds that you've hit the max. The extra pick isn't added.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ───────── 05 Outcome ───────── -->
+    <section class="cc-sec cc-white cc-outcome" id="outcome" aria-labelledby="h-outcome">
+      <div class="cc-wrap">
+        <div class="cc-meta cc-rv"><span>05 · Outcome</span><span>After release</span><span>3 weeks</span></div>
+        <h2 class="cc-sr" id="h-outcome">Outcome</h2>
+        <div class="cc-big">
+          <div class="cc-big-item cc-rv"><p class="cc-big-v">+8.3%</p><p class="cc-big-c">QR adoption rate, three weeks after the feature went out.</p></div>
+        </div>
+        <p class="cc-body ee-outcome-note cc-rv" style="--i:1">The customization screen got much better. We ran user testing along the way to check people understood it, and found new ways to keep them engaged.</p>
+      </div>
+      <div class="cc-stage cc-art--easyeat-stage">
+        <div class="cr-wp-photo" aria-hidden="true"></div><div class="cc-dusk cc-dusk--soft" aria-hidden="true"></div>
+        <div class="cc-wrap">
+          <div class="cc-meta cc-rv"><span>Old flow vs new</span><span>Same dish</span><span>What changed</span></div>
+          <div class="cc-stats3 cc-stats3--glass">
+            <div class="cc-stat cc-rv" style="--i:1"><p class="cc-stat-h">Screens</p><p class="cc-stat-v">1</p><p class="cc-stat-c">for every variant and add-on. Before, a chain of pop-ups.</p></div>
+            <div class="cc-stat cc-rv" style="--i:2"><p class="cc-stat-h">Tap target</p><p class="cc-stat-v">Row</p><p class="cc-stat-c">The whole row selects. Before, only the small box.</p></div>
+            <div class="cc-stat cc-rv" style="--i:3"><p class="cc-stat-h">Max-limit message</p><p class="cc-stat-v">5s</p><p class="cc-stat-c">on screen. Before, the button went grey and said nothing.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── 06 Learned ───────── -->
+    <section class="cc-sec cc-white cc-slide" id="learned" aria-labelledby="h-learned">
+      <div class="cc-wrap">
+        <div class="cc-meta cc-rv"><span>06 · Looking back</span><span>What held up</span><span>What stayed open</span></div>
+        <div class="cc-split">
+          <p class="cc-body cc-rv" style="--i:1">Most of the fixes were small. A message instead of a grey button. A bigger tap area. A number in a tag. None of it looks like much in a screenshot.</p>
+          <h2 class="cc-statement cc-rv" id="h-learned" style="--i:2">Most of the work was writing rules, not drawing screens.</h2>
+        </div>
+        <div class="cc-learn">
+          <div class="cc-learn-col cc-rv">
+            <h3 class="cc-learn-h">What worked</h3>
+            <ul><li>Talking to restaurant partners, not just diners. The server's problem was the same problem.</li><li>Listing every problem before brainstorming. Each fix had a reason.</li><li>Looking at how Grab, Zomato and Swiggy handle long lists of choices.</li></ul>
+          </div>
+          <div class="cc-learn-col cc-rv" style="--i:1">
+            <h3 class="cc-learn-h">Still open</h3>
+            <ul><li>The 0/3 counter can't work in min and max sections. There's no fixed upper limit to show.</li><li>The goal was 2x lead conversion. The number I have is QR adoption.</li></ul>
+          </div>
+          <div class="cc-learn-col cc-rv" style="--i:2">
+            <h3 class="cc-learn-h">Touched</h3>
+            <ul class="cc-chips"><li class="cc-chip">Menu</li><li class="cc-chip">Customization screen</li><li class="cc-chip">Add to cart</li><li class="cc-chip">Design system</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── Credits ───────── -->
+    <section class="cc-credits" aria-labelledby="h-credits">
+      <div class="cc-wrap">
+        <h2 class="cc-credits-h cc-rv" id="h-credits">Credits</h2>
+        <dl class="cc-credits-grid">
+          <div class="cc-rv"><dt>Role</dt><dd>UI/UX Designer. Problems, designs, design reviews and bug checks.</dd></div>
+          <div class="cc-rv" style="--i:1"><dt>Team</dt><dd>Product manager, design researcher, developers</dd></div>
+          <div class="cc-rv" style="--i:2"><dt>Research</dt><dd>1on1 calls with partners and users, 30+ statements, 3 competitor flows</dd></div>
+          <div class="cc-rv" style="--i:3"><dt>Product</dt><dd>easyeat.ai, user side. Contactless ordering in restaurants.</dd></div>
+          <div class="cc-rv" style="--i:4"><dt>Timeline</dt><dd>At Easy Eat, Dec 2021 to Aug 2022</dd></div>
+          <div class="cc-rv" style="--i:5"><dt>Company</dt><dd>Easy Eat. Gurugram, India.</dd></div>
+        </dl>
+        <div class="cc-meta cc-meta--dark"><span>EasyEat</span><span>Gaurav Avinash</span><span>2026</span></div>
+      </div>
+    </section>
+
+    <section class="cc-next cc-art--easyeat-dark" aria-labelledby="h-next">
+      <div class="cr-wp-photo" aria-hidden="true"></div><div class="cc-dusk cc-dusk--soft" aria-hidden="true"></div>
+      <div class="cc-wrap">
+        <a class="cc-next-card cc-rv" href="./craft-resonance.html" aria-label="Next project: Resonance case study">
+          <span class="cc-next-meta"><span>Next project</span><span>05</span></span>
+          <h2 class="cc-next-t" id="h-next">Resonance</h2>
+          <span class="cc-next-s">Speculative Spotify playback that starts songs closer to the moments you actually want to hear.</span>
+          <span class="cc-next-img"><img src="./assets/resonance/resonance-featured.png?v=1" alt="" loading="lazy" width="1580" height="1936"></span>
+          <span class="cc-next-go">Read the Resonance case <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <script src="./assets/craft/case/case.js?v=1" defer></script>
+</body>
+</html>

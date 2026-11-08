@@ -21,8 +21,14 @@
   var TYPE_MS = 14, TYPE_CHUNK = 3;
   var GROUP_LIMIT = { section: 5 };
   var SUGGESTED = ["AI search", "Deal Room", "Motion", "Fintech", "Resume", "Contact"];
-  /* The KB links to the green site's pages; Craft has its own versions of two of them */
-  var LINK_MAP = { "./deal-room.html": "./deal-room-short.html", "./contextual-chat-short.html": "./craft-contextual-chat.html" };
+  /* The KB links to the green site's pages; Craft has its own version of each case study */
+  var LINK_MAP = {
+    "./deal-room.html": "./craft-deal-room.html", "./deal-room-short.html": "./craft-deal-room.html", "./deal-room-case-study.html": "./craft-deal-room.html",
+    "./contextual-chat.html": "./craft-contextual-chat.html", "./contextual-chat-short.html": "./craft-contextual-chat.html",
+    "./white-label-short.html": "./craft-white-label.html",
+    "./easyeat-case-study.html": "./craft-easyeat.html",
+    "./resonance-short.html": "./craft-resonance.html"
+  };
   /* KB topics that belong to one of the five case studies: show that case study under the answer */
   var TOPIC_CASE = {
     deal_room: "deal-room", deal_room_problem: "deal-room", deal_room_research: "deal-room", deal_room_decisions: "deal-room", deal_room_outcome: "deal-room",

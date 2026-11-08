@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>EasyEat stage</title>
+<style>
+@font-face { font-family: "Inter"; src: url("../fonts/inter-latin-400-normal.woff2") format("woff2"); font-weight: 400; }
+@font-face { font-family: "Inter"; src: url("../fonts/inter-latin-500-normal.woff2") format("woff2"); font-weight: 500; }
+@font-face { font-family: "Inter"; src: url("../fonts/inter-latin-600-normal.woff2") format("woff2"); font-weight: 600; }
+@font-face { font-family: "JBM"; src: url("../fonts/jetbrains-mono-latin-400-normal.woff2") format("woff2"); font-weight: 400; }
+@font-face { font-family: "JBM"; src: url("../fonts/jetbrains-mono-latin-500-normal.woff2") format("woff2"); font-weight: 500; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 2560px; height: 1440px; overflow: hidden; background: var(--bg0); }
+body { font-family: "Inter", system-ui, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11", "tnum"; }
+.scene { position: absolute; inset: 0; overflow: hidden; }
+.abs { position: absolute; }
+.mono { font-family: "JBM", ui-monospace, monospace; }
+.fill { position: absolute; inset: 0; }
+.persp { position: absolute; inset: 0; perspective: 3200px; transform-style: preserve-3d; }
+.p3 { position: absolute; transform-style: preserve-3d; }
+.glass { background: linear-gradient(180deg, var(--glass-top), var(--glass-bot)); border: 1.5px solid var(--glass-line); border-radius: 30px;
+  -webkit-backdrop-filter: blur(28px) saturate(1.2); backdrop-filter: blur(28px) saturate(1.2);
+  box-shadow: 0 60px 140px var(--shadow), inset 0 1.5px 0 var(--glass-hi); }
+.solid { background: var(--card); border-radius: 30px; box-shadow: 0 60px 140px var(--shadow), 0 0 0 1.5px var(--card-line); color: var(--card-ink); }
+.tag { display: inline-flex; align-items: center; gap: 12px; height: 46px; padding: 0 20px; border-radius: 999px; font: 500 20px/1 "JBM", monospace; letter-spacing: .02em;
+  color: var(--tag-ink); background: var(--tag-bg); box-shadow: inset 0 0 0 1.5px var(--tag-line); white-space: nowrap; }
+.tag i { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 16px var(--accent); }
+.bar { height: 14px; border-radius: 999px; background: var(--skel); }
+.code { font: 400 23px/1.62 "JBM", monospace; color: var(--code-ink); white-space: pre; letter-spacing: 0; }
+.code .k { color: var(--code-k); } .code .s { color: var(--code-s); } .code .c { color: var(--code-c); } .code .n { color: var(--code-n); } .code .p { color: var(--code-p); }
+.code .ln { color: var(--code-c); opacity: .55; display: inline-block; width: 52px; }
+.chrome { display: flex; gap: 12px; padding: 26px 30px 0; }
+.chrome b { width: 14px; height: 14px; border-radius: 50%; background: var(--chrome-dot); }
+.grain { position: absolute; inset: 0; pointer-events: none; }
+
+:root { 
+--bg0:#2a0d09; --ink:#fff; --accent:#ff8a5c;
+--glass-top:rgba(64,22,16,.80); --glass-bot:rgba(64,22,16,.66);
+--glass-line:rgba(255,255,255,.12); --glass-hi:rgba(255,255,255,.10);
+--shadow:rgba(0,0,0,.45); --card:#fff; --card-line:rgba(0,0,0,.06); --card-ink:#0a0a0a;
+--tag-ink:rgba(255,255,255,.86); --tag-bg:rgba(255,255,255,.06); --tag-line:rgba(255,255,255,.16);
+--skel:rgba(255,255,255,.14); --chrome-dot:rgba(255,255,255,.18);
+--code-ink:rgba(236,236,245,.86); --code-k:#ffb38c; --code-s:#ffe3a8; --code-c:rgba(255,255,255,.36);
+--code-n:#ffd0b0; --code-p:rgba(255,255,255,.5);
+ }
+
+</style></head>
+<body><div class="scene">
+<div class="fill" style="background:linear-gradient(180deg,#a8442f 0%,#86301f 50%,#5a1a10 100%)"></div><div class="abs" style="left:180px;top:-900.0px;width:2200px;height:2200.0px;opacity:1.0;border-radius:50%;background:radial-gradient(closest-side,rgba(255,210,170,.28),transparent)"></div><div class="abs" style="left:0;top:820px;width:2560px;height:1440px;perspective:900px;perspective-origin:50% 0%;opacity:1">
+  <div class="abs" style="left:-1200px;top:0;width:4960px;height:2400px;transform-origin:50% 0%;transform:rotateX(74deg);
+    background-image:linear-gradient(rgba(255,220,200,.10) 1.5px,transparent 1.5px),linear-gradient(90deg,rgba(255,220,200,.10) 1.5px,transparent 1.5px);background-size:110px 110px;
+    -webkit-mask-image:linear-gradient(180deg,black 0%,black 30%,transparent 92%);mask-image:linear-gradient(180deg,black 0%,black 30%,transparent 92%)"></div></div><div class="abs" style="left:-40px;top:220px;width:400px;height:819px;opacity:0.95;transform:perspective(2600px) rotateY(18deg) rotateX(6deg) rotateZ(-3deg);border-radius:64px;background:#0b0b0c;padding:14px;box-shadow:0 80px 160px rgba(0,0,0,.55),inset 0 0 0 2px rgba(255,255,255,.14)"><div style="position:relative;width:100%;height:100%;border-radius:52px;overflow:hidden;background:#fff"><img src="../../../../../easyeat/main-complete.png" style="display:block;width:100%;height:100%;object-fit:cover;object-position:50% 0"><div class="fill" style="background:rgba(0,0,0,0.04);border-radius:52.0px"></div></div></div><div class="abs" style="left:2200px;top:200px;width:400px;height:819px;opacity:0.95;transform:perspective(2600px) rotateY(-18deg) rotateX(6deg) rotateZ(3deg);border-radius:64px;background:#0b0b0c;padding:14px;box-shadow:0 80px 160px rgba(0,0,0,.55),inset 0 0 0 2px rgba(255,255,255,.14)"><div style="position:relative;width:100%;height:100%;border-radius:52px;overflow:hidden;background:#fff"><img src="../../../../../easyeat/max-limit.png" style="display:block;width:100%;height:100%;object-fit:cover;object-position:50% 0"><div class="fill" style="background:rgba(0,0,0,0.04);border-radius:52.0px"></div></div></div><div class="abs " style="left:1900px;top:860px;width:440px;opacity:0.95;transform:perspective(2600px) rotateY(-14deg) rotateZ(4deg);background:#fbf3ea;border-radius:18px;box-shadow:0 70px 140px rgba(40,6,2,.5)"><div style="padding:30px 32px 24px;font:500 20px/1 JBM;color:#3a1c14;letter-spacing:.06em">ORDER · TABLE QR</div><div style="margin:0 32px;border-top:2px dashed rgba(58,28,20,.25)"></div><div style="padding:18px 32px 30px"><div style="display:flex;gap:20px;white-space:nowrap;font:500 21px/1.9 JBM;color:#2a120c"><span style="width:34px">1x</span><span>DIY Salad</span></div><div style="display:flex;gap:20px;white-space:nowrap;font:400 21px/1.9 JBM;color:rgba(42,18,12,.6)"><span style="width:34px"></span><span>Main · Beetroot</span></div><div style="display:flex;gap:20px;white-space:nowrap;font:400 21px/1.9 JBM;color:rgba(42,18,12,.6)"><span style="width:34px"></span><span>Main · Celery</span></div><div style="display:flex;gap:20px;white-space:nowrap;font:400 21px/1.9 JBM;color:rgba(42,18,12,.6)"><span style="width:34px"></span><span>Main · Masala Chickpeas</span></div><div style="display:flex;gap:20px;white-space:nowrap;font:500 21px/1.9 JBM;color:#2a120c"><span style="width:34px">1x</span><span>Rabbit Salad</span></div></div><div style="margin:0 32px 28px;height:40px;border-radius:999px;background:#e5533c;color:#fff;font:500 18px/40px JBM;text-align:center">sent to kitchen</div></div><div class="fill" style="background:radial-gradient(48% 60% at 50% 52%,rgba(90,26,16,.45) 0%,rgba(90,26,16,0) 100%)"></div>
+</div></body></html>

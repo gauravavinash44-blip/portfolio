@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>White Label band</title>
+<style>
+@font-face { font-family: "Inter"; src: url("../fonts/inter-latin-400-normal.woff2") format("woff2"); font-weight: 400; }
+@font-face { font-family: "Inter"; src: url("../fonts/inter-latin-500-normal.woff2") format("woff2"); font-weight: 500; }
+@font-face { font-family: "Inter"; src: url("../fonts/inter-latin-600-normal.woff2") format("woff2"); font-weight: 600; }
+@font-face { font-family: "JBM"; src: url("../fonts/jetbrains-mono-latin-400-normal.woff2") format("woff2"); font-weight: 400; }
+@font-face { font-family: "JBM"; src: url("../fonts/jetbrains-mono-latin-500-normal.woff2") format("woff2"); font-weight: 500; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 2560px; height: 1440px; overflow: hidden; background: var(--bg0); }
+body { font-family: "Inter", system-ui, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11", "tnum"; }
+.scene { position: absolute; inset: 0; overflow: hidden; }
+.abs { position: absolute; }
+.mono { font-family: "JBM", ui-monospace, monospace; }
+.fill { position: absolute; inset: 0; }
+.persp { position: absolute; inset: 0; perspective: 3200px; transform-style: preserve-3d; }
+.p3 { position: absolute; transform-style: preserve-3d; }
+.glass { background: linear-gradient(180deg, var(--glass-top), var(--glass-bot)); border: 1.5px solid var(--glass-line); border-radius: 30px;
+  -webkit-backdrop-filter: blur(28px) saturate(1.2); backdrop-filter: blur(28px) saturate(1.2);
+  box-shadow: 0 60px 140px var(--shadow), inset 0 1.5px 0 var(--glass-hi); }
+.solid { background: var(--card); border-radius: 30px; box-shadow: 0 60px 140px var(--shadow), 0 0 0 1.5px var(--card-line); color: var(--card-ink); }
+.tag { display: inline-flex; align-items: center; gap: 12px; height: 46px; padding: 0 20px; border-radius: 999px; font: 500 20px/1 "JBM", monospace; letter-spacing: .02em;
+  color: var(--tag-ink); background: var(--tag-bg); box-shadow: inset 0 0 0 1.5px var(--tag-line); white-space: nowrap; }
+.tag i { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 16px var(--accent); }
+.bar { height: 14px; border-radius: 999px; background: var(--skel); }
+.code { font: 400 23px/1.62 "JBM", monospace; color: var(--code-ink); white-space: pre; letter-spacing: 0; }
+.code .k { color: var(--code-k); } .code .s { color: var(--code-s); } .code .c { color: var(--code-c); } .code .n { color: var(--code-n); } .code .p { color: var(--code-p); }
+.code .ln { color: var(--code-c); opacity: .55; display: inline-block; width: 52px; }
+.chrome { display: flex; gap: 12px; padding: 26px 30px 0; }
+.chrome b { width: 14px; height: 14px; border-radius: 50%; background: var(--chrome-dot); }
+.grain { position: absolute; inset: 0; pointer-events: none; }
+
+:root { 
+--bg0:#1f0c1a; --ink:#fff; --accent:#f078be;
+--glass-top:rgba(56,22,46,.80); --glass-bot:rgba(56,22,46,.66);
+--glass-line:rgba(255,255,255,.12); --glass-hi:rgba(255,255,255,.10);
+--shadow:rgba(0,0,0,.45); --card:#fff; --card-line:rgba(0,0,0,.06); --card-ink:#0a0a0a;
+--tag-ink:rgba(255,255,255,.86); --tag-bg:rgba(255,255,255,.06); --tag-line:rgba(255,255,255,.16);
+--skel:rgba(255,255,255,.14); --chrome-dot:rgba(255,255,255,.18);
+--code-ink:rgba(236,236,245,.86); --code-k:#ff9fd2; --code-s:#f2d3a3; --code-c:rgba(255,255,255,.36);
+--code-n:#c7b3ff; --code-p:rgba(255,255,255,.5);
+ }
+
+</style></head>
+<body><div class="scene">
+<div class="fill" style="background:radial-gradient(70% 100% at 85% 55%,#4f1a42 0%,#2a0f25 60%,#1a0816 100%)"></div><div class="abs" style="left:1320px;top:-60.0px;width:1520px;height:1520.0px;opacity:1.0;border-radius:50%;background:radial-gradient(closest-side,rgba(240,120,190,.28),transparent)"></div><div class="abs" style="left:0px;top:0px;width:2560px;height:1440px;background-image:radial-gradient(rgba(255,255,255,.07) 1.3px,transparent 1.9px);background-size:36px 36px;-webkit-mask-image:radial-gradient(50% 70% at 78% 50%,black,transparent);mask-image:radial-gradient(50% 70% at 78% 50%,black,transparent)"></div><div class="abs glass" style="left:1660px;top:470px;width:250px;height:100px;opacity:1;border-radius:22px"><div style="height:100%;display:flex;align-items:center;gap:14px;padding:0 22px;font:500 21px/1 Inter;white-space:nowrap;color:#fff"><i style="width:10px;height:10px;border-radius:50%;background:#f078be"></i>Subdomain</div></div><div class="abs glass" style="left:1966px;top:470px;width:250px;height:100px;opacity:1;border-radius:22px"><div style="height:100%;display:flex;align-items:center;gap:14px;padding:0 22px;font:500 21px/1 Inter;white-space:nowrap;color:rgba(255,255,255,.75)"><i style="width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.4)"></i>DNS record</div></div><div class="abs glass" style="left:2272px;top:470px;width:250px;height:100px;opacity:1;border-radius:22px"><div style="height:100%;display:flex;align-items:center;gap:14px;padding:0 22px;font:500 21px/1 Inter;white-space:nowrap;color:rgba(255,255,255,.75)"><i style="width:10px;height:10px;border-radius:50%;background:#7ee2a1"></i>Live URL</div></div><svg class="abs" style="left:1660px;top:470px;width:862px;height:540px;opacity:1;overflow:visible" viewBox="0 0 862 540" xmlns="http://www.w3.org/2000/svg" ><path d="M258,50 L298,50" stroke="#f078be" stroke-opacity=".6" stroke-width="2.5" stroke-linecap="round"/><circle cx="298" cy="50" r="5" fill="#ff9fd2"/><path d="M564,50 L604,50" stroke="#f078be" stroke-opacity=".6" stroke-width="2.5" stroke-linecap="round"/><circle cx="604" cy="50" r="5" fill="#ff9fd2"/></svg><div class="abs glass" style="left:1660px;top:650px;width:250px;height:100px;opacity:1;border-radius:22px"><div style="height:100%;display:flex;align-items:center;gap:14px;padding:0 22px;font:500 21px/1 Inter;white-space:nowrap;color:#fff"><i style="width:10px;height:10px;border-radius:50%;background:#f078be"></i>Logo</div></div><div class="abs glass" style="left:1966px;top:650px;width:250px;height:100px;opacity:1;border-radius:22px"><div style="height:100%;display:flex;align-items:center;gap:14px;padding:0 22px;font:500 21px/1 Inter;white-space:nowrap;color:rgba(255,255,255,.75)"><i style="width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.4)"></i>File storage</div></div><div class="abs glass" style="left:2272px;top:650px;width:250px;height:100px;opacity:1;border-radius:22px"><div style="height:100%;display:flex;align-items:center;gap:14px;padding:0 22px;font:500 21px/1 Inter;white-space:nowrap;color:rgba(255,255,255,.75)"><i style="width:10px;height:10px;border-radius:50%;background:#7ee2a1"></i>Shown on invites</div></div><svg class="abs" style="left:1660px;top:470px;width:862px;height:540px;opacity:1;overflow:visible" viewBox="0 0 862 540" xmlns="http://www.w3.org/2000/svg" ><path d="M258,230 L298,230" stroke="#f078be" stroke-opacity=".6" stroke-width="2.5" stroke-linecap="round"/><circle cx="298" cy="230" r="5" fill="#ff9fd2"/><path d="M564,230 L604,230" stroke="#f078be" stroke-opacity=".6" stroke-width="2.5" stroke-linecap="round"/><circle cx="604" cy="230" r="5" fill="#ff9fd2"/></svg><div class="abs glass" style="left:1660px;top:830px;width:250px;height:100px;opacity:1;border-radius:22px"><div style="height:100%;display:flex;align-items:center;gap:14px;padding:0 22px;font:500 21px/1 Inter;white-space:nowrap;color:#fff"><i style="width:10px;height:10px;border-radius:50%;background:#f078be"></i>Sender</div></div><div class="abs glass" style="left:1966px;top:830px;width:250px;height:100px;opacity:1;border-radius:22px"><div style="height:100%;display:flex;align-items:center;gap:14px;padding:0 22px;font:500 21px/1 Inter;white-space:nowrap;color:rgba(255,255,255,.75)"><i style="width:10px;height:10px;border-radius:50%;background:#f6c177"></i>Pending</div></div><div class="abs glass" style="left:2272px;top:830px;width:250px;height:100px;opacity:1;border-radius:22px"><div style="height:100%;display:flex;align-items:center;gap:14px;padding:0 22px;font:500 21px/1 Inter;white-space:nowrap;color:rgba(255,255,255,.75)"><i style="width:10px;height:10px;border-radius:50%;background:#7ee2a1"></i>Verified</div></div><svg class="abs" style="left:1660px;top:470px;width:862px;height:540px;opacity:1;overflow:visible" viewBox="0 0 862 540" xmlns="http://www.w3.org/2000/svg" ><path d="M258,410 L298,410" stroke="#f078be" stroke-opacity=".6" stroke-width="2.5" stroke-linecap="round"/><circle cx="298" cy="410" r="5" fill="#ff9fd2"/><path d="M564,410 L604,410" stroke="#f078be" stroke-opacity=".6" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="3 10"/><circle cx="604" cy="410" r="5" fill="#ff9fd2"/></svg><div class="abs tag" style="left:1966px;top:380px;opacity:0.85;transform:none"><i></i>DNS</div><div class="abs tag" style="left:2272px;top:380px;opacity:0.85;transform:none"><i></i>file storage</div><div class="abs" style="left:2272px;top:1040px;opacity:1;font:400 18px/1.2 "JBM", monospace;letter-spacing:.04em;color:rgba(255,255,255,.5);white-space:nowrap">verification wait</div><div class="fill" style="background:linear-gradient(90deg,rgba(26,8,22,.85) 0%,rgba(26,8,22,.5) 48%,rgba(26,8,22,0) 64%)"></div>
+</div></body></html>

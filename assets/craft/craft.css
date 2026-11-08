@@ -1241,12 +1241,11 @@ html.ga-aw-open .craft-switch, html.ga-aw-open .ga-brand { opacity: 0; visibilit
 
 /* ═════════════ Now Playing pill (Resonance) ═════════════
    Sits right of the Design Playground stack, bottom edge on the dock's baseline.
-   One 12s clock drives the line, the jump to the marker, the subline swap and the marker
-   pulse; .is-paused (or an open popup) freezes all of it at once. */
+   Starts paused. While playing, JS writes the line from the audio clock and the bars
+   from real levels; these classes only handle the jump, the marker pulse and the subline. */
 .cr-hero .cr-corner--left { display: flex; align-items: flex-end; gap: 12px; }
 .cr-np {
   --np-w: calc(272px * min(1.1, max(0.92, var(--cr-scale, 1))));
-  --np-loop: 12s;
   position: relative; display: flex; align-items: center; gap: 4px;
   width: var(--np-w); height: 52px; padding: 5px 6px 5px 5px;
   border-radius: var(--radius-pill); color: #fff; cursor: pointer;
@@ -1286,20 +1285,22 @@ html.ga-aw-open .craft-switch, html.ga-aw-open .ga-brand { opacity: 0; visibilit
 .cr-np-title { font-size: 14px; line-height: 17px; font-weight: 500; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cr-np-sub { position: relative; height: 15px; font-size: 12px; line-height: 15px; color: rgba(255, 255, 255, 0.8); }
 .cr-np-sub > span { position: absolute; left: 0; top: 0; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+.cr-np-sub > span { transition: opacity 260ms ease; }
 .cr-np-sub-b { opacity: 0; color: #fff; }
+.cr-np.is-moment .cr-np-sub-a { opacity: 0; }
+.cr-np.is-moment .cr-np-sub-b { opacity: 1; }
 .cr-np-dot { display: inline-block; flex: none; width: 6px; height: 6px; border-radius: 50%; background: #1db954; box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.22); }
 .cr-np-track { position: relative; display: block; height: 3px; margin-top: 5px; border-radius: 2px; background: rgba(255, 255, 255, 0.24); }
-.cr-np-fill { position: absolute; inset: 0; border-radius: inherit; background: #fff; transform-origin: 0 50%; transform: scaleX(0.64); }
+.cr-np-fill { position: absolute; inset: 0; border-radius: inherit; background: #fff; transform-origin: 0 50%; transform: scaleX(0); }
 .cr-np-mark {
-  position: absolute; left: 64%; top: 50%; width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px; border-radius: 50%;
+  position: absolute; left: 30.77%; top: 50%; width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px; border-radius: 50%;
   background: #1db954; box-shadow: 0 0 0 1.5px rgba(20, 12, 20, 0.35);
 }
 .cr-np-eq { flex: none; display: flex; align-items: flex-end; gap: 2px; width: 16px; height: 14px; margin-right: 2px; }
 .cr-np-eq i { flex: 1; height: 100%; border-radius: 1px; background: #fff; transform-origin: 50% 100%; opacity: 0.92; }
-.cr-np-eq i:nth-child(1) { transform: scaleY(0.45); }
-.cr-np-eq i:nth-child(2) { transform: scaleY(0.9); }
-.cr-np-eq i:nth-child(3) { transform: scaleY(0.6); }
-.cr-np-eq i:nth-child(4) { transform: scaleY(0.75); }
+.cr-np-eq i { transform: scaleY(0.22); transition: transform 240ms ease; }
+.cr-np.is-playing .cr-np-eq i { transition: none; }
+.cr-np.is-paused .cr-np-eq i { opacity: 0.7; }
 .cr-np-play {
   flex: none; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%;
   color: #fff; background: rgba(255, 255, 255, 0.16); cursor: pointer;
@@ -1310,33 +1311,20 @@ html.ga-aw-open .craft-switch, html.ga-aw-open .ga-brand { opacity: 0; visibilit
 .cr-np-play svg { width: 15px; height: 15px; }
 
 @media (prefers-reduced-motion: no-preference) {
-  .cr-np-fill { animation: crNpFill var(--np-loop) linear infinite; }
-  .cr-np-mark { animation: crNpMark var(--np-loop) linear infinite; }
-  .cr-np-sub-a { animation: crNpSubA var(--np-loop) linear infinite; }
-  .cr-np-sub-b { animation: crNpSubB var(--np-loop) linear infinite; }
-  .cr-np-eq i { animation: crNpEq 900ms ease-in-out infinite alternate; }
-  .cr-np-eq i:nth-child(2) { animation-duration: 640ms; animation-delay: -200ms; }
-  .cr-np-eq i:nth-child(3) { animation-duration: 1080ms; animation-delay: -420ms; }
-  .cr-np-eq i:nth-child(4) { animation-duration: 760ms; animation-delay: -120ms; }
-  .cr-np.is-paused *, html.ga-np-open .cr-np * { animation-play-state: paused !important; }
+  /* the skip to the drop: the line glides instead of snapping */
+  .cr-np.is-jumping .cr-np-fill { transition: transform 460ms cubic-bezier(0.16, 1, 0.3, 1); }
+  .cr-np.is-pulse .cr-np-mark { animation: crNpMark 700ms var(--ease-snap, ease) 1; }
+  /* no AnalyserNode: plain CSS bars, only while playing */
+  .cr-np.is-eq-css.is-playing .cr-np-eq i { animation: crNpEq 900ms ease-in-out infinite alternate; }
+  .cr-np.is-eq-css.is-playing .cr-np-eq i:nth-child(2) { animation-duration: 640ms; animation-delay: -200ms; }
+  .cr-np.is-eq-css.is-playing .cr-np-eq i:nth-child(3) { animation-duration: 1080ms; animation-delay: -420ms; }
+  .cr-np.is-eq-css.is-playing .cr-np-eq i:nth-child(4) { animation-duration: 760ms; animation-delay: -120ms; }
 }
-/* creep from 0, hold a beat, skip to the marker (64%), play on, fade and restart */
-@keyframes crNpFill {
-  0% { transform: scaleX(0); opacity: 1; animation-timing-function: linear; }
-  12% { transform: scaleX(0.07); animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
-  16% { transform: scaleX(0.64); animation-timing-function: linear; }
-  94% { transform: scaleX(0.97); opacity: 1; }
-  98% { transform: scaleX(0.98); opacity: 0; }
-  100% { transform: scaleX(0); opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .cr-np .cr-np-eq i { animation: none !important; transform: scaleY(0.5) !important; }
+  .cr-np-sub > span { transition: none; }
 }
-@keyframes crNpMark {
-  0%, 12% { transform: scale(1); }
-  15% { transform: scale(1.7); }
-  20% { transform: scale(1); }
-  100% { transform: scale(1); }
-}
-@keyframes crNpSubA { 0%, 14% { opacity: 1; } 16%, 40% { opacity: 0; } 43%, 100% { opacity: 1; } }
-@keyframes crNpSubB { 0%, 14% { opacity: 0; } 16%, 40% { opacity: 1; } 43%, 100% { opacity: 0; } }
+@keyframes crNpMark { 0% { transform: scale(1); } 35% { transform: scale(1.9); box-shadow: 0 0 0 4px rgba(29, 185, 84, 0.35); } 100% { transform: scale(1); } }
 @keyframes crNpEq { 0% { transform: scaleY(0.25); } 100% { transform: scaleY(1); } }
 
 /* While the popup is open the corners and top bar step back like the All work sheet */
@@ -1417,7 +1405,7 @@ html.ga-np-open .craft-switch, html.ga-np-open .ga-brand { opacity: 0; visibilit
 .cr-np-poster-np > span:not(.cr-np-track) { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: rgba(255, 255, 255, 0.7); }
 .cr-np-poster-np .cr-np-track { margin-top: 14px; background: rgba(255, 255, 255, 0.22); }
 .cr-np-poster-np .cr-np-fill { animation: none; transform: scaleX(0.64); }
-.cr-np-poster-np .cr-np-mark { animation: none; }
+.cr-np-poster-np .cr-np-mark { animation: none; left: 64%; }
 .cr-np-screen[data-status="ready"] .cr-np-poster { opacity: 0; visibility: hidden; transition: opacity 420ms ease, visibility 0s linear 420ms; }
 .cr-np-state {
   position: absolute; left: 50%; bottom: 7%; transform: translateX(-50%);
