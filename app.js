@@ -983,7 +983,7 @@
       if (t) t.setAttribute("aria-expanded", picker ? "true" : "false");
     }, [picker]);
     useEffect(() => {
-      if (!sheet || sheet.kind === "allwork") return undefined; /* the All work sheet animates its own close */
+      if (!sheet || sheet.kind === "allwork" || sheet.kind === "resonance" || sheet.kind === "search") return undefined; /* these sheets animate their own close */
       const onKey = (ev) => { if (ev.key === "Escape") setSheet(null); };
       window.addEventListener("keydown", onKey);
       return () => window.removeEventListener("keydown", onKey);
@@ -1014,17 +1014,31 @@
         if (back) back.focus({ preventScroll: true });
       });
     }, []);
+    /* Search + assistant popup (assets/craft/search.js). mode: "search" or "ask" */
+    const CS = window.CraftSearch;
+    const [pgQueue, setPgQueue] = useState(undefined); /* playground pick from search: open once the old view is gone */
+    const openSearch = (opener, mode) => {
+      if (!CS) { openAssistant(); return; }
+      setPicker(false);
+      setSheet({ kind: "search", opener: opener || null, mode: mode || "search" });
+    };
+    useEffect(() => {
+      if (pgQueue === undefined || playground) return;
+      setPgQueue(undefined);
+      openPlayground(pgQueue);
+    }, [pgQueue, playground]);
+    if (CS) CS.useShortcut((btn) => openSearch(btn, "search"), !(sheet && sheet.kind !== "search"));
     const topbar = Object.assign({}, data.topbar, {
       tab: sheet && sheet.kind === "allwork" && !sheet.closing ? 1 : 0,
       onTab: (i, label, ev) => (i === 1 ? openAllWork(fromEvent(ev)) : setSheet(null)),
-      onSearch: openAssistant,
-      searchLabel: "Ask the portfolio assistant",
+      onSearch: CS ? (ev) => openSearch(fromEvent(ev), "search") : openAssistant,
+      searchLabel: CS ? "Search the portfolio" : "Ask the portfolio assistant",
     });
     const dock = {
       actions: [
         { icon: "image", label: "Change wallpaper", onClick: () => setPicker((p) => !p) },
         { icon: "download", label: "Download resume", onClick: () => window.open(ASSETS.resume, "_blank", "noopener") },
-        { icon: "chat", label: "Ask the portfolio assistant", accent: true, onClick: openAssistant },
+        { icon: "chat", label: "Ask the portfolio assistant", accent: true, onClick: (ev) => openSearch(fromEvent(ev), "ask") },
       ],
     };
 
@@ -1074,7 +1088,8 @@
         }, data.profileSheet)) : null
       ),
       e("div", { className: "cr-corners" },
-      e("div", { className: "cr-corner cr-corner--left" }, e(C.AvatarStack, CP ? Object.assign({}, data.stack, { onClick: openPlayground }) : data.stack)),
+      e("div", { className: "cr-corner cr-corner--left" }, e(C.AvatarStack, CP ? Object.assign({}, data.stack, { onClick: openPlayground }) : data.stack),
+        C.NowPlayingPill ? e(C.NowPlayingPill, { onOpen: (el) => { setPicker(false); setSheet({ kind: "resonance", opener: el }); } }) : null),
       e("div", { className: "cr-corner cr-corner--right cr-dock-wrap" },
         picker ? e("div", { className: "cr-wp-picker cr-glass-light", role: "group", "aria-label": "Wallpapers" },
           CRAFT_WALLPAPERS.map((w) => e("button", {
@@ -1096,6 +1111,11 @@
         onPick: (item) => openPlayground(item.pgId),
         onClosing: () => setSheet((s) => (s ? Object.assign({}, s, { closing: true }) : s)),
         onClose: (then) => { setSheet(null); if (typeof then === "function") requestAnimationFrame(then); },
+      }) : null,
+      sheet && sheet.kind === "resonance" && C.ResonanceSheet ? e(C.ResonanceSheet, {
+        opener: sheet.opener,
+        onClosing: () => setSheet((s) => (s ? Object.assign({}, s, { closing: true }) : s)),
+        onClose: () => setSheet(null),
       }) : null
     );
 
@@ -1105,9 +1125,25 @@
         stageRef,
         wallpaper,
         resumeHref: ASSETS.resume,
-        onAssistant: openAssistant,
+        onAssistant: CS ? (ev) => openSearch(ev && ev.currentTarget, "ask") : openAssistant,
         onClose: closePlayground,
         startId: pgStart,
+      }) : null,
+      sheet && sheet.kind === "search" && CS ? e(CS.SearchPopup, {
+        mode: sheet.mode,
+        opener: sheet.opener,
+        cases: data.cases,
+        playground: allWork.filter((it) => it.group === "playground"),
+        resumeHref: ASSETS.resume,
+        onAllWork: () => openAllWork(listCard(), "all"),
+        onPlayground: (id) => {
+          if (playground && !id) return;
+          if (playground) { setPlayground(false); setPgStart(null); }
+          setPgQueue(id || null);
+        },
+        onClassic: () => onExit(),
+        onClosing: () => setSheet((s) => (s ? Object.assign({}, s, { closing: true }) : s)),
+        onClose: (then) => { setSheet(null); if (typeof then === "function") requestAnimationFrame(then); },
       }) : null
     );
   }

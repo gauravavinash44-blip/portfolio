@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"Craft","components":[{"name":"Stage"},{"name":"TopBar"},{"name":"NotificationPill"},{"name":"SegmentedControl"},{"name":"IconButton"},{"name":"Chip"},{"name":"Toggle"},{"name":"AgendaCard"},{"name":"FolderListCard"},{"name":"DropZoneCard"},{"name":"PreviewCard"},{"name":"CursorChip"},{"name":"ProfileOrb"},{"name":"StatCard"},{"name":"AvatarStack"},{"name":"Dock"},{"name":"MetaStrip"},{"name":"HeroBoard"},{"name":"FolderOpen"},{"name":"ProfileOpen"},{"name":"AllWorkSheet"},{"name":"ProjectWell"}]} */
+/* @ds-bundle: {"format":4,"namespace":"Craft","components":[{"name":"Stage"},{"name":"TopBar"},{"name":"NotificationPill"},{"name":"SegmentedControl"},{"name":"IconButton"},{"name":"Chip"},{"name":"Toggle"},{"name":"AgendaCard"},{"name":"FolderListCard"},{"name":"DropZoneCard"},{"name":"PreviewCard"},{"name":"CursorChip"},{"name":"ProfileOrb"},{"name":"StatCard"},{"name":"AvatarStack"},{"name":"Dock"},{"name":"MetaStrip"},{"name":"HeroBoard"},{"name":"FolderOpen"},{"name":"ProfileOpen"},{"name":"AllWorkSheet"},{"name":"ProjectWell"},{"name":"NowPlayingPill"},{"name":"ResonanceSheet"}]} */
 (function () {
   var React = window.React;
   var h = React.createElement;
@@ -869,6 +869,202 @@
       h("button", { type: "button", className: "cr-replay", onClick: function () { setOpen(!open); } }, open ? "Close profile" : "Open profile"));
   }
 
+  /* ───────── Now Playing pill + Resonance prototype sheet ─────────
+     The pill is a quiet loop of the product idea: the line creeps from the start,
+     then skips ahead to "your moment". All of its motion is CSS on one 12s clock,
+     so play/pause just flips animation-play-state and everything stays in sync. */
+  var NP_ART = "./assets/resonance/np-art.jpg";
+  var NP_POSTER = "./assets/resonance/np-art-lg.jpg";
+  var NP_FRAME = "./assets/resonance/mockup/iphone-frame.png";
+  var NP_DESIGN_W = 390;
+  /* Same host rule as resonance-short.html: GitHub Pages build next to the GitHub Pages portfolio */
+  function resonanceBase() {
+    return /\.github\.io$/i.test(location.hostname) ? "https://gauravavinash44-blip.github.io/drop-mode/" : "https://drop-mode.vercel.app/";
+  }
+  var NP_ICON = {
+    play: "M8 5.6v12.8a.8.8 0 0 0 1.2.7l10.1-6.4a.8.8 0 0 0 0-1.4L9.2 4.9a.8.8 0 0 0-1.2.7z",
+    pause: "M7 5h3.4v14H7zM13.6 5H17v14h-3.4z"
+  };
+
+  function NowPlayingPill(props) {
+    var _p = useState(true), playing = _p[0], setPlaying = _p[1];
+    var ref = useRef(null);
+    function open(ev) {
+      if (ev) ev.stopPropagation(); /* the stage treats bare taps as "change wallpaper" */
+      if (ev && ev.target.closest && ev.target.closest(".cr-np-play")) return;
+      if (props.onOpen) props.onOpen(ref.current);
+    }
+    var title = props.title || "Resonance";
+    return h("div", { className: cx("cr-np", playing ? "is-playing" : "is-paused"), ref: ref, onClick: open, "data-cr-enter": "", "data-np-pill": "" },
+      h("button", { type: "button", className: "cr-np-open", "aria-haspopup": "dialog",
+        "aria-label": props.label || (title + " for Spotify. Open the live prototype") },
+        h("span", { className: "cr-np-art", "aria-hidden": "true" }, h("img", { src: props.art || NP_ART, alt: "", decoding: "async" })),
+        h("span", { className: "cr-np-text", "aria-hidden": "true" },
+          h("span", { className: "cr-np-title" }, title),
+          h("span", { className: "cr-np-sub" },
+            h("span", { className: "cr-np-sub-a" }, h("i", { className: "cr-np-dot" }), props.sub || "For Spotify"),
+            h("span", { className: "cr-np-sub-b" }, props.moment || "Your moment")),
+          h("span", { className: "cr-np-track" },
+            h("i", { className: "cr-np-fill" }),
+            h("i", { className: "cr-np-mark" }))),
+        h("span", { className: "cr-np-eq", "aria-hidden": "true" }, h("i"), h("i"), h("i"), h("i"))),
+      h("button", { type: "button", className: "cr-np-play", "aria-label": playing ? "Pause preview" : "Play preview", "aria-pressed": playing ? "false" : "true",
+        onClick: function (ev) { ev.stopPropagation(); setPlaying(!playing); } },
+        h("svg", { viewBox: "0 0 24 24", width: 16, height: 16, "aria-hidden": "true", fill: "currentColor" },
+          h("path", { d: playing ? NP_ICON.pause : NP_ICON.play }))));
+  }
+
+  function ResonanceSheet(props) {
+    var ref = useRef(null), scrimRef = useRef(null), screenRef = useRef(null), frameRef = useRef(null);
+    var closing = useRef(false);
+    var base = props.base || resonanceBase();
+    var full = props.fullHref || base + "?fresh=1";
+    var _s = useState(""), src = _s[0], setSrc = _s[1];
+    var _st = useState("loading"), status = _st[0], setStatus = _st[1]; /* loading | ready | failed */
+    var _k = useState(null), fit = _k[0], setFit = _k[1];
+
+    /* Open: scrim fades, the sheet grows out of the pill, copy rises */
+    useLayoutEffect(function () {
+      var sheet = ref.current, root = document.documentElement;
+      root.classList.add("ga-np-open");
+      var prev = props.opener && props.opener.querySelector ? (props.opener.querySelector(".cr-np-open") || props.opener) : document.activeElement;
+      var src0 = sourceOf(props.opener), still = reduced();
+      if (scrimRef.current) scrimRef.current.animate([{ opacity: 0 }, { opacity: 1 }], { duration: still ? 160 : 420, easing: "ease", fill: "backwards" });
+      if (still || !src0) {
+        sheet.animate([{ opacity: 0, transform: still ? "none" : "scale(0.97)" }, { opacity: 1, transform: "none" }], { duration: still ? 160 : 420, easing: EASE_ARRIVE, fill: "backwards" });
+      } else {
+        sheet.animate(growFrames(sheet, src0), { duration: 520, easing: EASE_ARRIVE, fill: "backwards" });
+        Array.prototype.slice.call(sheet.querySelectorAll("[data-np-chrome]")).forEach(function (n, i) {
+          n.animate([{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "none" }], { duration: 520, delay: 120 + i * 50, easing: EASE_ARRIVE, fill: "backwards" });
+        });
+      }
+      var t = setTimeout(function () {
+        var btn = sheet.querySelector(".cr-np-close");
+        if (btn) btn.focus({ preventScroll: true });
+      }, 60);
+      return function () {
+        clearTimeout(t);
+        root.classList.remove("ga-np-open");
+        if (prev && prev.isConnected && prev.focus) prev.focus({ preventScroll: true });
+      };
+    }, []);
+
+    /* Fit the 390px-wide app into whatever size the phone screen ends up */
+    useLayoutEffect(function () {
+      var el = screenRef.current;
+      if (!el) return undefined;
+      function measure() {
+        var w = el.clientWidth, hh = el.clientHeight;
+        if (!w || !hh) return;
+        var k = w / NP_DESIGN_W;
+        setFit({ k: k, h: Math.round(hh / k) });
+      }
+      measure();
+      if (typeof ResizeObserver === "undefined") { window.addEventListener("resize", measure); return function () { window.removeEventListener("resize", measure); }; }
+      var ro = new ResizeObserver(measure);
+      ro.observe(el);
+      return function () { ro.disconnect(); };
+    }, []);
+
+    /* Load the prototype only now. A cross-origin frame fires load even on an error page,
+       so a no-cors probe of the same URL decides whether it really arrived. */
+    useEffect(function () {
+      var url = props.src || (base + "?fresh=1&embed=1&t=" + Date.now());
+      var alive = true, loaded = false, probe = "pending";
+      function settle() {
+        if (!alive) return;
+        if (probe === "fail") setStatus("failed");
+        else if (loaded && probe === "ok") setStatus("ready");
+      }
+      frameRef.current = { onLoad: function () { loaded = true; settle(); } };
+      var start = setTimeout(function () { if (alive) setSrc(url); }, reduced() ? 0 : 280); /* let the grow animation run first */
+      var give = setTimeout(function () { if (!alive) return; setStatus(function (s) { return s === "ready" ? s : "failed"; }); }, 8000);
+      try {
+        fetch(url, { mode: "no-cors", cache: "no-store", credentials: "omit" }).then(
+          function () { probe = "ok"; settle(); },
+          function () { probe = "fail"; settle(); });
+      } catch (err) { probe = "ok"; }
+      return function () { alive = false; clearTimeout(start); clearTimeout(give); };
+    }, []);
+
+    function close() {
+      if (closing.current) return;
+      closing.current = true;
+      var sheet = ref.current, called = false;
+      var done = function () { if (called) return; called = true; props.onClose(); };
+      if (!sheet) { done(); return; }
+      setTimeout(done, 700);
+      document.documentElement.classList.remove("ga-np-open");
+      if (props.onClosing) props.onClosing();
+      var src0 = sourceOf(props.opener), still = reduced();
+      if (scrimRef.current) scrimRef.current.animate([{ opacity: 1 }, { opacity: 0 }], { duration: still ? 140 : 380, easing: "ease", fill: "forwards" });
+      Array.prototype.slice.call(sheet.querySelectorAll("[data-np-chrome]")).forEach(function (n) {
+        n.animate([{ opacity: 1 }, { opacity: 0 }], { duration: still ? 120 : 200, easing: "ease", fill: "forwards" });
+      });
+      var anim;
+      if (still || !src0) {
+        anim = sheet.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: still ? "none" : "scale(0.96)" }], { duration: still ? 140 : 320, easing: AW_EASE_BACK, fill: "forwards" });
+      } else {
+        var fr = growFrames(sheet, src0).reverse();
+        fr[1].opacity = 0.6;
+        anim = sheet.animate(fr, { duration: 440, easing: AW_EASE_BACK, fill: "forwards" });
+      }
+      anim.finished.then(done, done);
+    }
+
+    /* Escape closes, Tab stays inside */
+    useEffect(function () {
+      function onKey(ev) {
+        if (ev.key === "Escape") { ev.preventDefault(); ev.stopPropagation(); close(); return; }
+        if (ev.key !== "Tab" || !ref.current) return;
+        var f = focusables(ref.current);
+        if (!f.length) return;
+        var a = f[0], z = f[f.length - 1];
+        if (!ref.current.contains(document.activeElement)) { ev.preventDefault(); a.focus(); return; }
+        if (ev.shiftKey && document.activeElement === a) { ev.preventDefault(); z.focus(); }
+        else if (!ev.shiftKey && document.activeElement === z) { ev.preventDefault(); a.focus(); }
+      }
+      window.addEventListener("keydown", onKey, true);
+      return function () { window.removeEventListener("keydown", onKey, true); };
+    }, []);
+
+    var frameStyle = fit ? { width: NP_DESIGN_W + "px", height: fit.h + "px", transform: "scale(" + fit.k + ")" } : { visibility: "hidden" };
+    return h("div", { className: "cr-np-modal" },
+      h("div", { className: "cr-np-scrim", ref: scrimRef, "aria-hidden": "true", onClick: function () { close(); } }),
+      h("section", { className: "cr-np-sheet", ref: ref, role: "dialog", "aria-modal": "true", "aria-labelledby": "cr-np-title", "aria-describedby": "cr-np-desc" },
+        h("button", { type: "button", className: "cr-iconbtn cr-iconbtn--solid cr-np-close", "aria-label": "Close Resonance prototype", title: "Close", "data-np-chrome": "", onClick: function () { close(); } },
+          h(Icon, { name: "close" })),
+        h("div", { className: "cr-np-device", "data-np-chrome": "" },
+          h("div", { className: "cr-np-phone" },
+            h("div", { className: "cr-np-screen", ref: screenRef, "data-status": status },
+              src ? h("iframe", { src: src, title: "Resonance live prototype", allow: "autoplay; encrypted-media", referrerPolicy: "no-referrer-when-downgrade",
+                style: frameStyle, tabIndex: status === "ready" ? 0 : -1, "aria-hidden": status === "ready" ? undefined : "true",
+                onLoad: function () { if (frameRef.current) frameRef.current.onLoad(); } }) : null,
+              h("div", { className: "cr-np-poster", "aria-hidden": status === "ready" ? "true" : undefined },
+                /* Poster: the pill's album art grown into a Now Playing screen */
+                h("img", { className: "cr-np-poster-bg", src: props.poster || NP_POSTER, alt: "", "aria-hidden": "true", decoding: "async" }),
+                h("div", { className: "cr-np-poster-np", "aria-hidden": "true" },
+                  h("img", { src: props.poster || NP_POSTER, alt: "", decoding: "async" }),
+                  h("b", null, props.title || "Resonance"),
+                  h("span", null, h("i", { className: "cr-np-dot" }), "For Spotify"),
+                  h("span", { className: "cr-np-track" }, h("i", { className: "cr-np-fill" }), h("i", { className: "cr-np-mark" }))),
+                status === "failed"
+                  ? h("div", { className: "cr-np-state is-failed", role: "status" },
+                      h("p", null, "The prototype didn't load here."),
+                      h("a", { className: "cr-np-state-link", href: full, target: "_blank", rel: "noreferrer" }, "Open full screen", h(Icon, { name: "arrow", stroke: 1.8 })))
+                  : h("div", { className: "cr-np-state", role: "status" }, h("i", { className: "cr-np-spin", "aria-hidden": "true" }), "Loading prototype"))),
+            h("img", { className: "cr-np-frame", src: props.frame || NP_FRAME, alt: "", "aria-hidden": "true", decoding: "async" }))),
+        h("div", { className: "cr-np-copy" },
+          h("p", { className: "cr-np-eyebrow", "data-np-chrome": "" }, h("i", { className: "cr-np-dot" }), "For Spotify · Personal project"),
+          h("h2", { id: "cr-np-title", className: "cr-np-heading", "data-np-chrome": "" }, props.title || "Resonance"),
+          h("p", { id: "cr-np-desc", className: "cr-np-desc", "data-np-chrome": "" },
+            props.description || "A speculative Spotify playback feature that starts songs closer to the moments you actually want to hear."),
+          h("p", { className: "cr-np-note", "data-np-chrome": "" }, "Live Resonance build. Try it in the phone. Prefer full screen on a real phone if you want more room."),
+          h("div", { className: "cr-np-actions", "data-np-chrome": "" },
+            h("a", { className: "cr-np-btn cr-np-btn--primary", href: full, target: "_blank", rel: "noreferrer" }, "Open full screen", h(Icon, { name: "arrow", stroke: 1.8 })),
+            h("a", { className: "cr-np-btn", href: props.caseHref || "./resonance-short.html" }, "Read the case study")))));
+  }
+
   window.Craft = {
     Stage: Stage, Backdrop: Backdrop, Icon: Icon, Avatar: Avatar,
     TopBar: TopBar, NotificationPill: NotificationPill, SegmentedControl: SegmentedControl,
@@ -878,7 +1074,8 @@
     AvatarStack: AvatarStack, Dock: Dock, MetaStrip: MetaStrip,
     HeroBoard: HeroBoard, FolderOpen: FolderOpen, ProfileOpen: ProfileOpen,
     FolderSheet: FolderSheet, ProfileSheet: ProfileSheet, AllWorkSheet: AllWorkSheet, ProjectWell: ProjectWell, useClock: useClock,
-    motion: { enter: enter, exit: exit, burst: burst, expandFrom: expandFrom },
+    NowPlayingPill: NowPlayingPill, ResonanceSheet: ResonanceSheet,
+    motion: { enter: enter, exit: exit, burst: burst, expandFrom: expandFrom, growFrames: growFrames, sourceOf: sourceOf },
     sample: sample
   };
 
