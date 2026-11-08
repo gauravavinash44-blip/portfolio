@@ -786,9 +786,27 @@
       ? Object.assign({}, f, { href: hrefs[f.title] })
       : Object.assign({}, f, { onClick: () => onExit("more-work") })));
     S.folders.rows = S.folders.rows.map((r) => Object.assign({}, r, { href: hrefs[r.title] }));
+    /* All work popup: the five case studies, facts from FEATURED and the case pages */
+    S.cases = [
+      { id: "contextual-chat", title: "Contextual Chat", href: hrefs["Contextual Chat"], image: ASSETS.chat, icon: "chatSpark", tone: "blue",
+        domain: "AI search", year: "2023 to now", summary: "AI chat so investors explore companies in plain language.",
+        metric: { value: "+25%", label: "engagement" } },
+      { id: "deal-room", title: "Deal Room", href: hrefs["Deal Room"], image: ASSETS.dealRoom, icon: "dealDoc", tone: "orange",
+        domain: "B2B SaaS", year: "2023-24", summary: "Deal creation anchored on the company profile, where intent lives.",
+        metric: { value: "+32%", label: "deal creation adoption" } },
+      { id: "white-label", title: "White Label Setup", href: hrefs["White Label"], image: ASSETS.whiteLabel, icon: "swatch", tone: "pink",
+        domain: "Fintech", year: "2025", summary: "A firm starts empty, then looks live once URL, logo and sender are set.",
+        metric: { value: "3", label: "steps to live: URL, logo, sender" } },
+      { id: "easyeat", title: "EasyEat", href: hrefs["EasyEat"], image: ASSETS.easyeat, icon: "bowl", tone: "orange",
+        domain: "FoodTech", summary: "Customization and monetisation flows for a multi-country launch.",
+        metric: { value: "+8.3%", label: "QR adoption in 3 weeks" } },
+      { id: "resonance", title: "Spotify Resonance", href: hrefs["Resonance"], image: ASSETS.resonance, icon: "wave", tone: "blue",
+        domain: "AI, Music", summary: "Playback that starts songs closer to the part you want to hear.",
+        metric: { value: "Concept", label: "speculative, personal project", word: true } },
+    ].map((c) => Object.assign({ group: "case", label: "Open " + c.title + " case study" }, c));
     S.preview.href = hrefs["Contextual Chat"];
     S.topbar.notice.href = hrefs["Contextual Chat"];
-    S.stat.onLink = () => onExit("work");
+    S.stat.linkLabel = "View all work";
     S.stack.onClick = () => onExit("more-work");
     S.profileSheet.links = [
       { label: "Resume", href: ASSETS.resume, external: true },
@@ -848,6 +866,52 @@
     }, [stageRef]);
   }
 
+  /* Design Playground explorations for the All work popup: titles and order from the
+     playground (window.CraftPlayground.items), categories and one-liners from playground-data.json */
+  const PG_ICONS = {
+    nomad: "plane", "health-karma": "gauge", swaply: "swap", splitly: "receipt", moov: "card",
+    "space-between": "orbits", "loading-range": "loader", "craft-mode": "layers",
+  };
+  function usePlaygroundJson(CP) {
+    const [json, setJson] = useState(null);
+    useEffect(() => {
+      let live = true;
+      if (CP && CP.preload) CP.preload().then((j) => { if (live && j) setJson(j); });
+      return () => { live = false; };
+    }, [CP]);
+    return json;
+  }
+  function firstSentence(t) {
+    if (!t) return "";
+    const m = String(t).match(/^.*?[.!?](\s|$)/);
+    return (m ? m[0] : t).trim();
+  }
+  function playgroundWork(CP, json) {
+    const byId = {};
+    if (json) ["interface", "motion"].forEach((k) => (json[k] || []).forEach((p) => { byId[p.id] = p; }));
+    const base = CP && CP.items ? CP.items() : PLAYGROUND.map((p) => ({ id: p.id, title: p.title, image: p.img, kind: p.kind }));
+    return base.map((it) => {
+      const p = byId[it.id] || {};
+      const motion = (it.kind || p.kind) === "motion" || (p.category === "Motion");
+      const kindLabel = it.id === "craft-mode" ? "This page" : it.look === "live" ? "Live prototype" : motion ? "Motion" : "Interface";
+      let metric = null;
+      if (it.duration) metric = { value: it.duration.toFixed(1) + "s", label: "motion study" };
+      else if (it.look === "live") metric = { value: "Live", label: "prototype you can try", word: true };
+      else if (it.id === "craft-mode") metric = { value: "Now", label: "you are on it", word: true };
+      return {
+        id: "pg-" + it.id, pgId: it.id, group: "playground",
+        title: it.title || p.title || it.id,
+        image: (it.crop && it.crop.poster) || it.poster || it.image || (p.preview && p.preview.src),
+        video: it.video && !it.crop ? it.video : null, /* Loading Range's poster is a blank frame, so its card plays the clip */
+        icon: PG_ICONS[it.id] || "grid", tone: "plain",
+        domain: kindLabel,
+        summary: firstSentence(p.description || it.description) || (p.category || "Exploration"),
+        metric,
+        label: "Open " + (it.title || p.title) + " in the Design Playground",
+      };
+    });
+  }
+
   function CraftHero({ onExit }) {
     const C = window.Craft;
     const stageRef = useRef(null);
@@ -859,8 +923,11 @@
     const [shuffleTick, setShuffleTick] = useState(0); /* bumps to restart the timer after a manual change */
     const [playground, setPlayground] = useState(false); /* Design Playground gallery open */
     const pgOpener = useRef(null);
+    const [pgStart, setPgStart] = useState(null); /* exploration to open straight into, if the playground supports it */
     const data = React.useMemo(() => craftData(onExit), [onExit]);
     const CP = window.CraftPlayground;
+    const pgJson = usePlaygroundJson(CP);
+    const allWork = React.useMemo(() => data.cases.concat(playgroundWork(CP, pgJson)), [data, pgJson]);
 
     useBoardScale(stageRef);
     useEffect(() => { C.motion.enter(stageRef.current, { delay: 300 }); }, []);
@@ -916,32 +983,40 @@
       if (t) t.setAttribute("aria-expanded", picker ? "true" : "false");
     }, [picker]);
     useEffect(() => {
-      if (!sheet) return undefined;
+      if (!sheet || sheet.kind === "allwork") return undefined; /* the All work sheet animates its own close */
       const onKey = (ev) => { if (ev.key === "Escape") setSheet(null); };
       window.addEventListener("keydown", onKey);
       return () => window.removeEventListener("keydown", onKey);
     }, [sheet]);
 
-    const openFolder = (from) => setSheet({ kind: "folder", from: from || "list" });
+    /* All work popup. opener = the element that was clicked; the sheet grows out of its card */
+    const openAllWork = (opener, filter) => {
+      setPicker(false);
+      setSheet({ kind: "allwork", opener: opener || null, filter: filter || "all" });
+    };
+    const fromEvent = (ev) => (ev && ev.currentTarget) || document.activeElement;
+    const listCard = () => stageRef.current && stageRef.current.querySelector(".cr-list .cr-chip--btn");
     useEffect(() => { if (CP) CP.preload(); }, []);
-    const openPlayground = () => {
+    const openPlayground = (startId) => {
       if (!CP || playground) return;
       pgOpener.current = document.activeElement;
       setPicker(false);
       setSheet(null);
+      setPgStart(typeof startId === "string" ? startId : null);
       setPlayground(true);
     };
     const closePlayground = useCallback((then) => {
       setPlayground(false);
+      setPgStart(null);
       requestAnimationFrame(() => {
         const back = stageRef.current && stageRef.current.querySelector("[data-pg-card]");
-        if (then === "folders") { openFolder("list"); return; }
+        if (then === "folders") { openAllWork(listCard(), "case"); return; }
         if (back) back.focus({ preventScroll: true });
       });
     }, []);
     const topbar = Object.assign({}, data.topbar, {
-      tab: sheet && sheet.kind === "folder" ? 1 : 0,
-      onTab: (i) => (i === 1 ? openFolder("list") : setSheet(null)),
+      tab: sheet && sheet.kind === "allwork" && !sheet.closing ? 1 : 0,
+      onTab: (i, label, ev) => (i === 1 ? openAllWork(fromEvent(ev)) : setSheet(null)),
       onSearch: openAssistant,
       searchLabel: "Ask the portfolio assistant",
     });
@@ -954,7 +1029,7 @@
     };
 
     const stage = e(C.Stage, {
-      className: "cr-hero craft-wp--" + wallpaper,
+      className: "cr-hero craft-wp--" + wallpaper + (sheet && sheet.kind === "allwork" && !sheet.closing ? " is-aw" : ""),
       wallpaper,
       stageRef,
       width: "100vw",
@@ -965,22 +1040,25 @@
       e("h1", { className: "cr-visually-hidden" }, "Gaurav Avinash, Product Designer"),
       e(C.TopBar, topbar),
       e("div", { className: "cr-board" },
-        e("div", { className: "cr-grid" + (sheet ? " cr-dimmed" : "") },
+        e("div", { className: "cr-grid" + (sheet && !sheet.closing ? " cr-dimmed" : "") },
           e("div", { className: "cr-dim" }, e(C.AgendaCard, data.agenda)),
           e("div", { className: "cr-dim" }, e(C.FolderListCard, Object.assign({}, data.folders, {
             draggable: true,
-            onOpen: () => openFolder("list"),
+            onOpen: (row, ev) => openAllWork(fromEvent(ev), "case"),
+            openLabel: (row) => row.title + ", " + row.sub + ". Show all work",
+            onAll: (ev) => openAllWork(fromEvent(ev)),
+            allLabel: "View all work, " + data.cases.length + " case studies",
           }))),
           e("div", { className: "cr-dim", "data-cr-drop": "" }, CP
             ? e(CP.PlaygroundCard, {
               thumbs: [ASSETS.nomad, ASSETS.spaceBetweenPoster, ASSETS.health],
               count: 8,
               onOpen: openPlayground,
-              onDrop: () => openFolder("drop"),
+              onDrop: () => openAllWork(stageRef.current && stageRef.current.querySelector("[data-pg-card]"), "case"),
             })
             : e(C.DropZoneCard, Object.assign({}, data.drop, {
-              onDrop: () => openFolder("drop"),
-              onClick: () => openFolder("drop"),
+              onDrop: () => openAllWork(null, "case"),
+              onClick: (ev) => openAllWork(fromEvent(ev)),
             }))),
           e("div", { className: "cr-dim" }, e(C.PreviewCard, data.preview)),
           e("div", { className: "cr-dim" }, e(C.ProfileOrb, Object.assign({}, data.profile, {
@@ -989,12 +1067,8 @@
             editIcon: "dropper",
             editLabel: "Open profile card",
           }))),
-          e("div", { className: "cr-dim" }, e(C.StatCard, data.stat))
+          e("div", { className: "cr-dim" }, e(C.StatCard, Object.assign({}, data.stat, { onLink: (ev) => openAllWork(fromEvent(ev)) })))
         ),
-        sheet && sheet.kind === "folder" ? e(C.FolderSheet, {
-          stageRef, from: sheet.from, folder: data.folder, files: data.files, style: {},
-          onClose: () => setSheet(null),
-        }) : null,
         sheet && sheet.kind === "profile" ? e(C.ProfileSheet, Object.assign({
           stageRef, style: {}, onClose: () => setSheet(null),
         }, data.profileSheet)) : null
@@ -1014,7 +1088,15 @@
           }))
         ) : null,
         e(C.Dock, dock)
-      ))
+      )),
+      sheet && sheet.kind === "allwork" ? e(C.AllWorkSheet, {
+        items: allWork,
+        opener: sheet.opener,
+        filter: sheet.filter,
+        onPick: (item) => openPlayground(item.pgId),
+        onClosing: () => setSheet((s) => (s ? Object.assign({}, s, { closing: true }) : s)),
+        onClose: (then) => { setSheet(null); if (typeof then === "function") requestAnimationFrame(then); },
+      }) : null
     );
 
     return e(React.Fragment, null,
@@ -1025,6 +1107,7 @@
         resumeHref: ASSETS.resume,
         onAssistant: openAssistant,
         onClose: closePlayground,
+        startId: pgStart,
       }) : null
     );
   }

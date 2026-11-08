@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"Craft","components":[{"name":"Stage"},{"name":"TopBar"},{"name":"NotificationPill"},{"name":"SegmentedControl"},{"name":"IconButton"},{"name":"Chip"},{"name":"Toggle"},{"name":"AgendaCard"},{"name":"FolderListCard"},{"name":"DropZoneCard"},{"name":"PreviewCard"},{"name":"CursorChip"},{"name":"ProfileOrb"},{"name":"StatCard"},{"name":"AvatarStack"},{"name":"Dock"},{"name":"MetaStrip"},{"name":"HeroBoard"},{"name":"FolderOpen"},{"name":"ProfileOpen"}]} */
+/* @ds-bundle: {"format":4,"namespace":"Craft","components":[{"name":"Stage"},{"name":"TopBar"},{"name":"NotificationPill"},{"name":"SegmentedControl"},{"name":"IconButton"},{"name":"Chip"},{"name":"Toggle"},{"name":"AgendaCard"},{"name":"FolderListCard"},{"name":"DropZoneCard"},{"name":"PreviewCard"},{"name":"CursorChip"},{"name":"ProfileOrb"},{"name":"StatCard"},{"name":"AvatarStack"},{"name":"Dock"},{"name":"MetaStrip"},{"name":"HeroBoard"},{"name":"FolderOpen"},{"name":"ProfileOpen"},{"name":"AllWorkSheet"},{"name":"ProjectWell"}]} */
 (function () {
   var React = window.React;
   var h = React.createElement;
@@ -30,7 +30,21 @@
     arrow: "M7 17L17 7M9 7h8v8",
     grid: "M5 5h6v6H5zM13 5h6v6h-6zM5 13h6v6H5zM13 13h6v6h-6z",
     image: "M4 5.5h16v13H4zM4 15l4.5-4.5 4 4 2.5-2.5 5 5M15.5 9.5a1.2 1.2 0 1 0 0-.01",
-    camera: "M3.5 7.5h11v9h-11zM14.5 10.5l5-2.5v8l-5-2.5"
+    camera: "M3.5 7.5h11v9h-11zM14.5 10.5l5-2.5v8l-5-2.5",
+    /* Project icons (same 1.5px line) */
+    chatSpark: "M13 4.5H6.5A2.5 2.5 0 0 0 4 7v7a2.5 2.5 0 0 0 2.5 2.5H8V20l4.2-3.5h5.3A2.5 2.5 0 0 0 20 14v-3M18 2.8l.85 2.05 2.05.85-2.05.85L18 8.6l-.85-2.05-2.05-.85 2.05-.85zM8 10.5h6",
+    dealDoc: "M14 3.5H7a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8.5zM14 3.5v5h5M8.8 14.2l2.2 2.2 4.2-4.4",
+    swatch: "M4.5 4.5h5v12.5a2.5 2.5 0 0 1-5 0zM9.5 8.4l3.4-3.4 3.6 3.6-7 7M11.8 19.5h7.7v-5h-4.6M7 17h.01",
+    bowl: "M3.5 11.5h17a8.5 6.5 0 0 1-17 0zM9 20.5h6M9 8.5c0-1.4 1-1.6 1-3M12.5 8.5c0-1.4 1-1.6 1-3M16 8.5c0-1.4 1-1.6 1-3",
+    wave: "M4 10.5v3M8 7.5v9M12 4.5v15M16 8.5v7M20 10.5v3",
+    plane: "M20.5 3.5L3.5 10.5l7 3 3 7zM10.5 13.5l10-10",
+    gauge: "M4.5 16.5a7.5 7.5 0 1 1 15 0M12 16.5l3.4-4.4M7 20h10",
+    swap: "M6.5 7.5h12M15 4l3.5 3.5L15 11M17.5 16.5h-12M9 13l-3.5 3.5L9 20",
+    receipt: "M6 3.5h12v17l-2-1.3-2 1.3-2-1.3-2 1.3-2-1.3-2 1.3zM9 8h6M9 11.5h6M9 15h3",
+    card: "M3.5 6.5h17v11h-17zM3.5 10h17M7 14.5h3",
+    orbits: "M4 12a5 5 0 1 0 10 0 5 5 0 1 0-10 0zM10 12a5 5 0 1 0 10 0 5 5 0 1 0-10 0z",
+    loader: "M12 4a8 8 0 1 1-7.6 5.5M12 8.5v3.5l2.5 1.5",
+    layers: "M12 4l8.5 4.5L12 13 3.5 8.5zM3.5 12.5L12 17l8.5-4.5M3.5 16.5L12 21l8.5-4.5"
   };
   function Icon(props) {
     if (props.name === "dropper") {
@@ -155,7 +169,7 @@
       items.map(function (it, i) {
         return h("button", { key: it, type: "button", role: "tab", "aria-selected": i === idx ? "true" : "false",
           ref: function (n) { refs.current[i] = n; },
-          onClick: function () { setIdx(i); if (props.onChange) props.onChange(i, it); } }, it);
+          onClick: function (ev) { setIdx(i); if (props.onChange) props.onChange(i, it, ev); } }, it);
       }));
   }
 
@@ -196,7 +210,7 @@
         h("span", { className: "cr-topbar-id" }, h("span", null, props.title), h("span", null, props.subtitle))),
       h("div", { "data-cr-enter": "" }, props.notice ? h(NotificationPill, props.notice) : null),
       h("div", { className: "cr-topbar-right", "data-cr-enter": "" },
-        h(SegmentedControl, { items: props.tabs || ["Board", "Folders"], value: props.tab || 0, onChange: props.onTab }),
+        h(SegmentedControl, { items: props.tabs || ["Home", "Projects"], value: props.tab || 0, onChange: props.onTab, label: props.tabsLabel || "Home or projects" }),
         h(IconButton, { variant: "glass", icon: "search", label: props.searchLabel || "Search", onClick: props.onSearch })));
   }
 
@@ -216,9 +230,9 @@
     return h("li", { className: "cr-row", draggable: props.draggable ? "true" : undefined,
       onDragStart: props.draggable ? function (ev) { ev.dataTransfer.setData("text/plain", r.title); } : undefined },
       h("span", { className: "cr-row-av" },
-        h("img", { className: "cr-row-thumb", src: r.thumb, alt: "" }),
+        r.icon ? h(ProjectWell, { icon: r.icon, tone: r.tone }) : h("img", { className: "cr-row-thumb", src: r.thumb, alt: "" }),
         r.badge ? h("i", { className: "cr-row-badge", "aria-hidden": "true" }, h("b"), h("b"), h("b")) : null),
-      h("button", { type: "button", className: "cr-row-text", onClick: function () { if (props.onOpen) props.onOpen(r); } },
+      h("button", { type: "button", className: "cr-row-text", "aria-label": props.openLabel ? props.openLabel(r) : undefined, onClick: function (ev) { if (props.onOpen) props.onOpen(r, ev); } },
         h("b", null, r.title), h("span", null, r.sub)),
       r.locked
         ? h(IconButton, { icon: "lock", label: r.title + " is under NDA" })
@@ -235,9 +249,11 @@
     return h("section", { className: cx("cr-card cr-solid cr-list", props.className), "data-cr-enter": "", "aria-label": props.title },
       h("header", { className: "cr-list-head" },
         h("h3", { className: "cr-t-title" }, props.title),
-        h(Chip, { variant: "outline" }, props.count)),
+        props.onAll
+          ? h("button", { type: "button", className: "cr-chip cr-chip--outline cr-chip--btn", "aria-label": props.allLabel || ("View " + props.count), "aria-haspopup": "dialog", onClick: props.onAll }, props.count)
+          : h(Chip, { variant: "outline" }, props.count)),
       h("ul", null, (props.rows || []).slice(0, 3).map(function (r) {
-        return h(FolderRow, { key: r.title, row: r, onOpen: props.onOpen, draggable: props.draggable });
+        return h(FolderRow, { key: r.title, row: r, onOpen: props.onOpen, openLabel: props.openLabel, draggable: props.draggable });
       })));
   }
 
@@ -368,7 +384,7 @@
     return h("section", { className: cx("cr-card cr-solid cr-stat", props.className), "data-cr-enter": "", "aria-label": props.title },
       h("header", { className: "cr-stat-head" },
         h("h3", { className: "cr-t-title" }, props.title),
-        props.link ? h("a", { className: "cr-stat-link", href: props.href || "#", onClick: props.onLink ? function (ev) { ev.preventDefault(); props.onLink(); } : undefined }, props.link, h(Icon, { name: "chevron", stroke: 2 })) : null),
+        props.link ? h("a", { className: "cr-stat-link", href: props.href || "#", "aria-haspopup": props.onLink ? "dialog" : undefined, "aria-label": props.linkLabel, onClick: props.onLink ? function (ev) { ev.preventDefault(); props.onLink(ev); } : undefined }, props.link, h(Icon, { name: "chevron", stroke: 2 })) : null),
       h("p", { className: "cr-stat-value cr-t-xl" }, val, h("span", null, props.unit || "")),
       h("div", { className: "cr-stat-legs" },
         segs.map(function (s, i) {
@@ -569,6 +585,222 @@
         })));
   }
 
+  /* Round icon well for a project: 1.5px line icon on a faint tint */
+  function ProjectWell(props) {
+    return h("span", { className: cx("cr-pwell", "cr-pwell--" + (props.tone || "plain"), props.className), "aria-hidden": "true" },
+      h(Icon, { name: props.icon }));
+  }
+
+  /* ───────── All work: every case study and exploration in one liquid-glass sheet ─────────
+     Grows out of the element that opened it (clip + translate, so nothing stretches),
+     cards burst in, and it folds back into the same element on close. */
+  var AW_FILTERS = [{ id: "all", label: "All" }, { id: "case", label: "Case studies" }, { id: "playground", label: "Playground" }];
+  var AW_EASE_BACK = "cubic-bezier(0.5, 0, 0.75, 0)";
+
+  function focusables(root) {
+    return Array.prototype.slice.call(root.querySelectorAll("a[href], button:not([disabled]), [tabindex]:not([tabindex='-1'])"))
+      .filter(function (n) { return n.offsetWidth || n.offsetHeight || n.getClientRects().length; });
+  }
+
+  /* Where the sheet starts and ends: the card around the opener (or the opener itself) */
+  function sourceOf(el) {
+    if (!el || !el.isConnected) return null;
+    var host = (el.closest && (el.closest(".cr-card") || el.closest(".cr-seg"))) || el;
+    var r = host.getBoundingClientRect();
+    if (!r.width || !r.height) return null;
+    var rad = parseFloat(getComputedStyle(host).borderTopLeftRadius) || 24;
+    var k = host.offsetWidth ? r.width / host.offsetWidth : 1;
+    return { rect: r, radius: Math.min(rad * k, r.height / 2) };
+  }
+
+  /* Keyframe pair: the sheet clipped and moved onto the source rect, then fully open */
+  function growFrames(sheet, src) {
+    var r = sheet.getBoundingClientRect();
+    var s = src.rect;
+    var w = Math.min(s.width, r.width), hh = Math.min(s.height, r.height);
+    /* keep the clip window inside the sheet, then translate so it lands on the source */
+    var cl = Math.max(0, Math.min(s.left - r.left, r.width - w));
+    var ct = Math.max(0, Math.min(s.top - r.top, r.height - hh));
+    var tx = s.left - (r.left + cl), ty = s.top - (r.top + ct);
+    var R = getComputedStyle(sheet).borderTopLeftRadius || "0px";
+    var from = {
+      clipPath: "inset(" + ct + "px " + (r.width - cl - w) + "px " + (r.height - ct - hh) + "px " + cl + "px round " + src.radius + "px)",
+      transform: "translate(" + tx + "px," + ty + "px)"
+    };
+    var to = { clipPath: "inset(0px 0px 0px 0px round " + R + ")", transform: "translate(0px,0px)" };
+    return [from, to];
+  }
+
+  function AllWorkCard(props) {
+    var it = props.item;
+    var metric = it.metric;
+    var inner = [
+      h("span", { key: "m", className: "cr-aw-media" + (it.contain ? " is-contain" : "") },
+        it.video
+          ? h("video", { src: it.video, poster: it.image, loop: true, playsInline: true, preload: "metadata", "aria-hidden": "true",
+              ref: function (n) { if (!n) return; n.muted = true; if (!reduced() && n.paused) { var pr = n.play(); if (pr && pr.catch) pr.catch(function () {}); } } })
+          : it.image ? h("img", { src: it.image, alt: "", loading: "lazy", decoding: "async" }) : null,
+        it.badge ? h("span", { className: "cr-aw-badge" }, it.badge) : null),
+      h("span", { key: "b", className: "cr-aw-body" },
+        h("span", { className: "cr-aw-head" },
+          h(ProjectWell, { icon: it.icon, tone: it.tone }),
+          h("span", { className: "cr-aw-name" },
+            h("b", null, it.title),
+            h("span", null, it.summary))),
+        h("span", { className: "cr-aw-foot" },
+          metric
+            ? h("span", { className: "cr-aw-metric" + (metric.word ? " is-word" : "") },
+                h("b", null, metric.value), h("span", null, metric.label))
+            : h("span", { className: "cr-aw-metric" }),
+          h("span", { className: "cr-aw-tags" },
+            it.domain ? h("span", { className: "cr-chip cr-chip--outline cr-aw-chip" }, it.domain) : null,
+            it.year ? h("span", { className: "cr-chip cr-chip--outline cr-aw-chip" }, it.year) : null),
+          h("span", { className: "cr-aw-go" }, h(Icon, { name: "arrow", stroke: 1.8 }))))
+    ];
+    var common = { className: "cr-aw-card", "data-aw-card": "", "aria-label": it.label || it.title };
+    if (it.href) return h("a", Object.assign({ href: it.href }, common), inner);
+    return h("button", Object.assign({ type: "button", onClick: function (ev) { props.onPick(it, ev); } }, common), inner);
+  }
+
+  function AllWorkSheet(props) {
+    var ref = useRef(null), scrimRef = useRef(null), gridRef = useRef(null), tabRefs = useRef([]);
+    var closing = useRef(false), first = useRef(true);
+    var _f = useState(props.filter || "all"), filter = _f[0], setFilter = _f[1];
+    var items = props.items || [];
+    var list = items.filter(function (it) { return filter === "all" || it.group === filter; });
+    var nCase = items.filter(function (it) { return it.group === "case"; }).length;
+    var nPg = items.length - nCase;
+
+    /* Open: scrim fades, sheet grows out of the source, header rises, cards burst */
+    useLayoutEffect(function () {
+      var sheet = ref.current;
+      var root = document.documentElement;
+      root.classList.add("ga-aw-open");
+      var prev = props.opener || document.activeElement;
+      var src = sourceOf(props.opener);
+      var still = reduced();
+      if (scrimRef.current) scrimRef.current.animate([{ opacity: 0 }, { opacity: 1 }], { duration: still ? 160 : 420, easing: "ease", fill: "backwards" });
+      if (still || !src) {
+        sheet.animate([{ opacity: 0, transform: still ? "none" : "scale(0.97)" }, { opacity: 1, transform: "none" }], { duration: still ? 160 : 420, easing: EASE_ARRIVE, fill: "backwards" });
+      } else {
+        sheet.animate(growFrames(sheet, src), { duration: 520, easing: EASE_ARRIVE, fill: "backwards" });
+        Array.prototype.slice.call(sheet.querySelectorAll("[data-aw-chrome]")).forEach(function (n, i) {
+          n.animate([{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "none" }], { duration: 520, delay: 110 + i * 50, easing: EASE_ARRIVE, fill: "backwards" });
+        });
+      }
+      var cards = Array.prototype.slice.call(sheet.querySelectorAll("[data-aw-card]"));
+      burst(src ? src.rect : sheet.getBoundingClientRect(), cards.filter(function (c) { return inView(c, sheet); }), { delay: 200, stagger: 50, duration: 720 });
+      var t = setTimeout(function () {
+        var btn = sheet.querySelector(".cr-aw-close");
+        if (btn) btn.focus({ preventScroll: true });
+      }, 60);
+      return function () {
+        clearTimeout(t);
+        root.classList.remove("ga-aw-open");
+        if (prev && prev.isConnected && prev.focus) prev.focus({ preventScroll: true });
+      };
+    }, []);
+
+    /* Filter change: the visible cards rise in, staggered */
+    useLayoutEffect(function () {
+      if (first.current) { first.current = false; return; }
+      var sheet = ref.current, g = gridRef.current;
+      if (!g) return;
+      g.scrollTop = 0;
+      var cards = Array.prototype.slice.call(g.querySelectorAll("[data-aw-card]")).filter(function (c) { return inView(c, sheet); });
+      cards.forEach(function (c, i) {
+        if (reduced()) { c.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160, fill: "backwards" }); return; }
+        c.animate([{ opacity: 0, transform: "translateY(18px) scale(0.96)" }, { opacity: 1, transform: "none" }],
+          { duration: 520, delay: i * 45, easing: EASE_ARRIVE, fill: "backwards" });
+      });
+    }, [filter]);
+
+    function inView(el, sheet) {
+      var r = el.getBoundingClientRect(), s = (sheet || ref.current).getBoundingClientRect();
+      return r.top < s.bottom && r.bottom > s.top;
+    }
+
+    function close(then) {
+      if (closing.current) return;
+      closing.current = true;
+      var sheet = ref.current;
+      var called = false;
+      var done = function () { if (called) return; called = true; props.onClose(then); };
+      if (!sheet) { done(); return; }
+      setTimeout(done, 700); /* never strand the sheet if frames stall */
+      if (props.onClosing) props.onClosing(); /* the board un-dims while the sheet folds back */
+      var src = then ? null : sourceOf(props.opener);
+      var still = reduced();
+      if (scrimRef.current) scrimRef.current.animate([{ opacity: 1 }, { opacity: 0 }], { duration: still ? 140 : 380, easing: "ease", fill: "forwards" });
+      Array.prototype.slice.call(sheet.querySelectorAll("[data-aw-chrome], [data-aw-card]")).forEach(function (n) {
+        n.animate([{ opacity: 1 }, { opacity: 0 }], { duration: still ? 120 : 200, easing: "ease", fill: "forwards" });
+      });
+      var anim;
+      if (still || !src) {
+        anim = sheet.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: still ? "none" : "scale(0.96)" }], { duration: still ? 140 : 320, easing: AW_EASE_BACK, fill: "forwards" });
+      } else {
+        var fr = growFrames(sheet, src).reverse();
+        fr[1].opacity = 0.6;
+        anim = sheet.animate(fr, { duration: 440, easing: AW_EASE_BACK, fill: "forwards" });
+      }
+      anim.finished.then(done, done);
+    }
+
+    /* Escape closes, Tab stays inside */
+    useEffect(function () {
+      function onKey(ev) {
+        if (ev.key === "Escape") { ev.preventDefault(); ev.stopPropagation(); close(); return; }
+        if (ev.key !== "Tab" || !ref.current) return;
+        var f = focusables(ref.current);
+        if (!f.length) return;
+        var a = f[0], z = f[f.length - 1];
+        if (!ref.current.contains(document.activeElement)) { ev.preventDefault(); a.focus(); return; }
+        if (ev.shiftKey && document.activeElement === a) { ev.preventDefault(); z.focus(); }
+        else if (!ev.shiftKey && document.activeElement === z) { ev.preventDefault(); a.focus(); }
+      }
+      window.addEventListener("keydown", onKey, true);
+      return function () { window.removeEventListener("keydown", onKey, true); };
+    }, []);
+
+    function onTabKey(ev, i) {
+      var n = AW_FILTERS.length, j = null;
+      if (ev.key === "ArrowRight") j = (i + 1) % n;
+      else if (ev.key === "ArrowLeft") j = (i - 1 + n) % n;
+      else if (ev.key === "Home") j = 0;
+      else if (ev.key === "End") j = n - 1;
+      if (j == null) return;
+      ev.preventDefault();
+      setFilter(AW_FILTERS[j].id);
+      if (tabRefs.current[j]) tabRefs.current[j].focus();
+    }
+    var fi = Math.max(0, AW_FILTERS.map(function (f) { return f.id; }).indexOf(filter));
+
+    return h("div", { className: "cr-aw" },
+      h("div", { className: "cr-aw-scrim", ref: scrimRef, "aria-hidden": "true", onClick: function () { close(); } }),
+      h("section", { className: "cr-aw-sheet", ref: ref, role: "dialog", "aria-modal": "true", "aria-labelledby": "cr-aw-title" },
+        h("header", { className: "cr-aw-top" },
+          h("div", { className: "cr-aw-titles" },
+            h("h2", { id: "cr-aw-title", className: "cr-aw-title", "data-aw-chrome": "" }, props.title || "All work"),
+            h("p", { className: "cr-aw-counts", "data-aw-chrome": "" },
+              h("span", { className: "cr-aw-count" }, nCase + " case studies"),
+              h("span", { className: "cr-aw-count" }, nPg + " explorations"))),
+          h("div", { className: "cr-aw-tabs", role: "tablist", "aria-label": "Filter work", "data-aw-chrome": "" },
+            h("span", { className: "cr-aw-tabpill", "aria-hidden": "true", style: { transform: "translateX(" + (fi * 100) + "%)" } }),
+            AW_FILTERS.map(function (f, i) {
+              var on = f.id === filter;
+              return h("button", { key: f.id, type: "button", role: "tab", id: "cr-aw-tab-" + f.id, "aria-selected": on ? "true" : "false", "aria-controls": "cr-aw-panel",
+                tabIndex: on ? 0 : -1, ref: function (n) { tabRefs.current[i] = n; },
+                onClick: function () { setFilter(f.id); }, onKeyDown: function (ev) { onTabKey(ev, i); } }, f.label);
+            })),
+          h("button", { type: "button", className: "cr-iconbtn cr-iconbtn--solid cr-aw-close", "aria-label": "Close all work", title: "Close", "data-aw-chrome": "", onClick: function () { close(); } },
+            h(Icon, { name: "close" }))),
+        h("div", { className: "cr-aw-scroll", ref: gridRef, id: "cr-aw-panel", role: "tabpanel", "aria-labelledby": "cr-aw-tab-" + filter, tabIndex: -1 },
+          h("div", { className: "cr-aw-grid" },
+            list.map(function (it) {
+              return h(AllWorkCard, { key: it.id, item: it, onPick: function (item) { close(function () { if (props.onPick) props.onPick(item); }); } });
+            })))));
+  }
+
   function ProfileSheet(props) {
     var ref = useRef(null);
     useDialogFocus(ref);
@@ -645,7 +877,7 @@
     PreviewCard: PreviewCard, CursorChip: CursorChip, ProfileOrb: ProfileOrb, HeadOrb: HeadOrb, StatCard: StatCard,
     AvatarStack: AvatarStack, Dock: Dock, MetaStrip: MetaStrip,
     HeroBoard: HeroBoard, FolderOpen: FolderOpen, ProfileOpen: ProfileOpen,
-    FolderSheet: FolderSheet, ProfileSheet: ProfileSheet, useClock: useClock,
+    FolderSheet: FolderSheet, ProfileSheet: ProfileSheet, AllWorkSheet: AllWorkSheet, ProjectWell: ProjectWell, useClock: useClock,
     motion: { enter: enter, exit: exit, burst: burst, expandFrom: expandFrom },
     sample: sample
   };
@@ -660,15 +892,15 @@
       date = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", timeZone: "Asia/Kolkata" }).format(now);
     } catch (e) { day = "Monday"; date = "27 April"; }
     var rows = [
-      { title: "Contextual Chat", sub: "AI search", thumb: img.chat },
-      { title: "Deal Room", sub: "B2B SaaS", thumb: img.dealRoom, pill: true, badge: true },
-      { title: "White Label", sub: "Fintech", thumb: img.whiteLabel }
+      { title: "Contextual Chat", sub: "AI search", thumb: img.chat, icon: "chatSpark", tone: "blue" },
+      { title: "Deal Room", sub: "B2B SaaS", thumb: img.dealRoom, icon: "dealDoc", tone: "orange", pill: true, badge: true },
+      { title: "White Label", sub: "Fintech", thumb: img.whiteLabel, icon: "swatch", tone: "pink" }
     ];
     return {
       topbar: {
         avatar: face, title: "Gaurav Avinash", subtitle: "Product Designer",
         notice: { avatar: img.chat, title: "Latest case study", subtitle: "Contextual Chat", meta: "Open", seconds: 14 },
-        tabs: ["Board", "Folders"]
+        tabs: ["Home", "Projects"]
       },
       agenda: { meta: date, avatar: face, day: day, time: "Available", label: "Open to new roles" },
       folders: { title: "Case studies", count: "All 5", rows: rows },

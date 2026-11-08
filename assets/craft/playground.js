@@ -10,6 +10,11 @@
 
   var EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
   var EASE_IN = "cubic-bezier(0.55, 0, 0.75, 0.2)";
+  /* Curves read off the reference recording (60fps) */
+  var EASE_SLIDE = "cubic-bezier(0.7, 0, 0.15, 1)";   /* home -> sheet: slow start, fastest mid-way, long settle */
+  var EASE_GROW = "cubic-bezier(0.75, 0, 0.35, 1)";   /* card -> story: barely moves for 100ms, near full by 430ms */
+  var EASE_RISE = "cubic-bezier(0.45, 0, 0.85, 0.55)"; /* sheet -> home: slow first, fastest at the end */
+  var EASE_POP = "cubic-bezier(0.2, 0.7, 0.3, 1)";    /* the quick final scale-up */
   var DATA_URL = "./assets/design-playground/playground-data.json?v=2";
   var FACE = "./assets/craft/avatar/head/face.webp";
   var DIR = "./assets/design-playground/";
@@ -24,7 +29,7 @@
   var LAYOUT = [
     { id: "nomad", look: "image", label: "Interface", focus: 0.5, stops: [0.276, 0.5, 0.73] },
     { id: "loading-range", look: "duration", label: "Motion", objpos: "30% 50%" },
-    { id: "space-between", look: "video", label: "Motion", crop: { x: 0.555, y: 0.06, w: 0.22, h: 0.32, vw: 1264, vh: 908, poster: "./assets/craft/playground/space-between-frame.jpg?v=1" } },
+    { id: "space-between", look: "video", label: "Motion", portrait: { video: "./assets/craft/playground/space-between-portrait.mp4?v=1", poster: "./assets/craft/playground/space-between-portrait.jpg?v=1" } },
     { id: "health-karma", look: "image", label: "Interface", focus: 0.66, stops: [0.21, 0.4, 0.6, 0.79] },
     { id: "swaply", look: "image", label: "Interface", focus: 0.33, stops: [0.157, 0.387, 0.61, 0.84] },
     { id: "moov", look: "image", label: "Interface", focus: 0.95, stops: [0.16, 0.41, 0.76] },
@@ -46,10 +51,10 @@
   /* The 8th card is this page. No invented project. */
   var CRAFT_ITEM = {
     id: "craft-mode", title: "Craft mode", kind: "prototype", category: "This page",
-    description: "The board you just came from. Glass widgets on photo wallpapers that change every 15 seconds, and this playground sliding out from under it.",
+    description: "The Home view you just came from. Glass widgets on photo wallpapers that change every 15 seconds, and this playground sliding out from under it.",
     objective: "",
     tools: ["React 18, no build step", "CSS backdrop-filter", "Web Animations API"],
-    preview: { src: "./assets/craft/playground/craft-board.webp?v=1", width: 1440, height: 900, alt: "The Craft mode board: glass cards over a photo wallpaper" }
+    preview: { src: "./assets/craft/playground/craft-board.webp?v=1", width: 1440, height: 900, alt: "The Craft mode Home view: glass cards over a photo wallpaper" }
   };
 
   var DURATIONS = { "loading-range": 7.8, "space-between": 4.0 };
@@ -75,6 +80,9 @@
       var vid = it.media && it.media.type === "video";
       it.video = vid ? it.media.src : null;
       it.poster = vid ? it.media.poster : (it.preview && it.preview.src);
+      it.openSrc = vid ? it.media.src : (it.preview && it.preview.src);
+      /* A portrait cut of the video (made with ffmpeg) so the story reads full-bleed */
+      if (vid && it.portrait) { it.video = it.portrait.video; it.poster = it.portrait.poster; }
       it.image = it.preview && it.preview.src;
       it.ratio = it.preview ? it.preview.width / it.preview.height : 1.6;
       it.duration = DURATIONS[it.id] || null;
@@ -185,7 +193,7 @@
       return h(React.Fragment, null,
         h(CardHead, { item: it }),
         h("span", { className: "cpg-num cpg-num--live" }, h("i", { className: "cpg-live-dot", "aria-hidden": "true" }), "Live"),
-        h("span", { className: "cpg-live-url" }, "splitmate prototype"),
+        h("span", { className: "cpg-live-url" }, "Splitly prototype"),
         h(Wave, { seed: 5, bars: 34 }));
     }
     if (it.look === "type") {
@@ -198,44 +206,34 @@
         h(Segs, { n: 3 }));
     }
     var media = it.video
-      ? h("video", { className: "cpg-card-media", src: it.video, poster: it.crop ? it.crop.poster : it.poster, muted: true, loop: true, playsInline: true, preload: "auto", "aria-hidden": "true", ref: props.videoRef, style: it.crop ? cropCss(it.crop) : null })
+      ? h("video", { className: "cpg-card-media", src: it.video, poster: it.poster, muted: true, loop: true, playsInline: true, preload: "auto", "aria-hidden": "true", ref: props.videoRef, style: it.objpos ? { objectPosition: it.objpos } : null })
       : h("img", { className: "cpg-card-media", src: it.image, alt: "", decoding: "async", draggable: false, style: { objectPosition: Math.round((it.focus != null ? it.focus : 0.5) * 100) + "% 50%" } });
     return h(React.Fragment, null, media, h("span", { className: "cpg-card-shade", "aria-hidden": "true" }), h(CardHead, { item: it }), h(Segs, { n: it.frames > 1 ? 3 : 3 }));
   }
 
-  /* Video crop: fit a region of the frame (contain) inside a box. Box in px, or CSS lengths for the grid. */
-  function cropStyle(c, W, H) {
-    var k = Math.min(W / (c.w * c.vw), H / (c.h * c.vh));
-    var vw = c.vw * k, vh = c.vh * k;
-    return { position: "absolute", inset: "auto", width: vw + "px", height: vh + "px", left: (W / 2 - (c.x + c.w / 2) * vw) + "px", top: (H / 2 - (c.y + c.h / 2) * vh) + "px", maxWidth: "none", objectFit: "fill" };
-  }
-  function cropCss(c) {
-    var k = "min(var(--cw) / " + (c.w * c.vw).toFixed(2) + ", var(--ch) / " + (c.h * c.vh).toFixed(2) + ")";
-    return {
-      position: "absolute", inset: "auto", maxWidth: "none", objectFit: "fill",
-      width: "calc(" + k + " * " + c.vw + ")", height: "calc(" + k + " * " + c.vh + ")",
-      left: "calc(var(--cw) / 2 - " + k + " * " + ((c.x + c.w / 2) * c.vw).toFixed(2) + ")",
-      top: "calc(var(--ch) / 2 - " + k + " * " + ((c.y + c.h / 2) * c.vh).toFixed(2) + ")"
-    };
-  }
-
   /* ───────── Story layout (px, from the viewport) ───────── */
+  /* The right edge keeps a column free for the up/down buttons (and, when the panel
+     sits inside the story, for the Home thumbnail at the top right). */
   function storyLayout(W, H) {
     if (W <= 700) return { mobile: true, compact: true, left: 0, top: 0, w: W, h: H, r: 0, pitch: H };
-    var railR = 104, padR = 28, act = 54 + 20, gap = 32;
+    var railR = 104, act = 54 + 20, gap = 32;
+    var navCol = 28 + 54 + 18, pipCol = 28 + (W >= 1100 ? 140 : 112) + 14;
     var panelW = W >= 1200 ? 320 : 280;
     var hgt = Math.min(710, H - 150), w = Math.round(hgt * 456 / 710);
-    var compact = false;
-    if (act + w + gap + panelW > W - railR - padR) {
-      var w2 = W - railR - padR - act - gap - panelW;
+    var compact = false, right = W - navCol;
+    if (act + w + gap + panelW > right - railR) {
+      var w2 = right - railR - act - gap - panelW;
       if (w2 >= 340) { w = w2; hgt = Math.round(w * 710 / 456); }
-      else { compact = true; panelW = 0; gap = 0; w = Math.min(w, W - railR - padR - act); hgt = Math.round(w * 710 / 456); }
+      else {
+        compact = true; panelW = 0; gap = 0; right = W - Math.max(navCol, pipCol);
+        w = Math.min(w, right - railR - act); hgt = Math.round(w * 710 / 456);
+      }
     }
     var left = Math.round(W / 2 - w / 2);
+    if (left + w + gap + panelW > right) left = right - panelW - gap - w;
     if (left - act < railR) left = railR + act;
-    if (!compact && left + w + gap + panelW > W - padR) left = W - padR - panelW - gap - w;
     var top = Math.round(clamp((H - hgt) / 2 - 40, 16, 40));
-    return { mobile: false, compact: compact, left: left, top: top, w: w, h: hgt, r: Math.max(28, Math.round(40 * w / 456)), pitch: hgt + 44, panelW: panelW, gap: gap };
+    return { mobile: false, compact: compact, left: left, top: top, w: w, h: hgt, r: Math.max(28, Math.round(40 * w / 456)), pitch: hgt + 44, panelW: panelW, gap: gap, pipBottom: W >= 1100 ? 136 : 118 };
   }
 
   /* Frame pan for an image inside a box */
@@ -253,57 +251,66 @@
     if (it.video) {
       if (props.active) {
         return h("video", {
-          className: "cpg-slide-video", src: it.video, poster: it.crop ? it.crop.poster : it.poster, muted: true, loop: true, playsInline: true,
+          className: "cpg-slide-video", src: it.video, poster: it.poster, muted: true, loop: true, playsInline: true,
           autoPlay: !props.still, preload: "auto", ref: props.videoRef, "aria-label": it.title + " motion study",
-          style: it.crop ? cropStyle(it.crop, L.w, L.h) : it.objpos ? { objectPosition: it.objpos } : null
+          style: it.objpos ? { objectPosition: it.objpos } : null
         });
       }
       return h("img", { className: "cpg-slide-video", src: it.poster, alt: "", decoding: "async", style: it.objpos ? { objectPosition: it.objpos } : null });
     }
     var src = it.image;
     var pan = panX(it, props.seg, L.w, L.h, props.active ? null : (it.focus != null ? it.focus : 0.5));
+    /* A peek only shows its top strip, which is mostly empty backdrop in these mockups:
+       lift it so the phones show through instead */
+    var lift = props.peek ? "-34%" : "0";
     return h("img", {
       className: "cpg-pan", src: src, alt: props.active ? it.alt : "", decoding: "async", draggable: false,
-      style: { width: Math.ceil(pan.imgW) + "px", transform: "translate3d(" + (-pan.x) + "px,0,0)" }
+      style: { width: Math.ceil(pan.imgW) + "px", transform: "translate3d(" + (-pan.x) + "px," + lift + ",0)" }
     });
   }
 
   /* ───────── Home sheet motion (the Craft stage itself moves) ───────── */
+  /* The stage's untransformed top in the viewport. Layout offsets, so a running
+     animation on the stage can't skew it. */
   function stageGeom(stage) {
-    var prev = stage.style.transform;
-    stage.style.transform = "none";
-    var base = stage.getBoundingClientRect().top;
-    stage.style.transform = prev;
-    return base;
+    var y = 0, n = stage;
+    while (n) { y += n.offsetTop; n = n.offsetParent; }
+    return y - (window.scrollY || window.pageYOffset || 0);
   }
-  function stagePose(name, base) {
+  /* Poses. The stage scales from its top edge (transform-origin 50% 0), so "lift" poses
+     shift it to keep the scale centred on the viewport. */
+  function stagePose(name, base, m) {
     var W = window.innerWidth, H = window.innerHeight;
     var bar = W <= 700 ? 84 : 96, s = W <= 700 ? 0.94 : 0.96;
     if (name === "home") return { t: "translate3d(0,0,0) scale(1)", r: "0px" };
-    if (name === "mid") { var m = 0.94; return { t: "translate3d(0," + ((H / 2 - base) * (1 - m)).toFixed(1) + "px,0) scale(" + m + ")", r: "38px" }; }
+    if (name === "lift") { m = m || 0.97; return { t: "translate3d(0," + ((H / 2 - base) * (1 - m)).toFixed(1) + "px,0) scale(" + m + ")", r: "34px" }; }
     if (name === "sheet") return { t: "translate3d(0," + (H - bar - base).toFixed(1) + "px,0) scale(" + s + ")", r: "36px" };
     return { t: "translate3d(0," + (H + 40 - base).toFixed(1) + "px,0) scale(" + s + ")", r: "36px" }; /* away */
   }
-  function moveStage(stage, base, from, to, opts) {
+  /* Where the stage is right now, even mid-animation. Stops whatever is running so a new
+     move starts from the live position instead of jumping. */
+  function livePose(stage) {
+    var cs = getComputedStyle(stage);
+    var pose = { t: cs.transform && cs.transform !== "none" ? cs.transform : "translate3d(0,0,0) scale(1)", r: cs.borderTopLeftRadius || "0px" };
+    stage.getAnimations().forEach(function (a) { a.cancel(); });
+    return pose;
+  }
+  /* steps: [{ pose, at, easing }]; the first step's easing applies from the live pose */
+  function moveStage(stage, base, to, opts) {
     opts = opts || {};
-    var a = stagePose(from, base), b = stagePose(to, base);
-    var frames;
+    var a = livePose(stage), b = stagePose(to, base);
+    stage.style.transform = b.t; stage.style.borderRadius = b.r;
     if (reduced()) {
-      stage.style.transform = b.t; stage.style.borderRadius = b.r;
       return stage.animate([{ opacity: 0.4 }, { opacity: 1 }], { duration: 180 }).finished.catch(function () {});
     }
-    if (opts.via) {
-      var m = stagePose(opts.via, base);
-      frames = [
-        { transform: a.t, borderRadius: a.r, easing: opts.firstEase || "cubic-bezier(0.3, 0.7, 0.2, 1)" },
-        { transform: m.t, borderRadius: m.r, offset: opts.at || 0.28, easing: opts.secondEase || EASE },
-        { transform: b.t, borderRadius: b.r }
-      ];
-    } else {
-      frames = [{ transform: a.t, borderRadius: a.r }, { transform: b.t, borderRadius: b.r }];
-    }
-    stage.style.transform = b.t; stage.style.borderRadius = b.r;
-    var anim = stage.animate(frames, { duration: opts.duration || 700, easing: opts.via ? "linear" : (opts.easing || EASE) });
+    var steps = opts.steps || [];
+    var frames = [{ transform: a.t, borderRadius: a.r, easing: steps.length ? steps[0].easing : (opts.easing || EASE) }];
+    steps.forEach(function (st, i) {
+      var p = stagePose(st.pose, base, st.scale);
+      frames.push({ transform: p.t, borderRadius: p.r, offset: st.at, easing: (steps[i + 1] && steps[i + 1].easing) || opts.last || EASE });
+    });
+    frames.push({ transform: b.t, borderRadius: b.r });
+    var anim = stage.animate(frames, { duration: opts.duration || 700, easing: "linear" });
     return anim.finished.catch(function () {});
   }
 
@@ -314,7 +321,8 @@
     var _x = useState(0), index = _x[0], setIndex = _x[1];
     var _f = useState("all"), filter = _f[0], setFilter = _f[1];
     var _s = useState(0), seg = _s[0], setSeg = _s[1];
-    var _p = useState(false), paused = _p[0], setPaused = _p[1];
+    var still = reduced();
+    var _p = useState(still), paused = _p[0], setPaused = _p[1];
     var _m = useState(false), more = _m[0], setMore = _m[1];
     var _in = useState(false), storyIn = _in[0], setStoryIn = _in[1];
     var _vp = useState({ W: window.innerWidth, H: window.innerHeight }), vp = _vp[0], setVp = _vp[1];
@@ -324,8 +332,8 @@
     var cardRefs = useRef({}), gridVideos = useRef({}), storyVideo = useRef(null);
     var stageBase = useRef(0), stageState = useRef("home");
     var busy = useRef(true), pending = useRef(null), rects = useRef({}), cardAnims = useRef([]);
+    var closingRef = useRef(false), queued = useRef(null), needsPose = useRef(false), handlers = useRef({});
     var wheelAcc = useRef(0), lastNav = useRef(0), touchY = useRef(null);
-    var still = reduced();
 
     var list = items.filter(function (it) { return matches(it, filter); });
     var cur = list[index] || list[0];
@@ -337,16 +345,31 @@
       window.addEventListener("resize", on);
       return function () { window.removeEventListener("resize", on); };
     }, []);
-    /* Keep the home sheet glued to the bottom when the window changes */
-    useEffect(function () {
+    /* Keep the home sheet glued to the bottom when the window changes. Mid-animation,
+       wait for it to end and then re-pose (see release). */
+    function applyPose() {
       var stage = props.stageRef.current;
-      if (!stage || busy.current) return;
+      if (!stage || closingRef.current) return;
+      needsPose.current = false;
       stageBase.current = stageGeom(stage);
       var pose = stagePose(stageState.current, stageBase.current);
-      stage.style.transform = pose.t;
+      stage.style.transform = pose.t; stage.style.borderRadius = pose.r;
+    }
+    useEffect(function () {
+      if (busy.current) { needsPose.current = true; return; }
+      applyPose();
     }, [vp.W, vp.H]);
 
-    /* ── Enter: board shrinks, slides down to a bar; cards burst out of the Playground card ── */
+    /* Animations done: accept input again, and run the last thing the user asked for meanwhile */
+    function release() {
+      if (closingRef.current) return;
+      busy.current = false;
+      if (needsPose.current) applyPose();
+      var q = queued.current; queued.current = null;
+      if (q && handlers.current[q[0]]) handlers.current[q[0]](q[1]);
+    }
+
+    /* ── Enter: the board dips, then slides down to a bar; the gallery is already there under it ── */
     useLayoutEffect(function () {
       var stage = props.stageRef.current;
       var root = document.documentElement;
@@ -360,22 +383,32 @@
       stage.setAttribute("inert", "");
       stage.style.transformOrigin = "50% 0";
       stageState.current = "sheet";
-      moveStage(stage, stageBase.current, "home", "sheet", { via: "mid", duration: 900, at: 0.27 }).then(function () { busy.current = false; });
+      /* Opened from the All work popup with a pick: expand that card once the gallery lands */
+      if (props.startId) {
+        var si = list.findIndex(function (it) { return it.id === props.startId; });
+        if (si >= 0) queued.current = ["startStory", si];
+      }
+      moveStage(stage, stageBase.current, "sheet", {
+        duration: 860,
+        steps: [{ pose: "lift", scale: 0.97, at: 0.24, easing: "cubic-bezier(0.3, 0, 0.3, 1)" }],
+        last: EASE_SLIDE
+      }).then(release);
 
       var cards = Array.prototype.slice.call(galleryRef.current.querySelectorAll(".cpg-cell"));
       cards.forEach(function (el, i) {
         var r = el.getBoundingClientRect();
         if (still) { el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, delay: 80 + i * 20, fill: "backwards" }); return; }
+        /* A short lean toward the Playground card, not a flight from it */
         var dx = sr.left + sr.width / 2 - (r.left + r.width / 2), dy = sr.top + sr.height / 2 - (r.top + r.height / 2);
-        var rot = (i % 2 ? 1 : -1) * (6 + (i * 5) % 9);
+        var d = Math.hypot(dx, dy) || 1, k = Math.min(56, d * 0.12) / d;
         el.animate([
-          { opacity: 0, transform: "translate3d(" + dx + "px," + dy + "px,0) scale(0.22) rotate(" + rot + "deg)" },
-          { opacity: 1, transform: "translate3d(" + dx * 0.3 + "px," + (dy * 0.3 - 30) + "px,0) scale(0.8) rotate(" + rot / 3 + "deg)", offset: 0.45 },
+          { opacity: 0, transform: "translate3d(" + (dx * k).toFixed(1) + "px," + (dy * k).toFixed(1) + "px,0) scale(0.92)" },
+          { opacity: 1, offset: 0.4 },
           { opacity: 1, transform: "none" }
-        ], { duration: 780, delay: 260 + i * 50, easing: EASE, fill: "backwards" });
+        ], { duration: 560, delay: 110 + i * 30, easing: EASE, fill: "backwards" });
       });
       Array.prototype.slice.call(galleryRef.current.querySelectorAll("[data-cpg-chrome]")).forEach(function (el, i) {
-        el.animate([{ opacity: 0, transform: "translateY(-8px)" }, { opacity: 1, transform: "none" }], { duration: still ? 160 : 520, delay: still ? 0 : 300 + i * 40, easing: EASE, fill: "backwards" });
+        el.animate([{ opacity: 0, transform: "translateY(-8px)" }, { opacity: 1, transform: "none" }], { duration: still ? 160 : 460, delay: still ? 0 : 220 + i * 40, easing: EASE, fill: "backwards" });
       });
       var t = setTimeout(function () {
         var first = galleryRef.current && galleryRef.current.querySelector(".cpg-card");
@@ -396,22 +429,17 @@
       ["transform", "border-radius", "transform-origin", "--pg-scroll"].forEach(function (p) { stage.style.removeProperty(p); });
     }
 
-    /* ── Back to the board ── */
+    /* ── Back to the board: it rises at near full width, then snaps up to full size.
+       The gallery (or story) stays put underneath; nothing fades. ── */
     var closeHome = useCallback(function (then) {
-      if (busy.current && stageState.current !== "sheet" && stageState.current !== "away") return;
+      if (closingRef.current) return;
+      closingRef.current = true;
       busy.current = true;
+      queued.current = null;
       setClosing(true);
-      setStoryIn(false);
       var stage = props.stageRef.current;
-      var g = galleryRef.current;
-      var from = stageState.current;
-      stageState.current = "home";
-      if (g) {
-        Array.prototype.slice.call(g.querySelectorAll(".cpg-cell, [data-cpg-chrome], .cpg-story")).forEach(function (el) {
-          el.animate([{ opacity: 1 }, { opacity: 0, transform: "translateY(-14px) scale(0.97)" }], { duration: still ? 120 : 420, easing: EASE, fill: "forwards" });
-        });
-      }
       Object.keys(gridVideos.current).forEach(function (k) { var v = gridVideos.current[k]; if (v) v.pause(); });
+      stageState.current = "home";
       var done = function () {
         if (rootRef.current) rootRef.current.style.display = "none";
         resetStage(stage);
@@ -419,18 +447,23 @@
         props.onClose(then);
       };
       if (!stage) { done(); return; }
-      moveStage(stage, stageBase.current, from, "home", { via: "mid", at: 0.7, duration: 860, firstEase: EASE, secondEase: "cubic-bezier(0.3, 0.7, 0.2, 1)" }).then(done);
+      moveStage(stage, stageBase.current, "home", {
+        duration: 720,
+        steps: [{ pose: "lift", scale: 0.965, at: 0.8, easing: EASE_RISE }],
+        last: EASE_POP
+      }).then(done);
     }, [props.onClose]);
 
     /* ── Open a card into the story viewer ── */
     function openStory(i) {
-      if (busy.current) return;
+      if (closingRef.current || view !== "grid" || !list[i]) return;
+      if (busy.current) { queued.current = ["openStory", i]; return; }
       busy.current = true;
       var map = {};
       list.forEach(function (it) { var el = cardRefs.current[it.id]; if (el) map[it.id] = el.getBoundingClientRect(); });
       rects.current = map;
       pending.current = { id: list[i].id };
-      setSeg(0); setPaused(false); setMore(false);
+      setSeg(0); setPaused(still); setMore(false);
       setIndex(i);
       setView("story");
     }
@@ -442,11 +475,13 @@
       var slide = storyRef.current && storyRef.current.querySelector(".cpg-slide.is-current");
       var stage = props.stageRef.current;
       Object.keys(gridVideos.current).forEach(function (k) { var v = gridVideos.current[k]; if (v) v.pause(); });
-      if (stage) { stageState.current = "away"; moveStage(stage, stageBase.current, "sheet", "away", { duration: 520, easing: EASE_IN }); }
+      if (stage) { stageState.current = "away"; moveStage(stage, stageBase.current, "away", { duration: 520, easing: EASE_IN }); }
       var srcCard = cardRefs.current[id];
       var c0 = src ? { x: src.left + src.width / 2, y: src.top + src.height / 2 } : { x: 0, y: 0 };
       cardAnims.current.forEach(function (a) { a.cancel(); });
       cardAnims.current = [];
+      var DUR = 580;
+      /* Neighbours shrink and drift outward, staying visible for most of the grow */
       list.forEach(function (it) {
         var el = cardRefs.current[it.id];
         if (!el) return;
@@ -454,35 +489,38 @@
         if (it.id === id) { cardAnims.current.push(cell.animate([{ opacity: 0 }, { opacity: 0 }], { duration: 10, fill: "forwards" })); return; }
         var r = rects.current[it.id] || el.getBoundingClientRect();
         var dx = r.left + r.width / 2 - c0.x, dy = r.top + r.height / 2 - c0.y, d = Math.hypot(dx, dy) || 1;
-        var push = still ? 0 : 140;
+        if (still) { cardAnims.current.push(cell.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, fill: "forwards" })); return; }
+        var push = 200, ux = dx / d * push, uy = dy / d * push;
         cardAnims.current.push(cell.animate([
           { opacity: 1, transform: "none" },
-          { opacity: 0.85, transform: "translate3d(" + (dx / d * push * 0.6) + "px," + (dy / d * push * 0.6) + "px,0) scale(0.9)", offset: 0.45 },
-          { opacity: 0, transform: "translate3d(" + (dx / d * push) + "px," + (dy / d * push) + "px,0) scale(0.8)" }
-        ], { duration: still ? 160 : 620, easing: EASE, fill: "forwards" }));
+          { opacity: 1, transform: "translate3d(" + (ux * 0.8).toFixed(1) + "px," + (uy * 0.8).toFixed(1) + "px,0) scale(0.88)", offset: 0.9 },
+          { opacity: 0, transform: "translate3d(" + ux.toFixed(1) + "px," + uy.toFixed(1) + "px,0) scale(0.85)" }
+        ], { duration: DUR + 100, easing: EASE_GROW, fill: "forwards" }));
       });
       if (slide && src && !still) {
         var r = slide.getBoundingClientRect();
         slide.animate([
           { transformOrigin: "0 0", transform: "translate3d(" + (src.left - r.left) + "px," + (src.top - r.top) + "px,0) scale(" + (src.width / r.width) + "," + (src.height / r.height) + ")", borderRadius: (30 * r.width / src.width).toFixed(1) + "px" },
           { transformOrigin: "0 0", transform: "none", borderRadius: L.r + "px" }
-        ], { duration: 560, easing: EASE });
+        ], { duration: DUR, easing: EASE_GROW });
       } else if (slide) {
         slide.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 180 });
       }
       requestAnimationFrame(function () { setStoryIn(true); });
       setTimeout(function () {
-        busy.current = false;
+        if (closingRef.current) return;
         var back = galleryRef.current && galleryRef.current.querySelector(".cpg-back");
         if (back && !rootRef.current.contains(document.activeElement)) back.focus({ preventScroll: true });
         else if (back && document.activeElement && document.activeElement.classList.contains("cpg-card")) back.focus({ preventScroll: true });
-      }, still ? 200 : 580);
+        release();
+      }, still ? 200 : DUR + 20);
       if (srcCard && srcCard === document.activeElement) srcCard.blur();
     }, [view]);
 
     /* ── Story back to the grid ── */
     function closeStory() {
-      if (busy.current || view !== "story") return;
+      if (closingRef.current || view !== "story") return;
+      if (busy.current) { queued.current = ["closeStory"]; return; }
       busy.current = true;
       var it = cur;
       var el = cardRefs.current[it.id];
@@ -509,7 +547,7 @@
       setStoryIn(false);
       var slide = storyRef.current && storyRef.current.querySelector(".cpg-slide.is-current");
       var stage = props.stageRef.current;
-      if (stage) { stageState.current = "sheet"; moveStage(stage, stageBase.current, "away", "sheet", { duration: 640 }); }
+      if (stage) { stageState.current = "sheet"; moveStage(stage, stageBase.current, "sheet", { duration: 640 }); }
       var anims = [];
       if (slide && target && !still) {
         var r = slide.getBoundingClientRect();
@@ -542,25 +580,38 @@
       });
       var wait = new Promise(function (res) { setTimeout(res, still ? 170 : 540); });
       Promise.all(anims.concat([wait])).then(function () {
+        if (closingRef.current) return;
         setView("grid");
-        busy.current = false;
-        var resume = function () {
+        requestAnimationFrame(function () {
           var c = cardRefs.current[it.id];
           if (c) c.focus({ preventScroll: true });
           playVisible();
-        };
-        requestAnimationFrame(resume);
+          release();
+        });
       });
     }
 
     function go(d) {
-      if (view !== "story" || busy.current) return;
+      if (view !== "story" || busy.current || closingRef.current) return;
       var ni = clamp(index + d, 0, list.length - 1);
       if (ni === index) return;
       lastNav.current = Date.now();
-      setSeg(0); setPaused(false); setMore(false);
+      setSeg(0); setPaused(still); setMore(false);
       setIndex(ni);
     }
+    /* Scroll the cell into view first (instantly) so the expand starts from where the card really is */
+    function startStory(i) {
+      var el = list[i] && cardRefs.current[list[i].id], sc = scrollRef.current;
+      if (el && sc) {
+        var r = el.getBoundingClientRect(), bar = vp.W <= 700 ? 84 : 96, topSafe = vp.W <= 700 ? 80 : 110;
+        var delta = 0;
+        if (r.bottom > vp.H - bar - 16) delta = r.bottom - (vp.H - bar - 16);
+        if (r.top - delta < topSafe) delta = r.top - topSafe;
+        if (delta) sc.scrollTop += delta;
+      }
+      openStory(i);
+    }
+    handlers.current = { openStory: openStory, closeStory: closeStory, startStory: startStory };
 
     /* ── Videos in the grid only play while visible ── */
     var visible = useRef({});
@@ -605,25 +656,44 @@
     useEffect(function () {
       var v = storyVideo.current;
       if (!v) return;
-      if (paused || still) v.pause(); else { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+      if (paused) v.pause(); else { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
     }, [paused, index, view]);
 
-    /* ── Keyboard: focus trap, Escape, arrows ── */
+    /* ── Keyboard: focus trap, Escape, arrows ──
+       Listens on the document, so it keeps working after a click on a non-focusable spot
+       (focus falls back to <body>). Keys aimed at something outside the playground are left alone. */
     function onKeyDown(ev) {
+      var root = rootRef.current;
+      if (!root || closingRef.current) return;
+      var t = ev.target;
+      var inside = root.contains(t) || t === document.body || t === document.documentElement;
+      if (!inside) return;
       if (ev.key === "Tab") {
         var nodes = Array.prototype.slice.call(rootRef.current.querySelectorAll("button:not([disabled]), a[href], [tabindex]:not([tabindex='-1'])"))
           .filter(function (n) { return !n.closest("[inert]") && !n.closest("[aria-hidden='true']") && n.getClientRects().length > 0 && getComputedStyle(n).visibility !== "hidden"; });
         if (!nodes.length) return;
         var first = nodes[0], last = nodes[nodes.length - 1];
-        if (ev.shiftKey && (document.activeElement === first || !rootRef.current.contains(document.activeElement))) { ev.preventDefault(); last.focus(); }
-        else if (!ev.shiftKey && document.activeElement === last) { ev.preventDefault(); first.focus(); }
+        var away = !root.contains(document.activeElement);
+        if (ev.shiftKey && (document.activeElement === first || away)) { ev.preventDefault(); last.focus(); }
+        else if (!ev.shiftKey && (document.activeElement === last || away)) { ev.preventDefault(); first.focus(); }
         return;
       }
       if (ev.key === "Escape") { ev.preventDefault(); ev.stopPropagation(); if (view === "story") closeStory(); else closeHome(); return; }
       if (view !== "story") return;
-      if (ev.key === "ArrowDown" || ev.key === "ArrowRight" || ev.key === "PageDown") { ev.preventDefault(); go(1); }
-      else if (ev.key === "ArrowUp" || ev.key === "ArrowLeft" || ev.key === "PageUp") { ev.preventDefault(); go(-1); }
+      var dir = (ev.key === "ArrowDown" || ev.key === "ArrowRight" || ev.key === "PageDown") ? 1
+        : (ev.key === "ArrowUp" || ev.key === "ArrowLeft" || ev.key === "PageUp") ? -1 : 0;
+      if (!dir) return;
+      ev.preventDefault();
+      if (Date.now() - lastNav.current < 700) return; /* same gate as the wheel */
+      go(dir);
     }
+    var keyRef = useRef(onKeyDown);
+    keyRef.current = onKeyDown;
+    useEffect(function () {
+      var fn = function (ev) { keyRef.current(ev); };
+      document.addEventListener("keydown", fn);
+      return function () { document.removeEventListener("keydown", fn); };
+    }, []);
     function inScrollablePanel(t) {
       var p = t && t.closest && t.closest(".cpg-panel-body");
       return p && p.scrollHeight > p.clientHeight + 2;
@@ -684,10 +754,15 @@
         L.compact ? h("button", { key: "m", type: "button", className: "cpg-more", "aria-expanded": more ? "true" : "false", onClick: function () { setMore(!more); } }, more ? "Less" : "More") : null,
         cur.prototype ? h("a", { key: "p", className: "cpg-proto", href: cur.prototype, target: "_blank", rel: "noopener" }, "Open live prototype", h(Icon, { name: "open", size: 16 })) : null
       ];
+      /* Up/down: the right column on wider screens, the panel's top corner on phones (never over the media) */
+      var navEl = h("div", { key: "nav", className: cx("cpg-nav", L.mobile && "cpg-nav--panel") },
+        roundBtn({ icon: "up", label: "Previous project", onClick: function () { go(-1); }, disabled: index === 0 }),
+        roundBtn({ icon: "down", label: "Next project", onClick: function () { go(1); }, disabled: index >= list.length - 1 }));
+      if (L.mobile) panelKids.push(navEl);
       var third = cur.prototype
         ? { icon: "share", label: "Open the " + cur.title + " live prototype", href: cur.prototype, external: true, className: "cpg-round--white" }
         : cur.id === "craft-mode"
-          ? { icon: "home", label: "Back to the board", onClick: function () { closeHome(); }, className: "cpg-round--white" }
+          ? { icon: "home", label: "Back to Home", onClick: function () { closeHome(); }, className: "cpg-round--white" }
           : cur.video
             ? { icon: paused ? "play" : "pause", fill: paused, label: paused ? "Play video" : "Pause video", onClick: function () { setPaused(!paused); }, className: "cpg-round--white", pressed: paused ? "true" : "false" }
             : { icon: "chat", label: "Ask the assistant about " + cur.title, onClick: props.onAssistant, className: "cpg-round--white" };
@@ -703,7 +778,7 @@
             if (Math.abs(i - index) > 1) return null;
             var current = i === index, next = i === index + 1;
             var style = { top: L.top + i * L.pitch, left: L.left, width: L.w, height: L.h, borderRadius: L.r };
-            var media = h(SlideMedia, { item: it, L: L, active: current, seg: current ? seg : 0, still: still || paused, videoRef: current ? storyVideo : undefined });
+            var media = h(SlideMedia, { item: it, L: L, active: current, peek: next, seg: current ? seg : 0, still: still || paused, videoRef: current ? storyVideo : undefined });
             if (current) {
               return h("div", { key: it.id, className: cx("cpg-slide is-current", it.video && "is-video"), style: style },
                 media,
@@ -719,30 +794,28 @@
           })),
         h("div", { className: "cpg-actions", style: L.mobile ? null : { left: actLeft, top: L.top + 26 } },
           h("img", { className: "cpg-actions-av", src: FACE, alt: "Gaurav Avinash", decoding: "async" }),
-          roundBtn({ icon: "open", label: "Open " + (cur.video ? "video" : "image") + " in a new tab", href: cur.video || cur.image, external: true }),
+          roundBtn({ icon: "open", label: "Open " + (cur.video ? "video" : "image") + " in a new tab", href: cur.openSrc || cur.video || cur.image, external: true }),
           roundBtn(third)),
         h("div", {
           className: "cpg-panel", key: "panel-" + cur.id,
           style: L.compact
             ? (L.mobile ? null : { left: L.left, width: L.w, top: L.top + L.h, "--pg-r": L.r + "px" })
-            : { left: L.left + L.w + L.gap, width: L.panelW, top: L.top + L.h, maxHeight: Math.min(L.h, L.top + L.h - (vp.W < 1100 ? 120 : 136)) }
+            : { left: L.left + L.w + L.gap, width: L.panelW, top: L.top + L.h, maxHeight: Math.min(L.h, L.top + L.h - L.pipBottom) }
         }, panelKids),
-        h("div", { className: "cpg-nav" },
-          roundBtn({ icon: "up", label: "Previous project", onClick: function () { go(-1); }, disabled: index === 0 }),
-          roundBtn({ icon: "down", label: "Next project", onClick: function () { go(1); }, disabled: index >= list.length - 1 })),
-        L.mobile ? null : h("button", { type: "button", className: "cpg-pip", "aria-label": "Back to the board", title: "Back to the board", onClick: function () { closeHome(); } },
+        L.mobile ? null : navEl,
+        L.mobile ? null : h("button", { type: "button", className: "cpg-pip", "aria-label": "Back to Home", title: "Back to Home", onClick: function () { closeHome(); } },
           h("span", { className: "cpg-pip-photo cr-wp-thumb craft-wp--" + (props.wallpaper || "fuji"), "aria-hidden": "true" }),
-          h("span", { className: "cpg-pip-label", "aria-hidden": "true" }, h(Icon, { name: "home", size: 14 }), "Board")),
+          h("span", { className: "cpg-pip-label", "aria-hidden": "true" }, h(Icon, { name: "home", size: 14 }), "Home")),
         h("p", { className: "cr-visually-hidden", "aria-live": "polite" }, cur.title + ", " + (index + 1) + " of " + list.length));
     }
 
     return h("div", {
       className: cx("cpg", isStory && "is-story", closing && "is-closing"), ref: rootRef,
-      role: "dialog", "aria-modal": "true", "aria-label": "Design Playground", onKeyDown: onKeyDown
+      role: "dialog", "aria-modal": "true", "aria-label": "Design Playground", tabIndex: -1
     },
       h("div", { className: "cpg-gallery", ref: galleryRef },
         h("h2", { className: "cr-visually-hidden" }, "Design Playground"),
-        roundBtn({ icon: "back", label: isStory ? "Back to all explorations" : "Back to the board", className: "cpg-back", chrome: true, onClick: function () { if (isStory) closeStory(); else closeHome(); } }),
+        roundBtn({ icon: "back", label: isStory ? "Back to all explorations" : "Back to Home", className: "cpg-back", chrome: true, onClick: function () { if (isStory) closeStory(); else closeHome(); } }),
         h("nav", { className: "cpg-rail", "aria-label": "Craft mode", "data-cpg-chrome": "" },
           roundBtn({ icon: "grid", label: "Design Playground", current: true, onClick: function () { if (isStory) closeStory(); } }),
           roundBtn({ icon: "folder", label: "Case studies", onClick: function () { closeHome("folders"); } }),
@@ -761,8 +834,8 @@
           roundBtn({ icon: "search", label: "Ask the portfolio assistant", onClick: props.onAssistant, className: "cpg-tools-search" })),
         grid,
         story),
-      h("button", { type: "button", className: "cpg-homebar", "aria-label": "Back to the board", title: "Back to the board", onClick: function () { closeHome(); }, tabIndex: isStory ? -1 : 0 },
-        h("span", { className: "cr-visually-hidden" }, "Back to the board")));
+      h("button", { type: "button", className: "cpg-homebar", "aria-label": "Back to Home", title: "Back to Home", onClick: function () { closeHome(); }, tabIndex: isStory ? -1 : 0 },
+        h("span", { className: "cr-visually-hidden" }, "Back to Home")));
   }
 
   window.CraftPlayground = { PlaygroundCard: PlaygroundCard, PlaygroundView: PlaygroundView, preload: preload, items: function () { return buildItems(null); } };
