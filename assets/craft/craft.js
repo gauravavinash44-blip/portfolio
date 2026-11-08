@@ -44,7 +44,11 @@
     card: "M3.5 6.5h17v11h-17zM3.5 10h17M7 14.5h3",
     orbits: "M4 12a5 5 0 1 0 10 0 5 5 0 1 0-10 0zM10 12a5 5 0 1 0 10 0 5 5 0 1 0-10 0z",
     loader: "M12 4a8 8 0 1 1-7.6 5.5M12 8.5v3.5l2.5 1.5",
-    layers: "M12 4l8.5 4.5L12 13 3.5 8.5zM3.5 12.5L12 17l8.5-4.5M3.5 16.5L12 21l8.5-4.5"
+    layers: "M12 4l8.5 4.5L12 13 3.5 8.5zM3.5 12.5L12 17l8.5-4.5M3.5 16.5L12 21l8.5-4.5",
+    /* Contact card */
+    linkedin: "M4.5 7a2.5 2.5 0 0 1 2.5-2.5h10A2.5 2.5 0 0 1 19.5 7v10a2.5 2.5 0 0 1-2.5 2.5H7A2.5 2.5 0 0 1 4.5 17zM8.5 11v4.5M8.5 8.4v.01M11.5 15.5V11M11.5 13c0-1.3.8-2 1.9-2s1.9.7 1.9 2v2.5",
+    doc: "M14 3.5H7a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8.5zM14 3.5v5h5M9 13h6M9 16.5h4",
+    send: "M20 4L3.5 10.5l6.8 2.7L13 20zM20 4l-9.7 9.2"
   };
   function Icon(props) {
     if (props.name === "dropper") {
@@ -68,7 +72,11 @@
         return prev.slice(-1).concat([props.wallpaper]);
       });
     }, [props.wallpaper]);
-    return h("div", { className: "cr-backdrop cr-backdrop--photo", "aria-hidden": "true" },
+    /* live motion (assets/craft/live-wallpaper.js) follows the settled layer */
+    var liveRef = useRef(null);
+    useEffect(function () { var L = window.CraftLiveWallpaper; if (L) L.sync(liveRef.current); }, [layers]);
+    useEffect(function () { return function () { var L = window.CraftLiveWallpaper; if (L) L.sync(null); }; }, []);
+    return h("div", { className: "cr-backdrop cr-backdrop--photo", "aria-hidden": "true", ref: liveRef },
       layers.map(function (id, i) {
         var last = i === layers.length - 1;
         return h("div", {
@@ -285,7 +293,10 @@
       h("div", { className: "cr-preview-chips" },
         h(Chip, { variant: "label" }, props.label || "Live preview"),
         props.timer ? h(Chip, { variant: "timer", live: true }, props.timer) : null),
-      h(props.href ? "a" : "div", { className: cx("cr-preview-shot", props.slides && "cr-preview-shot--strip"), href: props.href, "aria-label": props.href ? "Open " + props.title + " case study" : undefined },
+      h(props.href ? "a" : "div", { className: cx("cr-preview-shot", props.slides && "cr-preview-shot--strip"), href: props.href,
+        /* with a footer arrow link, the picture stays clickable but out of the tab order */
+        "aria-label": props.href && !props.arrowHref ? "Open " + props.title + " case study" : undefined,
+        tabIndex: props.arrowHref ? -1 : undefined, "aria-hidden": props.arrowHref ? "true" : undefined },
         props.slides
           /* Three-slide strip like the reference: partial left, main, partial right, tiny labels above */
           ? h("span", { className: "cr-strip", "aria-hidden": "true" },
@@ -296,10 +307,12 @@
               }))
           : h("img", { src: props.image, alt: props.alt || "" }),
         (props.cursors || []).map(function (c, i) { return h(CursorChip, Object.assign({ key: c.name, wander: (i % 2) + 1 }, c)); })),
-      h("div", { className: "cr-preview-foot" + (props.avatar ? "" : " cr-preview-foot--noavatar") },
-        props.avatar ? h(Avatar, { src: props.avatar, size: 50 }) : null,
+      h("div", { className: "cr-preview-foot" + (props.avatar || props.icon ? "" : " cr-preview-foot--noavatar") },
+        props.icon ? h(ProjectWell, { icon: props.icon, tone: props.tone })
+          : props.avatar ? h(Avatar, { src: props.avatar, size: 50 }) : null,
         h("span", { className: "cr-row-text" }, h("b", null, props.title), h("span", null, props.subtitle)),
-        props.count != null ? h(Chip, { variant: "count" }, String(props.count))
+        props.arrowHref ? h("a", { className: "cr-chip cr-chip--count cr-preview-go", href: props.arrowHref, "aria-label": "Open " + props.title + " case study", title: "Open case study" }, h(Icon, { name: "arrow" }))
+        : props.count != null ? h(Chip, { variant: "count" }, String(props.count))
           : props.countIcon ? h("span", { className: "cr-chip cr-chip--count", "aria-hidden": "true" }, h(Icon, { name: props.countIcon })) : null),
       h("style", null, "@keyframes crWander1{0%{transform:translate(0,0)}50%{transform:translate(18px,-10px)}100%{transform:translate(-8px,12px)}}@keyframes crWander2{0%{transform:translate(0,0)}50%{transform:translate(-16px,8px)}100%{transform:translate(10px,-14px)}}"));
   }
@@ -401,6 +414,116 @@
       h("div", { className: "cr-stat-keys" },
         segs.map(function (s) { return h("span", { key: s.label }, h("i", { style: { background: s.color } }), s.label); })),
       h("style", null, "@keyframes crBar{from{transform:scaleX(0)}to{transform:scaleX(1)}}"));
+  }
+
+  /* ───────── Small board cards (mindset "Dashboard" screen) ───────── */
+
+  /* "Data" card: title + link, one number, a segmented bar and two keys */
+  function MiniStatCard(props) {
+    var segs = props.segments || [];
+    var val = useCountUp(props.value, props.decimals || 0, props.animate !== false);
+    var keys = segs.slice(0, 2);
+    return h("section", { className: cx("cr-card cr-solid cr-mstat", props.className), "data-cr-enter": "", "aria-label": props.title },
+      h("header", { className: "cr-mstat-head" },
+        h("h3", null, props.title),
+        props.link ? h("a", { className: "cr-mstat-link", href: props.href || "#", "aria-haspopup": props.onLink ? "dialog" : undefined, "aria-label": props.linkLabel,
+          onClick: props.onLink ? function (ev) { ev.preventDefault(); props.onLink(ev); } : undefined }, props.link, h(Icon, { name: "chevron", stroke: 2 })) : null),
+      h("p", { className: "cr-mstat-value" }, val, props.unit || ""),
+      h("div", { className: "cr-mstat-bars", role: "img", "aria-label": segs.map(function (s) { return s.label + " " + (s.caption || s.value); }).join(", ") },
+        segs.map(function (s, i) {
+          var anim = props.animate === false || reduced() ? null : { animation: "crBar 1.2s " + (0.3 + i * 0.12) + "s " + EASE_ARRIVE + " both" };
+          return h("i", { key: s.label, style: Object.assign({ flex: s.value, background: s.color }, anim) });
+        })),
+      h("p", { className: "cr-mstat-keys", "aria-hidden": "true" },
+        keys.map(function (s) { return h("span", { key: s.label, title: s.label + ", " + (s.caption || "") }, h("i", { style: { background: s.color } }), s.short || s.label); })),
+      h("style", null, "@keyframes crBar{from{transform:scaleX(0)}to{transform:scaleX(1)}}"));
+  }
+
+  /* "Core Product Team" card as a button: title, subtitle, overlapping round thumbs, a count */
+  function TeamCard(props) {
+    var _o = useState(false), over = _o[0], setOver = _o[1];
+    var drop = !!props.onDrop;
+    return h("button", Object.assign({
+      type: "button", className: cx("cr-card cr-solid cr-team", over && "is-over", props.className), "data-cr-enter": "",
+      "aria-label": props.label, onClick: props.onOpen
+    }, props.attrs || {}, drop ? {
+      onDragOver: function (ev) { ev.preventDefault(); setOver(true); },
+      onDragLeave: function () { setOver(false); },
+      onDrop: function (ev) { ev.preventDefault(); setOver(false); props.onDrop(ev.dataTransfer.getData("text/plain")); }
+    } : {}),
+      h("span", { className: "cr-team-title" }, props.title),
+      h(Icon, { name: "wave", className: "cr-team-glyph", stroke: 1.8 }),
+      h("span", { className: "cr-team-sub" }, over && props.dropHint ? props.dropHint : props.subtitle),
+      h("span", { className: "cr-team-foot", "aria-hidden": "true" },
+        h("span", { className: "cr-team-faces" }, (props.thumbs || []).slice(0, 3).map(function (src, i) {
+          return h("img", { key: i, src: src, alt: "", decoding: "async", draggable: false });
+        })),
+        h("span", { className: "cr-team-count" }, String(props.count))));
+  }
+
+  /* "Create a room": glass card, plus and one label */
+  function ActionCard(props) {
+    return h("button", { type: "button", className: cx("cr-card cr-glass cr-action", props.className), "data-cr-enter": "",
+      "aria-haspopup": props.haspopup, onClick: props.onClick },
+      h(Icon, { name: props.icon || "plus", className: "cr-action-icon", stroke: 1.5 }),
+      h("span", { className: "cr-action-label" }, props.title));
+  }
+
+  /* "Happy Birthday!" card as a contact carousel. Dots, arrow keys and swipe move between slides;
+     it advances on its own every few seconds, paused on hover, focus, hidden tab or reduced motion. */
+  function ContactCard(props) {
+    var slides = props.slides || [];
+    var n = slides.length;
+    var _i = useState(0), idx = _i[0], setIdx = _i[1];
+    var _h = useState(false), hover = _h[0], setHover = _h[1];
+    var _f = useState(false), focus = _f[0], setFocus = _f[1];
+    var drag = useRef(null), swiped = useRef(false);
+    var paused = hover || focus || reduced();
+    function go(i) { setIdx(((i % n) + n) % n); }
+    useEffect(function () {
+      if (paused || n < 2) return undefined;
+      var id = setInterval(function () { if (!document.hidden) setIdx(function (i) { return (i + 1) % n; }); }, props.interval || 5000);
+      return function () { clearInterval(id); };
+    }, [paused, n]);
+    function onKey(ev) {
+      if (ev.key === "ArrowRight") { ev.preventDefault(); go(idx + 1); }
+      else if (ev.key === "ArrowLeft") { ev.preventDefault(); go(idx - 1); }
+    }
+    return h("section", {
+      className: cx("cr-card cr-solid cr-hello", props.className), "data-cr-enter": "",
+      "aria-roledescription": "carousel", "aria-label": props.label || "Say hello",
+      onKeyDown: onKey,
+      onMouseEnter: function () { setHover(true); }, onMouseLeave: function () { setHover(false); },
+      onFocus: function () { setFocus(true); },
+      onBlur: function (ev) { if (!ev.currentTarget.contains(ev.relatedTarget)) setFocus(false); },
+      onPointerDown: function (ev) { drag.current = { x: ev.clientX, y: ev.clientY }; swiped.current = false; },
+      onPointerUp: function (ev) {
+        var d = drag.current; drag.current = null;
+        if (!d) return;
+        var dx = ev.clientX - d.x, dy = ev.clientY - d.y;
+        if (Math.abs(dx) > 28 && Math.abs(dx) > Math.abs(dy)) { swiped.current = true; go(idx + (dx < 0 ? 1 : -1)); }
+      },
+      onPointerCancel: function () { drag.current = null; },
+      onClickCapture: function (ev) { if (swiped.current) { swiped.current = false; ev.preventDefault(); ev.stopPropagation(); } }
+    },
+      h("div", { className: "cr-hello-track", "aria-live": paused ? "polite" : "off", style: { transform: "translateX(" + (-idx * 100) + "%)" } },
+        slides.map(function (s, i) {
+          var on = i === idx;
+          return h("div", { key: s.id, className: cx("cr-hello-slide", on && "is-on"), role: "group", "aria-roledescription": "slide",
+            "aria-label": (i + 1) + " of " + n + ": " + s.title, "aria-hidden": on ? undefined : "true" },
+            h(ProjectWell, { icon: s.icon, tone: s.tone, className: "cr-hello-icon" }),
+            h("a", { className: "cr-hello-go cr-hello-go--" + (s.tone || "plain"), href: s.href, tabIndex: on ? undefined : -1,
+              target: s.external ? "_blank" : undefined, rel: s.external ? "noopener" : undefined,
+              "aria-label": s.action, title: s.action, draggable: false },
+              h(Icon, { name: s.go || "arrow", stroke: 1.8 })),
+            h("span", { className: "cr-hello-title" }, s.title),
+            h("span", { className: "cr-hello-sub" }, s.subParts ? [s.subParts[0], h("wbr", { key: "w" }), s.subParts[1]] : s.sub));
+        })),
+      h("div", { className: "cr-hello-dots", role: "group", "aria-label": "Choose a contact" },
+        slides.map(function (s, i) {
+          return h("button", { key: s.id, type: "button", className: cx("cr-hello-dot", i === idx && "is-on"),
+            "aria-label": "Show " + s.name, "aria-current": i === idx ? "true" : undefined, onClick: function () { go(i); } });
+        })));
   }
 
   function AvatarStack(props) {
@@ -1264,6 +1387,7 @@
     IconButton: IconButton, Chip: Chip, Toggle: Toggle,
     AgendaCard: AgendaCard, FolderListCard: FolderListCard, DropZoneCard: DropZoneCard,
     PreviewCard: PreviewCard, CursorChip: CursorChip, ProfileOrb: ProfileOrb, HeadOrb: HeadOrb, StatCard: StatCard,
+    MiniStatCard: MiniStatCard, TeamCard: TeamCard, ActionCard: ActionCard, ContactCard: ContactCard,
     AvatarStack: AvatarStack, Dock: Dock, MetaStrip: MetaStrip,
     HeroBoard: HeroBoard, FolderOpen: FolderOpen, ProfileOpen: ProfileOpen,
     FolderSheet: FolderSheet, ProfileSheet: ProfileSheet, AllWorkSheet: AllWorkSheet, ProjectWell: ProjectWell, useClock: useClock,

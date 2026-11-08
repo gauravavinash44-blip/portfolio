@@ -805,8 +805,25 @@
         metric: { value: "Concept", label: "speculative, personal project", word: true } },
     ].map((c) => Object.assign({ group: "case", label: "Open " + c.title + " case study" }, c));
     S.preview.href = hrefs["Contextual Chat"];
+    /* Featured card on the board ("Growth Team" slot): one "Project" chip, icon well, arrow link.
+       Cursor x/y are measured from the card's top-left (the preview area starts at the top). */
+    S.preview = Object.assign({}, S.preview, {
+      label: "Project", timer: null, icon: "chatSpark", tone: "blue", arrowHref: hrefs["Contextual Chat"],
+      cursors: S.preview.cursors.map((c) => Object.assign({}, c, c.name === "You" ? { x: 81, y: 178 } : { x: 207, y: 69 })),
+    });
     S.topbar.notice.href = hrefs["Contextual Chat"];
     S.stat.linkLabel = "View all work";
+    /* Experience keys: the two named segments, short enough for the small card (full label in the tooltip) */
+    S.stat.segments = S.stat.segments.map((s) => Object.assign({}, s, { short: s.label === "Fintech AI" ? "Fintech" : s.label }));
+    S.hello = [
+      { id: "email", name: "Email", icon: "mail", tone: "orange", go: "send", title: "Say hello",
+        sub: "gauravavinash3@gmail.com", subParts: ["gauravavinash3", "@gmail.com"],
+        href: "mailto:gauravavinash3@gmail.com", action: "Email Gaurav at gauravavinash3@gmail.com" },
+      { id: "linkedin", name: "LinkedIn", icon: "linkedin", tone: "blue", go: "arrow", title: "LinkedIn",
+        sub: "in/gauravavinash", href: "https://www.linkedin.com/in/gauravavinash", external: true, action: "Open Gaurav's LinkedIn (new tab)" },
+      { id: "resume", name: "Resume", icon: "doc", tone: "plain", go: "download", title: "Resume",
+        sub: "One page, PDF", href: ASSETS.resume, external: true, action: "Open Gaurav's resume, PDF (new tab)" },
+    ];
     S.stack.onClick = () => onExit("more-work");
     S.profileSheet.links = [
       { label: "Resume", href: ASSETS.resume, external: true },
@@ -821,50 +838,65 @@
     if (fab) fab.click();
   }
 
+  /* Board: the mindset "Dashboard" screen. 5 x 3 grid of 160px cells, 23px gutters
+     (892 x 526 at scale 1). The reference screenshot is this canvas at 1.258x (1610 x 1052). */
+  const BOARD = { w: 892, h: 526, tw: 709, th: 709 };
   function useBoardScale(stageRef) {
+    const [layout, setLayout] = useState(() => (window.innerWidth <= 700 ? "stack" : "grid"));
     useEffect(() => {
       const fit = () => {
         const el = stageRef.current;
         if (!el) return;
         const w = window.innerWidth, h = window.innerHeight;
-        // Mobile: CSS stacks the cards in a scrolling column, no scaling.
+        // Mobile: CSS stacks the cards in a scrolling two-up column, no scaling.
         if (w <= 700) {
           el.dataset.crFit = "stack";
+          delete el.dataset.crCols;
           el.style.removeProperty("--cr-scale");
+          setLayout("stack");
           return;
         }
-        // Desktop: the reference dashboard is a 1280 x 853 canvas, so the board
-        // scales with the smaller of the two ratios and CSS places it like the
-        // reference (68% of the free height above the grid).
-        if (w >= 1100 && h >= 700) {
+        // Desktop: board centred between the top bar and the corners, scaled like the
+        // reference (1280 x 836 canvas), never closer than 100px to the top or bottom edge.
+        if (w >= 1100 && h >= 620) {
           delete el.dataset.crFit;
           delete el.dataset.crCols;
           el.style.removeProperty("--cr-stage-h");
           el.style.removeProperty("--cr-board-top");
-          const scale = Math.min(1.15, w / 1280, h / 853);
+          const scale = Math.min(1.35, w / 1280, h / 836, (h - 200) / BOARD.h, (w - 120) / BOARD.w);
           el.style.setProperty("--cr-scale", Math.max(0.55, scale).toFixed(3));
+          setLayout("grid");
           return;
         }
-        // Tablet or short screens: fit between the top bar and the corners,
-        // 2 columns in portrait, and scroll instead of shrinking past 0.68.
-        const cols = w < 1100 && h > w ? 2 : 3;
-        const bw = cols === 2 ? 605 : 919, bh = cols === 2 ? 919 : 605;
+        // Tablet or short screens: fit between the top bar and the corners.
+        // Portrait: a 4 x 4 board; landscape keeps the 5 x 3 board. Scroll instead of shrinking past 0.68.
+        const portrait = w < 1100 && h > w;
+        const bw = portrait ? BOARD.tw : BOARD.w, bh = portrait ? BOARD.th : BOARD.h;
         const top = w < 1100 ? 168 : 104, bottom = 112;
         let scale = Math.min(1.12, (w - 64) / bw, (h - top - bottom) / bh);
         scale = Math.max(Math.min(0.68, (w - 64) / bw), scale);
         const boardH = bh * scale;
         const room = Math.max(0, h - top - bottom - boardH);
         el.dataset.crFit = "flow";
-        el.dataset.crCols = String(cols);
+        if (portrait) el.dataset.crCols = "2"; else delete el.dataset.crCols;
         el.style.setProperty("--cr-scale", scale.toFixed(3));
         el.style.setProperty("--cr-board-top", Math.round(top + room / 2) + "px");
         el.style.setProperty("--cr-stage-h", Math.ceil(top + boardH + bottom + room) + "px");
+        setLayout(portrait ? "tablet" : "grid");
       };
       fit();
       window.addEventListener("resize", fit);
       return () => window.removeEventListener("resize", fit);
     }, [stageRef]);
+    return layout;
   }
+
+  /* Card order per layout = reading order, so Tab follows what you see */
+  const BOARD_ORDER = {
+    grid: ["cases", "exp", "date", "orb", "pg", "chat", "ask", "hello"],
+    tablet: ["orb", "exp", "chat", "pg", "date", "cases", "ask", "hello"],
+    stack: ["orb", "chat", "cases", "exp", "pg", "date", "ask", "hello"],
+  };
 
   /* Design Playground explorations for the All work popup: titles and order from the
      playground (window.CraftPlayground.items), categories and one-liners from playground-data.json */
@@ -929,7 +961,7 @@
     const pgJson = usePlaygroundJson(CP);
     const allWork = React.useMemo(() => data.cases.concat(playgroundWork(CP, pgJson)), [data, pgJson]);
 
-    useBoardScale(stageRef);
+    const layout = useBoardScale(stageRef);
     useEffect(() => { C.motion.enter(stageRef.current, { delay: 300 }); }, []);
     useEffect(() => {
       try { window.localStorage.setItem(CRAFT_WP_KEY, wallpaper); } catch (err) { /* ignore */ }
@@ -1042,6 +1074,43 @@
       ],
     };
 
+    /* Board cards by slot (placement and order live in craft.css / BOARD_ORDER) */
+    const pgCard = () => stageRef.current && stageRef.current.querySelector("[data-pg-card]");
+    const boardCards = {
+      cases: () => e(C.FolderListCard, Object.assign({}, data.folders, {
+        draggable: true,
+        onOpen: (row, ev) => openAllWork(fromEvent(ev), "case"),
+        openLabel: (row) => row.title + ", " + row.sub + ". Show all work",
+        onAll: (ev) => openAllWork(fromEvent(ev)),
+        allLabel: "View all work, " + data.cases.length + " case studies",
+      })),
+      exp: () => e(C.MiniStatCard, Object.assign({}, data.stat, { onLink: (ev) => openAllWork(fromEvent(ev)) })),
+      date: () => e(C.AgendaCard, data.agenda),
+      orb: () => e(C.ProfileOrb, Object.assign({}, data.profile, {
+        onOpen: () => setSheet({ kind: "profile" }),
+        onEdit: () => setSheet({ kind: "profile" }),
+        editIcon: "dropper",
+        editLabel: "Open profile card",
+      })),
+      pg: () => e(C.TeamCard, {
+        title: "Design Playground",
+        subtitle: "Interface and motion studies",
+        thumbs: [ASSETS.moov, ASSETS.spaceBetweenPoster, ASSETS.swaply],
+        count: 8,
+        label: "Open Design Playground, 8 interface and motion studies",
+        attrs: { "data-pg-card": "" },
+        onOpen: CP ? openPlayground : (ev) => openAllWork(fromEvent(ev), "playground"),
+        onDrop: () => openAllWork(pgCard(), "case"),
+        dropHint: "Drop to see all work",
+      }),
+      chat: () => e(C.PreviewCard, data.preview),
+      ask: () => e(C.ActionCard, {
+        title: "Ask the assistant", icon: "plus", haspopup: "dialog",
+        onClick: (ev) => openSearch(fromEvent(ev), "ask"),
+      }),
+      hello: () => e(C.ContactCard, { label: "Say hello", slides: data.hello }),
+    };
+
     const stage = e(C.Stage, {
       className: "cr-hero craft-wp--" + wallpaper + (sheet && sheet.kind === "allwork" && !sheet.closing ? " is-aw" : ""),
       wallpaper,
@@ -1055,33 +1124,7 @@
       e(C.TopBar, topbar),
       e("div", { className: "cr-board" },
         e("div", { className: "cr-grid" + (sheet && !sheet.closing ? " cr-dimmed" : "") },
-          e("div", { className: "cr-dim" }, e(C.AgendaCard, data.agenda)),
-          e("div", { className: "cr-dim" }, e(C.FolderListCard, Object.assign({}, data.folders, {
-            draggable: true,
-            onOpen: (row, ev) => openAllWork(fromEvent(ev), "case"),
-            openLabel: (row) => row.title + ", " + row.sub + ". Show all work",
-            onAll: (ev) => openAllWork(fromEvent(ev)),
-            allLabel: "View all work, " + data.cases.length + " case studies",
-          }))),
-          e("div", { className: "cr-dim", "data-cr-drop": "" }, CP
-            ? e(CP.PlaygroundCard, {
-              thumbs: [ASSETS.nomad, ASSETS.spaceBetweenPoster, ASSETS.health],
-              count: 8,
-              onOpen: openPlayground,
-              onDrop: () => openAllWork(stageRef.current && stageRef.current.querySelector("[data-pg-card]"), "case"),
-            })
-            : e(C.DropZoneCard, Object.assign({}, data.drop, {
-              onDrop: () => openAllWork(null, "case"),
-              onClick: (ev) => openAllWork(fromEvent(ev)),
-            }))),
-          e("div", { className: "cr-dim" }, e(C.PreviewCard, data.preview)),
-          e("div", { className: "cr-dim" }, e(C.ProfileOrb, Object.assign({}, data.profile, {
-            onOpen: () => setSheet({ kind: "profile" }),
-            onEdit: () => setSheet({ kind: "profile" }),
-            editIcon: "dropper",
-            editLabel: "Open profile card",
-          }))),
-          e("div", { className: "cr-dim" }, e(C.StatCard, Object.assign({}, data.stat, { onLink: (ev) => openAllWork(fromEvent(ev)) })))
+          BOARD_ORDER[layout].map((slot) => e("div", { key: slot, className: "cr-dim cr-slot cr-slot--" + slot, "data-cr-drop": slot === "pg" ? "" : undefined }, boardCards[slot]()))
         ),
         sheet && sheet.kind === "profile" ? e(C.ProfileSheet, Object.assign({
           stageRef, style: {}, onClose: () => setSheet(null),
@@ -1090,6 +1133,12 @@
       e("div", { className: "cr-corners" },
       e("div", { className: "cr-corner cr-corner--left" }, e(C.AvatarStack, CP ? Object.assign({}, data.stack, { onClick: openPlayground }) : data.stack),
         C.NowPlayingPill ? e(C.NowPlayingPill, { onOpen: (el) => { setPicker(false); setSheet({ kind: "resonance", opener: el }); } }) : null),
+      e("div", { className: "cr-corner cr-corner--center" },
+        e("button", {
+          type: "button", className: "cr-plusbtn cr-glass-light", "data-cr-enter": "",
+          "aria-label": "All work", title: "All work", "aria-haspopup": "dialog",
+          onClick: (ev) => openAllWork(fromEvent(ev)),
+        }, e(C.Icon, { name: "plus", stroke: 1.6 }))),
       e("div", { className: "cr-corner cr-corner--right cr-dock-wrap" },
         picker ? e("div", { className: "cr-wp-picker cr-glass-light", role: "group", "aria-label": "Wallpapers" },
           CRAFT_WALLPAPERS.map((w) => e("button", {

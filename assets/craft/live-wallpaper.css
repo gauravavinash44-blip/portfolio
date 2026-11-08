@@ -1,0 +1,12 @@
+/* Live wallpaper canvas (assets/craft/live-wallpaper.js). Sits inside the active .cr-wp-photo,
+   so it shares the photo's cover crop, slow drift and the layer crossfade. */
+.cr-wp-live {
+  position: absolute; inset: 0;
+  display: block; width: 100%; height: 100%;
+  opacity: 0; pointer-events: none;
+  transition: opacity 900ms ease;
+}
+.cr-wp-live.is-on { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .cr-wp-live { display: none; }
+}

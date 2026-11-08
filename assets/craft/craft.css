@@ -490,11 +490,12 @@ html.ga-craft .ga-brand { box-shadow: 0 8px 24px rgba(30, 20, 30, 0.16); }
 @media (max-width: 1350px) { .cr-hero .cr-clock { margin-left: 12px; } .cr-hero .cr-topbar-left { gap: 16px; } }
 .cr-hero .cr-topbar-id span:last-child { color: inherit; opacity: 0.8; }
 
-/* Board: the 912×600 grid, centred and scaled to fit the viewport */
+/* Board: the 892×526 grid (5 × 3 cells of 160, gutters 23), centred and scaled to fit the viewport */
 .cr-board {
+  --widget: 160px; --gutter: 23px;
   position: absolute; left: 50%; top: 50%;
-  width: calc(var(--widget) * 3 + var(--gutter) * 2);
-  height: calc(var(--widget) * 2 + var(--gutter));
+  width: calc(var(--widget) * 5 + var(--gutter) * 4);
+  height: calc(var(--widget) * 3 + var(--gutter) * 2);
   transform: translate(-50%, -46%) scale(var(--cr-scale, 1));
   transform-origin: 50% 50%;
   z-index: 2;
@@ -549,18 +550,21 @@ html.ga-craft:has(.cr-hero[data-cr-fit="flow"]) body { overflow: visible; }
   transform-origin: 50% 0;
 }
 
-/* Portrait tablet: 2 x 3, glass and white in a checkerboard */
+/* Portrait tablet: 4 x 4. Avatar, Experience | Contextual Chat / Playground, date |
+   Case studies | Ask and Say hello as wide cards (DOM order matches, see BOARD_ORDER) */
 .cr-hero[data-cr-cols="2"] .cr-board {
-  width: calc(var(--widget) * 2 + var(--gutter));
-  height: calc(var(--widget) * 3 + var(--gutter) * 2);
+  width: calc(var(--widget) * 4 + var(--gutter) * 3);
+  height: calc(var(--widget) * 4 + var(--gutter) * 3);
 }
-.cr-hero[data-cr-cols="2"] .cr-board .cr-grid { grid-template-columns: repeat(2, var(--widget)); }
-.cr-hero[data-cr-cols="2"] .cr-grid > :nth-child(1) { order: 1; } /* Agenda */
-.cr-hero[data-cr-cols="2"] .cr-grid > :nth-child(2) { order: 2; } /* Case studies */
-.cr-hero[data-cr-cols="2"] .cr-grid > :nth-child(4) { order: 3; } /* Live preview */
-.cr-hero[data-cr-cols="2"] .cr-grid > :nth-child(5) { order: 4; } /* Profile orb */
-.cr-hero[data-cr-cols="2"] .cr-grid > :nth-child(3) { order: 5; } /* Drop zone */
-.cr-hero[data-cr-cols="2"] .cr-grid > :nth-child(6) { order: 6; } /* Experience */
+.cr-hero[data-cr-cols="2"] .cr-board .cr-grid { grid-template-columns: repeat(4, var(--widget)); grid-template-rows: repeat(4, var(--widget)); }
+.cr-hero[data-cr-cols="2"] .cr-slot--orb { grid-area: 1 / 1; }
+.cr-hero[data-cr-cols="2"] .cr-slot--exp { grid-area: 1 / 2; }
+.cr-hero[data-cr-cols="2"] .cr-slot--chat { grid-area: 1 / 3 / 3 / 5; }
+.cr-hero[data-cr-cols="2"] .cr-slot--pg { grid-area: 2 / 1; }
+.cr-hero[data-cr-cols="2"] .cr-slot--date { grid-area: 2 / 2; }
+.cr-hero[data-cr-cols="2"] .cr-slot--cases { grid-area: 3 / 1 / 5 / 3; }
+.cr-hero[data-cr-cols="2"] .cr-slot--ask { grid-area: 3 / 3 / 4 / 5; }
+.cr-hero[data-cr-cols="2"] .cr-slot--hello { grid-area: 4 / 3 / 5 / 5; }
 .cr-hero[data-cr-cols="2"] .cr-sheet-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .cr-hero[data-cr-cols="2"] .cr-profile-sheet { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; }
 .cr-hero[data-cr-cols="2"] .cr-profile-body { padding: 32px 36px 36px; }
@@ -633,28 +637,20 @@ html.ga-craft:has(.cr-hero[data-cr-fit="flow"]) body { overflow: visible; }
     padding: 20px 16px 0;
     flex: 1 0 auto;
   }
+  /* Two-up column: wide cards span both columns, small cards sit in pairs at their desktop size.
+     Order (DOM, see BOARD_ORDER): avatar, Contextual Chat, Case studies, Experience | Playground,
+     date | Ask, Say hello */
   .cr-hero .cr-board .cr-grid {
-    display: flex; flex-direction: column; gap: 16px;
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: none; grid-auto-rows: auto; gap: 14px;
     max-width: 420px; margin: 0 auto;
   }
-  .cr-hero .cr-grid > * { width: 100%; }
-  .cr-hero .cr-grid > :nth-child(5) { order: 1; } /* Profile orb */
-  .cr-hero .cr-grid > :nth-child(1) { order: 2; } /* Agenda */
-  .cr-hero .cr-grid > :nth-child(2) { order: 3; } /* Case studies */
-  .cr-hero .cr-grid > :nth-child(4) { order: 4; } /* Live preview */
-  .cr-hero .cr-grid > :nth-child(6) { order: 5; } /* Experience */
-  .cr-hero .cr-grid > :nth-child(3) { order: 6; } /* Drop zone */
-
-  .cr-hero .cr-board .cr-card { width: 100%; height: auto; }
-  .cr-hero .cr-orb-slot { width: min(300px, 100%); height: auto; aspect-ratio: 1; margin: 4px auto 8px; }
-  .cr-hero .cr-agenda { aspect-ratio: 5 / 4; }
-  .cr-hero .cr-agenda-body p { font-size: 40px; }
-  .cr-hero .cr-list { padding-bottom: var(--space-3); }
-  .cr-hero .cr-board .cr-preview { height: 340px; }
-  .cr-hero .cr-board .cr-stat { min-height: 288px; }
-  .cr-hero .cr-stat .cr-t-xl { font-size: 64px; }
-  .cr-hero .cr-stat-legs { margin-top: 18px; }
-  .cr-hero .cr-board .cr-drop { height: 184px; }
+  .cr-hero .cr-grid > .cr-slot { grid-area: auto; min-width: 0; }
+  .cr-hero .cr-grid > .cr-slot--orb, .cr-hero .cr-grid > .cr-slot--chat,
+  .cr-hero .cr-grid > .cr-slot--cases, .cr-hero .cr-grid > .cr-slot--hello { grid-column: 1 / -1; }
+  .cr-hero .cr-board .cr-card { width: 100%; height: auto; aspect-ratio: 1; }
+  .cr-hero .cr-board .cr-slot--cases .cr-card, .cr-hero .cr-board .cr-slot--chat .cr-card { aspect-ratio: auto; height: 343px; }
+  .cr-hero .cr-board .cr-slot--hello .cr-card { aspect-ratio: auto; height: 172px; }
+  .cr-hero .cr-orb-slot { width: min(232px, 100%); height: auto; aspect-ratio: 1; margin: 2px auto 6px; }
 
   /* Stack + dock become one sticky glass pill */
   .cr-hero .cr-corners {
@@ -804,18 +800,19 @@ html.ga-craft:has(.cr-hero[data-cr-fit="flow"]) body { overflow: visible; }
    the segmented control ends at column 3 (+4px), search sits left of the Craft switch. */
 .cr-hero:not([data-cr-fit]) .cr-topbar { top: 27px; left: 0; right: 0; height: 50px; display: block; }
 .cr-hero:not([data-cr-fit]) .cr-topbar-left { position: absolute; left: 28px; top: 0; height: 50px; gap: 0; }
-.cr-hero:not([data-cr-fit]) .cr-clock { margin-left: calc(50vw - 459.5px * var(--cr-scale, 1) - 78px + 7px); }
+/* (board half-width 446; clock sits 17 left of the grid, notice 148 left of centre, Home/Projects ends 20 past the grid) */
+.cr-hero:not([data-cr-fit]) .cr-clock { margin-left: calc(50vw - 463px * var(--cr-scale, 1) - 78px); }
 .cr-hero:not([data-cr-fit]) .cr-topbar-id { display: flex; margin-left: 18px; }
-.cr-hero:not([data-cr-fit]) .cr-topbar > :nth-child(2) { position: absolute; top: 0; left: calc(50% - 145.5px * var(--cr-scale, 1)); }
+.cr-hero:not([data-cr-fit]) .cr-topbar > :nth-child(2) { position: absolute; top: 0; left: calc(50% - 148px * var(--cr-scale, 1)); }
 .cr-hero:not([data-cr-fit]) .cr-notice .cr-avatar { display: block; }
 .cr-hero:not([data-cr-fit]) .cr-topbar-right { position: absolute; inset: 0; display: block; pointer-events: none; }
 .cr-hero:not([data-cr-fit]) .cr-topbar-right > * { pointer-events: auto; }
-.cr-hero:not([data-cr-fit]) .cr-topbar-right .cr-seg { position: absolute; top: 0; right: calc(50% - 459.5px * var(--cr-scale, 1) - 4px); }
+.cr-hero:not([data-cr-fit]) .cr-topbar-right .cr-seg { position: absolute; top: 0; right: calc(50% - 466px * var(--cr-scale, 1)); }
 .cr-hero:not([data-cr-fit]) .cr-topbar-right .cr-iconbtn { display: inline-grid; position: absolute; top: 0; right: 90px; }
 
-/* Board: reference proportions, 68% of the free height above the grid */
+/* Board: centred in the viewport like the reference (top 197 of 1052) */
 .cr-hero:not([data-cr-fit]) .cr-board {
-  top: calc((100% - 605px * var(--cr-scale, 1)) * 0.68);
+  top: calc((100% - 526px * var(--cr-scale, 1)) * 0.5 + 2px * var(--cr-scale, 1));
   transform: translateX(-50%) scale(var(--cr-scale, 1));
   transform-origin: 50% 0;
 }
@@ -1509,4 +1506,168 @@ html.ga-np-open .craft-switch, html.ga-np-open .ga-brand { opacity: 0; visibilit
 @media (max-width: 359px) {
   .cr-hero .cr-clock { margin-left: 10px; font-size: 28px; }
   .cr-hero .cr-topbar-right { margin-right: 92px; }
+}
+
+/* ═════════════ Board v2: the mindset "Dashboard" screen ═════════════
+   5 × 3 grid of 160px cells, 23px gutters. Values are the reference screenshot's px / 1.258
+   (it shows this canvas at 1610 × 1052). Cards keep their components; this only places and sizes them. */
+.cr-board .cr-grid { grid-template-columns: repeat(5, var(--widget)); grid-template-rows: repeat(3, var(--widget)); grid-auto-rows: var(--widget); }
+.cr-slot { display: grid; min-width: 0; min-height: 0; }
+.cr-slot > * { grid-area: 1 / 1; }
+.cr-slot--cases { grid-area: 1 / 1 / 3 / 3; }
+.cr-slot--exp { grid-area: 1 / 3; }
+.cr-slot--date { grid-area: 1 / 4; }
+.cr-slot--orb { grid-area: 1 / 5; }
+.cr-slot--pg { grid-area: 2 / 3; }
+.cr-slot--chat { grid-area: 2 / 4 / 4 / 6; }
+.cr-slot--ask { grid-area: 3 / 1; }
+.cr-slot--hello { grid-area: 3 / 2; }
+.cr-board .cr-slot > .cr-card { width: 100%; height: 100%; border-radius: 32px; }
+.cr-board .cr-slot--cases > .cr-card, .cr-board .cr-slot--chat > .cr-card { border-radius: 37px; }
+.cr-board .cr-slot--ask > .cr-card, .cr-board .cr-slot--hello > .cr-card { border-radius: 32px; }
+
+/* ── Case studies ("Privacy"): 2 × 2 ── */
+.cr-board .cr-list { display: block; padding: 0 8px; }
+.cr-board .cr-list-head { height: 79px; margin: 0; padding: 21px 13px 0 20px; align-items: flex-start; }
+.cr-board .cr-list-head .cr-t-title { margin-top: 9px; font-size: 17px; line-height: 1; letter-spacing: -0.02em; }
+.cr-board .cr-list-head .cr-chip--outline { height: 42px; min-width: 67px; justify-content: center; padding: 0 15px; font-size: 12px; font-weight: 400; }
+.cr-board .cr-list .cr-row { height: 86px; padding: 0 12px 0 13px; grid-template-columns: 57px minmax(0, 1fr) auto; gap: 15px; border-radius: 24px; }
+.cr-board .cr-list .cr-row + .cr-row::before { left: 13px; right: 6px; }
+.cr-board .cr-row-av, .cr-board .cr-row-av .cr-pwell, .cr-board .cr-row-thumb { width: 57px; height: 57px; }
+.cr-board .cr-row-av .cr-pwell svg { width: 24px; height: 24px; }
+.cr-board .cr-row-badge { top: -2px; right: -4px; }
+.cr-board .cr-list .cr-row-text b { font-size: 17.5px; line-height: 1.2; }
+.cr-board .cr-list .cr-row-text span { margin-top: 3px; font-size: 12px; }
+.cr-board .cr-list .cr-row .cr-iconbtn { width: 57px; height: 57px; }
+.cr-board .cr-list .cr-row .cr-iconbtn svg { width: 16px; height: 16px; }
+.cr-board .cr-row-pill { width: 60px; height: 38px; margin-right: 0; border-radius: 19px; }
+.cr-board .cr-row-pill svg { left: 9px; top: 12px; width: 14px; height: 14px; }
+.cr-board .cr-row-pill-knob { top: 3px; right: 3px; width: 32px; height: 32px; }
+
+/* ── Experience ("Data") ── */
+.cr-mstat { position: relative; display: block; }
+.cr-mstat-head { position: absolute; left: 17px; right: 15px; top: 17px; height: 18px; display: flex; justify-content: space-between; align-items: center; }
+.cr-mstat-head h3 { margin: 0; font-size: 13.5px; font-weight: 400; letter-spacing: -0.015em; white-space: nowrap; }
+.cr-mstat-link { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: var(--ink-link); white-space: nowrap; }
+.cr-mstat-link svg { width: 8px; height: 8px; color: var(--ink); }
+.cr-mstat-link:hover { color: var(--ink); }
+.cr-mstat-value { position: absolute; left: 17px; top: 71px; margin: 0; font-size: 22px; line-height: 26px; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.cr-mstat-bars { position: absolute; left: 17px; right: 17px; top: 108px; height: 5px; display: flex; gap: 2.5px; }
+.cr-mstat-bars i { display: block; height: 100%; border-radius: 3px; transform-origin: left center; }
+.cr-mstat-keys { position: absolute; left: 17px; right: 15px; top: 126px; margin: 0; display: flex; justify-content: space-between; gap: 6px; font-size: 11px; line-height: 16px; color: var(--ink-2); white-space: nowrap; }
+.cr-mstat-keys span { display: inline-flex; align-items: center; gap: 4px; min-width: 0; }
+.cr-mstat-keys i { flex: none; width: 4px; height: 4px; border-radius: 50%; }
+
+/* ── Date ── */
+.cr-board .cr-agenda { display: block; padding: 0; }
+.cr-board .cr-agenda-top { position: absolute; left: 17px; top: 19px; }
+.cr-board .cr-agenda-meta { margin: 0; font-size: 12px; line-height: 16px; letter-spacing: -0.01em; }
+.cr-board .cr-agenda-body { position: absolute; left: 17px; right: 8px; top: 59px; margin: 0; }
+.cr-board .cr-agenda-body p { font-size: 21px; line-height: 23px; letter-spacing: -0.025em; }
+.cr-board .cr-agenda-body p + p { margin-top: 0; font-size: 21px; color: #fff; }
+.cr-board .cr-agenda-label { position: absolute; left: 17px; right: 8px; top: 126px; font-size: 12px; line-height: 16px; }
+
+/* ── Avatar orb: the white button sits on the circle's left edge ── */
+.cr-board .cr-orb-edit { left: 0; top: 13px; }
+.cr-board .cr-orb-edit .cr-iconbtn { width: 44px; height: 44px; }
+.cr-board .cr-orb-edit .cr-iconbtn svg { width: 19px; height: 19px; }
+
+/* ── Design Playground ("Core Product Team") ── */
+.cr-team { position: relative; display: block; padding: 0; text-align: left; cursor: pointer; color: var(--ink); transition: box-shadow 240ms ease; }
+.cr-team-title { position: absolute; left: 17px; top: 17px; width: 112px; font-size: 17.5px; line-height: 18.5px; letter-spacing: -0.02em; }
+.cr-team-glyph { position: absolute; right: 20px; top: 19px; width: 14px; height: 14px; color: #8c8c8c; }
+.cr-team-sub { position: absolute; left: 17px; right: 12px; top: 61px; font-size: 12px; line-height: 14px; color: var(--ink-2); }
+.cr-team-foot { position: absolute; left: 17px; right: 17px; top: 99px; height: 43px; display: flex; align-items: center; justify-content: space-between; }
+.cr-team-faces { display: flex; }
+.cr-team-faces img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; background: var(--well); box-shadow: 0 0 0 2px #fff; transition: margin 420ms var(--ease-arrive); }
+.cr-team-faces img + img { margin-left: -22px; }
+.cr-team:hover .cr-team-faces img + img, .cr-team:focus-visible .cr-team-faces img + img { margin-left: -16px; }
+.cr-team-count { flex: none; width: 43px; height: 43px; border-radius: 50%; background: var(--well); display: grid; place-items: center; font-size: 12px; }
+.cr-team.is-over { box-shadow: inset 0 0 0 2px var(--blue); }
+
+/* ── Contextual Chat ("Growth Team"): 2 × 2 ── */
+.cr-board .cr-preview { display: block; }
+.cr-board .cr-preview-chips { position: absolute; left: 25px; top: 25px; padding: 0; z-index: 3; }
+.cr-board .cr-preview .cr-chip { height: 41px; padding: 0 17px; font-size: 12px; }
+.cr-board .cr-preview-shot { position: absolute; left: 0; right: 0; top: 0; height: 246px; overflow: visible; }
+.cr-board .cr-strip-slide { top: 89px; height: 115px; }
+.cr-board .cr-strip-slide--left { left: 0; width: 49px; }
+.cr-board .cr-strip-slide--main { left: 66px; width: 206px; }
+.cr-board .cr-strip-slide--right { left: 288px; width: 72px; }
+.cr-board .cr-strip-label { top: -12px; font-size: 9px; }
+.cr-board .cr-preview .cr-cursor svg { width: 15px; height: 15px; }
+.cr-board .cr-preview .cr-cursor-av { left: 4px; top: 14px; width: 29px; height: 29px; font-size: 12px; }
+.cr-board .cr-preview .cr-cursor .cr-cursor-tag { left: 37px; top: 14px; height: 29px; padding: 0 11px; font-size: 13.5px; font-weight: 400; }
+.cr-board .cr-preview-foot { position: absolute; left: 0; right: 0; bottom: 0; height: 97px; padding: 0 21px 13px; grid-template-columns: 57px minmax(0, 1fr) 57px; gap: 13px; }
+.cr-board .cr-preview-foot .cr-pwell { width: 57px; height: 57px; }
+.cr-board .cr-preview-foot .cr-pwell svg { width: 24px; height: 24px; }
+.cr-board .cr-preview-foot .cr-row-text b { font-size: 17.5px; }
+.cr-board .cr-preview-foot .cr-row-text span { margin-top: 3px; font-size: 12px; }
+.cr-board .cr-preview-foot .cr-chip--count { width: 57px; height: 57px; }
+.cr-preview-go { transition: background var(--dur-snap) ease, color var(--dur-snap) ease; }
+.cr-preview-go:hover, .cr-preview-go:focus-visible { background: var(--blue); color: #fff; }
+
+/* ── Ask the assistant ("Create a room") ── */
+.cr-action { position: relative; display: block; padding: 0; cursor: pointer; color: #fff; }
+.cr-action-icon { position: absolute; left: 50%; top: 60px; width: 16px; height: 16px; margin-left: -8px; transition: transform 500ms var(--ease-pop); }
+.cr-action-label { position: absolute; left: 8px; right: 8px; top: 86px; font-size: 13.5px; line-height: 18px; letter-spacing: -0.01em; text-align: center; color: rgba(255, 255, 255, 0.8); }
+.cr-action:hover .cr-action-icon, .cr-action:focus-visible .cr-action-icon { transform: rotate(90deg) scale(1.1); }
+.cr-action:focus-visible, .cr-plusbtn:focus-visible { outline-color: #fff; }
+.cr-glass.cr-action { background: var(--g-create); }
+.cr-action, .cr-plusbtn {
+  border: 1px solid rgba(255, 255, 255, 0.30);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 -1px 0 rgba(255, 255, 255, 0.10), inset 0 0 24px rgba(255, 255, 255, 0.06), 0 10px 30px rgba(20, 10, 30, 0.10);
+  -webkit-backdrop-filter: var(--g-blur); backdrop-filter: var(--g-blur);
+  text-shadow: 0 1px 3px rgba(20, 10, 20, 0.22);
+}
+
+/* ── Say hello ("Happy Birthday!") ── */
+.cr-hello { position: relative; padding: 0; touch-action: pan-y; -webkit-user-select: none; user-select: none; }
+.cr-hello-track { position: absolute; inset: 0; display: flex; transition: transform 560ms var(--ease-arrive); }
+.cr-hello-slide { position: relative; flex: 0 0 100%; height: 100%; transition: opacity 400ms ease; }
+.cr-hello-slide:not(.is-on) { opacity: 0.35; }
+.cr-hello .cr-hello-icon { position: absolute; left: 17px; top: 17px; width: 57px; height: 57px; background: var(--well); color: #3d3d3d; }
+.cr-hello .cr-hello-icon svg { width: 24px; height: 24px; }
+.cr-hello-go { position: absolute; right: 17px; top: 17px; width: 57px; height: 57px; border-radius: 50%; display: grid; place-items: center; transition: transform var(--dur-snap) var(--ease-snap), background var(--dur-snap) ease; }
+.cr-hello-go svg { width: 20px; height: 20px; }
+.cr-hello-go:active { transform: scale(0.94); }
+.cr-hello-go--orange { background: #fdeeea; color: #e0582c; }
+.cr-hello-go--orange:hover { background: #fbe1d8; }
+.cr-hello-go--blue { background: #eef1fe; color: var(--blue); }
+.cr-hello-go--blue:hover { background: #e0e6fd; }
+.cr-hello-go--plain { background: var(--well); color: #222; }
+.cr-hello-go--plain:hover { background: #ececec; }
+.cr-hello-title { position: absolute; left: 8px; right: 8px; top: 81px; text-align: center; font-size: 17.5px; line-height: 20px; letter-spacing: -0.02em; white-space: nowrap; }
+.cr-hello-sub { position: absolute; left: 8px; right: 8px; top: 103px; text-align: center; font-size: 12px; line-height: 14px; color: var(--ink-2); }
+.cr-hello-dots { position: absolute; left: 0; right: 0; bottom: 9px; display: flex; justify-content: center; }
+.cr-hello-dot { width: 13px; height: 13px; display: grid; place-items: center; cursor: pointer; }
+.cr-hello-dot::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: #d6d6d6; transition: background 240ms ease, transform 240ms ease; }
+.cr-hello-dot.is-on::before { background: #000; transform: scale(1.3); }
+.cr-hello-dot:hover::before { background: #9a9a9a; }
+.cr-hello-dot.is-on:hover::before { background: #000; }
+.cr .cr-hello-dot:focus-visible { outline-offset: 0; border-radius: 50%; }
+@media (prefers-reduced-motion: reduce) { .cr-hello-track { transition: none; } }
+
+/* ── "+" All work, bottom centre on the dock's baseline ── */
+.cr-corner--center { left: 50%; transform: translateX(-50%); }
+.cr-plusbtn { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 15px; color: #fff; background: var(--g-dock); transition: transform 400ms var(--ease-pop), background 240ms ease; }
+.cr-plusbtn svg { width: 20px; height: 20px; }
+.cr-plusbtn:hover { transform: scale(1.06); background: rgba(60, 48, 60, 0.34); }
+.cr-plusbtn:active { transform: scale(0.95); }
+@media (min-width: 701px) { .cr-hero .cr-wp-hint { bottom: 96px; } }
+
+/* ── Mobile: the bottom bar holds stack | + | dock; cards keep their desktop px ── */
+@media (max-width: 700px) {
+  .cr-hero .cr-board .cr-slot > .cr-card { width: 100%; height: auto; aspect-ratio: 1; }
+  .cr-hero .cr-board .cr-slot--cases > .cr-card, .cr-hero .cr-board .cr-slot--chat > .cr-card { aspect-ratio: auto; height: 343px; }
+  .cr-hero .cr-board .cr-slot--hello > .cr-card { aspect-ratio: auto; height: 172px; }
+  .cr-hero .cr-slot--orb { justify-items: center; }
+  .cr-hero .cr-corner--center { transform: none; padding-right: 6px; border-right: 1px solid rgba(255, 255, 255, 0.28); }
+  .cr-hero .cr-plusbtn { width: 44px; height: 44px; border-radius: 14px; border: 0; box-shadow: none; background: rgba(255, 255, 255, 0.16); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .cr-hello-dot { width: 22px; height: 22px; }
+  .cr-hello-dots { bottom: 6px; }
+}
+/* Narrow tablets: the left corner (stack + now playing) reaches the middle, so "+" sits left of the dock */
+@media (min-width: 701px) and (max-width: 900px) {
+  .cr-hero .cr-corner--center { left: auto; right: 168px; transform: none; }
 }
