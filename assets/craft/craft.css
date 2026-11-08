@@ -563,7 +563,7 @@ html.ga-craft:has(.cr-hero[data-cr-fit="flow"]) body { overflow: visible; }
 .cr-hero[data-cr-cols="2"] .cr-slot--pg { grid-area: 2 / 1; }
 .cr-hero[data-cr-cols="2"] .cr-slot--date { grid-area: 2 / 2; }
 .cr-hero[data-cr-cols="2"] .cr-slot--cases { grid-area: 3 / 1 / 5 / 3; }
-.cr-hero[data-cr-cols="2"] .cr-slot--ask { grid-area: 3 / 3 / 4 / 5; }
+.cr-hero[data-cr-cols="2"] .cr-slot--np { grid-area: 3 / 3 / 4 / 5; }
 .cr-hero[data-cr-cols="2"] .cr-slot--hello { grid-area: 4 / 3 / 5 / 5; }
 .cr-hero[data-cr-cols="2"] .cr-sheet-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .cr-hero[data-cr-cols="2"] .cr-profile-sheet { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; }
@@ -1357,7 +1357,7 @@ html.ga-np-open .craft-switch, html.ga-np-open .ga-brand { opacity: 0; visibilit
 .cr-np-modal { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; }
 .cr-np-scrim { position: absolute; inset: 0; background: rgba(28, 18, 30, 0.22); }
 .cr-np-sheet {
-  --np-phone-h: min(680px, calc(100vh - 128px));
+  --np-phone-h: min(680px, calc(100vh - 176px));
   position: relative;
   display: grid; grid-template-columns: auto minmax(0, 380px); align-items: center; gap: 56px;
   max-width: calc(100vw - 64px); max-height: calc(100vh - 64px);
@@ -1370,51 +1370,64 @@ html.ga-np-open .craft-switch, html.ga-np-open .ga-brand { opacity: 0; visibilit
 }
 .cr-np-close { position: absolute; top: 22px; right: 22px; z-index: 2; width: 50px; height: 50px; }
 .cr-np-close:focus-visible { outline-color: #fff; }
-.cr-np-device { display: grid; place-items: center; }
+.cr-np-device { display: flex; flex-direction: column; align-items: center; gap: 14px; min-height: 0; }
 .cr-np-phone {
-  position: relative; height: var(--np-phone-h); aspect-ratio: 1294 / 2656;
+  position: relative; height: var(--np-phone-h); aspect-ratio: 1294 / 2656; flex: none;
   filter: drop-shadow(0 28px 48px rgba(0, 0, 0, 0.32));
 }
 .cr-np-frame { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none; user-select: none; }
 .cr-np-screen {
   position: absolute; top: 1.88%; right: 4.48%; bottom: 1.88%; left: 4.4%; z-index: 1;
   overflow: hidden; border-radius: 11.5% / 5.4%; background: #000;
+  /* own layer, so the rounded clip holds while the app zooms in */
+  isolation: isolate; transform: translateZ(0);
 }
-.cr-np-screen iframe {
-  position: absolute; top: 0; left: 0; border: 0; background: #121212;
-  transform-origin: 0 0;
+/* iOS home screen (Figma export); the whole screen is the Spotify button, as on the case page */
+.cr-np-home {
+  position: absolute; inset: 0; z-index: 1; margin: 0; padding: 0; border: 0;
+  background: #000; cursor: pointer; overflow: hidden; border-radius: inherit;
+  -webkit-tap-highlight-color: transparent;
 }
-.cr-np-poster { position: absolute; inset: 0; z-index: 2; transition: opacity 420ms ease, visibility 0s linear 0s; }
-.cr-np-poster { background: #121212; overflow: hidden; }
-.cr-np-poster-bg {
-  position: absolute; inset: -20%; width: 140%; height: 140%; object-fit: cover;
-  filter: blur(36px) saturate(0.8); opacity: 0.5; transform: translateZ(0);
+.cr-np-home img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center top; pointer-events: none; user-select: none; }
+.cr-np-home:focus-visible { outline: 2px solid #1db954; outline-offset: -3px; }
+.cr-np-home:active img { filter: brightness(0.92); }
+.cr-np-screen[data-phase="app"] .cr-np-home { visibility: hidden; transition: visibility 0s linear 480ms; }
+/* soft ring on the Spotify icon so the first tap is obvious */
+.cr-np-home-ring {
+  position: absolute; aspect-ratio: 1; transform: translate(-50%, -50%);
+  border-radius: 24%; pointer-events: none;
+  box-shadow: 0 0 0 2px rgba(30, 215, 96, 0.85), 0 0 18px rgba(30, 215, 96, 0.45);
+  opacity: 0;
 }
-.cr-np-poster-np {
-  position: absolute; left: 9%; right: 9%; top: 15%;
-  display: flex; flex-direction: column; gap: 4px; color: #fff;
+@media (prefers-reduced-motion: no-preference) {
+  .cr-np-home-ring { animation: crNpRing 2.4s ease-out 900ms infinite; }
 }
-.cr-np-poster-np img {
-  width: 100%; aspect-ratio: 1; object-fit: cover; display: block; margin-bottom: 14%;
-  border-radius: 6px; box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+@media (prefers-reduced-motion: reduce) { .cr-np-home-ring { opacity: 0.8; } }
+@keyframes crNpRing {
+  0% { opacity: 0; scale: 0.96; }
+  20% { opacity: 1; scale: 1.04; }
+  60%, 100% { opacity: 0; scale: 1.2; }
 }
-.cr-np-poster-np b { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
-.cr-np-poster-np > span:not(.cr-np-track) { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: rgba(255, 255, 255, 0.7); }
-.cr-np-poster-np .cr-np-track { margin-top: 14px; background: rgba(255, 255, 255, 0.22); }
-.cr-np-poster-np .cr-np-fill { animation: none; transform: scaleX(0.64); }
-.cr-np-poster-np .cr-np-mark { animation: none; left: 64%; }
-.cr-np-screen[data-status="ready"] .cr-np-poster { opacity: 0; visibility: hidden; transition: opacity 420ms ease, visibility 0s linear 420ms; }
+/* The app: opens out of the icon (origin set inline), black like the Spotify splash while it loads */
+.cr-np-app { position: absolute; inset: 0; z-index: 2; overflow: hidden; background: #000; }
+.cr-np-app iframe {
+  position: absolute; top: 0; left: 0; border: 0; background: #000;
+  transform-origin: 0 0; opacity: 0; transition: opacity 260ms ease;
+}
+.cr-np-screen[data-status="ready"] .cr-np-app iframe { opacity: 1; }
 .cr-np-state {
   position: absolute; left: 50%; bottom: 7%; transform: translateX(-50%);
   display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
   height: 34px; padding: 0 14px; border-radius: var(--radius-pill);
   font-size: 12px; color: #fff;
-  background: rgba(20, 14, 22, 0.55); border: 1px solid rgba(255, 255, 255, 0.22);
-  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.18);
 }
+/* only say "opening" if it takes a moment */
+@media (prefers-reduced-motion: no-preference) { .cr-np-state.is-loading { animation: crNpFadeIn 240ms ease 900ms backwards; } }
+@keyframes crNpFadeIn { from { opacity: 0; } }
 .cr-np-state.is-failed {
-  left: 10%; right: 10%; transform: none; height: auto; flex-direction: column; gap: 10px;
-  padding: 14px 12px; border-radius: 22px; white-space: normal; text-align: center; font-size: 13px; line-height: 1.3;
+  left: 10%; right: 10%; bottom: auto; top: 50%; transform: translateY(-50%); height: auto; flex-direction: column; gap: 12px;
+  padding: 16px 12px; border-radius: 22px; white-space: normal; text-align: center; font-size: 13px; line-height: 1.3;
 }
 .cr-np-state p { margin: 0; }
 .cr-np-state-link {
@@ -1426,6 +1439,19 @@ html.ga-np-open .craft-switch, html.ga-np-open .ga-brand { opacity: 0; visibilit
 .cr-np-spin { width: 12px; height: 12px; border-radius: 50%; border: 1.5px solid rgba(255, 255, 255, 0.35); border-top-color: #fff; }
 @media (prefers-reduced-motion: no-preference) { .cr-np-spin { animation: crNpSpin 900ms linear infinite; } }
 @keyframes crNpSpin { to { transform: rotate(360deg); } }
+/* Under the phone: hint, then Home screen / Restart */
+.cr-np-phonebar { display: flex; align-items: center; justify-content: center; gap: 8px; height: 34px; flex: none; }
+.cr-np-hint { display: inline-flex; align-items: center; gap: 8px; margin: 0; font-size: 13px; color: rgba(255, 255, 255, 0.78); }
+.cr-np-ctl {
+  display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 13px 0 11px; margin: 0;
+  border-radius: var(--radius-pill); font: inherit; font-size: 13px; font-weight: 500; color: #fff; cursor: pointer;
+  background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.26);
+  transition: background var(--dur-snap) ease, transform var(--dur-snap) var(--ease-snap);
+}
+.cr-np-ctl svg { width: 15px; height: 15px; }
+.cr-np-ctl:hover { background: rgba(255, 255, 255, 0.22); }
+.cr-np-ctl:active { transform: scale(0.96); }
+.cr-np-ctl:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
 .cr-np-copy { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; min-width: 0; }
 .cr-np-eyebrow {
@@ -1452,13 +1478,13 @@ html.ga-np-open .craft-switch, html.ga-np-open .ga-brand { opacity: 0; visibilit
 .cr-np-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
 @media (max-width: 1099px) {
-  .cr-np-sheet { --np-phone-h: min(640px, calc(100vh - 112px)); grid-template-columns: auto minmax(0, 280px); gap: 36px; padding: 28px 56px 28px 32px; max-width: calc(100vw - 48px); max-height: calc(100vh - 48px); }
+  .cr-np-sheet { --np-phone-h: min(640px, calc(100vh - 160px)); grid-template-columns: auto minmax(0, 280px); gap: 36px; padding: 28px 56px 28px 32px; max-width: calc(100vw - 48px); max-height: calc(100vh - 48px); }
   .cr-np-heading { font-size: 40px; }
   .cr-np-desc { font-size: 16px; }
 }
 /* Portrait tablets: phone over copy */
 @media (min-width: 701px) and (max-width: 1099px) and (orientation: portrait) {
-  .cr-np-sheet { --np-phone-h: min(620px, calc(100vh - 470px)); grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 22px; padding: 36px 48px 36px; width: min(560px, calc(100vw - 48px)); }
+  .cr-np-sheet { --np-phone-h: min(620px, calc(100vh - 518px)); grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 22px; padding: 36px 48px 36px; width: min(560px, calc(100vw - 48px)); }
   .cr-np-copy { align-items: center; text-align: center; }
   .cr-np-actions { justify-content: center; }
 }
@@ -1476,13 +1502,15 @@ html.ga-np-open .craft-switch, html.ga-np-open .ga-brand { opacity: 0; visibilit
   .cr-np-heading { order: 2; margin: -4px 0 0; font-size: 34px; }
   .cr-np-desc { order: 3; font-size: 15px; margin-top: -6px; }
   .cr-np-note { display: none; }
-  .cr-np-device { order: 4; flex: 1 1 0; min-height: 0; width: 100%; }
-  .cr-np-phone { height: 100%; max-height: 640px; max-width: 100%; }
+  .cr-np-device { order: 4; flex: 1 1 0; min-height: 0; width: 100%; gap: 10px; }
+  .cr-np-phone { flex: 1 1 0; min-height: 0; height: auto; max-height: 640px; max-width: 100%; }
+  .cr-np-phonebar { height: 32px; }
+  .cr-np-ctl { height: 32px; }
   .cr-np-actions { order: 5; width: 100%; margin-top: 0; flex-wrap: nowrap; }
   .cr-np-btn { flex: 1 1 0; justify-content: center; padding: 0 12px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .cr-np, .cr-np-play, .cr-np-btn { transition: none; }
+  .cr-np, .cr-np-play, .cr-np-btn, .cr-np-ctl, .cr-np-app iframe { transition: none; }
   .cr-np:hover, .cr-np:active { translate: none; scale: none; }
 }
 
@@ -1520,11 +1548,11 @@ html.ga-np-open .craft-switch, html.ga-np-open .ga-brand { opacity: 0; visibilit
 .cr-slot--orb { grid-area: 1 / 5; }
 .cr-slot--pg { grid-area: 2 / 3; }
 .cr-slot--chat { grid-area: 2 / 4 / 4 / 6; }
-.cr-slot--ask { grid-area: 3 / 1; }
+.cr-slot--np { grid-area: 3 / 1; }
 .cr-slot--hello { grid-area: 3 / 2; }
 .cr-board .cr-slot > .cr-card { width: 100%; height: 100%; border-radius: 32px; }
 .cr-board .cr-slot--cases > .cr-card, .cr-board .cr-slot--chat > .cr-card { border-radius: 37px; }
-.cr-board .cr-slot--ask > .cr-card, .cr-board .cr-slot--hello > .cr-card { border-radius: 32px; }
+.cr-board .cr-slot--np > .cr-card, .cr-board .cr-slot--hello > .cr-card { border-radius: 32px; }
 
 /* ── Case studies ("Privacy"): 2 × 2 ── */
 .cr-board .cr-list { display: block; padding: 0 8px; }
@@ -1667,7 +1695,99 @@ html.ga-np-open .craft-switch, html.ga-np-open .ga-brand { opacity: 0; visibilit
   .cr-hello-dot { width: 22px; height: 22px; }
   .cr-hello-dots { bottom: 6px; }
 }
-/* Narrow tablets: the left corner (stack + now playing) reaches the middle, so "+" sits left of the dock */
-@media (min-width: 701px) and (max-width: 900px) {
-  .cr-hero .cr-corner--center { left: auto; right: 168px; transform: none; }
+
+/* ═════════════ Resonance player card ("Create a room" slot) ═════════════
+   Same player as the pill (useResonancePlayer): JS writes the line and the bars, these classes
+   only style the states. Dark green-tinted glass so white type holds on every wallpaper. */
+.cr-rp {
+  position: relative; isolation: isolate;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto minmax(0, 1fr) auto;
+  padding: 14px 14px 16px 15px; color: #fff; cursor: pointer;
+  background:
+    var(--g-sheen),
+    radial-gradient(130% 85% at 30% 118%, rgba(30, 215, 96, 0.30), rgba(30, 215, 96, 0) 62%),
+    linear-gradient(rgba(34, 46, 38, 0.30), rgba(26, 34, 30, 0.44));
+  border: 1px solid rgba(255, 255, 255, 0.30);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 -1px 0 rgba(255, 255, 255, 0.10), inset 0 0 24px rgba(255, 255, 255, 0.06), 0 10px 30px rgba(20, 10, 30, 0.10);
+  -webkit-backdrop-filter: blur(22px) saturate(1.6); backdrop-filter: blur(22px) saturate(1.6);
+  text-shadow: 0 1px 3px rgba(8, 14, 10, 0.32);
+  transition: translate 420ms var(--ease-arrive), box-shadow 420ms var(--ease-arrive);
+  -webkit-tap-highlight-color: transparent;
 }
+.cr-rp:hover {
+  translate: 0 -3px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.12), inset 0 0 24px rgba(255, 255, 255, 0.08), 0 18px 38px rgba(20, 10, 30, 0.2);
+}
+.cr-rp:active { translate: 0 -1px; }
+.cr-rp:has(.cr-rp-open:focus-visible) { outline: 2px solid #fff; outline-offset: 3px; }
+.cr-rp-open { position: absolute; inset: 0; z-index: 1; padding: 0; border-radius: inherit; background: none; cursor: pointer; }
+.cr-rp-open:focus-visible { outline: none; }
+/* the album art, blurred, as a soft wash behind everything */
+.cr-rp-glow {
+  position: absolute; inset: -30%; z-index: -1; pointer-events: none;
+  background: url("../resonance/np-art.jpg") 30% 20% / cover no-repeat;
+  filter: blur(26px); opacity: 0.32;
+}
+.cr-rp-art {
+  grid-area: 1 / 1; justify-self: start; position: relative; pointer-events: none;
+  width: 76px; height: 76px; border-radius: 17px; overflow: hidden; background: #1a1a1a;
+  box-shadow: 0 8px 18px rgba(6, 10, 8, 0.32), inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+  transition: transform 520ms var(--ease-pop);
+}
+.cr-rp-art img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.cr-rp:hover .cr-rp-art { transform: scale(1.04) rotate(-2deg); }
+.cr-rp-play {
+  grid-area: 1 / 2; align-self: start; position: relative; z-index: 2;
+  display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%;
+  background: #1ed760; color: #0b0b0b; cursor: pointer;
+  box-shadow: 0 6px 14px rgba(6, 30, 14, 0.3);
+  transition: transform var(--dur-snap) var(--ease-snap), background var(--dur-snap) ease;
+}
+.cr-rp-play:hover { transform: scale(1.07); background: #3be477; }
+.cr-rp-play:active { transform: scale(0.93); }
+.cr-rp-play:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.cr-rp-play svg { width: 17px; height: 17px; }
+.cr-rp.is-paused .cr-rp-play svg { transform: translateX(1px); }
+.cr-rp-meta { grid-area: 3 / 1 / 4 / 3; position: relative; pointer-events: none; display: flex; flex-direction: column; min-width: 0; }
+.cr-rp-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.cr-rp-title { font-size: 17.5px; line-height: 21px; letter-spacing: -0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cr-rp .cr-rp-eq { width: 15px; height: 13px; margin: 0 1px 0 0; }
+.cr-rp .cr-rp-sub { margin-top: 2px; color: rgba(255, 255, 255, 0.84); }
+.cr-rp .cr-rp-track { margin-top: 11px; background: rgba(255, 255, 255, 0.26); }
+.cr-rp.is-moment .cr-np-sub-a { opacity: 0; }
+.cr-rp.is-moment .cr-np-sub-b { opacity: 1; }
+.cr-rp.is-playing .cr-np-eq i { transition: none; }
+.cr-rp.is-paused .cr-np-eq i { opacity: 0.7; }
+@media (prefers-reduced-motion: no-preference) {
+  .cr-rp.is-jumping .cr-np-fill { transition: transform 460ms cubic-bezier(0.16, 1, 0.3, 1); }
+  .cr-rp.is-pulse .cr-np-mark { animation: crNpMark 700ms var(--ease-snap, ease) 1; }
+  .cr-rp.is-eq-css.is-playing .cr-np-eq i { animation: crNpEq 900ms ease-in-out infinite alternate; }
+  .cr-rp.is-eq-css.is-playing .cr-np-eq i:nth-child(2) { animation-duration: 640ms; animation-delay: -200ms; }
+  .cr-rp.is-eq-css.is-playing .cr-np-eq i:nth-child(3) { animation-duration: 1080ms; animation-delay: -420ms; }
+  .cr-rp.is-eq-css.is-playing .cr-np-eq i:nth-child(4) { animation-duration: 760ms; animation-delay: -120ms; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cr-rp, .cr-rp-art { transition: none; }
+  .cr-rp:hover, .cr-rp:hover .cr-rp-art { translate: none; transform: none; }
+  .cr-rp .cr-np-eq i { animation: none !important; transform: scaleY(0.5) !important; }
+}
+/* Portrait tablet: the slot is two cells wide, so art | text | play in one row */
+.cr-hero[data-cr-cols="2"] .cr-rp { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-rows: minmax(0, 1fr); column-gap: 16px; padding: 16px 18px 16px 16px; }
+.cr-hero[data-cr-cols="2"] .cr-rp-art { grid-area: 1 / 1; align-self: center; width: 92px; height: 92px; border-radius: 20px; }
+.cr-hero[data-cr-cols="2"] .cr-rp-meta { grid-area: 1 / 2; align-self: center; }
+.cr-hero[data-cr-cols="2"] .cr-rp-play { grid-area: 1 / 3; align-self: center; width: 50px; height: 50px; }
+.cr-hero[data-cr-cols="2"] .cr-rp-title { font-size: 20px; line-height: 24px; }
+
+/* ═════════════ Contextual Chat card: the assistant panel itself ═════════════ */
+.cr-pclip {
+  position: absolute; left: 24px; right: 24px; top: 84px; aspect-ratio: 1376 / 652;
+  border-radius: 14px; overflow: hidden; background: #fff;
+  box-shadow: 0 0 0 1px rgba(40, 30, 60, 0.07), 0 10px 26px rgba(50, 40, 80, 0.13), 0 2px 6px rgba(50, 40, 80, 0.06);
+  transition: transform 520ms var(--ease-arrive), box-shadow 520ms var(--ease-arrive);
+}
+.cr-pclip img, .cr-pclip video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top left; display: block; }
+.cr-pclip video { opacity: 0; transition: opacity 420ms ease; }
+.cr-pclip.is-live video { opacity: 1; }
+.cr-preview:hover .cr-pclip { transform: translateY(-2px); box-shadow: 0 0 0 1px rgba(40, 30, 60, 0.07), 0 16px 34px rgba(50, 40, 80, 0.18), 0 2px 6px rgba(50, 40, 80, 0.06); }
+.cr-preview-shot[data-clip] .cr-cursor { z-index: 3; }
+@media (prefers-reduced-motion: reduce) { .cr-pclip, .cr-pclip video { transition: none; } .cr-preview:hover .cr-pclip { transform: none; } }

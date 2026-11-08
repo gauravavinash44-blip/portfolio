@@ -1,0 +1,1 @@
+Static web build of github.com/gauravavinash44-blip/drop-mode at commit 099a278e02147b5d455819dcbd7703f2c407edbe (built with `expo export --platform web`, repackaged by a script: relative paths, assets flattened into a/, unused icon fonts dropped, audio masters loaded from the hosted build). Do not edit by hand; rebuild from the source repo.

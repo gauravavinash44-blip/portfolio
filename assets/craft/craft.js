@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"Craft","components":[{"name":"Stage"},{"name":"TopBar"},{"name":"NotificationPill"},{"name":"SegmentedControl"},{"name":"IconButton"},{"name":"Chip"},{"name":"Toggle"},{"name":"AgendaCard"},{"name":"FolderListCard"},{"name":"DropZoneCard"},{"name":"PreviewCard"},{"name":"CursorChip"},{"name":"ProfileOrb"},{"name":"StatCard"},{"name":"AvatarStack"},{"name":"Dock"},{"name":"MetaStrip"},{"name":"HeroBoard"},{"name":"FolderOpen"},{"name":"ProfileOpen"},{"name":"AllWorkSheet"},{"name":"ProjectWell"},{"name":"NowPlayingPill"},{"name":"ResonanceSheet"}]} */
+/* @ds-bundle: {"format":4,"namespace":"Craft","components":[{"name":"Stage"},{"name":"TopBar"},{"name":"NotificationPill"},{"name":"SegmentedControl"},{"name":"IconButton"},{"name":"Chip"},{"name":"Toggle"},{"name":"AgendaCard"},{"name":"FolderListCard"},{"name":"DropZoneCard"},{"name":"PreviewCard"},{"name":"CursorChip"},{"name":"ProfileOrb"},{"name":"StatCard"},{"name":"AvatarStack"},{"name":"Dock"},{"name":"MetaStrip"},{"name":"HeroBoard"},{"name":"FolderOpen"},{"name":"ProfileOpen"},{"name":"AllWorkSheet"},{"name":"ProjectWell"},{"name":"NowPlayingPill"},{"name":"ResonanceCard"},{"name":"ResonanceSheet"}]} */
 (function () {
   var React = window.React;
   var h = React.createElement;
@@ -288,6 +288,38 @@
       h("span", { className: "cr-cursor-tag", style: { background: props.color } }, props.name));
   }
 
+  /* A framed product window: poster first, then a muted looping clip once the card is on screen.
+     Paused off-screen, on a hidden tab, with reduced motion or Save-Data (poster only). */
+  function PreviewClip(props) {
+    var box = useRef(null), vid = useRef(null), seen = useRef(false);
+    var _w = useState(false), want = _w[0], setWant = _w[1];   /* mount the <video> */
+    var _l = useState(false), live = _l[0], setLive = _l[1];   /* first frame painted: fade it in */
+    var still = reduced() || !!(navigator.connection && navigator.connection.saveData) || !props.video;
+    function sync() {
+      var v = vid.current;
+      if (!v) return;
+      if (seen.current && !document.hidden) { var pr = v.play(); if (pr && pr.catch) pr.catch(function () {}); }
+      else v.pause();
+    }
+    useEffect(function () {
+      if (still || !box.current) return undefined;
+      var io = "IntersectionObserver" in window ? new IntersectionObserver(function (es) {
+        seen.current = es[es.length - 1].isIntersecting;
+        if (seen.current) setWant(true);
+        sync();
+      }, { threshold: 0.25 }) : null;
+      if (io) io.observe(box.current); else { seen.current = true; setWant(true); }
+      document.addEventListener("visibilitychange", sync);
+      return function () { if (io) io.disconnect(); document.removeEventListener("visibilitychange", sync); if (vid.current) vid.current.pause(); };
+    }, [still]);
+    useEffect(sync, [want]); /* the <video> just mounted: start it if the card is still in view */
+    return h("span", { className: cx("cr-pclip", live && "is-live"), ref: box, "aria-hidden": "true" },
+      h("img", { className: "cr-pclip-poster", src: props.poster, alt: "", decoding: "async", draggable: false }),
+      want && !still ? h("video", { className: "cr-pclip-video", ref: vid, src: props.video, poster: props.poster,
+        muted: true, playsInline: true, loop: true, preload: "auto", disablePictureInPicture: true, tabIndex: -1,
+        onPlaying: function () { setLive(true); } }) : null);
+  }
+
   function PreviewCard(props) {
     return h("article", { className: cx("cr-card cr-solid cr-preview", props.className), "data-cr-enter": "" },
       h("div", { className: "cr-preview-chips" },
@@ -296,8 +328,10 @@
       h(props.href ? "a" : "div", { className: cx("cr-preview-shot", props.slides && "cr-preview-shot--strip"), href: props.href,
         /* with a footer arrow link, the picture stays clickable but out of the tab order */
         "aria-label": props.href && !props.arrowHref ? "Open " + props.title + " case study" : undefined,
+        "data-clip": props.clip ? "" : undefined,
         tabIndex: props.arrowHref ? -1 : undefined, "aria-hidden": props.arrowHref ? "true" : undefined },
-        props.slides
+        props.clip ? h(PreviewClip, props.clip)
+        : props.slides
           /* Three-slide strip like the reference: partial left, main, partial right, tiny labels above */
           ? h("span", { className: "cr-strip", "aria-hidden": "true" },
               props.slides.map(function (sl, i) {
@@ -1023,13 +1057,16 @@
   var npPlayers = [];
   function npPauseAll() { npPlayers.forEach(function (p) { p.pause(); }); }
 
-  function NowPlayingPill(props) {
+  /* One Resonance player: audio element, gain + analyser, the jump to the drop, Media Session.
+     Starts paused; pauses itself on a hidden tab, when the popup opens (npPauseAll) and on unmount.
+     The view passes fillRef (progress line) and eqRef (four bars); JS writes them from the audio. */
+  function useResonancePlayer() {
     var _p = useState(false), playing = _p[0], setPlaying = _p[1];
     var _m = useState(false), moment = _m[0], setMoment = _m[1];
     var _j = useState(false), jumping = _j[0], setJumping = _j[1];
     var _u = useState(false), pulse = _u[0], setPulse = _u[1];
     var _c = useState(false), cssEq = _c[0], setCssEq = _c[1];
-    var ref = useRef(null), fillRef = useRef(null), eqRef = useRef(null);
+    var fillRef = useRef(null), eqRef = useRef(null);
     var api = useRef(null);
 
     useEffect(function () {
@@ -1200,7 +1237,21 @@
         if (ms) try { ms.setActionHandler("play", null); ms.setActionHandler("pause", null); ms.metadata = null; } catch (err) { /* ignore */ }
       };
     }, []);
+    return {
+      playing: playing, moment: moment, jumping: jumping, pulse: pulse, cssEq: cssEq,
+      fillRef: fillRef, eqRef: eqRef,
+      toggle: function () { if (api.current) api.current.toggle(); }
+    };
+  }
+  function npStateClass(pl) {
+    return cx(pl.playing ? "is-playing" : "is-paused", pl.moment && "is-moment", pl.jumping && "is-jumping", pl.pulse && "is-pulse", pl.cssEq && "is-eq-css");
+  }
+  var NP_MARK_LEFT = (NP_DROP / NP_DUR * 100).toFixed(2) + "%";
 
+  /* Compact pill (kept for other layouts; the board uses ResonanceCard) */
+  function NowPlayingPill(props) {
+    var pl = useResonancePlayer();
+    var ref = useRef(null);
     function open(ev) {
       if (ev) ev.stopPropagation(); /* the stage treats bare taps as "change wallpaper" */
       if (ev && ev.target.closest && ev.target.closest(".cr-np-play")) return;
@@ -1208,8 +1259,7 @@
       if (props.onOpen) props.onOpen(ref.current);
     }
     var title = props.title || "Resonance";
-    var markLeft = (NP_DROP / NP_DUR * 100).toFixed(2) + "%";
-    return h("div", { className: cx("cr-np", playing ? "is-playing" : "is-paused", moment && "is-moment", jumping && "is-jumping", pulse && "is-pulse", cssEq && "is-eq-css"),
+    return h("div", { className: cx("cr-np", npStateClass(pl)),
         ref: ref, onClick: open, "data-cr-enter": "", "data-np-pill": "", "data-drop": NP_DROP },
       h("button", { type: "button", className: "cr-np-open", "aria-haspopup": "dialog",
         "aria-label": props.label || (title + " for Spotify. Open the live prototype") },
@@ -1220,23 +1270,76 @@
             h("span", { className: "cr-np-sub-a" }, h("i", { className: "cr-np-dot" }), props.sub || "For Spotify"),
             h("span", { className: "cr-np-sub-b" }, props.moment || "Your moment")),
           h("span", { className: "cr-np-track" },
-            h("i", { className: "cr-np-fill", ref: fillRef }),
-            h("i", { className: "cr-np-mark", style: { left: markLeft } }))),
-        h("span", { className: "cr-np-eq", ref: eqRef, "aria-hidden": "true" }, h("i"), h("i"), h("i"), h("i"))),
-      h("button", { type: "button", className: "cr-np-play", "aria-label": playing ? "Pause preview" : "Play preview", "aria-pressed": playing ? "true" : "false",
-        onClick: function (ev) { ev.stopPropagation(); if (api.current) api.current.toggle(); } },
+            h("i", { className: "cr-np-fill", ref: pl.fillRef }),
+            h("i", { className: "cr-np-mark", style: { left: NP_MARK_LEFT } }))),
+        h("span", { className: "cr-np-eq", ref: pl.eqRef, "aria-hidden": "true" }, h("i"), h("i"), h("i"), h("i"))),
+      h("button", { type: "button", className: "cr-np-play", "aria-label": pl.playing ? "Pause preview" : "Play preview", "aria-pressed": pl.playing ? "true" : "false",
+        onClick: function (ev) { ev.stopPropagation(); pl.toggle(); } },
         h("svg", { viewBox: "0 0 24 24", width: 16, height: 16, "aria-hidden": "true", fill: "currentColor" },
-          h("path", { d: playing ? NP_ICON.pause : NP_ICON.play }))));
+          h("path", { d: pl.playing ? NP_ICON.pause : NP_ICON.play }))));
   }
 
+  /* Board card ("Create a room" slot): the same player in a glass card. The card body opens the
+     Resonance popup, growing from the card; the play button only plays. */
+  function ResonanceCard(props) {
+    var pl = useResonancePlayer();
+    var openRef = useRef(null);
+    var title = props.title || "Resonance";
+    function open(ev) {
+      if (ev) ev.stopPropagation(); /* the stage treats bare taps as "change wallpaper" */
+      if (ev && ev.target.closest && ev.target.closest(".cr-rp-play")) return;
+      npPauseAll();
+      if (props.onOpen) props.onOpen(openRef.current);
+    }
+    return h("div", { className: cx("cr-card cr-glass cr-rp", npStateClass(pl), props.className),
+        onClick: open, "data-cr-enter": "", "data-np-card": "", "data-drop": NP_DROP },
+      h("span", { className: "cr-rp-glow", "aria-hidden": "true" }),
+      h("button", { type: "button", className: "cr-rp-open", ref: openRef, "aria-haspopup": "dialog",
+        "aria-label": props.label || (title + " for Spotify. Open the live prototype") }),
+      h("span", { className: "cr-rp-art", "aria-hidden": "true" },
+        h("img", { src: props.art || NP_ART, srcSet: (props.art || NP_ART) + " 1x, " + (props.artLg || NP_POSTER) + " 2.5x", alt: "", decoding: "async", draggable: false })),
+      h("button", { type: "button", className: "cr-rp-play", "aria-label": pl.playing ? "Pause Resonance preview" : "Play Resonance preview", "aria-pressed": pl.playing ? "true" : "false",
+        onClick: function (ev) { ev.stopPropagation(); pl.toggle(); } },
+        h("svg", { viewBox: "0 0 24 24", width: 18, height: 18, "aria-hidden": "true", fill: "currentColor" },
+          h("path", { d: pl.playing ? NP_ICON.pause : NP_ICON.play }))),
+      h("span", { className: "cr-rp-meta", "aria-hidden": "true" },
+        h("span", { className: "cr-rp-row" },
+          h("span", { className: "cr-rp-title" }, title),
+          h("span", { className: "cr-np-eq cr-rp-eq", ref: pl.eqRef }, h("i"), h("i"), h("i"), h("i"))),
+        h("span", { className: "cr-np-sub cr-rp-sub" },
+          h("span", { className: "cr-np-sub-a" }, h("i", { className: "cr-np-dot" }), props.sub || "For Spotify"),
+          h("span", { className: "cr-np-sub-b" }, props.moment || "Your moment")),
+        h("span", { className: "cr-np-track cr-rp-track" },
+          h("i", { className: "cr-np-fill", ref: pl.fillRef }),
+          h("i", { className: "cr-np-mark", style: { left: NP_MARK_LEFT } }))));
+  }
+
+  /* The phone in the popup runs the real prototype, as on resonance-short.html: it starts on the
+     iOS home screen, tapping Spotify launches the app from the start (splash, first-time education,
+     Now Playing with Resonance). Primary source is the copy bundled in assets/resonance/app (same
+     origin, so it works where outside frames are blocked); the hosted build is the fallback. */
+  var RS_HOME = "./assets/resonance/mockup/screen-homescreen.png";
+  var RS_LOCAL = "./assets/resonance/app/";
+  /* Spotify icon on the home-screen export (693 × 1502): centre and width as % of the screen */
+  var RS_ICON_AT = { x: 61.5, y: 36.8, w: 15.6 };
+  var RS_ICON = {
+    home: "M4.5 10.5L12 4l7.5 6.5M6.5 9v10.5h11V9M10 19.5v-5h4v5",
+    restart: "M5 12a7 7 0 1 0 2.1-5M5 4.5V8h3.5"
+  };
+  function rsFresh(base, embed) { return base + "?fresh=1&t=" + Date.now() + (embed ? "&embed=1" : ""); }
+
   function ResonanceSheet(props) {
-    var ref = useRef(null), scrimRef = useRef(null), screenRef = useRef(null), frameRef = useRef(null);
-    var closing = useRef(false);
-    var base = props.base || resonanceBase();
-    var full = props.fullHref || base + "?fresh=1";
-    var _s = useState(""), src = _s[0], setSrc = _s[1];
-    var _st = useState("loading"), status = _st[0], setStatus = _st[1]; /* loading | ready | failed */
+    var ref = useRef(null), scrimRef = useRef(null), screenRef = useRef(null);
+    var appRef = useRef(null), homeRef = useRef(null), iframeRef = useRef(null);
+    var closing = useRef(false), run = useRef(0), watch = useRef(null);
+    var hosted = props.base || resonanceBase();
+    var local = props.localBase || RS_LOCAL;
+    var _ph = useState("home"), phase = _ph[0], setPhase = _ph[1];      /* home | app | leaving */
+    var _f = useState(null), frame = _f[0], setFrame = _f[1];             /* { key, src, from } */
+    var _st = useState("idle"), status = _st[0], setStatus = _st[1];      /* idle | loading | ready | failed */
     var _k = useState(null), fit = _k[0], setFit = _k[1];
+
+    function fullHref() { return props.fullHref || rsFresh(hosted, false); }
 
     /* Open: scrim fades, the sheet grows out of the pill, copy rises */
     useLayoutEffect(function () {
@@ -1253,13 +1356,14 @@
           n.animate([{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "none" }], { duration: 520, delay: 120 + i * 50, easing: EASE_ARRIVE, fill: "backwards" });
         });
       }
-      npPauseAll(); /* the live prototype may make its own sound */
+      npPauseAll(); /* the live prototype makes its own sound */
       var t = setTimeout(function () {
         var btn = sheet.querySelector(".cr-np-close");
         if (btn) btn.focus({ preventScroll: true });
       }, 60);
       return function () {
         clearTimeout(t);
+        stopWatch();
         root.classList.remove("ga-np-open");
         if (prev && prev.isConnected && prev.focus) prev.focus({ preventScroll: true });
       };
@@ -1282,26 +1386,101 @@
       return function () { ro.disconnect(); };
     }, []);
 
-    /* Load the prototype only now. A cross-origin frame fires load even on an error page,
-       so a no-cors probe of the same URL decides whether it really arrived. */
-    useEffect(function () {
-      var url = props.src || (base + "?fresh=1&embed=1&t=" + Date.now());
-      var alive = true, loaded = false, probe = "pending";
-      function settle() {
-        if (!alive) return;
-        if (probe === "fail") setStatus("failed");
-        else if (loaded && probe === "ok") setStatus("ready");
+    function stopWatch() { if (watch.current) { watch.current(); watch.current = null; } }
+
+    /* Load one source and decide whether it really arrived.
+       Bundled copy: same origin, so read the page and wait for the app to mount.
+       Hosted build: a cross-origin frame fires load even on an error page, so a no-cors probe decides. */
+    function load(from) {
+      stopWatch();
+      var id = ++run.current;
+      var src = rsFresh(from === "local" ? local : hosted, true);
+      var alive = true, timers = [];
+      function later(fn, ms) { timers.push(setTimeout(function () { if (alive && run.current === id) fn(); }, ms)); }
+      watch.current = function () { alive = false; timers.forEach(clearTimeout); };
+      setStatus("loading");
+      setFrame({ key: id, src: src, from: from, onLoad: null });
+      function fail() {
+        stopWatch();
+        if (from === "local") load("hosted"); else setStatus("failed");
       }
-      frameRef.current = { onLoad: function () { loaded = true; settle(); } };
-      var start = setTimeout(function () { if (alive) setSrc(url); }, reduced() ? 0 : 280); /* let the grow animation run first */
-      var give = setTimeout(function () { if (!alive) return; setStatus(function (s) { return s === "ready" ? s : "failed"; }); }, 8000);
+      if (from === "local") {
+        var t0 = Date.now();
+        var poll = function () {
+          var f = iframeRef.current, doc = null;
+          try { doc = f && f.contentDocument; } catch (err) { doc = null; }
+          var root = doc && doc.getElementById("root");
+          if (root && root.childElementCount) { stopWatch(); setStatus("ready"); hookKeys(f); return; }
+          /* loaded, but not our app (a 404 page, or the folder isn't deployed) */
+          if (doc && doc.readyState === "complete" && !root && doc.location.href !== "about:blank") { fail(); return; }
+          if (Date.now() - t0 > 7000) { fail(); return; }
+          later(poll, 120);
+        };
+        later(poll, 120);
+      } else {
+        var loaded = false, probe = "pending";
+        var settle = function () {
+          if (!alive || run.current !== id) return;
+          if (probe === "fail") fail();
+          else if (loaded && probe === "ok") { stopWatch(); setStatus("ready"); }
+        };
+        setFrame({ key: id, src: src, from: from, onLoad: function () { loaded = true; settle(); } });
+        later(fail, 9000);
+        try {
+          fetch(src, { mode: "no-cors", cache: "no-store", credentials: "omit" }).then(
+            function () { probe = "ok"; settle(); },
+            function () { probe = "fail"; settle(); });
+        } catch (err) { probe = "ok"; }
+      }
+    }
+
+    /* Escape inside the (same-origin) app still closes the popup */
+    function hookKeys(f) {
       try {
-        fetch(url, { mode: "no-cors", cache: "no-store", credentials: "omit" }).then(
-          function () { probe = "ok"; settle(); },
-          function () { probe = "fail"; settle(); });
-      } catch (err) { probe = "ok"; }
-      return function () { alive = false; clearTimeout(start); clearTimeout(give); };
-    }, []);
+        f.contentWindow.addEventListener("keydown", function (ev) {
+          if (ev.key === "Escape") { ev.preventDefault(); close(); }
+        });
+      } catch (err) { /* cross-origin: Escape works once focus is back in the page */ }
+    }
+
+    /* Tap Spotify: the app opens out of the icon, like iOS */
+    function launch() {
+      if (phase === "app") return;
+      npPauseAll();
+      setPhase("app");
+      load("local");
+      requestAnimationFrame(function () {
+        var app = appRef.current;
+        if (app && !reduced()) {
+          app.animate([
+            { transform: "scale(" + (RS_ICON_AT.w / 100).toFixed(3) + ")", borderRadius: "22%", opacity: 0.2 },
+            { transform: "none", borderRadius: "0", opacity: 1 }
+          ], { duration: 460, easing: EASE_ARRIVE });
+        } else if (app) {
+          app.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160, easing: "ease" });
+        }
+        var ctl = ref.current && ref.current.querySelector(".cr-np-ctl");
+        if (ctl) ctl.focus({ preventScroll: true });
+      });
+    }
+    /* Back to the home screen: the app folds into the icon and stops (unloading it stops its audio) */
+    function goHome() {
+      if (phase !== "app") return;
+      stopWatch();
+      var app = appRef.current, still = reduced();
+      setPhase("leaving");
+      var done = function () {
+        setFrame(null); setStatus("idle"); setPhase("home");
+        requestAnimationFrame(function () { if (homeRef.current) homeRef.current.focus({ preventScroll: true }); });
+      };
+      if (!app) { done(); return; }
+      var anim = app.animate(still
+        ? [{ opacity: 1 }, { opacity: 0 }]
+        : [{ transform: "none", borderRadius: "0", opacity: 1 }, { transform: "scale(" + (RS_ICON_AT.w / 100).toFixed(3) + ")", borderRadius: "22%", opacity: 0 }],
+        { duration: still ? 140 : 360, easing: AW_EASE_BACK, fill: "forwards" });
+      anim.finished.then(done, done);
+    }
+    function restart() { if (phase === "app") load("local"); }
 
     function close() {
       if (closing.current) return;
@@ -1344,7 +1523,12 @@
       return function () { window.removeEventListener("keydown", onKey, true); };
     }, []);
 
+    var inApp = phase !== "home";
     var frameStyle = fit ? { width: NP_DESIGN_W + "px", height: fit.h + "px", transform: "scale(" + fit.k + ")" } : { visibility: "hidden" };
+    var svg = function (d) { return h("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.7, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true", focusable: "false" }, h("path", { d: d })); };
+    var openFull = function (ev) { ev.currentTarget.href = fullHref(); };
+    var origin = RS_ICON_AT.x + "% " + RS_ICON_AT.y + "%";
+
     return h("div", { className: "cr-np-modal" },
       h("div", { className: "cr-np-scrim", ref: scrimRef, "aria-hidden": "true", onClick: function () { close(); } }),
       h("section", { className: "cr-np-sheet", ref: ref, role: "dialog", "aria-modal": "true", "aria-labelledby": "cr-np-title", "aria-describedby": "cr-np-desc" },
@@ -1352,32 +1536,40 @@
           h(Icon, { name: "close" })),
         h("div", { className: "cr-np-device", "data-np-chrome": "" },
           h("div", { className: "cr-np-phone" },
-            h("div", { className: "cr-np-screen", ref: screenRef, "data-status": status },
-              src ? h("iframe", { src: src, title: "Resonance live prototype", allow: "autoplay; encrypted-media", referrerPolicy: "no-referrer-when-downgrade",
-                style: frameStyle, tabIndex: status === "ready" ? 0 : -1, "aria-hidden": status === "ready" ? undefined : "true",
-                onLoad: function () { if (frameRef.current) frameRef.current.onLoad(); } }) : null,
-              h("div", { className: "cr-np-poster", "aria-hidden": status === "ready" ? "true" : undefined },
-                /* Poster: the pill's album art grown into a Now Playing screen */
-                h("img", { className: "cr-np-poster-bg", src: props.poster || NP_POSTER, alt: "", "aria-hidden": "true", decoding: "async" }),
-                h("div", { className: "cr-np-poster-np", "aria-hidden": "true" },
-                  h("img", { src: props.poster || NP_POSTER, alt: "", decoding: "async" }),
-                  h("b", null, props.title || "Resonance"),
-                  h("span", null, h("i", { className: "cr-np-dot" }), "For Spotify"),
-                  h("span", { className: "cr-np-track" }, h("i", { className: "cr-np-fill" }), h("i", { className: "cr-np-mark" }))),
+            h("div", { className: "cr-np-screen", ref: screenRef, "data-phase": phase, "data-status": status },
+              /* iOS home screen: the whole screen opens Spotify, as on the case page */
+              h("button", { type: "button", className: "cr-np-home", ref: homeRef, onClick: launch,
+                  "aria-label": "Open Spotify to start the Resonance prototype", tabIndex: inApp ? -1 : 0, "aria-hidden": inApp ? "true" : undefined },
+                h("img", { src: props.home || RS_HOME, alt: "", width: 693, height: 1502, decoding: "async" }),
+                h("i", { className: "cr-np-home-ring", "aria-hidden": "true",
+                  style: { left: RS_ICON_AT.x + "%", top: RS_ICON_AT.y + "%", width: RS_ICON_AT.w + "%" } })),
+              inApp ? h("div", { className: "cr-np-app", ref: appRef, style: { transformOrigin: origin } },
+                frame ? h("iframe", { key: frame.key, ref: iframeRef, src: frame.src, title: "Resonance live prototype",
+                  allow: "autoplay; encrypted-media", referrerPolicy: "no-referrer-when-downgrade", style: frameStyle,
+                  "data-source": frame.from, tabIndex: status === "ready" ? 0 : -1, "aria-hidden": status === "ready" ? undefined : "true",
+                  onLoad: function () { if (frame.onLoad) frame.onLoad(); } }) : null,
                 status === "failed"
                   ? h("div", { className: "cr-np-state is-failed", role: "status" },
                       h("p", null, "The prototype didn't load here."),
-                      h("a", { className: "cr-np-state-link", href: full, target: "_blank", rel: "noreferrer" }, "Open full screen", h(Icon, { name: "arrow", stroke: 1.8 })))
-                  : h("div", { className: "cr-np-state", role: "status" }, h("i", { className: "cr-np-spin", "aria-hidden": "true" }), "Loading prototype"))),
-            h("img", { className: "cr-np-frame", src: props.frame || NP_FRAME, alt: "", "aria-hidden": "true", decoding: "async" }))),
+                      h("a", { className: "cr-np-state-link", href: fullHref(), onClick: openFull, target: "_blank", rel: "noreferrer" }, "Open full screen", h(Icon, { name: "arrow", stroke: 1.8 })))
+                  : status === "loading"
+                    ? h("div", { className: "cr-np-state is-loading", role: "status" }, h("i", { className: "cr-np-spin", "aria-hidden": "true" }), "Opening Spotify")
+                    : null) : null),
+            h("img", { className: "cr-np-frame", src: props.frame || NP_FRAME, alt: "", "aria-hidden": "true", decoding: "async" })),
+          /* Under the phone: a hint on the home screen, home and restart once the app is open */
+          h("div", { className: "cr-np-phonebar" },
+            inApp
+              ? [h("button", { key: "home", type: "button", className: "cr-np-ctl", onClick: goHome, title: "Back to the home screen" }, svg(RS_ICON.home), "Home screen"),
+                 h("button", { key: "restart", type: "button", className: "cr-np-ctl", onClick: restart, title: "Start the prototype again" }, svg(RS_ICON.restart), "Restart")]
+              : h("p", { className: "cr-np-hint" }, h("i", { className: "cr-np-dot", "aria-hidden": "true" }), "Tap Spotify to start"))),
         h("div", { className: "cr-np-copy" },
           h("p", { className: "cr-np-eyebrow", "data-np-chrome": "" }, h("i", { className: "cr-np-dot" }), "For Spotify · Personal project"),
           h("h2", { id: "cr-np-title", className: "cr-np-heading", "data-np-chrome": "" }, props.title || "Resonance"),
           h("p", { id: "cr-np-desc", className: "cr-np-desc", "data-np-chrome": "" },
             props.description || "A speculative Spotify playback feature that starts songs closer to the moments you actually want to hear."),
-          h("p", { className: "cr-np-note", "data-np-chrome": "" }, "Live Resonance build. Try it in the phone. Prefer full screen on a real phone if you want more room."),
+          h("p", { className: "cr-np-note", "data-np-chrome": "" }, "Live Resonance build. Tap Spotify in the phone to start it from the top. Prefer full screen on a real phone if you want more room."),
           h("div", { className: "cr-np-actions", "data-np-chrome": "" },
-            h("a", { className: "cr-np-btn cr-np-btn--primary", href: full, target: "_blank", rel: "noreferrer" }, "Open full screen", h(Icon, { name: "arrow", stroke: 1.8 })),
+            h("a", { className: "cr-np-btn cr-np-btn--primary", href: fullHref(), onClick: openFull, target: "_blank", rel: "noreferrer" }, "Open full screen", h(Icon, { name: "arrow", stroke: 1.8 })),
             h("a", { className: "cr-np-btn", href: props.caseHref || "./craft-resonance.html" }, "Read the case study")))));
   }
 
@@ -1391,7 +1583,7 @@
     AvatarStack: AvatarStack, Dock: Dock, MetaStrip: MetaStrip,
     HeroBoard: HeroBoard, FolderOpen: FolderOpen, ProfileOpen: ProfileOpen,
     FolderSheet: FolderSheet, ProfileSheet: ProfileSheet, AllWorkSheet: AllWorkSheet, ProjectWell: ProjectWell, useClock: useClock,
-    NowPlayingPill: NowPlayingPill, ResonanceSheet: ResonanceSheet,
+    NowPlayingPill: NowPlayingPill, ResonanceCard: ResonanceCard, useResonancePlayer: useResonancePlayer, ResonanceSheet: ResonanceSheet,
     motion: { enter: enter, exit: exit, burst: burst, expandFrom: expandFrom, growFrames: growFrames, sourceOf: sourceOf },
     sample: sample
   };

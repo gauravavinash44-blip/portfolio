@@ -809,7 +809,11 @@
        Cursor x/y are measured from the card's top-left (the preview area starts at the top). */
     S.preview = Object.assign({}, S.preview, {
       label: "Project", timer: null, icon: "chatSpark", tone: "blue", arrowHref: hrefs["Contextual Chat"],
-      cursors: S.preview.cursors.map((c) => Object.assign({}, c, c.name === "You" ? { x: 81, y: 178 } : { x: 207, y: 69 })),
+      /* The assistant itself: the Systematic Agent chat panel (question + answer), cropped from the
+         interaction demo. Poster first; the muted loop starts only while the card is on screen. */
+      slides: null,
+      clip: { poster: "./assets/craft/case/chat-panel-poster.jpg", video: "./assets/craft/case/chat-panel.mp4" },
+      cursors: S.preview.cursors.map((c) => Object.assign({}, c, c.name === "You" ? { x: 58, y: 104 } : { x: 186, y: 184 })),
     });
     S.topbar.notice.href = hrefs["Contextual Chat"];
     S.stat.linkLabel = "View all work";
@@ -893,9 +897,9 @@
 
   /* Card order per layout = reading order, so Tab follows what you see */
   const BOARD_ORDER = {
-    grid: ["cases", "exp", "date", "orb", "pg", "chat", "ask", "hello"],
-    tablet: ["orb", "exp", "chat", "pg", "date", "cases", "ask", "hello"],
-    stack: ["orb", "chat", "cases", "exp", "pg", "date", "ask", "hello"],
+    grid: ["cases", "exp", "date", "orb", "pg", "chat", "np", "hello"],
+    tablet: ["orb", "exp", "chat", "pg", "date", "cases", "np", "hello"],
+    stack: ["orb", "chat", "cases", "exp", "pg", "date", "np", "hello"],
   };
 
   /* Design Playground explorations for the All work popup: titles and order from the
@@ -1074,6 +1078,7 @@
       ],
     };
 
+    const openResonance = (el) => { setPicker(false); setSheet({ kind: "resonance", opener: el }); };
     /* Board cards by slot (placement and order live in craft.css / BOARD_ORDER) */
     const pgCard = () => stageRef.current && stageRef.current.querySelector("[data-pg-card]");
     const boardCards = {
@@ -1104,10 +1109,8 @@
         dropHint: "Drop to see all work",
       }),
       chat: () => e(C.PreviewCard, data.preview),
-      ask: () => e(C.ActionCard, {
-        title: "Ask the assistant", icon: "plus", haspopup: "dialog",
-        onClick: (ev) => openSearch(fromEvent(ev), "ask"),
-      }),
+      /* Resonance player ("Create a room" slot). The assistant lives in search (Ask tab) and the dock. */
+      np: () => e(C.ResonanceCard, { onOpen: openResonance }),
       hello: () => e(C.ContactCard, { label: "Say hello", slides: data.hello }),
     };
 
@@ -1131,8 +1134,6 @@
         }, data.profileSheet)) : null
       ),
       e("div", { className: "cr-corners" },
-      e("div", { className: "cr-corner cr-corner--left" }, e(C.AvatarStack, CP ? Object.assign({}, data.stack, { onClick: openPlayground }) : data.stack),
-        C.NowPlayingPill ? e(C.NowPlayingPill, { onOpen: (el) => { setPicker(false); setSheet({ kind: "resonance", opener: el }); } }) : null),
       e("div", { className: "cr-corner cr-corner--center" },
         e("button", {
           type: "button", className: "cr-plusbtn cr-glass-light", "data-cr-enter": "",
