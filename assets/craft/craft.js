@@ -231,7 +231,7 @@
     var _hd = useState(function () { return typeof document !== "undefined" && document.hidden; }), hidden = _hd[0], setHidden = _hd[1];
     var _ann = useState(""), said = _ann[0], setSaid = _ann[1];
     var ringRef = useRef(null), measureRef = useRef(null), clock = useRef({ t: 0, last: 0 });
-    var paused = hover || focus || userPaused || hidden || state !== "open";
+    var paused = hover || focus || userPaused || hidden || !!props.hidden || state !== "open";
     var pausedRef = useRef(paused); pausedRef.current = paused;
     var curRef = useRef(cur); curRef.current = cur;
 
@@ -351,10 +351,22 @@
         props.avatar ? h("span", { className: "cr-brandorb" }, h("img", { src: props.avatar, alt: "" })) : null,
         h("span", { className: "cr-clock" }, props.time || time),
         h("span", { className: "cr-topbar-id" }, h("span", null, props.title), h("span", null, props.subtitle))),
-      h("div", { "data-cr-enter": "" }, props.notice ? h(props.notice.items ? PhilosophyPill : NotificationPill, props.notice) : null),
+      /* noticeHidden: an overlay is open (or phone width). The pill fades out, leaves the tab order and the
+         accessibility tree (inert), and its timer pauses until it comes back. */
+      h("div", { "data-cr-enter": "", className: cx("cr-topbar-notice", props.noticeHidden && "is-hidden"),
+          "aria-hidden": props.noticeHidden ? "true" : undefined, inert: props.noticeHidden ? "" : undefined },
+        props.notice ? h(props.notice.items ? PhilosophyPill : NotificationPill, Object.assign({}, props.notice, { hidden: !!props.noticeHidden })) : null),
       h("div", { className: "cr-topbar-right", "data-cr-enter": "" },
         h(SegmentedControl, { items: props.tabs || ["Home", "Projects"], value: props.tab || 0, onChange: props.onTab, label: props.tabsLabel || "Home or projects" }),
         h(IconButton, { variant: "glass", icon: "search", label: props.searchLabel || "Search", onClick: props.onSearch })));
+  }
+
+  /* ───────── LiveStatus: an "active" availability chip, green dot with a soft pulsing halo ─────────
+     The halo is decoration (CSS animation, static under reduced motion); the label carries the meaning. */
+  function LiveStatus(props) {
+    return h("span", { className: cx("cr-live-status", props.className) },
+      h("span", { className: "cr-live-dot", "aria-hidden": "true" }),
+      h("span", { className: "cr-live-label" }, props.label || "Open to work"));
   }
 
   /* ───────── Widget cards ───────── */
@@ -364,7 +376,9 @@
         h("span", { className: "cr-agenda-meta" }, props.meta),
         props.avatar ? h(Avatar, { src: props.avatar, size: 48 }) : null),
       h("div", { className: "cr-agenda-body" }, h("p", null, props.day), h("p", null, props.time)),
-      h("p", { className: "cr-agenda-label" }, props.label));
+      props.live
+        ? h("p", { className: "cr-agenda-label cr-agenda-label--live" }, h(LiveStatus, { label: props.label }))
+        : h("p", { className: "cr-agenda-label" }, props.label));
   }
 
   /* One case-study row. Every row has the same trailing round arrow link; the row that is
@@ -427,7 +441,7 @@
     return h("span", { className: "cr-cursor", style: style, "aria-hidden": "true" },
       h("svg", { viewBox: "0 0 16 16" }, h("path", { d: "M2 1.5l11 5.2-4.6 1.4-1.9 4.6z", fill: props.color, strokeLinejoin: "round" })),
       h("span", { className: "cr-cursor-av", style: { boxShadow: "0 0 0 2px " + props.color } },
-        props.avatar ? h("img", { src: props.avatar, alt: "" }) : h("span", { style: { color: props.color } }, (props.name || "?").charAt(0))),
+        props.avatar ? h("img", { src: props.avatar, srcSet: props.avatarSet, alt: "", decoding: "async" }) : h("span", { style: { color: props.color } }, (props.name || "?").charAt(0))),
       h("span", { className: "cr-cursor-tag", style: { background: props.color } }, props.name));
   }
 
@@ -544,7 +558,7 @@
       h("button", { type: "button", className: "cr-orb cr-glass", ref: ref, onMouseMove: onMove, onMouseLeave: onLeave,
         onClick: props.onOpen, "aria-label": "Open profile of " + (props.name || "") },
         props.cutout
-          ? h("span", { className: "cr-orb-figure" }, h("img", { className: "cr-orb-avatar", src: props.image, alt: "", decoding: "async" }))
+          ? h("span", { className: "cr-orb-figure", "data-figure": props.figure }, h("img", { className: "cr-orb-avatar", src: props.image, srcSet: props.imageSet, sizes: props.imageSet ? props.imageSizes : undefined, alt: "", decoding: "async" }))
           : h("img", { className: "cr-orb-photo", src: props.image, alt: "" }),
         props.name ? h("span", { className: "cr-orb-name" }, props.name) : null),
       props.onEdit ? h("span", { className: "cr-orb-edit" }, h(IconButton, { variant: "solid", icon: props.editIcon || "pen", label: props.editLabel || "Edit profile", onClick: props.onEdit })) : null);
@@ -1110,6 +1124,23 @@
             })))));
   }
 
+  /* One timeline entry in the profile sheet: dot + rail, role and place on the left, dates on the right */
+  function ProfileTimeline(props) {
+    var rows = props.rows || [];
+    if (!rows.length) return null;
+    return h("section", { className: "cr-pt", "aria-labelledby": props.id },
+      h("h3", { id: props.id, className: "cr-pt-title" }, props.title),
+      h("ol", { className: "cr-pt-list" }, rows.map(function (r, i) {
+        return h("li", { key: r.title + i, className: cx("cr-pt-row", r.current && "is-current") },
+          h("span", { className: "cr-pt-dot", "aria-hidden": "true" }),
+          h("div", { className: "cr-pt-main" },
+            h("p", { className: "cr-pt-role" }, r.title),
+            h("p", { className: "cr-pt-org" }, [r.org, r.place].filter(Boolean).join(" · ")),
+            r.note ? h("p", { className: "cr-pt-note" }, r.note) : null),
+          h("p", { className: "cr-pt-date" }, r.dates));
+      })));
+  }
+
   function ProfileSheet(props) {
     var ref = useRef(null);
     useDialogFocus(ref);
@@ -1124,8 +1155,8 @@
         { clipPath: "circle(" + (r.width / 2 / k) + "px at " + cx0 + "px " + cy0 + "px)" },
         { clipPath: "circle(" + Math.hypot(s.width, s.height) + "px at " + cx0 + "px " + cy0 + "px)" }
       ], { duration: 720, easing: EASE_ARRIVE, fill: "both" });
-      Array.prototype.slice.call(sheet.querySelectorAll(".cr-profile-body > *")).forEach(function (n, i) {
-        n.animate([{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }], { duration: 560, delay: 220 + i * 60, easing: EASE_ARRIVE, fill: "both" });
+      Array.prototype.slice.call(sheet.querySelectorAll(".cr-profile-head, .cr-profile-scroll > *")).forEach(function (n, i) {
+        n.animate([{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }], { duration: 560, delay: 220 + Math.min(i, 7) * 60, easing: EASE_ARRIVE, fill: "backwards" });
       });
     }, []);
     function close() {
@@ -1135,21 +1166,25 @@
     }
     return h("section", { className: "cr-sheet cr-profile-sheet", ref: ref, role: "dialog", "aria-modal": "true", "aria-label": props.name,
       style: props.style || { left: 184, right: 184, top: 172, height: 600 } },
+      /* Header sits outside the scroll area so status + close stay put (sticky on phones) */
+      h("div", { className: "cr-profile-head" },
+        h(LiveStatus, { label: props.status || "Open to work" }),
+        h(IconButton, { variant: "solid", icon: "close", label: "Close profile", onClick: close })),
       h("div", { className: "cr-profile-photo" }, h("img", { src: props.image, alt: props.name })),
       h("div", { className: "cr-profile-body" },
-        h("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" } },
-          h(Chip, null, props.status || "Open to work"),
-          h(IconButton, { variant: "solid", icon: "close", label: "Close profile", onClick: close })),
-        h("p", { className: "cr-sheet-title" }, props.name),
-        h("p", { className: "cr-sheet-sub" }, props.role),
-        h("p", { className: "cr-t-body", style: { color: "rgba(255,255,255,.9)", maxWidth: 380 } }, props.bio),
-        props.links ? h("div", { className: "cr-profile-links" }, props.links.map(function (l) {
-          return l.onClick
-            ? h("button", { key: l.label, type: "button", className: "cr-chip", onClick: l.onClick }, l.label)
-            : h("a", { key: l.label, className: "cr-chip", href: l.href, target: l.external ? "_blank" : undefined, rel: l.external ? "noreferrer" : undefined }, l.label);
-        })) : null,
-        h("div", { className: "cr-profile-facts" },
-          (props.facts || []).map(function (f) { return h("div", { key: f.label, className: "cr-fact" }, h("b", null, f.value), h("span", null, f.label)); }))));
+        h("div", { className: "cr-profile-scroll", tabIndex: -1 },
+          h("p", { className: "cr-sheet-title" }, props.name),
+          h("p", { className: "cr-sheet-sub" }, props.role),
+          h("p", { className: "cr-t-body cr-profile-bio" }, props.bio),
+          props.links ? h("div", { className: "cr-profile-links" }, props.links.map(function (l) {
+            return l.onClick
+              ? h("button", { key: l.label, type: "button", className: "cr-chip", onClick: l.onClick }, l.label)
+              : h("a", { key: l.label, className: "cr-chip", href: l.href, target: l.external ? "_blank" : undefined, rel: l.external ? "noreferrer" : undefined }, l.label);
+          })) : null,
+          h("div", { className: "cr-profile-facts" },
+            (props.facts || []).map(function (f) { return h("div", { key: f.label, className: "cr-fact" }, h("b", null, f.value), h("span", null, f.label)); })),
+          h(ProfileTimeline, { id: "cr-pt-exp", title: "Experience", rows: props.experience }),
+          h(ProfileTimeline, { id: "cr-pt-edu", title: "Education", rows: props.education }))));
   }
 
   function FolderOpen(props) {
@@ -2099,7 +2134,7 @@
 
   window.Craft = {
     Stage: Stage, Backdrop: Backdrop, Icon: Icon, Avatar: Avatar,
-    TopBar: TopBar, NotificationPill: NotificationPill, PhilosophyPill: PhilosophyPill, SegmentedControl: SegmentedControl,
+    TopBar: TopBar, NotificationPill: NotificationPill, PhilosophyPill: PhilosophyPill, LiveStatus: LiveStatus, SegmentedControl: SegmentedControl,
     IconButton: IconButton, Chip: Chip, Toggle: Toggle,
     AgendaCard: AgendaCard, FolderListCard: FolderListCard, DropZoneCard: DropZoneCard,
     PreviewCard: PreviewCard, CursorChip: CursorChip, ProfileOrb: ProfileOrb, HeadOrb: HeadOrb, StatCard: StatCard,
@@ -2132,7 +2167,7 @@
         notice: { avatar: img.chat, title: "Latest case study", subtitle: "Contextual Chat", meta: "Open", seconds: 14 },
         tabs: ["Home", "Projects"]
       },
-      agenda: { meta: date, avatar: face, day: day, time: "Available", label: "Open to new roles" },
+      agenda: { meta: date, avatar: face, day: day, time: "Available", label: "Open to new roles", live: true },
       folders: { title: "Case studies", count: "All 5", rows: rows },
       folder: { title: "Case studies", sub: "4 shipped, 1 concept, 3 explorations" },
       drop: { title: "Open a folder", hint: "Drag a case study here" },

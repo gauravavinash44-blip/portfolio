@@ -762,15 +762,47 @@
     return CRAFT_WALLPAPERS[0].id;
   }
 
+  /* Profile sheet history, read from the green site's TIMELINE so both stay in step.
+     Work body: "Place. What he did. More." -> place + first sentence. Education body: "School · note. More." */
+  function profileHistory() {
+    const group = (name) => (TIMELINE.find((g) => g.heading === name) || { rows: [] }).rows;
+    const split = (body) => {
+      const i = body.indexOf(". ");
+      const head = i < 0 ? body : body.slice(0, i);
+      const rest = i < 0 ? "" : body.slice(i + 2);
+      const j = rest.indexOf(". ");
+      const first = (j < 0 ? rest : rest.slice(0, j + 1)).replace(/ - /g, ", ");
+      return { head, first };
+    };
+    const experience = group("Work Experience").map((r) => {
+      const at = r.title.split(" at ");
+      const b = split(r.body);
+      return { title: at[0], org: at[1] || "", place: b.head, note: b.first, dates: r.date, current: /present/i.test(r.date) };
+    });
+    const education = group("Education").map((r) => {
+      const b = split(r.body);
+      const parts = b.head.split(" · ");
+      return { title: r.title, org: parts[0], place: parts.slice(1).join(" · "), dates: r.date };
+    });
+    return { experience, education };
+  }
+
   function craftData(onExit) {
     const C = window.Craft;
     const S = C.sample({
       profile: ASSETS.profile, logo: ASSETS.logo, chat: ASSETS.chat, dealRoom: ASSETS.dealRoom,
       easyeat: ASSETS.easyeat, whiteLabel: ASSETS.whiteLabel, resonance: ASSETS.resonance,
       nomad: ASSETS.nomad, health: ASSETS.health, swaply: ASSETS.swaply, splitly: ASSETS.splitly,
-      avatar: "./assets/craft/avatar/head/face.webp",
+      avatar: "./assets/craft/avatar/gaurav-3d-shirt-face-96.webp",
     });
-    S.profile = Object.assign({}, S.profile, { image: "./assets/craft/avatar/gaurav-3d-visor.webp", cutout: true, head: null });
+    /* Board-only avatar (white shirt, glasses). The profile sheet keeps ASSETS.profile. */
+    S.profile = Object.assign({}, S.profile, {
+      image: "./assets/craft/avatar/gaurav-3d-shirt-520.webp",
+      imageSet: "./assets/craft/avatar/gaurav-3d-shirt-520.webp 520w, ./assets/craft/avatar/gaurav-3d-shirt-1040.webp 1040w",
+      imageSizes: "(max-width: 700px) 186px, 200px",
+      cutout: true, head: null, figure: "bust",
+    });
+    S.profileSheet = Object.assign({}, S.profileSheet, profileHistory());
     S.topbar = Object.assign({}, S.topbar, { avatar: ASSETS.logo });
     S.agenda = Object.assign({}, S.agenda, { avatar: null });
     S.preview = Object.assign({}, S.preview, { avatar: null });
@@ -813,7 +845,8 @@
          interaction demo. Poster first; the muted loop starts only while the card is on screen. */
       slides: null,
       clip: { poster: "./assets/craft/case/chat-panel-poster.jpg", video: "./assets/craft/case/chat-panel.mp4" },
-      cursors: S.preview.cursors.map((c) => Object.assign({}, c, c.name === "You" ? { x: 58, y: 104 } : { x: 186, y: 184 })),
+      cursors: S.preview.cursors.map((c) => Object.assign({}, c, c.name === "You" ? { x: 58, y: 104 }
+        : { x: 186, y: 184, avatarSet: "./assets/craft/avatar/gaurav-3d-shirt-face-96.webp 1x, ./assets/craft/avatar/gaurav-3d-shirt-face-192.webp 2x" })),
     });
     /* Top bar pill: rotating design notes (rendered by Craft.PhilosophyPill). Interleaved Norman, Rams, Gaurav.
        Norman and Rams lines are short paraphrases of their principles, not verbatim quotes.
@@ -997,6 +1030,14 @@
     const allWork = React.useMemo(() => data.cases.concat(playgroundWork(CP, pgJson)), [data, pgJson]);
 
     const layout = useBoardScale(stageRef);
+    /* Phones never show the design-notes pill (it would push the board down) */
+    const [phone, setPhone] = useState(() => window.matchMedia("(max-width: 700px)").matches);
+    useEffect(() => {
+      const mq = window.matchMedia("(max-width: 700px)");
+      const on = () => setPhone(mq.matches);
+      mq.addEventListener("change", on);
+      return () => mq.removeEventListener("change", on);
+    }, []);
     useEffect(() => { C.motion.enter(stageRef.current, { delay: 300 }); }, []);
     useEffect(() => {
       try { window.localStorage.setItem(CRAFT_WP_KEY, wallpaper); } catch (err) { /* ignore */ }
@@ -1100,6 +1141,9 @@
       onTab: (i, label, ev) => (i === 1 ? openAllWork(fromEvent(ev)) : setSheet(null)),
       onSearch: CS ? (ev) => openSearch(fromEvent(ev), "search") : openAssistant,
       searchLabel: CS ? "Search the portfolio" : "Ask the portfolio assistant",
+      /* Pill only on the bare board: any sheet (all work, search, profile, open Resonance), the playground,
+         or phone width hides it. A parked Resonance popup is not a sheet, so the pill comes back. */
+      noticeHidden: phone || !!sheet || playground,
     });
     const dock = {
       actions: [

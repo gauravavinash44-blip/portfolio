@@ -1960,3 +1960,151 @@ body:has(.cr-np-modal:not(.is-parked)) .cr-dimmed .cr-dim:has(> .cr-rp) { opacit
   .cr-philo.is-closing { animation: none; }
 }
 @keyframes crPhiloFade { from { opacity: 0; } to { opacity: 1; } }
+
+/* ═════════════ Live availability status (Craft.LiveStatus) ═════════════
+   Green dot with a soft pulsing halo: reads as an active status, not a plain label.
+   White pill so it stays legible on every wallpaper and glass tint. */
+.cr-live-status {
+  --live-green: #1fb45a;
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 30px; padding: 0 12px 0 10px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.94); color: var(--ink);
+  font-size: 12px; font-weight: 500; line-height: 1; white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(30, 20, 30, 0.10);
+}
+.cr-live-dot {
+  position: relative; flex-shrink: 0; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--live-green);
+  box-shadow: 0 0 0 2px rgba(31, 180, 90, 0.18);
+}
+.cr-live-dot::after {
+  content: ""; position: absolute; inset: 0; border-radius: 50%;
+  background: var(--live-green); opacity: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .cr-live-dot::after { animation: crLivePulse 2.2s cubic-bezier(0.16, 1, 0.3, 1) infinite; }
+}
+@keyframes crLivePulse {
+  0% { transform: scale(1); opacity: 0.55; }
+  70%, 100% { transform: scale(3.2); opacity: 0; }
+}
+/* Date card: the chip replaces the plain "Open to new roles" line */
+.cr-board .cr-agenda-label--live { top: auto; bottom: 14px; left: 12px; right: auto; }
+.cr-board .cr-agenda-label--live .cr-live-status { height: 28px; padding: 0 11px 0 9px; gap: 7px; font-size: 11.5px; }
+
+/* ═════════════ Profile sheet: header, scroll area, experience and education ═════════════ */
+.cr-profile-sheet { grid-template-rows: auto minmax(0, 1fr); }
+.cr-profile-sheet > .cr-profile-photo { grid-column: 1; grid-row: 1 / span 2; }
+.cr-profile-sheet > .cr-profile-head {
+  grid-column: 2; grid-row: 1;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 32px 32px 8px 40px;
+}
+.cr-profile-sheet > .cr-profile-body { grid-column: 2; grid-row: 2; min-height: 0; padding: 0; gap: 0; }
+.cr-profile-head .cr-live-status { height: 34px; padding: 0 14px 0 12px; font-size: 13px; }
+.cr-profile-scroll {
+  height: 100%; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+  display: flex; flex-direction: column; gap: 14px;
+  padding: 14px 40px 36px;
+  scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 14px, #000 calc(100% - 28px), transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0, #000 14px, #000 calc(100% - 28px), transparent 100%);
+}
+.cr-profile-scroll:focus { outline: none; }
+.cr-profile-scroll > * { flex-shrink: 0; }
+.cr-profile-bio { color: rgba(255, 255, 255, 0.9); max-width: 420px; }
+.cr-profile-sheet .cr-profile-facts { margin-top: 6px; }
+
+.cr-pt { margin-top: 14px; }
+.cr-pt-title {
+  margin: 0 0 10px; font-size: 13px; font-weight: 500; letter-spacing: 0.01em;
+  color: var(--on-glass-3);
+}
+.cr-pt-list { list-style: none; margin: 0; padding: 0; }
+.cr-pt-row {
+  position: relative;
+  display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; column-gap: 12px;
+  padding: 12px 0 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+.cr-pt-row:first-child { border-top: 0; padding-top: 2px; }
+/* rail: a thin line through the dots ties the rows into one timeline */
+.cr-pt-row::before {
+  content: ""; position: absolute; left: 8.5px; top: 0; bottom: 0; width: 1px;
+  background: rgba(255, 255, 255, 0.22);
+}
+.cr-pt-row:first-child::before { top: 10px; }
+.cr-pt-row:last-child::before { bottom: auto; height: 20px; }
+.cr-pt-row:only-child::before { display: none; }
+.cr-pt-dot {
+  position: relative; z-index: 1; margin: 5px 0 0 4px;
+  width: 10px; height: 10px; border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
+  background: rgba(40, 30, 40, 0.35);
+}
+.cr-pt-row:first-child .cr-pt-dot { margin-top: 5px; }
+.cr-pt-row:not(:first-child) .cr-pt-dot { margin-top: 5px; }
+.cr-pt-row.is-current .cr-pt-dot { background: #fff; border-color: #fff; box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.18); }
+.cr-pt-main { min-width: 0; }
+.cr-pt-role { margin: 0; font-size: 16px; line-height: 1.25; letter-spacing: -0.01em; color: #fff; }
+.cr-pt-org { margin: 2px 0 0; font-size: 13px; line-height: 1.35; color: var(--on-glass-2); }
+.cr-pt-note { margin: 6px 0 0; font-size: 13px; line-height: 1.45; color: var(--on-glass-3); max-width: 46ch; }
+.cr-pt-date {
+  margin: 1px 0 0; font-size: 12px; line-height: 1.4; color: var(--on-glass-2);
+  font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right;
+}
+
+/* Tablet (2 columns): photo band on top, header, then the rest scrolls */
+.cr-hero[data-cr-cols="2"] .cr-profile-sheet { grid-template-columns: 1fr; grid-template-rows: minmax(140px, 34%) auto minmax(0, 1fr); }
+.cr-hero[data-cr-cols="2"] .cr-profile-sheet > .cr-profile-photo { grid-column: 1; grid-row: 1; }
+.cr-hero[data-cr-cols="2"] .cr-profile-sheet > .cr-profile-head { grid-column: 1; grid-row: 2; padding: 22px 28px 4px 36px; }
+.cr-hero[data-cr-cols="2"] .cr-profile-sheet > .cr-profile-body { grid-column: 1; grid-row: 3; padding: 0; }
+.cr-hero[data-cr-cols="2"] .cr-profile-scroll { padding: 12px 36px 32px; }
+
+@media (max-width: 700px) {
+  /* The whole sheet scrolls; the status + close row is sticky (zero height, so it floats over the photo) */
+  .cr-hero .cr-profile-sheet > .cr-profile-head {
+    position: sticky; top: 0; z-index: 3; flex: none; height: 0; overflow: visible;
+    align-items: flex-start; padding: 0 16px; margin: 0;
+  }
+  .cr-hero .cr-profile-sheet > .cr-profile-head > * { margin-top: calc(16px + env(safe-area-inset-top, 0px)); }
+  .cr-hero .cr-profile-sheet > .cr-profile-photo { flex: none; height: 52vh; height: 52svh; min-height: 260px; }
+  .cr-hero .cr-profile-sheet > .cr-profile-body { padding: 0; }
+  .cr-hero .cr-profile-body > .cr-profile-scroll {
+    position: static; height: auto;
+    overflow: visible; -webkit-mask-image: none; mask-image: none;
+    padding: 22px 20px calc(28px + env(safe-area-inset-bottom, 0px)); gap: 10px;
+  }
+  .cr-hero .cr-sheet-title { font-size: 34px; }
+  .cr-pt-row { grid-template-columns: 18px minmax(0, 1fr); }
+  .cr-pt-date { grid-column: 2; grid-row: 1; justify-self: start; text-align: left; margin: 0 0 2px; font-size: 12px; color: var(--on-glass-3); }
+  .cr-pt-main { grid-column: 2; grid-row: 2; }
+  .cr-pt-dot { grid-row: 1 / span 2; }
+}
+
+/* ═════════════ Design-notes pill visibility ═════════════
+   Hidden while any overlay is open (CraftHero noticeHidden): fades and lifts away, then leaves the
+   tab order (inert) and the accessibility tree (aria-hidden). Phones never show it. */
+.cr-topbar-notice > * {
+  transition: opacity 260ms ease, transform 420ms var(--ease-arrive), filter 260ms ease, visibility 0s linear 0s;
+}
+.cr-topbar-notice.is-hidden > * {
+  opacity: 0; transform: translateY(-12px) scale(0.96); filter: blur(4px);
+  visibility: hidden; pointer-events: none;
+  transition: opacity 220ms ease, transform 320ms cubic-bezier(0.7, 0, 0.84, 0), filter 220ms ease, visibility 0s linear 320ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cr-topbar-notice > *, .cr-topbar-notice.is-hidden > * { transform: none; filter: none; }
+}
+@media (max-width: 700px) {
+  .cr-hero .cr-topbar > .cr-topbar-notice { display: none; }
+}
+
+/* Board avatar (white shirt bust): head and collar fill the circle; the shirt dissolves into the glass lower down */
+.cr-orb .cr-orb-figure[data-figure="bust"] { top: 3%; width: 102%; }
+.cr-orb .cr-orb-figure[data-figure="bust"] .cr-orb-avatar {
+  -webkit-mask-image: linear-gradient(180deg, #000 68%, transparent 97%);
+  mask-image: linear-gradient(180deg, #000 68%, transparent 97%);
+  filter: drop-shadow(0 12px 16px rgba(30, 14, 30, 0.18));
+}
