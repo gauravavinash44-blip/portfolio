@@ -1377,6 +1377,8 @@ html.ga-np-open .craft-switch, html.ga-np-open .ga-brand { opacity: 0; visibilit
 
 /* ── Resonance popup ── */
 .cr-np-modal { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; }
+/* parked: closed, but the prototype inside keeps playing (the board card is its mini player) */
+.cr-np-modal.is-parked { display: none; }
 .cr-np-scrim {
   position: absolute; inset: 0; background: rgba(24, 16, 28, 0.26);
   -webkit-backdrop-filter: blur(6px) saturate(1.05); backdrop-filter: blur(6px) saturate(1.05);
@@ -1387,9 +1389,9 @@ html.ga-np-open .craft-switch, html.ga-np-open .ga-brand { opacity: 0; visibilit
 /* While the Resonance popup is up: the board dims on the same clock as the morph, the scrim's one
    backdrop blur replaces the per-card blur (cheaper per frame), and the card's own slot stays put
    so the popup can fold back into exactly where the card is. */
-body:has(.cr-np-modal) .cr-dim { transition: opacity 520ms cubic-bezier(0.33, 1, 0.68, 1), transform 560ms cubic-bezier(0.16, 1, 0.3, 1); }
-body:has(.cr-np-modal) .cr-dimmed .cr-dim { filter: none; }
-body:has(.cr-np-modal) .cr-dimmed .cr-dim:has(> .cr-rp) { opacity: 1; transform: none; }
+body:has(.cr-np-modal:not(.is-parked)) .cr-dim { transition: opacity 520ms cubic-bezier(0.33, 1, 0.68, 1), transform 560ms cubic-bezier(0.16, 1, 0.3, 1); }
+body:has(.cr-np-modal:not(.is-parked)) .cr-dimmed .cr-dim { filter: none; }
+body:has(.cr-np-modal:not(.is-parked)) .cr-dimmed .cr-dim:has(> .cr-rp) { opacity: 1; transform: none; }
 .cr-np-sheet {
   --np-phone-h: min(680px, calc(100vh - 176px));
   position: relative;
@@ -1807,6 +1809,9 @@ body:has(.cr-np-modal) .cr-dimmed .cr-dim:has(> .cr-rp) { opacity: 1; transform:
 .cr-rp .cr-np-sub-b { translate: 0 30%; }
 .cr-rp .cr-np-sub-b { color: #fff; }
 .cr-rp.is-moment .cr-np-sub-a { opacity: 0; translate: 0 -30%; }
+/* mini player mode (the prototype's song): artist names run long, so cut them cleanly */
+.cr-rp.is-proto .cr-np-sub-a { display: block; right: 0; overflow: hidden; text-overflow: ellipsis; }
+.cr-rp.is-proto.is-loading .cr-rp-play { opacity: 0.75; }
 .cr-rp.is-moment .cr-np-sub-b { opacity: 1; translate: 0 0; }
 
 .cr-rp-play {

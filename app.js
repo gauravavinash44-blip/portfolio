@@ -980,6 +980,9 @@
     const C = window.Craft;
     const stageRef = useRef(null);
     const [sheet, setSheet] = useState(null);
+    /* The Resonance popup stays mounted (hidden) after it closes while its prototype has a song,
+       so the song keeps playing and the board card works as the mini player */
+    const [rsLive, setRsLive] = useState(false);
     const [wallpaper, setWallpaper] = useState(readWallpaper);
     const [picker, setPicker] = useState(false);
     const [hint, setHint] = useState(false);
@@ -1190,10 +1193,11 @@
         onClosing: () => setSheet((s) => (s ? Object.assign({}, s, { closing: true }) : s)),
         onClose: (then) => { setSheet(null); if (typeof then === "function") requestAnimationFrame(then); },
       }) : null,
-      sheet && sheet.kind === "resonance" && C.ResonanceSheet ? e(C.ResonanceSheet, {
-        opener: sheet.opener,
+      ((sheet && sheet.kind === "resonance") || rsLive) && C.ResonanceSheet ? e(C.ResonanceSheet, {
+        parked: !(sheet && sheet.kind === "resonance"),
+        opener: sheet && sheet.kind === "resonance" ? sheet.opener : null,
         onClosing: () => setSheet((s) => (s ? Object.assign({}, s, { closing: true }) : s)),
-        onClose: () => setSheet(null),
+        onClose: (keep) => { setRsLive(!!keep); setSheet(null); },
       }) : null
     );
 

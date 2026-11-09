@@ -34,6 +34,7 @@
     var base = p.slice(0, p.lastIndexOf("/"));
     var clips = { "all-black": 1, "bairan": 1, "aari-aari": 1, "didi-sher-e-baloch": 1, "jaiye-sajana": 1, "bandhu-2": 1 };
     window.__RS_BASE__ = base;
+    window.__RS_LOCAL__ = clips;
     window.__RS_AUDIO__ = /\.github\.io$/i.test(location.hostname)
       ? "https://gauravavinash44-blip.github.io/drop-mode"
       : "https://drop-mode.vercel.app";
@@ -44,6 +45,8 @@
     };
   })();
   </script>
+  <!-- Now Playing bridge to the portfolio page, Media Session, generated covers and skip-on-fail for blocked hosts -->
+  <script src="./rs-bridge.js?v=2"></script>
 </head>
 
   <body>

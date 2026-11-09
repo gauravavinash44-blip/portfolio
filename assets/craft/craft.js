@@ -1209,6 +1209,108 @@
   var npPlayers = [];
   function npPauseAll() { npPlayers.forEach(function (p) { p.pause(); }); }
 
+  /* ───────── Prototype Now Playing ─────────
+     The live prototype in the popup (assets/resonance/app, same origin) runs rs-bridge.js, which posts
+     { type: "rs-now-playing", track, playing, position, duration, ... } here and takes
+     { type: "rs-control", action: play | pause | next | prev | seek } back. Only messages from our own
+     origin and from the one prototype frame we mounted count. The board widget turns into the mini
+     player for whatever the prototype plays, and only one of the two (demo, prototype) sounds at a time. */
+  var RS_IDLE = { track: null, playing: false, loading: false, position: 0, duration: 0, error: null, at: 0 };
+  var rsNow = RS_IDLE, rsWin = null, rsSubs = [], rsKey = "";
+  var msOwner = null; /* who holds the Media Session: "demo" | "proto" */
+  function rsSubscribe(fn) { rsSubs.push(fn); return function () { rsSubs = rsSubs.filter(function (f) { return f !== fn; }); }; }
+  function rsEmit() {
+    /* position moves every few hundred ms; views redraw only when something they show changes */
+    var t = rsNow.track;
+    var key = t ? [t.id, t.coverFailed, rsNow.playing, rsNow.loading, rsNow.error, Math.round(rsNow.duration)].join("|") : "";
+    if (key === rsKey) return;
+    rsKey = key;
+    rsSubs.slice().forEach(function (fn) { fn(rsNow); });
+  }
+  function rsAttach(win) { if (win) rsWin = win; }
+  function rsDetach(win) {
+    if (!win || rsWin !== win) return;
+    rsWin = null;
+    rsNow = RS_IDLE;
+    rsEmit();
+    if (msOwner === "proto") msClear();
+  }
+  function rsControl(action, extra) {
+    if (!rsWin) return false;
+    try { rsWin.postMessage(Object.assign({ type: "rs-control", action: action }, extra || {}), location.origin); } catch (err) { return false; }
+    return true;
+  }
+  function rsPositionNow() {
+    var n = rsNow;
+    if (!n.track) return 0;
+    var p = n.position + (n.playing ? (performance.now() - n.at) / 1000 : 0);
+    return n.duration > 0 ? Math.min(p, n.duration) : p;
+  }
+  window.addEventListener("message", function (ev) {
+    if (ev.origin !== location.origin || !rsWin || ev.source !== rsWin) return;
+    var d = ev.data;
+    if (!d || d.type !== "rs-now-playing") return;
+    var was = rsNow.playing;
+    rsNow = {
+      track: d.track && typeof d.track === "object" ? d.track : null,
+      playing: !!d.playing, loading: !!d.loading,
+      position: +d.position || 0, duration: +d.duration || 0,
+      error: d.error || null, at: performance.now()
+    };
+    if (rsNow.playing && !was) npPauseAll(); /* one source of sound at a time */
+    rsSession();
+    rsEmit();
+  });
+
+  /* Media Session for the prototype's song: OS media controls (lock screen, media keys) show it and
+     drive the prototype. The frame sets the same on its side; browsers use whichever frame they route to. */
+  var rsSessionKey = "", rsPosAt = 0;
+  function msClear() {
+    var ms = navigator.mediaSession;
+    msOwner = null; rsSessionKey = "";
+    if (!ms) return;
+    try {
+      ["play", "pause", "nexttrack", "previoustrack", "seekto"].forEach(function (a) { try { ms.setActionHandler(a, null); } catch (err) { /* unsupported */ } });
+      ms.metadata = null;
+      ms.playbackState = "none";
+    } catch (err) { /* older browsers */ }
+  }
+  function rsArt(t) { return t.coverFailed || !t.cover ? t.placeholder : t.cover; }
+  function rsSession() {
+    var ms = navigator.mediaSession, n = rsNow, t = n.track;
+    if (!ms || !t) return;
+    /* the demo keeps the session while it plays and the prototype is quiet */
+    if (msOwner === "demo" && !n.playing) return;
+    try {
+      var key = t.id + "|" + t.coverFailed + "|" + !!t.art;
+      if (msOwner !== "proto" || key !== rsSessionKey) {
+        msOwner = "proto"; rsSessionKey = key;
+        if (window.MediaMetadata) {
+          var art = t.coverFailed || !t.cover
+            ? (t.art ? [{ src: t.art, sizes: "512x512", type: "image/png" }] : [])
+            : [{ src: t.cover, sizes: "600x600", type: "image/jpeg" }];
+          ms.metadata = new MediaMetadata({ title: t.title || "", artist: t.artist || "", album: "Resonance prototype", artwork: art });
+        }
+        [["play", function () { rsControl("play"); }], ["pause", function () { rsControl("pause"); }],
+         ["nexttrack", function () { rsControl("next"); }], ["previoustrack", function () { rsControl("prev"); }],
+         ["seekto", function (d) { if (d && isFinite(d.seekTime)) rsControl("seek", { time: d.seekTime }); }]].forEach(function (h) {
+          try { ms.setActionHandler(h[0], h[1]); } catch (err) { /* unsupported action */ }
+        });
+      }
+      ms.playbackState = n.playing ? "playing" : "paused";
+      var now = performance.now();
+      if (n.duration > 0 && (now - rsPosAt > 900 || !n.playing)) {
+        rsPosAt = now;
+        ms.setPositionState({ duration: n.duration, playbackRate: 1, position: Math.min(n.position, n.duration) });
+      }
+    } catch (err) { /* older browsers */ }
+  }
+  function useRsNow() {
+    var _s = useState(rsNow), s = _s[0], set = _s[1];
+    useEffect(function () { set(rsNow); return rsSubscribe(function (n) { set(n); }); }, []);
+    return s;
+  }
+
   /* One Resonance player: audio element, gain + analyser, the jump to the drop, Media Session.
      Starts paused; pauses itself on a hidden tab, when the popup opens (npPauseAll) and on unmount.
      The view passes fillRef (progress line) and eqRef (four bars); JS writes them from the audio. */
@@ -1223,7 +1325,7 @@
 
     useEffect(function () {
       var audio = null, ctx = null, gain = null, analyser = null, bins = null;
-      var raf = 0, fadeRaf = 0, jumped = false, want = false, alive = true;
+      var raf = 0, fadeRaf = 0, jumped = false, want = false, alive = true, seq = 0;
       var waveAt = 0, waveHist = [];
       var timers = [];
       function later(fn, ms) { var t = setTimeout(fn, ms); timers.push(t); return t; }
@@ -1239,7 +1341,8 @@
         audio.addEventListener("ended", function () { if (want) loopBack(); });
         audio.addEventListener("error", function () { stop(true); });
         /* paused from outside (headphones out, OS controls): follow it */
-        audio.addEventListener("pause", function () { if (want && !audio.ended) stop(true); });
+        /* (pause events arrive a task late: one from our own fade-out can land after a quick re-play, so check the element) */
+        audio.addEventListener("pause", function () { if (want && audio.paused && !audio.ended) stop(true); });
         /* Real levels for the bars; the audio still plays without it */
         try {
           var AC = window.AudioContext || window.webkitAudioContext;
@@ -1346,13 +1449,21 @@
       function play() {
         if (want) return;
         ensureAudio();
+        rsControl("pause"); /* the prototype in the popup goes quiet: one source of sound at a time */
         want = true; setPlaying(true);
-        if (ctx && ctx.state === "suspended") ctx.resume().catch(function () {});
+        var my = ++seq;
+        /* resume inside the tap; Safari can also leave it "interrupted" after a call or another tab */
+        if (ctx && ctx.state !== "running") ctx.resume().catch(function () {});
         if (!gain) { try { audio.volume = 0; } catch (err) { /* ignore */ } }
         var pr;
         try { pr = audio.play(); } catch (err) { stop(true); return; }
         var started = function () {
-          if (!want) return;
+          if (!want || my !== seq) return;
+          /* the element plays through the AudioContext: if that never runs, the "playing" UI would sit on silence */
+          if (ctx && ctx.state !== "running") {
+            ctx.resume().catch(function () {});
+            later(function () { if (want && my === seq && ctx.state !== "running") stop(true); }, 700);
+          }
           ramp(1, NP_FADE);
           cancelAnimationFrame(raf); loop();
           if (!jumped) {
@@ -1360,7 +1471,8 @@
             later(function () { if (audio.currentTime < NP_JUMP_TO) jumpTo(NP_JUMP_TO); }, Math.max(0, (NP_JUMP_AT - audio.currentTime) * 1000));
           }
         };
-        if (pr && pr.then) pr.then(started, function () { stop(true); });
+        /* a play() that a later pause or play superseded rejects with AbortError: not this attempt's failure */
+        if (pr && pr.then) pr.then(started, function (err) { if (my === seq && !(err && err.name === "AbortError" && !want)) stop(true); });
         else started();
         setMediaSession();
       }
@@ -1375,13 +1487,18 @@
         /* a jump scheduled but not yet taken happens on the next play */
         if (audio.currentTime < NP_JUMP_TO) jumped = false;
         var finish = function () { if (want) return; cancelAnimationFrame(raf); audio.pause(); paint(); };
-        if (hard || !was) { cancelAnimationFrame(fadeRaf); if (gain) gain.gain.value = 0; finish(); }
+        if (hard || !was) {
+          cancelAnimationFrame(fadeRaf);
+          if (gain && ctx) { gain.gain.cancelScheduledValues(ctx.currentTime); gain.gain.setValueAtTime(0, ctx.currentTime); }
+          finish();
+        }
         else ramp(0, NP_FADE, finish);
-        if (navigator.mediaSession) try { navigator.mediaSession.playbackState = "paused"; } catch (err) { /* ignore */ }
+        if (navigator.mediaSession && msOwner === "demo") try { navigator.mediaSession.playbackState = "paused"; } catch (err) { /* ignore */ }
       }
       function setMediaSession() {
         var ms = navigator.mediaSession;
         if (!ms) return;
+        msOwner = "demo"; rsSessionKey = "";
         try {
           if (window.MediaMetadata) ms.metadata = new MediaMetadata({
             title: "Resonance demo", artist: "Gaurav Avinash", album: "Resonance",
@@ -1389,7 +1506,9 @@
           });
           ms.setActionHandler("play", function () { play(); });
           ms.setActionHandler("pause", function () { stop(false); });
+          ["nexttrack", "previoustrack", "seekto"].forEach(function (a) { try { ms.setActionHandler(a, null); } catch (err) { /* unsupported */ } });
           ms.playbackState = "playing";
+          if (ms.setPositionState && audio && isFinite(audio.duration) && audio.duration > 0) ms.setPositionState({ duration: audio.duration, playbackRate: 1, position: Math.min(audio.currentTime, audio.duration) });
         } catch (err) { /* older browsers */ }
       }
       function onVis() { if (document.hidden && want) stop(true); }
@@ -1406,8 +1525,8 @@
         cancelAnimationFrame(fadeRaf);
         if (audio) { audio.removeAttribute("src"); try { audio.load(); } catch (err) { /* ignore */ } }
         if (ctx && ctx.close) ctx.close().catch(function () {});
-        var ms = navigator.mediaSession;
-        if (ms) try { ms.setActionHandler("play", null); ms.setActionHandler("pause", null); ms.metadata = null; } catch (err) { /* ignore */ }
+        /* another card instance (or the prototype) may hold the session by now: only clear our own */
+        if (msOwner === "demo" && !npPlayers.length) msClear();
       };
     }, []);
     return {
@@ -1459,10 +1578,13 @@
   var RP_TINT = "#467ca2";
   var RP_WAVE_BARS = 14;
   var rpTintCache = {};
-  function rpSampleTint(src, done) {
+  function rpSampleTint(src, done, cors, fallback) {
     if (rpTintCache[src]) { done(rpTintCache[src]); return; }
+    var fb = fallback || RP_TINT;
     var img = new Image();
     img.decoding = "async";
+    /* outside covers (Apple's CDN) can only be read back with CORS; without it the fallback tint stays */
+    if (cors) img.crossOrigin = "anonymous";
     img.onload = function () {
       try {
         var c = document.createElement("canvas"); c.width = c.height = 12;
@@ -1479,9 +1601,9 @@
         /* too grey to carry a colour: keep the dusty blue */
         var tint = sat < 0.14 ? RP_TINT : "hsl(" + Math.round(hue) + " " + Math.round(Math.min(0.46, Math.max(0.26, sat)) * 100) + "% " + Math.round(Math.min(0.42, Math.max(0.33, l)) * 100) + "%)";
         rpTintCache[src] = tint; done(tint);
-      } catch (err) { done(RP_TINT); }
+      } catch (err) { done(fb); }
     };
-    img.onerror = function () { done(RP_TINT); };
+    img.onerror = function () { done(fb); };
     img.src = src;
   }
   /* Warm the popup's big images on intent (hover, focus, press) so the open morph never waits on a decode */
@@ -1497,52 +1619,97 @@
   var RP_MARK = "M7.5 10v4M10.5 7.5v9M13.5 9v6M16.5 11v2";
   var RP_PAUSE = "M8.3 5h1.4c.7 0 1.3.6 1.3 1.3v11.4c0 .7-.6 1.3-1.3 1.3H8.3c-.7 0-1.3-.6-1.3-1.3V6.3C7 5.6 7.6 5 8.3 5zM14.3 5h1.4c.7 0 1.3.6 1.3 1.3v11.4c0 .7-.6 1.3-1.3 1.3h-1.4c-.7 0-1.3-.6-1.3-1.3V6.3c0-.7.6-1.3 1.3-1.3z";
 
+  /* Mini player mode: while the prototype has a song, the card shows that song (cover, title, artist,
+     progress, play state) and its play button drives the prototype, Spotify's mini player style. */
+  function useRsProgress(fillRef, now) {
+    useEffect(function () {
+      if (!now.track) return undefined;
+      var raf = 0;
+      function paint() {
+        var el = fillRef.current, d = rsNow.duration;
+        if (el) el.style.transform = "scaleX(" + (d > 0 ? Math.max(0, Math.min(1, rsPositionNow() / d)) : 0).toFixed(4) + ")";
+        if (rsNow.playing) raf = requestAnimationFrame(paint);
+      }
+      paint();
+      return function () { cancelAnimationFrame(raf); };
+    }, [now]);
+  }
+
   function ResonanceCard(props) {
     var pl = useResonancePlayer();
-    var openRef = useRef(null);
-    var art = props.art || NP_ART;
+    var now = useRsNow(), t = now.track, proto = !!t;
+    var openRef = useRef(null), protoFillRef = useRef(null);
+    var _af = useState(""), artFailed = _af[0], setArtFailed = _af[1];
+    var art = proto ? (t.coverFailed || artFailed === t.cover ? t.placeholder : t.cover) : (props.art || NP_ART);
     var _t = useState(rpTintCache[art] || RP_TINT), tint = _t[0], setTint = _t[1];
     useEffect(function () {
       var alive = true;
-      rpSampleTint(art, function (c) { if (alive) setTint(c); });
+      if (proto && art === t.placeholder) {
+        /* generated cover: its own hue, in the widget's tint range */
+        setTint("hsl(" + (t.hue || 0) + " 40% 38%)");
+      } else {
+        rpSampleTint(art, function (c) { if (alive) setTint(c); }, proto, proto ? "hsl(" + (t.hue || 0) + " 40% 38%)" : null);
+      }
       return function () { alive = false; };
     }, [art]);
-    var title = props.title || "Resonance";
+    useRsProgress(protoFillRef, now);
+    var title = proto ? t.title : (props.title || "Resonance");
+    var playing = proto ? now.playing : pl.playing;
     function open(ev) {
       if (ev) ev.stopPropagation(); /* the stage treats bare taps as "change wallpaper" */
       if (ev && ev.target.closest && ev.target.closest(".cr-rp-play")) return;
-      npPauseAll();
+      if (!proto) npPauseAll(); /* the prototype keeps playing while you look at it */
       rpWarm();
       if (props.onOpen) props.onOpen(openRef.current);
     }
+    function toggle(ev) {
+      ev.stopPropagation();
+      if (!proto) { pl.toggle(); return; }
+      /* the prototype frame went away (should not happen while it has a song): open it instead */
+      if (!rsControl(now.playing ? "pause" : "play")) open(null);
+    }
+    var momentLeft = proto && now.duration > 0 && t.momentMs > 0 && t.momentMs / 1000 < now.duration
+      ? (t.momentMs / 10 / now.duration).toFixed(2) + "%" : null;
     var wave = [];
     for (var i = 0; i < RP_WAVE_BARS; i++) wave.push(h("i", { key: i }));
-    return h("div", { className: cx("cr-card cr-rp", npStateClass(pl), props.className),
+    var stateClass = proto
+      ? cx(playing ? "is-playing" : "is-paused", "is-eq-css", "is-proto", now.loading && "is-loading")
+      : npStateClass(pl);
+    return h("div", { className: cx("cr-card cr-rp", stateClass, props.className),
         style: { "--rp-tint": tint },
         onClick: open, onPointerEnter: rpWarm, onFocus: rpWarm,
-        "data-cr-enter": "", "data-np-card": "", "data-drop": NP_DROP },
+        "data-cr-enter": "", "data-np-card": "", "data-drop": NP_DROP, "data-track": proto ? t.id : undefined },
       h("button", { type: "button", className: "cr-rp-open", ref: openRef, "aria-haspopup": "dialog",
-        "aria-label": props.label || (title + " for Spotify. Open the live prototype") }),
+        "aria-label": proto ? (t.title + " by " + t.artist + (playing ? ", playing" : ", paused") + " in the Resonance prototype. Open it")
+          : props.label || (title + " for Spotify. Open the live prototype") }),
       h("span", { className: "cr-rp-art", "aria-hidden": "true" },
-        h("img", { src: art, srcSet: art + " 1x, " + (props.artLg || NP_POSTER) + " 2.5x", alt: "", decoding: "async", draggable: false }),
-        h("span", { className: "cr-rp-wave", ref: pl.waveRef }, wave)),
+        proto
+          ? h("img", { key: "proto", src: art, alt: "", decoding: "async", draggable: false,
+              onError: function () { if (art === t.cover) setArtFailed(t.cover); } })
+          : h("img", { key: "demo", src: art, srcSet: art + " 1x, " + (props.artLg || NP_POSTER) + " 2.5x", alt: "", decoding: "async", draggable: false }),
+        h("span", { className: "cr-rp-wave", ref: proto ? null : pl.waveRef }, wave)),
       h("span", { className: "cr-rp-mark", "aria-hidden": "true" },
         h("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2.2, strokeLinecap: "round" },
           h("path", { d: RP_MARK }))),
       h("span", { className: "cr-rp-meta", "aria-hidden": "true" },
         h("span", { className: "cr-rp-title" }, title),
         h("span", { className: "cr-np-sub cr-rp-sub" },
-          h("span", { className: "cr-np-sub-a" }, props.sub || "For Spotify"),
-          h("span", { className: "cr-np-sub-b" }, props.moment || "Your moment"))),
-      h("button", { type: "button", className: "cr-rp-play", "aria-label": pl.playing ? "Pause Resonance preview" : "Play Resonance preview", "aria-pressed": pl.playing ? "true" : "false",
-        onClick: function (ev) { ev.stopPropagation(); pl.toggle(); } },
+          h("span", { className: "cr-np-sub-a" }, proto ? t.artist : (props.sub || "For Spotify")),
+          proto ? null : h("span", { className: "cr-np-sub-b" }, props.moment || "Your moment"))),
+      h("button", { type: "button", className: "cr-rp-play",
+        "aria-label": proto ? (playing ? "Pause " : "Play ") + t.title : (pl.playing ? "Pause Resonance preview" : "Play Resonance preview"),
+        "aria-pressed": playing ? "true" : "false", onClick: toggle },
         /* both glyphs stay mounted; CSS crossfades them with a small turn and scale */
         h("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", fill: "currentColor" },
           h("path", { className: "cr-rp-g-play", d: NP_ICON.play }),
           h("path", { className: "cr-rp-g-pause", d: RP_PAUSE }))),
       h("span", { className: "cr-rp-track", "aria-hidden": "true" },
-        h("i", { className: "cr-rp-fill", ref: pl.fillRef }),
-        h("i", { className: "cr-rp-drop", style: { left: NP_MARK_LEFT } })));
+        proto
+          ? h("i", { key: "pf", className: "cr-rp-fill", ref: protoFillRef })
+          : h("i", { key: "df", className: "cr-rp-fill", ref: pl.fillRef }),
+        proto
+          ? (momentLeft ? h("i", { key: "pd", className: "cr-rp-drop", style: { left: momentLeft } }) : null)
+          : h("i", { key: "dd", className: "cr-rp-drop", style: { left: NP_MARK_LEFT } })));
   }
 
   /* The phone in the popup runs the real prototype, as on resonance-short.html: it starts on the
@@ -1603,7 +1770,13 @@
     return { frames: frames, ghost: ghost, tint: tint };
   }
 
+  /* Parked: closing the popup while the prototype has a song keeps this component (and its iframe)
+     mounted but hidden, so the song plays on and the board card acts as the mini player, as Spotify
+     does when you leave the full player. Reopening shows the app where it was. The host (app.js)
+     renders it with parked=true between opens; onClose(true) asks for that. */
   function ResonanceSheet(props) {
+    var parked = !!props.parked;
+    var propsRef = useRef(props); propsRef.current = props;
     var ref = useRef(null), scrimRef = useRef(null), screenRef = useRef(null);
     var appRef = useRef(null), homeRef = useRef(null), iframeRef = useRef(null);
     var closing = useRef(false), run = useRef(0), watch = useRef(null);
@@ -1629,7 +1802,14 @@
       q.forEach(function (fn) { fn(); });
     }
     useLayoutEffect(function () {
+      if (parked) return undefined;
       var sheet = ref.current, root = document.documentElement;
+      closing.current = false;
+      settled.current = false;
+      /* a reopen: drop the fills the last close left on the panel, scrim and copy */
+      [scrimRef.current, sheet].forEach(function (n) {
+        if (n && n.getAnimations) n.getAnimations({ subtree: true }).forEach(function (a) { a.cancel(); });
+      });
       root.classList.add("ga-np-open");
       var prev = props.opener && props.opener.querySelector ? (props.opener.querySelector(".cr-np-open") || props.opener) : document.activeElement;
       var card = rsCardOf(props.opener);
@@ -1666,7 +1846,7 @@
       };
       /* the chrome's stagger ends a little after the sheet; let both land before any heavy work */
       var settleT = setTimeout(cleanup, still || !src0 ? 200 : RS_OPEN_MS * 0.42 + chrome.length * 60 + 480);
-      npPauseAll(); /* the live prototype makes its own sound */
+      if (rsNow.playing || phase === "home") npPauseAll(); /* the live prototype makes its own sound */
       var t = setTimeout(function () {
         var btn = sheet.querySelector(".cr-np-close");
         if (btn) btn.focus({ preventScroll: true });
@@ -1678,7 +1858,15 @@
         if (cardRef.current) cardRef.current.style.visibility = "";
         if (prev && prev.isConnected && prev.focus) prev.focus({ preventScroll: true });
       };
-    }, []);
+    }, [parked]);
+
+    /* The prototype frame reports what it plays (rs-bridge.js); listen to this frame only */
+    var frameKey = frame ? frame.key : 0;
+    useEffect(function () {
+      var f = iframeRef.current, w = f && frame && frame.from === "local" ? f.contentWindow : null;
+      if (w) rsAttach(w);
+      return function () { if (w) rsDetach(w); };
+    }, [frameKey]);
 
     /* Fit the 390px-wide app into whatever size the phone screen ends up */
     useLayoutEffect(function () {
@@ -1800,14 +1988,21 @@
     function restart() { if (phase === "app") load("local"); }
 
     function close() {
-      if (closing.current) return;
+      var props = propsRef.current;
+      if (closing.current || props.parked) return;
       closing.current = true;
       var sheet = ref.current, called = false;
       var card = cardRef.current || rsCardOf(props.opener);
+      /* keep the app alive while it has a song (playing or paused), like leaving Spotify's full player */
+      var keep = !!(rsWin && rsNow.track);
       var done = function () {
         if (called) return; called = true;
         if (card) card.style.visibility = "";
-        props.onClose();
+        props.onClose(keep);
+        /* parked: the sheet stays in the DOM, so take the morph's card copy out once it's hidden */
+        if (keep) requestAnimationFrame(function () { requestAnimationFrame(function () {
+          if (sheet) Array.prototype.slice.call(sheet.querySelectorAll(":scope > .cr-np-ghost, :scope > .cr-np-morph-tint")).forEach(function (n) { n.remove(); });
+        }); });
       };
       if (!sheet) { done(); return; }
       document.documentElement.classList.remove("ga-np-open");
@@ -1837,6 +2032,7 @@
 
     /* Escape closes, Tab stays inside */
     useEffect(function () {
+      if (parked) return undefined;
       function onKey(ev) {
         if (ev.key === "Escape") { ev.preventDefault(); ev.stopPropagation(); close(); return; }
         if (ev.key !== "Tab" || !ref.current) return;
@@ -1849,7 +2045,7 @@
       }
       window.addEventListener("keydown", onKey, true);
       return function () { window.removeEventListener("keydown", onKey, true); };
-    }, []);
+    }, [parked]);
 
     var inApp = phase !== "home";
     var frameStyle = fit ? { width: NP_DESIGN_W + "px", height: fit.h + "px", transform: "scale(" + fit.k + ")" } : { visibility: "hidden" };
@@ -1857,7 +2053,7 @@
     var openFull = function (ev) { ev.currentTarget.href = fullHref(); };
     var origin = RS_ICON_AT.x + "% " + RS_ICON_AT.y + "%";
 
-    return h("div", { className: "cr-np-modal" },
+    return h("div", { className: cx("cr-np-modal", parked && "is-parked"), "aria-hidden": parked ? "true" : undefined, inert: parked ? "" : undefined },
       h("div", { className: "cr-np-scrim", ref: scrimRef, "aria-hidden": "true", onClick: function () { close(); } }),
       h("section", { className: "cr-np-sheet", ref: ref, role: "dialog", "aria-modal": "true", "aria-labelledby": "cr-np-title", "aria-describedby": "cr-np-desc" },
         h("button", { type: "button", className: "cr-iconbtn cr-iconbtn--solid cr-np-close", "aria-label": "Close Resonance prototype", title: "Close", "data-np-chrome": "", onClick: function () { close(); } },
