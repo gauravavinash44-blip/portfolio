@@ -174,3 +174,99 @@ a.cm-pill:hover { background: rgba(255, 255, 255, 0.94); }
 .cm-next .cm-orb { --cm-ring: var(--surface); }
 .cm-orb .cr-orb-glyph { width: 58%; height: 58%; display: block; overflow: visible; }
 .cm-next-k, .cm-next-t, .cm-next-s { display: block; }
+
+/* ── Short read / Full case study switch (both Contextual Chat pages) ── */
+.cm-switch { display: inline-flex; gap: 2px; padding: 3px; margin-bottom: 22px; border-radius: 999px; background: rgba(10, 10, 10, 0.05); font-size: 13px; }
+.cm-switch a { height: 30px; display: inline-flex; align-items: center; padding: 0 14px; border-radius: 999px; color: var(--ink-2); text-decoration: none; transition: background .2s, color .2s; }
+.cm-switch a:hover { color: var(--ink); }
+.cm-switch a[aria-current="page"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06); }
+
+/* ══ Detailed case study additions (cmd-*). Only used by pages with body.cmd. ══ */
+@media (max-width: 959px) { .cmd .cm-toc { display: none; } }
+.cmd .cm-toc a { padding: 0 12px; }
+.cmd-tldr { margin-top: 28px; background: var(--surface); border-radius: 28px; padding: 22px 26px; }
+.cmd-tldr p:first-child { font-size: 13px; color: var(--ink-2); margin-bottom: 8px; }
+.cmd-tldr p + p { font-size: 17px; line-height: 1.55; }
+.cmd-pull { margin-top: 32px; padding-left: 20px; border-left: 2px solid var(--blue); font-size: clamp(20px, 1.9vw, 24px); line-height: 1.35; letter-spacing: -0.016em; }
+.cmd-pull + .cmd-pull-by, .cmd-pull-by { margin-top: 8px; padding-left: 22px; font-size: 14px; color: var(--ink-2); }
+.cmd-h3 { margin-top: 44px; font-size: 19px; line-height: 1.3; font-weight: 500; letter-spacing: -0.014em; }
+.cmd-h3 + .cm-body { margin-top: 10px; }
+.cmd-note { margin-top: 12px; font-size: 13px; line-height: 1.45; color: var(--ink-2); }
+
+/* Card grid: personas, insights, constraints, rounds */
+.cmd-cards { margin-top: 20px; display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); gap: 10px; }
+.cmd-cards--2 { --n: 2; }
+.cmd-card { background: var(--surface); border-radius: 24px; padding: 20px 22px; font-size: 15px; line-height: 1.45; }
+.cmd-card-k { font-size: 13px; color: var(--ink-2); }
+.cmd-card-v { margin-top: 4px; font-size: 34px; line-height: 1.05; font-weight: 400; letter-spacing: -0.035em; font-variant-numeric: tabular-nums; }
+.cmd-card-t { margin-top: 6px; font-size: 16px; font-weight: 500; letter-spacing: -0.01em; }
+.cmd-card p + p, .cmd-card ul { margin-top: 8px; }
+.cmd-card .cmd-then { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--hairline); color: var(--ink-2); }
+.cmd-card .cmd-then b { color: var(--ink); font-weight: 500; }
+.cmd-card ul li { position: relative; padding-left: 14px; color: var(--ink-2); }
+.cmd-card ul li + li { margin-top: 4px; }
+.cmd-card ul li::before { content: ""; position: absolute; left: 0; top: 0.62em; width: 5px; height: 5px; border-radius: 50%; background: var(--ink-3); }
+@media (max-width: 859px) { .cmd-cards { grid-template-columns: 1fr; gap: 8px; } .cmd-card { padding: 16px 18px; } }
+
+/* Quotes */
+.cmd-quotes { margin-top: 20px; display: grid; gap: 10px; }
+.cmd-quotes li { background: var(--surface); border-radius: 24px; padding: 18px 22px; }
+.cmd-quotes blockquote p { font-size: 17px; line-height: 1.45; letter-spacing: -0.01em; }
+.cmd-quotes li > p { margin-top: 8px; font-size: 13px; color: var(--ink-2); }
+
+/* Funnel: five stages, one marked */
+.cmd-funnel { margin-top: 20px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; counter-reset: st; }
+.cmd-funnel li { counter-increment: st; background: var(--surface); border-radius: 18px; padding: 14px 14px 16px; font-size: 14px; line-height: 1.35; }
+.cmd-funnel li::before { content: "0" counter(st); display: block; font-size: 12px; color: var(--ink-3); margin-bottom: 6px; }
+.cmd-funnel li b { display: block; font-weight: 500; }
+.cmd-funnel li span { display: block; margin-top: 4px; font-size: 13px; color: var(--ink-2); }
+.cmd-funnel li.is-peak { box-shadow: inset 0 0 0 1.5px var(--blue); }
+.cmd-funnel li.is-peak::before { color: var(--blue-text); }
+@media (max-width: 719px) { .cmd-funnel { grid-template-columns: 1fr; } .cmd-funnel li { display: grid; grid-template-columns: 28px minmax(0, 1fr); padding: 12px 14px; } .cmd-funnel li::before { margin: 2px 0 0; grid-row: span 2; } }
+
+/* Comparison table */
+.cmd-tablewrap { margin-top: 20px; background: var(--surface); border-radius: 24px; padding: 6px 22px; overflow-x: auto; }
+.cmd-table { width: 100%; border-collapse: collapse; font-size: 15px; line-height: 1.45; min-width: 560px; }
+.cmd-table th, .cmd-table td { text-align: left; vertical-align: top; padding: 14px 16px 14px 0; border-bottom: 1px solid var(--hairline); }
+.cmd-table tr:last-child th, .cmd-table tr:last-child td { border-bottom: 0; }
+.cmd-table thead th { font-size: 13px; font-weight: 400; color: var(--ink-2); }
+.cmd-table tbody th { font-weight: 500; width: 24%; }
+.cmd-table .cmd-verdict { display: inline-block; font-size: 12px; padding: 2px 9px; border-radius: 999px; background: rgba(10, 10, 10, 0.05); color: var(--ink-2); white-space: nowrap; }
+.cmd-table .cmd-verdict--yes { background: var(--blue); color: #fff; }
+
+/* Versions and findings */
+.cmd-rows { margin-top: 20px; display: grid; gap: 8px; }
+.cmd-rows > li { background: var(--surface); border-radius: 22px; padding: 16px 20px; display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 4px 16px; font-size: 15px; line-height: 1.45; }
+.cmd-rows .cmd-row-k { font-size: 14px; font-weight: 500; }
+.cmd-rows .cmd-row-k small { display: block; margin-top: 2px; font-size: 12px; font-weight: 400; color: var(--ink-2); }
+.cmd-rows p + p { margin-top: 6px; }
+.cmd-rows .cmd-changed { color: var(--ink-2); }
+.cmd-rows .cmd-changed b { color: var(--ink); font-weight: 500; }
+@media (max-width: 519px) { .cmd-rows > li { grid-template-columns: 1fr; padding: 14px 16px; } }
+
+/* Shots inside detailed decisions */
+.cmd-shot-sm .cm-shot-frame { max-width: 640px; margin: 0 auto; }
+.cmd-shot-sm figcaption { text-align: center; margin-left: auto; margin-right: auto; }
+.cmd-fade-rb img { -webkit-mask-image: linear-gradient(90deg, #000 82%, transparent), linear-gradient(#000 80%, transparent); -webkit-mask-composite: source-in; mask-image: linear-gradient(90deg, #000 82%, transparent), linear-gradient(#000 80%, transparent); mask-composite: intersect; }
+.cmd-pair-sm .cm-pair-row { max-width: 640px; margin: 0 auto; }
+
+/* Separate measurement block */
+.cmd-separate { margin-top: 36px; border: 1px solid var(--hairline); border-radius: 28px; padding: 22px 24px; }
+.cmd-separate .cmd-separate-k { font-size: 13px; color: var(--ink-2); }
+.cmd-separate .cmd-h3 { margin-top: 6px; }
+.cmd-separate .cmd-cards { --n: 2; }
+.cmd-separate .cmd-card { background: rgba(10, 10, 10, 0.03); }
+.cmd-rows .cmd-changed a { color: var(--blue-text); text-underline-offset: 3px; }
+/* Comparison table becomes stacked cards on phones, so the "Call" column is never off-screen */
+@media (max-width: 719px) {
+  .cmd-tablewrap { padding: 4px 18px; overflow: visible; }
+  .cmd-table { min-width: 0; }
+  .cmd-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .cmd-table, .cmd-table tbody, .cmd-table tr, .cmd-table th, .cmd-table td { display: block; width: auto; }
+  .cmd-table tr { padding: 14px 0; border-bottom: 1px solid var(--hairline); }
+  .cmd-table tr:last-child { border-bottom: 0; }
+  .cmd-table th, .cmd-table td { padding: 0; border: 0; }
+  .cmd-table tbody th { width: auto; }
+  .cmd-table td { margin-top: 8px; font-size: 14px; }
+  .cmd-table td[data-k]::before { content: attr(data-k); display: block; font-size: 12px; color: var(--ink-2); margin-bottom: 2px; }
+}
