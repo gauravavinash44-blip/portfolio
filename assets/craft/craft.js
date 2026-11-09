@@ -908,8 +908,20 @@
     var isOrb = !!(O && key && O.has(key));
     var ref = useRef(null);
     useEffect(function () { return isOrb ? O.mount(ref.current, key) : undefined; }, [isOrb, key]);
-    if (isOrb) return h("span", { className: cx("cr-pwell cr-pwell--orb", props.className), ref: ref, "aria-hidden": "true",
-      style: { backgroundImage: O.fallback(key) } });
+    /* Black badge on the orb's bottom edge with a white glyph saying what the project is
+       (glyph data in orb.js). Pass badge: false to leave it off. */
+    var glyph = isOrb && props.badge !== false && O.glyph ? O.glyph(key) : null;
+    if (isOrb) return h("span", { className: cx("cr-pwell cr-pwell--orb", glyph && "has-badge", props.className), ref: ref, "aria-hidden": "true",
+      style: { backgroundImage: O.fallback(key) } },
+      glyph ? h("span", { className: "cr-orb-badge" },
+        h("svg", { className: "cr-orb-glyph", viewBox: "0 0 24 24", focusable: "false", "aria-hidden": "true" },
+          glyph.map(function (g, i) {
+            var p = { key: i, opacity: g.o };
+            if (g.f || g.kf) p.fill = g.f ? "#fff" : "currentColor"; else p.fill = "none";
+            if (g.s || g.k) { p.stroke = g.s ? "#fff" : "currentColor"; p.strokeWidth = g.s || g.k; p.strokeLinecap = "round"; p.strokeLinejoin = "round"; }
+            if (g.c) { p.cx = g.c[0]; p.cy = g.c[1]; p.r = g.c[2]; return h("circle", p); }
+            p.d = g.d; return h("path", p);
+          }))) : null);
     return h("span", { className: cx("cr-pwell", "cr-pwell--" + (props.tone || "plain"), props.className), "aria-hidden": "true" },
       h(Icon, { name: props.icon }));
   }

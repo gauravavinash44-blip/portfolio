@@ -227,5 +227,48 @@
     };
   }
 
-  window.CraftOrb = { mount: mount, has: function (key) { return !!PALETTES[key]; }, fallback: fallback, palettes: PALETTES };
+  /* Badge glyphs: what each project is, drawn white on the black badge that sits on the orb's
+     bottom edge (ProjectWell renders them). 24-unit box, bolder than the 1.5px line icons so
+     they still read at ~11px. Each part: f = white fill, s = white stroke width,
+     k = stroke width in the badge ink (cut-out detail), o = opacity; c = circle [cx, cy, r]. */
+  var GLYPHS = {
+    chatSpark: [ /* chat bubble + spark */
+      { d: "M2.5 10.5A3.5 3.5 0 0 1 6 7h6.5A3.5 3.5 0 0 1 16 10.5v3.5a3.5 3.5 0 0 1-3.5 3.5H9.2l-3.7 3.2v-3.4A3.5 3.5 0 0 1 2.5 14z", f: 1 },
+      { d: "M19 1.8l1.1 2.6 2.6 1.1-2.6 1.1L19 9.2l-1.1-2.6-2.6-1.1 2.6-1.1z", f: 1 }],
+    dealDoc: [ /* document with a check */
+      { d: "M7 2.5h7.2l5.3 5.3V19.5a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-15a2 2 0 0 1 2-2z", f: 1 },
+      { d: "M8.6 13.6l2.4 2.4 4.6-4.8", k: 2.1 }],
+    swatch: [ /* painter's palette: brand colours */
+      { d: "M12 2.8a9.2 9.2 0 0 0 0 18.4c1.1 0 1.9-.8 1.9-1.8 0-.5-.2-.9-.5-1.3-.3-.3-.5-.7-.5-1.2 0-1 .8-1.8 1.8-1.8h2.2a4.3 4.3 0 0 0 4.3-4.3C21.2 6.5 17.1 2.8 12 2.8z", f: 1 },
+      { c: [7.2, 11.6, 1.5], kf: 1 }, { c: [9.6, 7.2, 1.5], kf: 1 }, { c: [14.6, 7.2, 1.5], kf: 1 }],
+    bowl: [ /* EasyEat: fork and knife (a bowl with steam read as a face at badge size) */
+      { d: "M6.5 3v5.6a2.6 2.6 0 0 0 5.2 0V3M9.1 3v18", s: 2.1 },
+      { d: "M17.4 21V3c-2.3 1.5-3.4 4.3-3.4 8.3h3.4", s: 2.1, f: 1 }],
+    wave: [ /* waveform */
+      { d: "M4 10.2v3.6M8 6.8v10.4M12 3.8v16.4M16 7.8v8.4M20 10.2v3.6", s: 2.6 }],
+    plane: [ /* aeroplane */
+      { d: "M21.5 16.2v-2.1l-8.2-5.1V3.6a1.5 1.5 0 0 0-3 0V9l-8.2 5.1v2.1l8.2-2.6v5.5l-2.2 1.6v1.6l3.7-1.1 3.7 1.1v-1.6l-2.2-1.6v-5.5z", f: 1 }],
+    gauge: [ /* Health Karma: heart with a pulse */
+      { d: "M12 21l-1.4-1.3C5.4 15.1 2 12.1 2 8.4 2 5.4 4.4 3 7.4 3c1.7 0 3.4.8 4.6 2.1C13.2 3.8 14.9 3 16.6 3 19.6 3 22 5.4 22 8.4c0 3.7-3.4 6.7-8.6 11.3z", f: 1 },
+      { d: "M5 11.2h3.3l1.6-2.6 2.6 5 1.6-2.4H19", k: 1.7 }],
+    swap: [ /* swap arrows */
+      { d: "M4.5 7.8h14M15 4.2l3.6 3.6-3.6 3.6M19.5 16.2h-14M9 12.6l-3.6 3.6L9 19.8", s: 2.3 }],
+    receipt: [ /* Splitly: receipt */
+      { d: "M5 2.5h14v19l-2.3-1.5-2.4 1.5-2.3-1.5-2.3 1.5-2.4-1.5L5 21.5z", f: 1 },
+      { d: "M8.6 7.6h6.8M8.6 11.2h6.8M8.6 14.8h3.8", k: 1.7 }],
+    card: [ /* moov: payment card */
+      { d: "M4.8 5h14.4a2.3 2.3 0 0 1 2.3 2.3v9.4a2.3 2.3 0 0 1-2.3 2.3H4.8a2.3 2.3 0 0 1-2.3-2.3V7.3A2.3 2.3 0 0 1 4.8 5z", f: 1 },
+      { d: "M2.5 9.6h19", k: 2.4 }, { d: "M6 14.8h4", k: 1.8 }],
+    orbits: [ /* Space Between: two overlapping circles */
+      { c: [8.8, 12, 5.8], s: 2.2 }, { c: [15.2, 12, 5.8], s: 2.2 }],
+    loader: [ /* Loading Range: spinner */
+      { c: [12, 12, 8.4], s: 2.6, o: 0.35 },
+      { d: "M12 3.6a8.4 8.4 0 0 1 8.4 8.4", s: 2.6 }],
+    layers: [ /* Craft mode: stacked layers */
+      { d: "M12 2.8l9.2 4.9L12 12.6 2.8 7.7z", f: 1 },
+      { d: "M3 12l9 4.8 9-4.8M3 16.4l9 4.8 9-4.8", s: 2 }]
+  };
+
+  window.CraftOrb = { mount: mount, has: function (key) { return !!PALETTES[key]; }, fallback: fallback, palettes: PALETTES,
+    glyph: function (key) { return GLYPHS[key] || null; } };
 })();

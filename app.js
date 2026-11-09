@@ -818,24 +818,45 @@
       ? Object.assign({}, f, { href: hrefs[f.title] })
       : Object.assign({}, f, { onClick: () => onExit("more-work") })));
     S.folders.rows = S.folders.rows.map((r) => Object.assign({}, r, { href: hrefs[r.title] }));
-    /* All work popup: the five case studies, facts from FEATURED and the case pages */
-    S.cases = [
+    S.folders.count = "All 4";
+    /* Projects (Craft playground component): case studies and AI works. Facts from FEATURED and the
+       case pages (meta description, first three fact lines). S.cases (all of them) feeds search. */
+    const caseStudies = [
       { id: "contextual-chat", title: "Contextual Chat", href: hrefs["Contextual Chat"], image: ASSETS.chat, icon: "chatSpark", tone: "blue",
-        domain: "AI search", year: "2023 to now", summary: "AI chat so investors explore companies in plain language.",
-        metric: { value: "+25%", label: "engagement" } },
+        sub: "Systematic", domain: "AI search", year: "2023 to now", summary: "AI chat so investors explore companies in plain language.",
+        metric: { value: "+25%", label: "engagement" },
+        description: "An AI assistant that lets investors search companies in plain language. Search went from 30 to 40 minutes to under 30 seconds.",
+        facts: [["Role", "Product Designer II"], ["Team", "PM, ML, engineering, data"], ["Shipped in", "8 weeks"]] },
       { id: "deal-room", title: "Deal Room", href: hrefs["Deal Room"], image: ASSETS.dealRoom, icon: "dealDoc", tone: "orange",
-        domain: "B2B SaaS", year: "2023-24", summary: "Deal creation anchored on the company profile, where intent lives.",
-        metric: { value: "+32%", label: "deal creation adoption" } },
+        sub: "Systematic", domain: "B2B SaaS", year: "2023-24", summary: "Deal creation anchored on the company profile, where intent lives.",
+        metric: { value: "+32%", label: "deal creation adoption" },
+        description: "Deal creation on the company profile and NDAs signed inside Systematic. Deal creation went up 32%.",
+        facts: [["Role", "Product Designer II"], ["Team", "Product, engineering, legal"], ["Timeline", "2023 to 2024"]] },
       { id: "white-label", title: "White Label Setup", href: hrefs["White Label"], image: ASSETS.whiteLabel, icon: "swatch", tone: "pink",
-        domain: "Fintech", year: "2025", summary: "A firm starts empty, then looks live once URL, logo and sender are set.",
-        metric: { value: "3", label: "steps to live: URL, logo, sender" } },
+        sub: "Systematic", domain: "Fintech", year: "2025", summary: "A firm starts empty, then looks live once URL, logo and sender are set.",
+        metric: { value: "3", label: "steps to live: URL, logo, sender" },
+        description: "The Settings page where an investor firm sets its URL, logo and sender. The old page looked live before anything was set. I redesigned it so a firm starts empty, then looks live.",
+        facts: [["Role", "Product Designer II"], ["Scope", "Settings hub"], ["Shipped in", "1 month"]] },
       { id: "easyeat", title: "EasyEat", href: hrefs["EasyEat"], image: ASSETS.easyeat, icon: "bowl", tone: "orange",
-        domain: "FoodTech", summary: "Every dish option on one screen that counts for you.",
-        metric: { value: "+8.3%", label: "QR adoption in 3 weeks" } },
+        sub: "Easy Eat", domain: "FoodTech", year: "2021-22", summary: "Every dish option on one screen that counts for you.",
+        metric: { value: "+8.3%", label: "QR adoption in 3 weeks" },
+        description: "Order customization: every variant and add-on on one screen that counts for you. QR adoption went up 8.3% in three weeks.",
+        facts: [["Role", "UI/UX Designer"], ["Team", "PM, researcher, developers"], ["At Easy Eat", "Dec 2021 to Aug 2022"]] },
+    ];
+    /* AI works tab: one entry per project. live: "resonance" opens the Resonance popup from CraftHero;
+       prototype: "https://..." opens a link instead. */
+    const aiWorks = [
       { id: "resonance", title: "Spotify Resonance", href: hrefs["Resonance"], image: ASSETS.resonance, icon: "wave", tone: "blue",
-        domain: "AI, Music", summary: "Playback that starts songs closer to the part you want to hear.",
-        metric: { value: "Concept", label: "speculative, personal project", word: true } },
-    ].map((c) => Object.assign({ group: "case", label: "Open " + c.title + " case study" }, c));
+        sub: "For Spotify", domain: "AI, Music", summary: "Playback that starts songs closer to the part you want to hear.",
+        metric: { value: "Concept", label: "speculative, personal project", word: true },
+        description: "A speculative, personal playback idea for Spotify that starts songs closer to the moment you actually want to hear. Not affiliated with Spotify.",
+        facts: [["Context", "For Spotify, personal"], ["Type", "Speculative product"], ["Prototype", "Live in the browser"]],
+        live: "resonance" },
+    ];
+    const asCase = (c) => Object.assign({ group: "case", label: "Open " + c.title + " case study" }, c);
+    S.caseStudies = caseStudies.map(asCase);
+    S.aiWorks = aiWorks.map(asCase);
+    S.cases = S.caseStudies.concat(S.aiWorks);
     S.preview.href = hrefs["Contextual Chat"];
     /* Featured card on the board ("Growth Team" slot): one "Project" chip, icon well, arrow link.
        Cursor x/y are measured from the card's top-left (the preview area starts at the top). */
@@ -963,7 +984,7 @@
     stack: ["orb", "chat", "cases", "exp", "pg", "date", "np", "hello"],
   };
 
-  /* Design Playground explorations for the All work popup: titles and order from the
+  /* Design Playground explorations for search: titles and order from the
      playground (window.CraftPlayground.items), categories and one-liners from playground-data.json */
   const PG_ICONS = {
     nomad: "plane", "health-karma": "gauge", swaply: "swap", splitly: "receipt", moov: "card",
@@ -1023,11 +1044,12 @@
     const [shuffleTick, setShuffleTick] = useState(0); /* bumps to restart the timer after a manual change */
     const [playground, setPlayground] = useState(false); /* Design Playground gallery open */
     const pgOpener = useRef(null);
-    const [pgStart, setPgStart] = useState(null); /* exploration to open straight into, if the playground supports it */
+    const [pgStart, setPgStart] = useState(null); /* { tab, startId, from } for the next open */
+    const [pgClosing, setPgClosing] = useState(false); /* Home is rising back: the top bar tab returns to Home */
     const data = React.useMemo(() => craftData(onExit), [onExit]);
     const CP = window.CraftPlayground;
     const pgJson = usePlaygroundJson(CP);
-    const allWork = React.useMemo(() => data.cases.concat(playgroundWork(CP, pgJson)), [data, pgJson]);
+    const pgWork = React.useMemo(() => playgroundWork(CP, pgJson), [pgJson]); /* playground items for search */
 
     const layout = useBoardScale(stageRef);
     /* Phones never show the design-notes pill (it would push the board down) */
@@ -1091,40 +1113,44 @@
       if (t) t.setAttribute("aria-expanded", picker ? "true" : "false");
     }, [picker]);
     useEffect(() => {
-      if (!sheet || sheet.kind === "allwork" || sheet.kind === "resonance" || sheet.kind === "search") return undefined; /* these sheets animate their own close */
+      if (!sheet || sheet.kind === "resonance" || sheet.kind === "search") return undefined; /* these sheets animate their own close */
       const onKey = (ev) => { if (ev.key === "Escape") setSheet(null); };
       window.addEventListener("keydown", onKey);
       return () => window.removeEventListener("keydown", onKey);
     }, [sheet]);
 
-    /* All work popup. opener = the element that was clicked; the sheet grows out of its card */
-    const openAllWork = (opener, filter) => {
-      setPicker(false);
-      setSheet({ kind: "allwork", opener: opener || null, filter: filter || "all" });
-    };
     const fromEvent = (ev) => (ev && ev.currentTarget) || document.activeElement;
-    const listCard = () => stageRef.current && stageRef.current.querySelector(".cr-list .cr-chip--btn");
     useEffect(() => { if (CP) CP.preload(); }, []);
-    const openPlayground = (startId) => {
+    /* Projects: the playground component (assets/craft/playground.js) with three tabs.
+       opts: { tab: "cases" | "playground" | "ai", startId (a playground item), from (the clicked element) }.
+       Home slides down into the bottom sheet from wherever it was opened. */
+    const openPlayground = (opts) => {
+      const o = opts && !opts.nativeEvent && !opts.currentTarget ? opts : { from: fromEvent(opts) };
       if (!CP || playground) return;
-      pgOpener.current = document.activeElement;
+      pgOpener.current = o.from || document.activeElement;
       setPicker(false);
       setSheet(null);
-      setPgStart(typeof startId === "string" ? startId : null);
+      setPgStart({ startId: o.startId || null, tab: o.startId ? "playground" : (o.tab || null), from: o.from || null });
+      setPgClosing(false);
       setPlayground(true);
     };
+    const openProjects = (ev) => openPlayground({ tab: "cases", from: ev && ev.nodeType ? ev : fromEvent(ev) });
+    const rsCard = () => stageRef.current && stageRef.current.querySelector(".cr-rp, .cr-np");
     const closePlayground = useCallback((then) => {
       setPlayground(false);
+      setPgClosing(false);
       setPgStart(null);
       requestAnimationFrame(() => {
-        const back = stageRef.current && stageRef.current.querySelector("[data-pg-card]");
-        if (then === "folders") { openAllWork(listCard(), "case"); return; }
+        /* "Open the live prototype" from an AI work: Home is back, now the Resonance popup grows from its card */
+        if (then && then.live === "resonance") { setPicker(false); setSheet({ kind: "resonance", opener: rsCard() }); return; }
+        const o = pgOpener.current;
+        const back = o && o.isConnected && stageRef.current && stageRef.current.contains(o) ? o : stageRef.current && stageRef.current.querySelector("[data-pg-card]");
         if (back) back.focus({ preventScroll: true });
       });
     }, []);
     /* Search + assistant popup (assets/craft/search.js). mode: "search" or "ask" */
     const CS = window.CraftSearch;
-    const [pgQueue, setPgQueue] = useState(undefined); /* playground pick from search: open once the old view is gone */
+    const [pgQueue, setPgQueue] = useState(undefined); /* Projects pick from search: open once the old view is gone */
     const openSearch = (opener, mode) => {
       if (!CS) { openAssistant(); return; }
       setPicker(false);
@@ -1137,11 +1163,11 @@
     }, [pgQueue, playground]);
     if (CS) CS.useShortcut((btn) => openSearch(btn, "search"), !(sheet && sheet.kind !== "search"));
     const topbar = Object.assign({}, data.topbar, {
-      tab: sheet && sheet.kind === "allwork" && !sheet.closing ? 1 : 0,
-      onTab: (i, label, ev) => (i === 1 ? openAllWork(fromEvent(ev)) : setSheet(null)),
+      tab: playground && !pgClosing ? 1 : 0,
+      onTab: (i, label, ev) => (i === 1 ? openProjects(ev) : setSheet(null)),
       onSearch: CS ? (ev) => openSearch(fromEvent(ev), "search") : openAssistant,
       searchLabel: CS ? "Search the portfolio" : "Ask the portfolio assistant",
-      /* Pill only on the bare board: any sheet (all work, search, profile, open Resonance), the playground,
+      /* Pill only on bare Home: any sheet (search, profile, open Resonance), Projects,
          or phone width hides it. A parked Resonance popup is not a sheet, so the pill comes back. */
       noticeHidden: phone || !!sheet || playground,
     });
@@ -1159,12 +1185,13 @@
     const boardCards = {
       cases: () => e(C.FolderListCard, Object.assign({}, data.folders, {
         draggable: true,
-        onOpen: (row, ev) => openAllWork(fromEvent(ev), "case"),
-        openLabel: (row) => row.title + ", " + row.sub + ". Show all work",
-        onAll: (ev) => openAllWork(fromEvent(ev)),
-        allLabel: "View all work, " + data.cases.length + " case studies",
+        /* A row goes to its case page (the arrow link does the same) */
+        onOpen: (row, ev) => { if (row.href) window.location.href = row.href; else openProjects(ev); },
+        openLabel: (row) => row.title + ", " + row.sub + ". Open case study",
+        onAll: (ev) => openProjects(ev),
+        allLabel: "View all projects, " + data.caseStudies.length + " case studies",
       })),
-      exp: () => e(C.MiniStatCard, Object.assign({}, data.stat, { onLink: (ev) => openAllWork(fromEvent(ev)) })),
+      exp: () => e(C.MiniStatCard, Object.assign({}, data.stat, { onLink: (ev) => openProjects(ev) })),
       date: () => e(C.AgendaCard, data.agenda),
       orb: () => e(C.ProfileOrb, Object.assign({}, data.profile, {
         onOpen: () => setSheet({ kind: "profile" }),
@@ -1179,9 +1206,9 @@
         count: 8,
         label: "Open Design Playground, 8 interface and motion studies",
         attrs: { "data-pg-card": "" },
-        onOpen: CP ? openPlayground : (ev) => openAllWork(fromEvent(ev), "playground"),
-        onDrop: () => openAllWork(pgCard(), "case"),
-        dropHint: "Drop to see all work",
+        onOpen: (ev) => openPlayground({ tab: "playground", from: fromEvent(ev) }),
+        onDrop: () => openProjects(pgCard()),
+        dropHint: "Drop to see all projects",
       }),
       chat: () => e(C.PreviewCard, data.preview),
       /* Resonance player ("Create a room" slot). The assistant lives in search (Ask tab) and the dock. */
@@ -1190,7 +1217,7 @@
     };
 
     const stage = e(C.Stage, {
-      className: "cr-hero craft-wp--" + wallpaper + (sheet && sheet.kind === "allwork" && !sheet.closing ? " is-aw" : ""),
+      className: "cr-hero craft-wp--" + wallpaper,
       wallpaper,
       stageRef,
       width: "100vw",
@@ -1212,8 +1239,8 @@
       e("div", { className: "cr-corner cr-corner--center" },
         e("button", {
           type: "button", className: "cr-plusbtn cr-glass-light", "data-cr-enter": "",
-          "aria-label": "All work", title: "All work", "aria-haspopup": "dialog",
-          onClick: (ev) => openAllWork(fromEvent(ev)),
+          "aria-label": "All projects", title: "All projects", "aria-haspopup": "dialog",
+          onClick: (ev) => openProjects(ev),
         }, e(C.Icon, { name: "plus", stroke: 1.6 }))),
       e("div", { className: "cr-corner cr-corner--right cr-dock-wrap" },
         picker ? e("div", { className: "cr-wp-picker cr-glass-light", role: "group", "aria-label": "Wallpapers" },
@@ -1229,14 +1256,6 @@
         ) : null,
         e(C.Dock, dock)
       )),
-      sheet && sheet.kind === "allwork" ? e(C.AllWorkSheet, {
-        items: allWork,
-        opener: sheet.opener,
-        filter: sheet.filter,
-        onPick: (item) => openPlayground(item.pgId),
-        onClosing: () => setSheet((s) => (s ? Object.assign({}, s, { closing: true }) : s)),
-        onClose: (then) => { setSheet(null); if (typeof then === "function") requestAnimationFrame(then); },
-      }) : null,
       ((sheet && sheet.kind === "resonance") || rsLive) && C.ResonanceSheet ? e(C.ResonanceSheet, {
         parked: !(sheet && sheet.kind === "resonance"),
         opener: sheet && sheet.kind === "resonance" ? sheet.opener : null,
@@ -1253,19 +1272,28 @@
         resumeHref: ASSETS.resume,
         onAssistant: CS ? (ev) => openSearch(ev && ev.currentTarget, "ask") : openAssistant,
         onClose: closePlayground,
-        startId: pgStart,
+        onClosing: () => setPgClosing(true),
+        startId: pgStart && pgStart.startId,
+        tab: pgStart && pgStart.tab,
+        from: pgStart && pgStart.from,
+        cases: data.caseStudies,
+        aiWorks: data.aiWorks,
+        onLive: (key) => key === "resonance" && !!C.ResonanceSheet,
       }) : null,
       sheet && sheet.kind === "search" && CS ? e(CS.SearchPopup, {
         mode: sheet.mode,
         opener: sheet.opener,
         cases: data.cases,
-        playground: allWork.filter((it) => it.group === "playground"),
+        playground: pgWork,
         resumeHref: ASSETS.resume,
-        onAllWork: () => openAllWork(listCard(), "all"),
+        onAllWork: () => {
+          if (playground) { setPlayground(false); setPgStart(null); }
+          setPgQueue({ tab: "cases", from: stageRef.current && stageRef.current.querySelector(".cr-list .cr-chip--btn") });
+        },
         onPlayground: (id) => {
           if (playground && !id) return;
           if (playground) { setPlayground(false); setPgStart(null); }
-          setPgQueue(id || null);
+          setPgQueue({ tab: "playground", startId: id || null, from: pgCard() });
         },
         onClassic: () => onExit(),
         onClosing: () => setSheet((s) => (s ? Object.assign({}, s, { closing: true }) : s)),

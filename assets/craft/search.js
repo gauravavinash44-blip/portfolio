@@ -196,7 +196,7 @@
       { id: "resume", title: "Download resume", sub: "PDF, opens in a new tab", icon: "download", keys: "cv resume pdf download hire" },
       { id: "email", title: "Email Gaurav", sub: EMAIL, icon: "mail", keys: "contact email mail hire reach message talk" },
       { id: "linkedin", title: "LinkedIn", sub: "linkedin.com/in/gauravavinash", icon: "linkedin", keys: "contact linkedin profile social connect" },
-      { id: "allwork", title: "Open All work", sub: nCase + " case studies, " + nPg + " explorations", icon: "grid", keys: "all work projects case studies portfolio browse" },
+      { id: "allwork", title: "Open Projects", sub: nCase + " case studies, " + nPg + " explorations", icon: "grid", keys: "all work projects case studies portfolio browse" },
       { id: "playground", title: "Open Design Playground", sub: "Interface and motion explorations", icon: "layers", keys: "playground explorations interface motion concepts experiments" },
       { id: "assistant", title: "Ask the portfolio assistant", sub: "Questions about Gaurav and his work", icon: "chat", keys: "assistant chat ask question help bot" },
       { id: "classic", title: "Switch to the classic portfolio", sub: "Leaves Craft mode", icon: "swapView", keys: "classic green old portfolio exit craft mode switch back" }

@@ -1119,6 +1119,31 @@ html.ga-craft .craft-switch {
 }
 .cr-pwell--orb.is-lit { background: none !important; }
 
+/* Project badge: a black circle with a white glyph on the orb's bottom edge, cut out of the
+   orb by a ring in the surface colour (--cr-orb-ring). Sized off the orb with container
+   units: ~41% on a 50px well, ~30% on a 120px orb; ring 3px growing to ~4.5px. */
+.cr-pwell--orb.has-badge { container-type: inline-size; overflow: visible; }
+.cr-orb-badge {
+  --b: 20px; --b: calc(9px + 23cqw);
+  --ring: 3px; --ring: calc(2px + 2cqw);
+  position: absolute; z-index: 1; left: 50%; bottom: calc(var(--b) / -2 + 4%);
+  width: var(--b); height: var(--b); border-radius: 50%;
+  display: grid; place-items: center;
+  background: #0d0d0d; color: #0d0d0d; /* glyph cut-outs use currentColor = badge ink */
+  box-shadow: 0 0 0 var(--ring) var(--cr-orb-ring, var(--surface, #fff));
+  transform: translate(-50%, 0);
+  transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 160ms ease;
+  pointer-events: none;
+}
+.cr-pwell.cr-pwell--orb .cr-orb-badge svg.cr-orb-glyph { width: 58%; height: 58%; display: block; overflow: visible; }
+:is(.cr-row, .cr-aw-card, .cs-row, .cs-related, .cr-preview):is(:hover, :focus-within, .is-active) .cr-orb-badge {
+  transform: translate(-50%, -1.5px) scale(1.04);
+}
+/* Ring follows the surface the orb sits on */
+.cr-row.is-active { --cr-orb-ring: #f6f5f7; }
+.cs-row.is-active { --cr-orb-ring: var(--well); }
+@media (prefers-reduced-motion: reduce) { .cr-orb-badge { transition: none; } }
+
 /* "All 5" chip is a button now */
 .cr-chip--btn { cursor: pointer; transition: background var(--dur-snap) ease, border-color var(--dur-snap) ease; }
 .cr-chip--btn:hover { background: var(--well); border-color: #e2e2e2; }

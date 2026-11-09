@@ -1,6 +1,6 @@
-/* Craft mode: Design Playground.
-   The home board slides down into a bottom sheet, a dark gallery of explorations
-   opens behind it, and a card grows into a story viewer.
+/* Craft mode: Projects (case studies, Design Playground, AI works).
+   Home slides down into a bottom sheet, a dark gallery opens behind it with three tabs,
+   and a card grows into a story viewer.
    Exposes window.CraftPlayground = { PlaygroundCard, PlaygroundView, preload }. */
 (function () {
   var React = window.React;
@@ -95,17 +95,47 @@
 
   function fmtTime(s) { s = Math.round(s); return Math.floor(s / 60) + ":" + (s % 60 < 10 ? "0" : "") + (s % 60); }
 
-  var FILTERS = [
-    { id: "all", label: "All" },
-    { id: "interface", label: "Interface", icon: "phone" },
-    { id: "motion", label: "Motion", icon: "play" },
-    { id: "prototype", label: "Prototype", icon: "cursor" }
+  /* ───────── Tabs: case studies, the playground, AI works ─────────
+     Case studies and AI works come in as props (app.js owns the facts); each entry is one
+     project: { id, title, href, image, icon, tone, sub, domain, year, summary, metric,
+     description, facts: [[label, value]], live?, prototype? }. */
+  var TABS = [
+    { id: "cases", label: "Case studies", plural: "case studies" },
+    { id: "playground", label: "Design Playground", plural: "explorations" },
+    { id: "ai", label: "AI works", plural: "AI works" }
   ];
-  function matches(it, f) {
-    if (f === "all") return true;
-    if (f === "prototype") return !!it.prototype || it.id === "craft-mode";
-    return it.kind === f;
+  var TAB_KEY = "ga-craft-pg-tab";
+  var lastTab = null;
+  function rememberedTab() {
+    if (lastTab) return lastTab;
+    try { lastTab = window.sessionStorage.getItem(TAB_KEY); } catch (err) { lastTab = null; }
+    return lastTab;
   }
+  function rememberTab(id) {
+    lastTab = id;
+    try { window.sessionStorage.setItem(TAB_KEY, id); } catch (err) { /* ignore */ }
+  }
+  function validTab(id) { return TABS.some(function (t) { return t.id === id; }) ? id : null; }
+
+  function projectItems(arr, tab) {
+    return (arr || []).map(function (p) {
+      return Object.assign({}, p, {
+        look: "case", group: tab, label: p.sub || (tab === "ai" ? "AI work" : "Case study"),
+        frames: 1, video: null, image: p.image, openSrc: p.href, alt: p.alt || (p.title + " cover")
+      });
+    });
+  }
+
+  /* Case study / AI work card size: four across on wide screens, two on tablets, one on phones.
+     Height keeps the story slide's proportion (456 x 710) so the grow has no stretch. */
+  function caseGrid(W, n) {
+    var cols = W >= 1240 ? 4 : W > 700 ? 2 : 1;
+    var w = cols === 4 ? Math.min(268, Math.floor((W - 280 - 60) / 4))
+      : cols === 2 ? Math.min(330, Math.floor((W - 192 - 20) / 2))
+      : W - 32;
+    return { cols: Math.max(1, Math.min(cols, n || 1)), w: w, h: Math.round(w * 710 / 456) };
+  }
+  var CS_FONT = 16 / 268; /* the card face is drawn in em: 16px at a 268px card */
 
   /* ───────── Icons ───────── */
   var PATHS = {
@@ -124,7 +154,8 @@
     up: "M12 19V5M6 11l6-6 6 6",
     down: "M12 5v14M6 13l6 6 6-6",
     share: "M14 5l6 6-6 6M20 11H10a6 6 0 0 0-6 6v1",
-    home: "M4 11l8-6.5 8 6.5M6.5 9.5V19h11V9.5"
+    home: "M4 11l8-6.5 8 6.5M6.5 9.5V19h11V9.5",
+    arrow: "M5 12h14M13 6l6 6-6 6"
   };
   function Icon(props) {
     return h("svg", { viewBox: "0 0 24 24", width: props.size || 20, height: props.size || 20, fill: props.fill ? "currentColor" : "none", stroke: props.fill ? "none" : "currentColor", strokeWidth: props.stroke || 1.7, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true", focusable: "false" },
@@ -141,7 +172,7 @@
     return h("span", { className: "cpg-wave", "aria-hidden": "true" }, out);
   }
 
-  /* ───────── Board card: Design Playground (replaces "Open a folder") ───────── */
+  /* ───────── Home card: Design Playground (replaces "Open a folder") ───────── */
   function PlaygroundCard(props) {
     var _o = useState(false), over = _o[0], setOver = _o[1];
     var thumbs = props.thumbs || [];
@@ -211,6 +242,27 @@
     return h(React.Fragment, null, media, h("span", { className: "cpg-card-shade", "aria-hidden": "true" }), h(CardHead, { item: it }), h(Segs, { n: it.frames > 1 ? 3 : 3 }));
   }
 
+  /* Case study / AI work face, in the All work card format: cover, orb + name + one-liner,
+     tags, and the metric in big regular numerals. Drawn in em, so the grid card and the
+     story slide are the same picture at two sizes. */
+  function CaseFace(props) {
+    var it = props.item, m = it.metric;
+    var Well = window.Craft && window.Craft.ProjectWell;
+    return h(React.Fragment, null,
+      h("span", { className: "cpg-cs-media" },
+        h("img", { src: it.image, alt: props.active ? it.alt : "", decoding: "async", draggable: false, style: it.coverPos ? { objectPosition: it.coverPos } : null })),
+      h("span", { className: "cpg-cs-body" },
+        h("span", { className: "cpg-cs-head" },
+          Well ? h(Well, { icon: it.icon, tone: it.tone, className: "cpg-cs-orb" }) : h("span", { className: "cpg-cs-orb cpg-cs-orb--plain", "aria-hidden": "true" }),
+          h("span", { className: "cpg-cs-name" }, h("b", null, it.title), h("span", null, it.summary))),
+        h("span", { className: "cpg-cs-foot" },
+          h("span", { className: "cpg-cs-tags" },
+            it.domain ? h("span", { className: "cpg-cs-chip" }, it.domain) : null,
+            it.year ? h("span", { className: "cpg-cs-chip" }, it.year) : null),
+          m ? h("span", { className: cx("cpg-cs-metric", m.word && "is-word") }, h("b", null, m.value), h("span", null, m.label)) : h("span", { className: "cpg-cs-metric" }),
+          props.go ? h("span", { className: "cpg-cs-go", "aria-hidden": "true" }, h(Icon, { name: "arrow", size: 16, stroke: 1.8 })) : null)));
+  }
+
   /* ───────── Story layout (px, from the viewport) ───────── */
   /* The right edge keeps a column free for the up/down buttons (and, when the panel
      sits inside the story, for the Home thumbnail at the top right). */
@@ -248,6 +300,12 @@
 
   function SlideMedia(props) {
     var it = props.item, L = props.L;
+    if (it.look === "case") {
+      /* Same face as the grid card, scaled to the slide (compact screens cap the type size) */
+      var fs = L.w * CS_FONT;
+      if (L.compact) fs = Math.min(fs, L.mobile ? 19 : 20);
+      return h("span", { className: "cpg-cs cpg-cs--slide", style: { fontSize: fs.toFixed(2) + "px" } }, h(CaseFace, { item: it, active: props.active }));
+    }
     if (it.video) {
       if (props.active) {
         return h("video", {
@@ -319,7 +377,12 @@
     var _i = useState(function () { return buildItems(null); }), items = _i[0], setItems = _i[1];
     var _v = useState("grid"), view = _v[0], setView = _v[1];
     var _x = useState(0), index = _x[0], setIndex = _x[1];
-    var _f = useState("all"), filter = _f[0], setFilter = _f[1];
+    /* Which tab: the opener's pick, else the last one this session, else the playground */
+    var _t = useState(function () {
+      var t = props.startId ? "playground" : (validTab(props.tab) || validTab(rememberedTab()) || "playground");
+      rememberTab(t);
+      return t;
+    }), tab = _t[0], setTab = _t[1];
     var _s = useState(0), seg = _s[0], setSeg = _s[1];
     var still = reduced();
     var _p = useState(still), paused = _p[0], setPaused = _p[1];
@@ -334,10 +397,15 @@
     var busy = useRef(true), pending = useRef(null), rects = useRef({}), cardAnims = useRef([]);
     var closingRef = useRef(false), queued = useRef(null), needsPose = useRef(false), handlers = useRef({});
     var wheelAcc = useRef(0), lastNav = useRef(0), touchY = useRef(null);
+    var tabRefs = useRef([]), pillRef = useRef(null), ghostRef = useRef(null);
 
-    var list = items.filter(function (it) { return matches(it, filter); });
+    var cases = React.useMemo(function () { return projectItems(props.cases, "cases"); }, [props.cases]);
+    var ai = React.useMemo(function () { return projectItems(props.aiWorks, "ai"); }, [props.aiWorks]);
+    var list = tab === "cases" ? cases : tab === "ai" ? ai : items;
+    var isCase = tab !== "playground";
     var cur = list[index] || list[0];
     var L = storyLayout(vp.W, vp.H);
+    var CG = caseGrid(vp.W, list.length);
 
     useEffect(function () { preload().then(function (j) { if (j) setItems(buildItems(j)); }); }, []);
     useEffect(function () {
@@ -369,13 +437,15 @@
       if (q && handlers.current[q[0]]) handlers.current[q[0]](q[1]);
     }
 
-    /* ── Enter: the board dips, then slides down to a bar; the gallery is already there under it ── */
+    /* ── Enter: Home dips, then slides down to a bar; the gallery is already there under it ── */
     useLayoutEffect(function () {
       var stage = props.stageRef.current;
       var root = document.documentElement;
       root.classList.add("ga-pg-open");
       if (!stage) { busy.current = false; return undefined; }
-      var src = stage.querySelector("[data-pg-card]");
+      /* The cards lean toward whatever opened this (Projects tab, All chip, View all, +), else the Playground card */
+      var from = props.from && props.from.isConnected && stage.contains(props.from) ? (props.from.closest(".cr-card") || props.from) : null;
+      var src = from || stage.querySelector("[data-pg-card]");
       var sr = (src || stage).getBoundingClientRect();
       stageBase.current = stageGeom(stage);
       stage.style.setProperty("--pg-scroll", Math.max(0, -stageBase.current) + "px");
@@ -383,7 +453,7 @@
       stage.setAttribute("inert", "");
       stage.style.transformOrigin = "50% 0";
       stageState.current = "sheet";
-      /* Opened from the All work popup with a pick: expand that card once the gallery lands */
+      /* Opened from search with a pick: expand that card once the gallery lands */
       if (props.startId) {
         var si = list.findIndex(function (it) { return it.id === props.startId; });
         if (si >= 0) queued.current = ["startStory", si];
@@ -429,7 +499,7 @@
       ["transform", "border-radius", "transform-origin", "--pg-scroll"].forEach(function (p) { stage.style.removeProperty(p); });
     }
 
-    /* ── Back to the board: it rises at near full width, then snaps up to full size.
+    /* ── Back to Home: it rises at near full width, then snaps up to full size.
        The gallery (or story) stays put underneath; nothing fades. ── */
     var closeHome = useCallback(function (then) {
       if (closingRef.current) return;
@@ -437,6 +507,7 @@
       busy.current = true;
       queued.current = null;
       setClosing(true);
+      if (props.onClosing) props.onClosing();
       var stage = props.stageRef.current;
       Object.keys(gridVideos.current).forEach(function (k) { var v = gridVideos.current[k]; if (v) v.pause(); });
       stageState.current = "home";
@@ -581,15 +652,21 @@
       var wait = new Promise(function (res) { setTimeout(res, still ? 170 : 540); });
       Promise.all(anims.concat([wait])).then(function () {
         if (closingRef.current) return;
+        backTo.current = it.id;
         setView("grid");
-        requestAnimationFrame(function () {
-          var c = cardRefs.current[it.id];
-          if (c) c.focus({ preventScroll: true });
-          playVisible();
-          release();
-        });
       });
     }
+    /* Back on the grid: focus the card the story came from once the grid is interactive again
+       (an effect, so React has dropped the grid's inert first) */
+    var backTo = useRef(null);
+    useEffect(function () {
+      if (view !== "grid" || backTo.current == null) return;
+      var id = backTo.current; backTo.current = null;
+      var c = cardRefs.current[id];
+      if (c) c.focus({ preventScroll: true });
+      playVisible();
+      release();
+    }, [view]);
 
     function go(d) {
       if (view !== "story" || busy.current || closingRef.current) return;
@@ -636,17 +713,75 @@
       }, { root: scrollRef.current, threshold: 0.2 });
       Object.keys(gridVideos.current).forEach(function (k) { var v = gridVideos.current[k]; if (v) io.observe(v.closest(".cpg-cell")); });
       return function () { io.disconnect(); };
-    }, [view, filter, items, closing]);
+    }, [view, tab, items, closing]);
 
-    /* Filter change: re-stagger the cards in */
-    var firstFilter = useRef(true);
+    /* ── Tabs ──
+       The old grid is copied into a layer that fades out while the new cards stagger in. */
+    function switchTab(id) {
+      if (id === tab || view !== "grid" || closingRef.current) return;
+      var ul = scrollRef.current && scrollRef.current.querySelector(".cpg-grid");
+      var host = ghostRef.current;
+      if (ul && host && !still) {
+        var r = ul.getBoundingClientRect();
+        var ghost = ul.cloneNode(true);
+        ghost.removeAttribute("aria-label");
+        ghost.setAttribute("aria-hidden", "true");
+        ghost.setAttribute("inert", "");
+        /* WebGL orbs don't survive a copy: show their gradient stand-in instead */
+        Array.prototype.forEach.call(ghost.querySelectorAll(".is-lit"), function (n) { n.classList.remove("is-lit"); });
+        ghost.style.cssText = "position:absolute;margin:0;left:" + r.left + "px;top:" + r.top + "px;width:" + r.width + "px;" + (ul.getAttribute("style") || "");
+        host.textContent = "";
+        host.appendChild(ghost);
+        ghost.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "scale(0.97)" }], { duration: 260, easing: EASE, fill: "forwards" })
+          .finished.then(function () { if (ghost.parentNode) ghost.parentNode.removeChild(ghost); }, function () {});
+      }
+      rememberTab(id);
+      setIndex(0);
+      setTab(id);
+    }
+    function onTabKey(ev, i) {
+      var n = TABS.length, j = null;
+      if (ev.key === "ArrowRight" || ev.key === "ArrowDown") j = (i + 1) % n;
+      else if (ev.key === "ArrowLeft" || ev.key === "ArrowUp") j = (i - 1 + n) % n;
+      else if (ev.key === "Home") j = 0;
+      else if (ev.key === "End") j = n - 1;
+      if (j == null) return;
+      ev.preventDefault();
+      switchTab(TABS[j].id);
+      if (tabRefs.current[j]) tabRefs.current[j].focus();
+    }
+    /* New tab: back to the top, cards stagger in (same lean as the opening burst, shorter) */
+    var firstTab = useRef(true);
     useLayoutEffect(function () {
-      if (firstFilter.current) { firstFilter.current = false; return; }
+      if (firstTab.current) { firstTab.current = false; return; }
       if (scrollRef.current) scrollRef.current.scrollTop = 0;
-      Array.prototype.slice.call(galleryRef.current.querySelectorAll(".cpg-cell")).forEach(function (el, i) {
-        el.animate(still ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: "translateY(18px) scale(0.94)" }, { opacity: 1, transform: "none" }], { duration: still ? 160 : 520, delay: i * 45, easing: EASE, fill: "backwards" });
+      Array.prototype.slice.call(scrollRef.current.querySelectorAll(".cpg-cell")).forEach(function (el, i) {
+        el.animate(still ? [{ opacity: 0 }, { opacity: 1 }] : [
+          { opacity: 0, transform: "translate3d(0,16px,0) scale(0.95)" },
+          { opacity: 1, offset: 0.5 },
+          { opacity: 1, transform: "none" }
+        ], { duration: still ? 160 : 400, delay: still ? 0 : 40 + i * 35, easing: EASE, fill: "backwards" });
       });
-    }, [filter]);
+    }, [tab]);
+    /* The pill under the selected tab follows it (measured, the labels differ in width) */
+    var pillReady = useRef(false);
+    function placePill() {
+      var i = TABS.map(function (t) { return t.id; }).indexOf(tab);
+      var b = tabRefs.current[i], p = pillRef.current;
+      if (!b || !p) return;
+      var snap = !pillReady.current || still;
+      if (snap) p.style.transition = "none";
+      p.style.width = b.offsetWidth + "px";
+      p.style.transform = "translate3d(" + b.offsetLeft + "px,0,0)";
+      if (snap) { void p.offsetWidth; p.style.transition = ""; }
+      pillReady.current = true;
+    }
+    var pillFn = useRef(placePill);
+    pillFn.current = placePill;
+    useLayoutEffect(placePill, [tab, vp.W, vp.H]);
+    useEffect(function () {
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { pillFn.current(); });
+    }, []);
 
     /* Story frames advance on their own (not under reduced motion, not when paused) */
     function onSegEnd() {
@@ -720,17 +855,29 @@
       return h("button", { key: o.key || o.label, type: "button", className: cls, "aria-label": o.label, title: o.label, onClick: o.onClick, disabled: o.disabled, "aria-current": o.current ? "page" : undefined, "aria-pressed": o.pressed, "data-cpg-chrome": o.chrome ? "" : undefined }, inner);
     }
 
-    var grid = h("div", { className: "cpg-scroll", ref: scrollRef, inert: isStory ? "" : undefined, "aria-hidden": isStory ? "true" : undefined },
-      h("ul", { className: "cpg-grid", "aria-label": "Explorations" },
+    var tabInfo = TABS.filter(function (t) { return t.id === tab; })[0] || TABS[1];
+    var grid = h("div", {
+      className: "cpg-scroll", ref: scrollRef, inert: isStory ? "" : undefined, "aria-hidden": isStory ? "true" : undefined,
+      role: "tabpanel", id: "cpg-tabpanel", "aria-labelledby": "cpg-tab-" + tab
+    },
+      h("ul", {
+        className: cx("cpg-grid", isCase && "cpg-grid--cs"), "aria-label": tabInfo.label,
+        style: isCase ? { gridTemplateColumns: "repeat(" + CG.cols + ", " + CG.w + "px)", "--csw": CG.w + "px", "--csh": CG.h + "px" } : null
+      },
         list.map(function (it, i) {
-          return h("li", { key: it.id, className: "cpg-cell cpg-cell--" + it.look, "data-id": it.id },
+          var caseCard = it.look === "case";
+          return h("li", { key: tab + "-" + it.id, className: "cpg-cell cpg-cell--" + it.look, "data-id": it.id },
             h("span", { className: "cpg-date", "aria-hidden": "true" }, it.label),
             h("button", {
               type: "button", className: "cpg-card cpg-card--" + it.look,
               ref: function (n) { cardRefs.current[it.id] = n; },
-              "aria-label": it.title + ", " + it.label + (it.video ? ", video" : "") + ". Open",
+              "aria-label": caseCard
+                ? it.title + ", " + it.label + ". " + (it.metric ? it.metric.value + " " + it.metric.label + ". " : "") + "Open"
+                : it.title + ", " + it.label + (it.video ? ", video" : "") + ". Open",
               onClick: function () { openStory(i); }
-            }, h(CardFace, { item: it, wallpaper: props.wallpaper, videoRef: it.video ? function (n) { gridVideos.current[it.id] = n; } : undefined })));
+            }, caseCard
+              ? h("span", { className: "cpg-cs" }, h(CaseFace, { item: it, go: true }))
+              : h(CardFace, { item: it, wallpaper: props.wallpaper, videoRef: it.video ? function (n) { gridVideos.current[it.id] = n; } : undefined })));
         })));
 
     var story = null;
@@ -744,7 +891,26 @@
             onAnimationEnd: s === seg ? onSegEnd : undefined
           })));
       }
-      var panelKids = [
+      var curCase = cur.look === "case";
+      var liveBtn = curCase && cur.live && props.onLive
+        ? h("button", { key: "l", type: "button", className: "cpg-proto cpg-proto--ghost", onClick: function () { closeHome({ live: cur.live }); } }, "Open the live prototype", h(Icon, { name: "play", fill: true, size: 14 }))
+        : null;
+      /* Compact screens: the slide already shows the name, tags and metric, so the panel keeps
+         to the kicker and the buttons; More opens the write-up and facts */
+      var panelKids = curCase ? [
+        h("p", { key: "k", className: "cpg-panel-kicker" }, cur.label + " · " + (index + 1) + " of " + list.length),
+        h("h3", { key: "t", className: L.compact ? "cr-visually-hidden" : "cpg-panel-title", id: "cpgStoryTitle" }, cur.title),
+        L.compact && !more ? null : h("div", { key: "b", className: "cpg-panel-body" },
+          h("p", null, cur.description || cur.summary),
+          cur.facts && cur.facts.length ? h("dl", { className: "cpg-facts" }, cur.facts.map(function (f) {
+            return h("div", { key: f[0] }, h("dt", null, f[0]), h("dd", null, f[1]));
+          })) : null),
+        L.compact ? h("button", { key: "m", type: "button", className: "cpg-more", "aria-expanded": more ? "true" : "false", onClick: function () { setMore(!more); } }, more ? "Less" : "More") : null,
+        h("div", { key: "a", className: "cpg-panel-actions" },
+          cur.href ? h("a", { className: "cpg-proto cpg-proto--primary", href: cur.href }, "Read case study", h(Icon, { name: "arrow", size: 16 })) : null,
+          liveBtn,
+          cur.prototype ? h("a", { className: "cpg-proto cpg-proto--ghost", href: cur.prototype, target: "_blank", rel: "noopener" }, "Open live prototype", h(Icon, { name: "open", size: 16 })) : null)
+      ] : [
         h("p", { key: "k", className: "cpg-panel-kicker" }, cur.label + " · " + (index + 1) + " of " + list.length),
         h("h3", { key: "t", className: "cpg-panel-title", id: "cpgStoryTitle" }, cur.title),
         h("div", { key: "b", className: cx("cpg-panel-body", L.compact && !more && "is-clamped") },
@@ -759,7 +925,9 @@
         roundBtn({ icon: "up", label: "Previous project", onClick: function () { go(-1); }, disabled: index === 0 }),
         roundBtn({ icon: "down", label: "Next project", onClick: function () { go(1); }, disabled: index >= list.length - 1 }));
       if (L.mobile) panelKids.push(navEl);
-      var third = cur.prototype
+      var third = curCase && cur.live && props.onLive
+        ? { icon: "play", fill: true, label: "Open the " + cur.title + " live prototype", onClick: function () { closeHome({ live: cur.live }); }, className: "cpg-round--white" }
+        : cur.prototype
         ? { icon: "share", label: "Open the " + cur.title + " live prototype", href: cur.prototype, external: true, className: "cpg-round--white" }
         : cur.id === "craft-mode"
           ? { icon: "home", label: "Back to Home", onClick: function () { closeHome(); }, className: "cpg-round--white" }
@@ -780,6 +948,7 @@
             var style = { top: L.top + i * L.pitch, left: L.left, width: L.w, height: L.h, borderRadius: L.r };
             var media = h(SlideMedia, { item: it, L: L, active: current, peek: next, seg: current ? seg : 0, still: still || paused, videoRef: current ? storyVideo : undefined });
             if (current) {
+              if (it.look === "case") return h("div", { key: it.id, className: "cpg-slide is-current is-case", style: style }, media);
               return h("div", { key: it.id, className: cx("cpg-slide is-current", it.video && "is-video"), style: style },
                 media,
                 h("span", { className: "cpg-slide-shade", "aria-hidden": "true" }),
@@ -788,16 +957,18 @@
                 h("span", { className: "cpg-segs", role: "progressbar", "aria-label": "Frame", "aria-valuemin": 1, "aria-valuemax": cur.frames, "aria-valuenow": seg + 1 }, segs));
             }
             if (next) {
-              return h("button", { key: it.id, type: "button", className: "cpg-slide cpg-slide--peek", style: style, "aria-label": "Next: " + it.title, onClick: function () { go(1); } }, media);
+              return h("button", { key: it.id, type: "button", className: cx("cpg-slide cpg-slide--peek", it.look === "case" && "is-case"), style: style, "aria-label": "Next: " + it.title, onClick: function () { go(1); } }, media);
             }
-            return h("div", { key: it.id, className: "cpg-slide", style: style, "aria-hidden": "true" }, media);
+            return h("div", { key: it.id, className: cx("cpg-slide", it.look === "case" && "is-case"), style: style, "aria-hidden": "true" }, media);
           })),
         h("div", { className: "cpg-actions", style: L.mobile ? null : { left: actLeft, top: L.top + 26 } },
           h("img", { className: "cpg-actions-av", src: FACE, alt: "Gaurav Avinash", decoding: "async" }),
-          roundBtn({ icon: "open", label: "Open " + (cur.video ? "video" : "image") + " in a new tab", href: cur.openSrc || cur.video || cur.image, external: true }),
+          curCase
+            ? roundBtn({ icon: "open", label: "Read the " + cur.title + " case study", href: cur.href })
+            : roundBtn({ icon: "open", label: "Open " + (cur.video ? "video" : "image") + " in a new tab", href: cur.openSrc || cur.video || cur.image, external: true }),
           roundBtn(third)),
         h("div", {
-          className: "cpg-panel", key: "panel-" + cur.id,
+          className: cx("cpg-panel", curCase && "is-case-panel"), key: "panel-" + cur.id,
           style: L.compact
             ? (L.mobile ? null : { left: L.left, width: L.w, top: L.top + L.h, "--pg-r": L.r + "px" })
             : { left: L.left + L.w + L.gap, width: L.panelW, top: L.top + L.h, maxHeight: Math.min(L.h, L.top + L.h - L.pipBottom) }
@@ -811,24 +982,28 @@
 
     return h("div", {
       className: cx("cpg", isStory && "is-story", closing && "is-closing"), ref: rootRef,
-      role: "dialog", "aria-modal": "true", "aria-label": "Design Playground", tabIndex: -1
+      role: "dialog", "aria-modal": "true", "aria-label": "Projects", tabIndex: -1
     },
       h("div", { className: "cpg-gallery", ref: galleryRef },
-        h("h2", { className: "cr-visually-hidden" }, "Design Playground"),
-        roundBtn({ icon: "back", label: isStory ? "Back to all explorations" : "Back to Home", className: "cpg-back", chrome: true, onClick: function () { if (isStory) closeStory(); else closeHome(); } }),
+        h("h2", { className: "cr-visually-hidden" }, "Projects"),
+        roundBtn({ icon: "back", label: isStory ? "Back to all " + tabInfo.plural : "Back to Home", className: "cpg-back", chrome: true, onClick: function () { if (isStory) closeStory(); else closeHome(); } }),
         h("nav", { className: "cpg-rail", "aria-label": "Craft mode", "data-cpg-chrome": "" },
-          roundBtn({ icon: "grid", label: "Design Playground", current: true, onClick: function () { if (isStory) closeStory(); } }),
-          roundBtn({ icon: "folder", label: "Case studies", onClick: function () { closeHome("folders"); } }),
+          roundBtn({ icon: "grid", label: "Design Playground", current: tab === "playground", onClick: function () { if (isStory) closeStory(); else switchTab("playground"); } }),
+          roundBtn({ icon: "folder", label: "Case studies", current: tab === "cases", onClick: function () { if (isStory) closeStory(); else switchTab("cases"); } }),
           roundBtn({ icon: "download", label: "Download resume", href: props.resumeHref, external: true }),
           roundBtn({ icon: "chat", label: "Ask the portfolio assistant", onClick: props.onAssistant })),
-        h("div", { className: "cpg-filter", role: "group", "aria-label": "Filter explorations", "data-cpg-chrome": "", inert: isStory ? "" : undefined },
-          FILTERS.map(function (f) {
+        h("div", { className: "cpg-tabs", role: "tablist", "aria-label": "Projects", "data-cpg-chrome": "", inert: isStory ? "" : undefined },
+          h("span", { className: "cpg-tabs-pill", ref: pillRef, "aria-hidden": "true" }),
+          TABS.map(function (t, i) {
+            var on = t.id === tab;
             return h("button", {
-              key: f.id, type: "button", className: cx("cpg-filter-btn", f.icon && "cpg-filter-btn--icon"),
-              "aria-pressed": filter === f.id ? "true" : "false", "aria-label": f.icon ? f.label : undefined, title: f.label,
-              onClick: function () { if (filter !== f.id) { setFilter(f.id); setIndex(0); } }
-            }, f.icon ? h(Icon, { name: f.icon, size: 18 }) : f.label);
+              key: t.id, type: "button", role: "tab", id: "cpg-tab-" + t.id, className: "cpg-tab",
+              "aria-selected": on ? "true" : "false", "aria-controls": "cpg-tabpanel", tabIndex: on ? 0 : -1,
+              ref: function (n) { tabRefs.current[i] = n; },
+              onClick: function () { switchTab(t.id); }, onKeyDown: function (ev) { onTabKey(ev, i); }
+            }, t.label);
           })),
+        h("div", { className: "cpg-ghosts", ref: ghostRef, "aria-hidden": "true" }),
         h("div", { className: "cpg-tools", "data-cpg-chrome": "", inert: isStory ? "" : undefined },
           roundBtn({ icon: "plus", label: "Suggest an exploration by email", href: "mailto:gauravavinash3@gmail.com?subject=Design%20Playground%20idea", className: "cpg-round--blue" }),
           roundBtn({ icon: "search", label: "Ask the portfolio assistant", onClick: props.onAssistant, className: "cpg-tools-search" })),
