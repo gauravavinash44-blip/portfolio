@@ -1,0 +1,16 @@
+/* White Label Setup, detailed case study: page-only additions on top of case-min.css (cmd-*).
+   Kept separate so case-min.css stays shared and untouched. */
+
+/* Path to live: four steps instead of the five-stage funnel */
+@media (min-width: 720px) { .wl-funnel { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+/* Sender states: four thin rows stacked in one surface, each with its label above */
+.wl-states { margin-top: 12px; }
+.wl-states ol { max-width: 760px; margin: 0 auto; background: var(--surface); border-radius: 28px; padding: clamp(10px, 1.4vw, 18px); display: grid; gap: 14px; }
+.wl-states li .cm-tag { margin: 0 0 8px; }
+.wl-states img { width: 100%; border-radius: 10px; background: #fff; outline: 1px solid var(--hairline); outline-offset: -1px; }
+.wl-states figcaption { margin: 12px auto 0; max-width: var(--col); text-align: center; font-size: 14px; color: var(--ink-2); }
+@media (max-width: 719px) { .wl-states ol { border-radius: 22px; gap: 12px; } }
+
+/* "Not yet" is a word, not a number: smaller on phones so it fits the 112px value column */
+@media (max-width: 719px) { .cm-num-v.wl-word { font-size: 26px; letter-spacing: -0.03em; } }

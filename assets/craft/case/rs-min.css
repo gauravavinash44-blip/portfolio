@@ -1,0 +1,63 @@
+/* Resonance additions to the case-min template (craft-resonance.html, body.rsd).
+   Dark frames for Spotify screens, and the live prototype in an iPhone frame (rs-min.js). */
+
+/* Spotify screens sit on dark frames so their edges don't read as a crop error */
+.rsd .rs-dark { background: #121212; }
+.rsd .rs-dark img { background: #121212; }
+.rsd .rs-narrow { max-width: 420px; }
+.rsd .rs-pair-dark > div { background: #121212; }
+.rsd .rs-pair-dark .cm-tag { color: rgba(255, 255, 255, 0.62); }
+.rsd .rs-pair-dark .cm-tag b { color: #fff; }
+.rsd .rs-pair-dark img { outline-color: rgba(255, 255, 255, 0.06); }
+.rsd .rs-cap-c { text-align: center; margin-left: auto; margin-right: auto; }
+
+/* ── Live prototype ── */
+.rs-proto { margin-top: 28px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; align-items: stretch; }
+.rs-stage { background: #121212; border-radius: 28px; padding: clamp(28px, 4vw, 44px) 20px 22px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+.rs-guide { background: var(--surface); border-radius: 28px; padding: 6px 28px 28px; align-self: start; }
+.rs-guide .cmd-h3 { margin-top: 22px; }
+.rs-steps { margin-top: 14px; display: grid; gap: 10px; counter-reset: rs; font-size: 16px; line-height: 1.45; }
+.rs-steps li { counter-increment: rs; display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 8px; }
+.rs-steps li::before { content: counter(rs); width: 22px; height: 22px; margin-top: 1px; border-radius: 50%; background: rgba(10, 10, 10, 0.05); display: grid; place-items: center; font-size: 12px; color: var(--ink-2); }
+.rs-full { display: inline-flex; align-items: center; gap: 6px; height: 44px; margin-top: 18px; padding: 0 18px; border-radius: 999px; background: var(--ink); color: #fff !important; text-decoration: none; font-size: 15px; font-weight: 500; }
+.rs-full:hover { background: #222; }
+
+/* iPhone frame: PNG over the screen. The app renders 390px wide and is scaled into the cutout (rs-min.js). */
+.rs-phone { width: min(300px, 72vw); filter: drop-shadow(0 24px 40px rgba(0, 0, 0, 0.45)); }
+.rs-phone-shell { position: relative; width: 100%; aspect-ratio: 1294 / 2656; }
+.rs-phone-frame { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none; user-select: none; }
+.rs-screen { position: absolute; top: 1.88%; right: 4.48%; bottom: 1.88%; left: 4.4%; overflow: hidden; border-radius: 11.5% / 5.4%; background: #000; z-index: 1; isolation: isolate; }
+.rs-home { position: absolute; inset: 0; z-index: 3; margin: 0; padding: 0; border: 0; background: #000; cursor: pointer; border-radius: inherit; overflow: hidden; }
+.rs-home img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center top; pointer-events: none; }
+.rs-home:focus-visible { outline: 3px solid #1ed760; outline-offset: -3px; }
+.rs-home-ring { position: absolute; left: 61.5%; top: 36.8%; width: 15.6%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 24%; box-shadow: 0 0 0 2px rgba(30, 215, 96, 0.9); animation: rs-pulse 2.2s ease-out infinite; pointer-events: none; }
+@keyframes rs-pulse { 0% { box-shadow: 0 0 0 0 rgba(30, 215, 96, 0.85); } 70% { box-shadow: 0 0 0 10px rgba(30, 215, 96, 0); } 100% { box-shadow: 0 0 0 0 rgba(30, 215, 96, 0); } }
+.rs-screen[data-phase="app"] .rs-home { visibility: hidden; }
+.rs-app { position: absolute; inset: 0; z-index: 2; background: #121212; transform-origin: 61.5% 36.8%; }
+.rs-app[hidden] { display: none; }
+.rs-app iframe { position: absolute; left: 0; top: 0; border: 0; background: #121212; transform-origin: 0 0; }
+
+.rs-state { position: absolute; inset: 0; z-index: 4; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 20px; text-align: center; color: rgba(255, 255, 255, 0.82); font-size: 14px; background: #121212; }
+.rs-screen[data-status="loading"] .rs-state--loading { display: flex; }
+.rs-screen[data-status="failed"] .rs-state--failed { display: flex; }
+.rs-spin { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.18); border-top-color: #1ed760; animation: rs-spin .8s linear infinite; }
+@keyframes rs-spin { to { transform: rotate(360deg); } }
+.rs-state-link { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 16px; border-radius: 999px; background: #1ed760; color: #000 !important; text-decoration: none; font-weight: 500; }
+
+.rs-bar { min-height: 40px; display: flex; align-items: center; justify-content: center; }
+.rs-hint { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: rgba(255, 255, 255, 0.72); }
+.rs-hint i { width: 8px; height: 8px; border-radius: 50%; background: #1ed760; }
+.rs-ctls { display: flex; gap: 8px; }
+.rs-ctls[hidden], .rs-hint[hidden] { display: none; }
+.rs-ctl { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px; border-radius: 999px; border: 0; cursor: pointer; background: rgba(255, 255, 255, 0.1); color: #fff; font: inherit; font-size: 14px; }
+.rs-ctl:hover { background: rgba(255, 255, 255, 0.18); }
+.rsd .rs-stage :focus-visible { outline-color: #1ed760; }
+
+@media (prefers-reduced-motion: reduce) { .rs-home-ring { animation: none; } .rs-spin { animation-duration: 2s; } }
+@media (max-width: 859px) {
+  .rs-proto { grid-template-columns: 1fr; gap: 8px; }
+  .rs-guide { padding: 2px 20px 22px; }
+  .rs-phone { width: min(270px, 70vw); }
+}
+/* Short cards (signals) pair up on phones instead of stacking four deep */
+@media (max-width: 859px) { .rsd .rs-2up { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

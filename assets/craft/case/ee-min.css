@@ -1,0 +1,23 @@
+/* EasyEat full case study (craft-easyeat.html). Additions on top of case-min.css (cm-*, cmd-*).
+   Phone screens are 375 px wide at 1x, so they get narrower frames than the desktop screens on other pages. */
+
+/* Phone pairs: keep each phone close to its real width */
+.ee .ee-pair .cm-pair-row { max-width: 760px; margin: 0 auto; }
+.ee .ee-pair--short .cm-pair-row { max-width: 880px; }
+.ee .ee-pair figcaption { text-align: center; margin-left: auto; margin-right: auto; }
+
+/* Single phone screen */
+.ee .ee-phone-shot .cm-shot-frame { max-width: 420px; margin: 0 auto; }
+.ee .ee-phone-shot figcaption { text-align: center; margin-left: auto; margin-right: auto; }
+
+/* Persona cards: two columns at text-plus width */
+.ee .ee-cards-mid { max-width: calc(880px + 2 * var(--pad)); }
+
+/* Short-label rows (problems, rules): narrower key column */
+.ee .ee-rows > li { grid-template-columns: 80px minmax(0, 1fr); align-items: baseline; }
+@media (max-width: 519px) { .ee .ee-rows > li { grid-template-columns: 1fr; } }
+
+/* Phones: a phone screen at half of 390 px is unreadable, so phone pairs stack here (unlike desktop-screen pairs) */
+@media (max-width: 519px) {
+  .ee .ee-pair .cm-pair-row { grid-template-columns: 1fr; gap: 10px; max-width: 340px; }
+}
