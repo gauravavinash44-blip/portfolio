@@ -1258,27 +1258,8 @@
           stageRef, style: {}, onClose: () => setSheet(null),
         }, data.profileSheet)) : null
       ),
-      e("div", { className: "cr-corners" },
-      e("div", { className: "cr-corner cr-corner--center" },
-        e("button", {
-          type: "button", className: "cr-plusbtn cr-glass-light", "data-cr-enter": "",
-          "aria-label": "All projects", title: "All projects", "aria-haspopup": "dialog",
-          onClick: (ev) => openProjects(ev),
-        }, e(C.Icon, { name: "plus", stroke: 1.6 }))),
-      e("div", { className: "cr-corner cr-corner--right cr-dock-wrap" },
-        picker ? e("div", { className: "cr-wp-picker cr-glass-light", role: "group", "aria-label": "Wallpapers" },
-          CRAFT_WALLPAPERS.map((w) => e("button", {
-            key: w.id,
-            type: "button",
-            className: "cr-wp-thumb craft-wp--" + w.id,
-            "aria-label": w.label,
-            "aria-pressed": wallpaper === w.id ? "true" : "false",
-            title: w.label,
-            onClick: () => changeWallpaper(w.id),
-          }))
-        ) : null,
-        e(C.Dock, dock)
-      )),
+      /* Bottom corners ("+", wallpaper, resume, chat) removed: those actions live in Projects, the profile, Say hello and search. */
+      null,
       ((sheet && sheet.kind === "resonance") || rsLive) && C.ResonanceSheet ? e(C.ResonanceSheet, {
         parked: !(sheet && sheet.kind === "resonance"),
         opener: sheet && sheet.kind === "resonance" ? sheet.opener : null,
