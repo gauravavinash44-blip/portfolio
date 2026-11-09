@@ -76,8 +76,16 @@
   /* ───────── Slots (Cal.com v2, public) ───────── */
   var mem = {};
   function slotKey(cfg, slug, tz) { return "ga-cal-slots:" + cfg.calUsername + ":" + slug + ":" + tz; }
-  function future(d) { var now = Date.now(); return { at: d.at, slots: d.slots.filter(function (s) { return Date.parse(s) > now; }) }; }
+  /* Interview window in IST (config hoursIST: [startHour, endHour]); slots outside it are hidden even if Cal.com offers them */
+  var HOURS = null;
+  function inHours(s) {
+    if (!HOURS) return true;
+    var m = (new Date(s).getUTCHours() * 60 + new Date(s).getUTCMinutes() + 330) % 1440;
+    return m >= HOURS[0] * 60 && m < HOURS[1] * 60;
+  }
+  function future(d) { var now = Date.now(); return { at: d.at, slots: d.slots.filter(function (s) { return Date.parse(s) > now && inHours(s); }) }; }
   function peekSlots(cfg, slug) {
+    HOURS = cfg.hoursIST || null;
     var k = slotKey(cfg, slug, visitorTz());
     var m = mem[k];
     if (m && m.data && Date.now() - m.data.at < CACHE_MS) return future(m.data);
@@ -108,6 +116,7 @@
     return out.map(function (t) { return new Date(t).toISOString(); });
   }
   function loadSlots(cfg, slug, force) {
+    HOURS = cfg.hoursIST || null;
     var tz = visitorTz(), k = slotKey(cfg, slug, tz);
     if (!force) { var hit = peekSlots(cfg, slug); if (hit) return Promise.resolve(hit); }
     if (mem[k] && mem[k].pending) return mem[k].pending;
@@ -338,23 +347,23 @@
       k = props.day || "Today"; v = "Say hello";
       say = "Gaurav is not looking for new roles right now. Contact him by email or LinkedIn";
     } else if (st.phase === "loading") {
-      k = status === "booked" ? "Still free" : "Next free";
+      k = status === "booked" ? "Still open" : "Next slot";
       v = h("span", { className: "cb-skel", "aria-hidden": "true" });
       sub = h("span", { className: "cb-skel cb-skel--sub", "aria-hidden": "true" });
       say = label + ". Checking Gaurav's calendar. " + bookAction;
     } else if (st.phase === "ready") {
       var nd = new Date(st.next), today = dayKey(nd, tz) === dayKey(new Date(), tz);
-      k = status === "booked" ? (today ? "Still free today" : "Still free") : (today ? "Free today" : "Next free");
+      k = status === "booked" ? (today ? "Still open today" : "Still open") : (today ? "Today" : "Next slot");
       v = today ? h(Time, { date: nd, tz: tz }) : h(React.Fragment, null, weekday(nd, tz), ", ", h(Time, { date: nd, tz: tz }));
       if (!ist) sub = "(" + timeStr(nd, IST) + " IST)";
-      say = label + ". Next free slot " + longDay(nd, tz) + ", " + timeStr(nd, tz) + (ist ? " IST" : " your time") + ". " + bookAction;
+      say = label + ". Next interview slot " + longDay(nd, tz) + ", " + timeStr(nd, tz) + (ist ? " IST" : " your time") + ". " + bookAction;
     } else if (st.phase === "empty") {
       k = "Next 2 weeks"; v = "Fully booked"; sub = "Email me instead";
       say = label + ". Fully booked for 2 weeks. Email " + cfg.email + " or see later dates";
     } else {
       var fh = splitHours(cfg.fallbackHours);
-      k = "Usually free"; v = fh[0]; sub = fh[1] || null;
-      say = label + ". Usually free " + cfg.fallbackHours + ". " + bookAction;
+      k = "Interview hours"; v = fh[0]; sub = fh[1] || null;
+      say = label + ". Interview hours " + cfg.fallbackHours + ". " + bookAction;
     }
 
     return h("button", {
@@ -578,8 +587,8 @@
     if (done) live = "Booked. " + shortDay(new Date(done.start), tz) + ", " + timeStr(new Date(done.start), tz) + " your time. Invite sent to your inbox.";
     else if (status !== "not-looking") {
       if (busy) live = "Opening the booking form";
-      else if (cur.phase === "loading") live = "Loading free times";
-      else if (cur.phase === "failed") live = "Couldn't load live times. Usually free " + cfg.fallbackHours;
+      else if (cur.phase === "loading") live = "Loading times";
+      else if (cur.phase === "failed") live = "Couldn't load live times. Interview hours " + cfg.fallbackHours;
       else if (cur.phase === "empty") live = "Fully booked for the next 2 weeks";
       else if (sel) live = sel.slots.length + (sel.slots.length === 1 ? " time" : " times") + " on " + sel.long;
     }
@@ -611,7 +620,7 @@
         var fh = splitHours(cfg.fallbackHours);
         slotsBody = h("div", { className: "cb-state" },
           h("p", { className: "cb-state-title" }, "Live times didn't load."),
-          h("p", { className: "cb-state-text" }, "Gaurav is usually free " + fh[0] + (fh[1] ? ", " + fh[1] : "") + "."),
+          h("p", { className: "cb-state-text" }, "Gaurav takes calls " + fh[0] + (fh[1] ? ", " + fh[1] : "") + "."),
           h("div", { className: "cb-actions" },
             h("a", { className: "cb-btn cb-btn--primary", href: CAL_ORIGIN + "/" + cfg.calUsername + "/" + type.slug, target: "_blank", rel: "noreferrer" }, "Open Cal.com", svg(PATH.link)),
             h("button", { type: "button", className: "cb-btn", onClick: function () { setTick(function (n) { return n + 1; }); } }, svg(PATH.retry), "Try again")));
@@ -623,7 +632,7 @@
             h("a", { className: "cb-btn cb-btn--primary", href: "mailto:" + cfg.email }, svg(PATH.mail), "Email Gaurav"),
             h("a", { className: "cb-btn", href: CAL_ORIGIN + "/" + cfg.calUsername + "/" + type.slug, target: "_blank", rel: "noreferrer" }, "Later dates", svg(PATH.link))));
       } else if (sel && sel.slots.length) {
-        slotsBody = h("div", { className: "cb-slots", role: "group", "aria-label": "Free times on " + sel.long },
+        slotsBody = h("div", { className: "cb-slots", role: "group", "aria-label": "Open times on " + sel.long },
           sel.slots.map(function (iso) {
             var d = new Date(iso), b = timeBits(d, showTz), isBusy = busy === iso;
             return h("button", {
@@ -634,7 +643,7 @@
             }, isBusy ? h(Spinner) : null, h("span", null, b.main, b.period ? h("small", null, " " + b.period) : null));
           }));
       } else {
-        slotsBody = h("div", { className: "cb-state" }, h("p", { className: "cb-state-text" }, "No free times this day."));
+        slotsBody = h("div", { className: "cb-state" }, h("p", { className: "cb-state-text" }, "No open times this day."));
       }
 
       body = h(React.Fragment, null,
@@ -661,7 +670,7 @@
               return h("button", {
                 key: d.key, type: "button", role: "radio",
                 "aria-checked": on ? "true" : "false", "aria-disabled": off ? "true" : undefined,
-                "aria-label": d.long + (loading ? "" : d.slots.length ? ", " + d.slots.length + (d.slots.length === 1 ? " free time" : " free times") : ", no free times"),
+                "aria-label": d.long + (loading ? "" : d.slots.length ? ", " + d.slots.length + (d.slots.length === 1 ? " open time" : " open times") : ", no open times"),
                 tabIndex: on ? 0 : -1,
                 className: cx("cb-day", on && "is-on", off && "is-off"),
                 ref: function (n) { dayRefs.current[i] = n; },

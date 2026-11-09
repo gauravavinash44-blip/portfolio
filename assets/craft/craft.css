@@ -2138,3 +2138,9 @@ body:has(.cr-np-modal:not(.is-parked)) .cr-dimmed .cr-dim:has(> .cr-rp) { opacit
 html:not(:has(.craft-switch)) .cr-hero:not([data-cr-fit]) .cr-topbar-right .cr-iconbtn { right: 28px; }
 html:not(:has(.craft-switch)) .cr-hero[data-cr-fit="flow"] .cr-topbar { right: 28px; }
 @media (max-width: 700px) { html:not(:has(.craft-switch)) .cr-hero .cr-topbar-right { margin-right: 0; } }
+/* Experience card opens the profile at the Experience timeline */
+.cr-mstat.is-clickable { cursor: pointer; transition: transform 380ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 380ms cubic-bezier(0.16, 1, 0.3, 1); }
+.cr-mstat.is-clickable:hover { transform: translateY(-2px); box-shadow: 0 18px 40px rgba(20, 16, 24, 0.16); }
+.cr-mstat.is-clickable:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.cr-pt { scroll-margin-top: 28px; }
+@media (prefers-reduced-motion: reduce) { .cr-mstat.is-clickable { transition: none; } .cr-mstat.is-clickable:hover { transform: none; } }

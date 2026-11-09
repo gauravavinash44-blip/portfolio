@@ -614,7 +614,12 @@
     var segs = props.segments || [];
     var val = useCountUp(props.value, props.decimals || 0, props.animate !== false);
     var keys = segs.slice(0, 2);
-    return h("section", { className: cx("cr-card cr-solid cr-mstat", props.className), "data-cr-enter": "", "aria-label": props.title },
+    var cardProps = props.onCard ? {
+      role: "button", tabIndex: 0, "aria-label": props.cardLabel || props.title, "aria-haspopup": "dialog",
+      onClick: function (ev) { if (ev.target.closest && ev.target.closest("a")) return; props.onCard(ev); },
+      onKeyDown: function (ev) { if (ev.target === ev.currentTarget && (ev.key === "Enter" || ev.key === " ")) { ev.preventDefault(); props.onCard(ev); } }
+    } : { "aria-label": props.title };
+    return h("section", Object.assign({ className: cx("cr-card cr-solid cr-mstat", props.onCard && "is-clickable", props.className), "data-cr-enter": "" }, cardProps),
       h("header", { className: "cr-mstat-head" },
         h("h3", null, props.title),
         props.link ? h("a", { className: "cr-mstat-link", href: props.href || "#", "aria-haspopup": props.onLink ? "dialog" : undefined, "aria-label": props.linkLabel,
@@ -1156,6 +1161,19 @@
   function ProfileSheet(props) {
     var ref = useRef(null);
     useDialogFocus(ref);
+    /* Opened from the Experience card: glide to the Experience timeline once the sheet has opened */
+    useEffect(function () {
+      if (props.focus !== "experience") return undefined;
+      var t = setTimeout(function () {
+        var sheet = ref.current, head = sheet && sheet.querySelector("#cr-pt-exp");
+        if (!head) return;
+        var sec = head.closest(".cr-pt") || head;
+        sec.scrollIntoView({ behavior: reduced() ? "auto" : "smooth", block: "start" });
+        head.setAttribute("tabindex", "-1");
+        try { head.focus({ preventScroll: true }); } catch (e) { head.focus(); }
+      }, reduced() ? 60 : 560);
+      return function () { clearTimeout(t); };
+    }, [props.focus]);
     useLayoutEffect(function () {
       var stage = props.stageRef.current, sheet = ref.current;
       if (!stage || !sheet) return;

@@ -924,7 +924,8 @@
       until: null,
       email: "gauravavinash3@gmail.com",
       linkedin: "https://www.linkedin.com/in/gauravavinash",
-      fallbackHours: "Mon to Fri, 9:00 to 18:00 IST",
+      fallbackHours: "Mon to Fri, 12:00 to 19:00 IST",
+      hoursIST: [12, 19],
     };
     S.profileSheet.links = [
       { label: "Resume", href: ASSETS.resume, external: true },
@@ -1208,7 +1209,7 @@
         onAll: (ev) => openProjects(ev),
         allLabel: "View all projects, " + data.caseStudies.length + " case studies",
       })),
-      exp: () => e(C.MiniStatCard, Object.assign({}, data.stat, { onLink: (ev) => openProjects(ev) })),
+      exp: () => e(C.MiniStatCard, Object.assign({}, data.stat, { linkLabel: "View experience in profile", cardLabel: "Experience, 5+ years. Open my experience", onLink: () => setSheet({ kind: "profile", focus: "experience" }), onCard: () => setSheet({ kind: "profile", focus: "experience" }) })),
       /* Date card: date, next free Cal.com slot, status. Tap grows it into the booking sheet. */
       date: () => (CB ? e(CB.AvailabilityCard, {
         config: data.availability,
@@ -1255,7 +1256,7 @@
           BOARD_ORDER[layout].map((slot) => e("div", { key: slot, className: "cr-dim cr-slot cr-slot--" + slot, "data-cr-drop": slot === "pg" ? "" : undefined }, boardCards[slot]()))
         ),
         sheet && sheet.kind === "profile" ? e(C.ProfileSheet, Object.assign({
-          stageRef, style: {}, onClose: () => setSheet(null),
+          stageRef, style: {}, focus: sheet.focus, onClose: () => setSheet(null),
         }, data.profileSheet)) : null
       ),
       /* Bottom corners ("+", wallpaper, resume, chat) removed: those actions live in Projects, the profile, Say hello and search. */
