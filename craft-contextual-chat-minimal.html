@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contextual Chat · Craft · Gaurav Avinash</title>
+  <meta name="description" content="Contextual Chat: an AI assistant that lets investors search companies in plain language. Search went from 30 to 40 minutes to under 30 seconds.">
+  <link rel="icon" href="./assets/logo-ga.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..500&display=swap">
+  <link rel="stylesheet" href="./assets/craft/craft-tokens.css?v=1">
+  <link rel="stylesheet" href="./assets/craft/case/case-min.css?v=3">
+</head>
+<!--
+  Case study template (case-min). Same order on every case study:
+  hero (label, title, one-line problem, 3 numbers with how measured, one visual) > meta > problem > 2-3 decisions > outcome > next > next case.
+  Notes marked class="cm-todo" are numbers whose method is not written down in Gaurav's sources yet.
+-->
+<body class="cr cm">
+  <a class="cm-skip" href="#main">Skip to content</a>
+
+  <header class="cm-bar">
+    <a class="cm-pill" href="./index.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+      <span>Home</span>
+    </a>
+    <nav class="cm-pill cm-toc" aria-label="Sections">
+      <a href="#problem">Problem</a>
+      <a href="#decisions">Decisions</a>
+      <a href="#outcome">Outcome</a>
+      <a href="#next-steps">Next steps</a>
+    </nav>
+    <div class="cm-progress" aria-hidden="true"></div>
+  </header>
+
+  <main id="main">
+    <!-- Hero -->
+    <section class="cm-hero" aria-labelledby="h-title">
+      <div class="cm-col">
+        <p class="cm-label"><span class="cm-orb" data-orb="chatSpark" aria-hidden="true"></span><span>Systematic · 2023 to now</span></p>
+        <h1 class="cm-title" id="h-title">Contextual Chat</h1>
+        <p class="cm-lede">Investors had all the data but had to know the exact filters to find anything, so one search took 30 to 40 minutes. I designed a chat assistant that answers in plain language.</p>
+      </div>
+
+      <ul class="cm-nums cm-wide" aria-label="Outcomes">
+        <li class="cm-num">
+          <p class="cm-num-v">&lt;30 s</p>
+          <p class="cm-num-l">to an answer, down from 30 to 40 minutes</p>
+          <p class="cm-num-m cm-todo">After launch. Method not documented yet.</p>
+        </li>
+        <li class="cm-num">
+          <p class="cm-num-v">+25%</p>
+          <p class="cm-num-l">session time</p>
+          <p class="cm-num-m cm-todo">After launch. Baseline and method not documented yet.</p>
+        </li>
+        <li class="cm-num">
+          <p class="cm-num-v">70%</p>
+          <p class="cm-num-l">of users preferred the chat flow</p>
+          <p class="cm-num-m cm-todo">After launch. Sample and method not documented yet.</p>
+        </li>
+      </ul>
+
+      <figure class="cm-shot cm-wide">
+        <div class="cm-shot-frame cm-media">
+          <video muted loop playsinline preload="none" poster="./assets/craft/case/chat-panel-poster.jpg" width="720" height="342" aria-label="The chat panel: an analysis of Adobe with numbered sources, then the next question typed in plain language">
+            <source src="./assets/craft/case/chat-panel.mp4" type="video/mp4">
+          </video>
+          <button class="cm-play" type="button" aria-label="Play video" hidden><span aria-hidden="true"></span></button>
+        </div>
+        <figcaption>The shipped panel. Every answer cites its sources.</figcaption>
+      </figure>
+    </section>
+
+    <dl class="cm-meta cm-col" aria-label="Project facts">
+      <div><dt>Role</dt><dd>Product Designer II. Research through UI and handoff.</dd></div>
+      <div><dt>Team</dt><dd>PM, ML, engineering, data</dd></div>
+      <div><dt>Timeline</dt><dd>v1 shipped in 8 weeks</dd></div>
+      <div><dt>Built with</dt><dd>OpenAI and vector search</dd></div>
+    </dl>
+
+    <!-- Problem -->
+    <section class="cm-sec cm-col" id="problem" aria-labelledby="h-problem">
+      <p class="cm-eyebrow">Problem</p>
+      <h2 class="cm-h2" id="h-problem">Search asked for precision too early</h2>
+      <div class="cm-body">
+        <p>There were 40+ filters with no hierarchy. Unless you knew the exact labels, you re-ran searches, reopened tabs and rebuilt context from memory.</p>
+        <p>Investors start broad and narrow down. The product made them translate a hunch into filter vocabulary before they'd seen anything.</p>
+      </div>
+      <figure class="cm-evidence">
+        <blockquote><p>“Filtering is too rigid. If my criteria is ‘innovative’ but the database only has ‘R&amp;D spend’, I miss the nuance entirely.”</p></blockquote>
+        <figcaption>Angel investor, tech focus. One of 18 user interviews.</figcaption>
+        <p class="cm-evidence-stat"><b>34%</b><span>of searches gave no usable result or forced a restart</span></p>
+      </figure>
+    </section>
+
+    <!-- Decisions -->
+    <section class="cm-sec" id="decisions" aria-labelledby="h-decisions">
+      <div class="cm-col">
+        <p class="cm-eyebrow">Key decisions</p>
+        <h2 class="cm-h2" id="h-decisions">Three calls that shaped it</h2>
+      </div>
+
+      <article class="cm-dec" id="decision-chat" aria-labelledby="h-d1">
+        <div class="cm-col">
+          <p class="cm-dec-n">01</p>
+          <h3 class="cm-h3" id="h-d1">Chat on top of search, not smarter filters</h3>
+          <div class="cm-body"><p>The team had two obvious answers: better filters, or a chatbot. I put chat on top of the page and kept classic search as a fallback, so nobody was forced into it on day one.</p></div>
+          <dl class="cm-tdw">
+            <div><dt>Tried</dt><dd>Smarter filters, a dashboard of AI picks, chat</dd></div>
+            <div><dt>Dropped</dt><dd>Smarter filters. The dashboard was parked for phase 2.</dd></div>
+            <div><dt>Why</dt><dd>Filters demand precision users didn't have yet. New investors have no signals for a dashboard, and “magic” picks weren't trusted.</dd></div>
+          </dl>
+        </div>
+        <figure class="cm-shot cm-shot--narrow cm-wide">
+          <div class="cm-shot-frame cm-fade"><picture><source media="(max-width: 719px)" srcset="./assets/craft/case/cc-entry-bar-sm.jpg" width="1100" height="720"><img src="./assets/craft/case/cc-entry-bar.jpg" alt="The search bar typed with “stri”, offering Ask Systematic Agent at the top and regular company results below" width="1600" height="509" loading="lazy" decoding="async"></picture></div>
+          <figcaption>Search and the agent share one bar. Regular results stay right below.</figcaption>
+        </figure>
+      </article>
+
+      <article class="cm-dec" id="decision-start" aria-labelledby="h-d2">
+        <div class="cm-col">
+          <p class="cm-dec-n">02</p>
+          <h3 class="cm-h3" id="h-d2">Never open on an empty box</h3>
+          <div class="cm-body"><p>In test round 1, 4 of 6 users stalled for 15+ seconds at “Ask anything”. v2 added three prompt starters by role.</p></div>
+          <dl class="cm-tdw">
+            <div><dt>Tried</dt><dd>An empty panel with a single Let's Chat button</dd></div>
+            <div><dt>Dropped</dt><dd>The open “Ask anything” start</dd></div>
+            <div><dt>Why</dt><dd>People didn't know how to begin</dd></div>
+          </dl>
+        </div>
+        <figure class="cm-pair cm-pair--narrow cm-wide">
+          <div class="cm-pair-row">
+            <div><img src="./assets/craft/case/cc-v1-panel.jpg" alt="Version 1: an empty chat panel with only a Let's Chat button" width="1360" height="1276" loading="lazy" decoding="async"><p class="cm-tag"><b>v1</b> Empty panel</p></div>
+            <div><img src="./assets/craft/case/cc-v2-panel.jpg" alt="Version 2: prompt starters above an otherwise empty chat body" width="1360" height="1276" loading="lazy" decoding="async"><p class="cm-tag"><b>v2</b> Prompt starters</p></div>
+          </div>
+        </figure>
+      </article>
+
+      <article class="cm-dec" id="decision-trust" aria-labelledby="h-d3">
+        <div class="cm-col">
+          <p class="cm-dec-n">03</p>
+          <h3 class="cm-h3" id="h-d3">Answers you can scan and check</h3>
+          <div class="cm-body"><p>Early AI accuracy sat around 74%, wrong often enough to plan for. In round 2, investors wanted to scan in under 10 seconds and skipped prose. So answers lead with a bold summary, then bullets and tables, and every claim links to the tab where its data lives.</p></div>
+          <dl class="cm-tdw">
+            <div><dt>Tried</dt><dd>History and table answers in a heavy overlay (v3)</dd></div>
+            <div><dt>Dropped</dt><dd>The heavy overlay and prose answers</dd></div>
+            <div><dt>Why</dt><dd>Not trusted enough for diligence</dd></div>
+          </dl>
+        </div>
+        <figure class="cm-pair cm-wide">
+          <div class="cm-pair-row">
+            <div><img src="./assets/craft/case/cc-v3-panel.jpg" alt="Version 3: a history sidebar and table answers in a heavy overlay" width="1600" height="1039" loading="lazy" decoding="async"><p class="cm-tag"><b>v3</b> Heavy overlay</p></div>
+            <div><img src="./assets/craft/case/cc-v4-answer.jpg" alt="Version 4, shipped: an answer card with a summary, bullet points and numbered sources, then a loading state" width="1600" height="1039" loading="lazy" decoding="async"><p class="cm-tag"><b>v4, shipped</b> Sourced answers</p></div>
+          </div>
+        </figure>
+      </article>
+    </section>
+
+    <!-- Outcome -->
+    <section class="cm-sec cm-col" id="outcome" aria-labelledby="h-outcome">
+      <p class="cm-eyebrow">Outcome</p>
+      <h2 class="cm-h2" id="h-outcome">What changed</h2>
+      <p class="cm-lead">The launch numbers are at the top of the page.</p>
+
+      <h3 class="cm-sub" id="usability">Usability, between test rounds</h3>
+      <p class="cm-note">Same tasks. Round 1: unmoderated Figma test, 6 internal users, week 3. Round 2: 45-minute think-aloud sessions, 8 investors on staging, week 6.</p>
+      <ol class="cm-results">
+        <li>
+          <p class="cm-r-k">SUS score</p>
+          <p class="cm-r-v"><span class="cm-before">54</span><span class="cm-arrow" aria-hidden="true">→</span><span class="cm-sr">to</span><span>72</span></p>
+          <p class="cm-r-m">Out of 100</p>
+        </li>
+        <li>
+          <p class="cm-r-k">Task completion</p>
+          <p class="cm-r-v"><span class="cm-before">61%</span><span class="cm-arrow" aria-hidden="true">→</span><span class="cm-sr">to</span><span>89%</span></p>
+          <p class="cm-r-m">Finished the flow without getting stuck</p>
+        </li>
+        <li>
+          <p class="cm-r-k">Time on task</p>
+          <p class="cm-r-v"><span class="cm-before">4m 20s</span><span class="cm-arrow" aria-hidden="true">→</span><span class="cm-sr">to</span><span>1m 55s</span></p>
+          <p class="cm-r-m">Lower is better</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- Next -->
+    <section class="cm-sec cm-col" id="next-steps" aria-labelledby="h-nextsteps">
+      <p class="cm-eyebrow">What I'd do next</p>
+      <h2 class="cm-h2" id="h-nextsteps">Loose ends</h2>
+      <ul class="cm-list">
+        <li>Define AI confidence as a metric from day one. It only became one midway.</li>
+        <li>Test the first chat earlier. It was hard even for experts, and it cost a full iteration.</li>
+        <li>Proactive alerts on followed companies, and prompts tuned by role.</li>
+      </ul>
+    </section>
+
+    <nav class="cm-end cm-col" aria-label="More case studies">
+      <a class="cm-next" href="./craft-deal-room.html">
+        <span class="cm-orb cm-orb--lg" data-orb="dealDoc" aria-hidden="true"></span>
+        <span>
+          <span class="cm-next-k">Next case study</span>
+          <span class="cm-next-t" id="h-next">Deal Room</span>
+          <span class="cm-next-s">Deal creation on the company profile went up 32%.</span>
+        </span>
+        <span class="cm-next-go" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+      <a class="cm-home" href="./index.html">Back to Home</a>
+    </nav>
+  </main>
+
+  <script src="./assets/craft/orb.js?v=1" defer></script>
+  <script src="./assets/craft/case/case-min.js?v=1" defer></script>
+</body>
+</html>
