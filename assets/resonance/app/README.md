@@ -1,1 +1,7 @@
-Static web build of github.com/gauravavinash44-blip/drop-mode at commit 099a278e02147b5d455819dcbd7703f2c407edbe (built with `expo export --platform web`, repackaged by a script: relative paths, assets flattened into a/, unused icon fonts dropped, audio masters loaded from the hosted build). Do not edit by hand; rebuild from the source repo.
+Static web build of github.com/gauravavinash44-blip/drop-mode at commit 099a278e02147b5d455819dcbd7703f2c407edbe (built with `expo export --platform web`, repackaged by a script: relative paths, assets flattened into a/, unused icon fonts dropped). Do not edit by hand; rebuild from the source repo.
+
+Audio (post-step after repackaging):
+- Every audio module in s/index-*.js resolves through `window.__RS_SRC__("<name>.<md5>.mp3")`, defined in index.html.
+- The six tracks of the main demo flow (all-black, bairan, aari-aari, didi-sher-e-baloch, jaiye-sajana, bandhu-2) play from same-origin clips in m/: VBR MP3 (~100 kbps), 0:00 to 40 s past the track's first Resonance moment (P1 in src/data/songs.ts), so playing from the top and starting at the moment both work with the app's own timings. All Black runs 0:00 to 1:00. 4.6 MB in total. A clip ends early, so the app moves to the next track; the P2/P3 moments of these six fall past the clip end.
+- All other tracks stream their full masters from the hosted build of the same commit (drop-mode.vercel.app, or gauravavinash44-blip.github.io/drop-mode on GitHub Pages). Hosts that block outside media get no sound for those.
+- The clips are cut from the masters already published in the public drop-mode repo (assets/audio). They are commercial recordings: fine for a personal, non-commercial portfolio demo in practice, but they are not licensed for redistribution.

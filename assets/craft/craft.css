@@ -299,7 +299,7 @@
   transition: background var(--dur-snap) ease;
 }
 .cr-row + .cr-row { box-shadow: 0 -1px 0 var(--hairline); }
-.cr-row:hover { background: #f7f6f7; }
+.cr-row.is-active { background: #f6f5f7; }
 .cr-row-thumb { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; background: var(--well); }
 .cr-row-text { display: flex; flex-direction: column; min-width: 0; text-align: left; }
 .cr-row-text b {
@@ -854,13 +854,6 @@ html.ga-craft .craft-switch { --g-search: rgba(60, 48, 60, 0.22); }
 }
 .cr-row-av { position: relative; width: 50px; height: 50px; }
 .cr-row-thumb { width: 50px; height: 50px; }
-.cr-row-badge { /* the "speaking" badge on the reference's middle avatar */
-  position: absolute; top: -3px; right: -5px; width: 17px; height: 17px; border-radius: 50%;
-  background: #fff; display: flex; align-items: center; justify-content: center; gap: 1.5px;
-}
-.cr-row-badge b { display: block; width: 1.6px; border-radius: 1px; background: var(--blue); }
-.cr-row-badge b:nth-child(1), .cr-row-badge b:nth-child(3) { height: 4px; }
-.cr-row-badge b:nth-child(2) { height: 8px; }
 .cr-row-text b { font-size: 17px; line-height: 1.22; letter-spacing: -0.015em; text-overflow: clip; display: block;
   -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 34px), rgba(0, 0, 0, 0.18));
   mask-image: linear-gradient(90deg, #000 calc(100% - 34px), rgba(0, 0, 0, 0.18)); }
@@ -868,13 +861,31 @@ html.ga-craft .craft-switch { --g-search: rgba(60, 48, 60, 0.22); }
 .cr-row .cr-iconbtn { width: 50px; height: 50px; }
 .cr-row .cr-iconbtn--well { color: var(--ink-3); }
 .cr-row .cr-iconbtn svg { width: 15px; height: 15px; }
-.cr-row-pill { /* link drawn as the reference's blue "on" toggle */
-  position: relative; display: block; width: 52px; height: 30px; margin-right: 6px; border-radius: 15px;
-  background: var(--blue); color: #fff; transition: background var(--dur-snap) ease;
+/* Trailing "open" control, the same on every row: a grey round arrow that fills Craft blue
+   from the centre when its row is active (hover or keyboard focus, one row at a time).
+   Transform/opacity/colour only, so the morph never relayouts. */
+.cr-row-go {
+  --go-ease: cubic-bezier(0.16, 1, 0.3, 1); --go-dur: 320ms;
+  position: relative; display: grid; place-items: center; flex-shrink: 0;
+  width: 50px; height: 50px; border-radius: 50%; overflow: hidden; isolation: isolate;
+  background: var(--well); color: var(--ink-3);
+  transition: color var(--go-dur) var(--go-ease), box-shadow var(--go-dur) var(--go-ease);
 }
-.cr-row-pill:hover { background: var(--blue-strong); }
-.cr-row-pill svg { position: absolute; left: 7px; top: 8px; width: 13px; height: 13px; }
-.cr-row-pill-knob { position: absolute; right: 3px; top: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15); }
+.cr-row-go-fill {
+  position: absolute; inset: 0; z-index: -1; border-radius: 50%; background: var(--blue);
+  transform: scale(0.2); opacity: 0;
+  transition: transform var(--go-dur) var(--go-ease), opacity calc(var(--go-dur) * 0.6) var(--go-ease);
+}
+.cr-row-go svg { width: 15px; height: 15px; transition: transform var(--go-dur) var(--go-ease); }
+.cr-row + .cr-row::before { transition: opacity 280ms ease; }
+.cr-row.is-active::before, .cr-row.is-active + .cr-row::before { opacity: 0; }
+.cr-row.is-active .cr-row-go { color: #fff; box-shadow: 0 6px 16px -6px rgba(43, 85, 246, 0.55); }
+.cr-row.is-active .cr-row-go-fill { transform: scale(1); opacity: 1; }
+.cr-row.is-active .cr-row-go svg { transform: translate(1.5px, -1.5px); }
+.cr-row-go:active .cr-row-go-fill { background: var(--blue-strong); }
+@media (prefers-reduced-motion: reduce) {
+  .cr-row, .cr-row-go, .cr-row-go-fill, .cr-row-go svg { transition: none; }
+}
 
 /* ── Create a room ── */
 .cr-drop-inner { gap: 5px; }
@@ -1098,6 +1109,15 @@ html.ga-craft .craft-switch {
 .cr-pwell--pink { background: #fcedf6; color: #cf268f; }
 .cr-pwell--plain { background: var(--well); color: #454545; }
 .cr-row-av .cr-pwell { width: 50px; height: 50px; }
+
+/* Project orbs (assets/craft/orb.js): the canvas is painted by one shared WebGL renderer;
+   the gradient underneath is the stand-in until the first frame (or without WebGL). */
+.cr-pwell--orb { position: relative; background-color: #e9e4ec; background-size: 100% 100%; }
+.cr-pwell--orb canvas {
+  position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 50%;
+  transition: opacity 240ms ease; will-change: transform;
+}
+.cr-pwell--orb.is-lit { background: none !important; }
 
 /* "All 5" chip is a button now */
 .cr-chip--btn { cursor: pointer; transition: background var(--dur-snap) ease, border-color var(--dur-snap) ease; }
@@ -1326,6 +1346,8 @@ html.ga-aw-open .craft-switch, html.ga-aw-open .ga-brand { opacity: 0; visibilit
 
 /* While the popup is open the corners and top bar step back like the All work sheet */
 html.ga-np-open .cr-hero .cr-topbar, html.ga-np-open .cr-hero .cr-corner { opacity: 0.25; filter: blur(4px); }
+/* dim in step with the popup morph instead of snapping */
+.cr-hero .cr-topbar, .cr-hero .cr-corner { transition: opacity 520ms cubic-bezier(0.33, 1, 0.68, 1), filter 520ms cubic-bezier(0.33, 1, 0.68, 1); }
 html.ga-np-open, html.ga-np-open body { overflow: hidden !important; }
 html.ga-np-open .craft-switch, html.ga-np-open .ga-brand { opacity: 0; visibility: hidden; pointer-events: none; }
 
@@ -1355,7 +1377,19 @@ html.ga-np-open .craft-switch, html.ga-np-open .ga-brand { opacity: 0; visibilit
 
 /* ── Resonance popup ── */
 .cr-np-modal { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; }
-.cr-np-scrim { position: absolute; inset: 0; background: rgba(28, 18, 30, 0.22); }
+.cr-np-scrim {
+  position: absolute; inset: 0; background: rgba(24, 16, 28, 0.26);
+  -webkit-backdrop-filter: blur(6px) saturate(1.05); backdrop-filter: blur(6px) saturate(1.05);
+}
+/* layers the open/close morph adds to the sheet for its duration (see rsMorph) */
+.cr-np-morph-tint { position: absolute; inset: 0; z-index: 6; pointer-events: none; border-radius: inherit; }
+.cr-np-sheet > .cr-np-ghost { z-index: 7; pointer-events: none; transition: none; }
+/* While the Resonance popup is up: the board dims on the same clock as the morph, the scrim's one
+   backdrop blur replaces the per-card blur (cheaper per frame), and the card's own slot stays put
+   so the popup can fold back into exactly where the card is. */
+body:has(.cr-np-modal) .cr-dim { transition: opacity 520ms cubic-bezier(0.33, 1, 0.68, 1), transform 560ms cubic-bezier(0.16, 1, 0.3, 1); }
+body:has(.cr-np-modal) .cr-dimmed .cr-dim { filter: none; }
+body:has(.cr-np-modal) .cr-dimmed .cr-dim:has(> .cr-rp) { opacity: 1; transform: none; }
 .cr-np-sheet {
   --np-phone-h: min(680px, calc(100vh - 176px));
   position: relative;
@@ -1563,14 +1597,12 @@ html.ga-np-open .craft-switch, html.ga-np-open .ga-brand { opacity: 0; visibilit
 .cr-board .cr-list .cr-row + .cr-row::before { left: 13px; right: 6px; }
 .cr-board .cr-row-av, .cr-board .cr-row-av .cr-pwell, .cr-board .cr-row-thumb { width: 57px; height: 57px; }
 .cr-board .cr-row-av .cr-pwell svg { width: 24px; height: 24px; }
-.cr-board .cr-row-badge { top: -2px; right: -4px; }
 .cr-board .cr-list .cr-row-text b { font-size: 17.5px; line-height: 1.2; }
 .cr-board .cr-list .cr-row-text span { margin-top: 3px; font-size: 12px; }
 .cr-board .cr-list .cr-row .cr-iconbtn { width: 57px; height: 57px; }
 .cr-board .cr-list .cr-row .cr-iconbtn svg { width: 16px; height: 16px; }
-.cr-board .cr-row-pill { width: 60px; height: 38px; margin-right: 0; border-radius: 19px; }
-.cr-board .cr-row-pill svg { left: 9px; top: 12px; width: 14px; height: 14px; }
-.cr-board .cr-row-pill-knob { top: 3px; right: 3px; width: 32px; height: 32px; }
+.cr-board .cr-list .cr-row-go { width: 57px; height: 57px; }
+.cr-board .cr-list .cr-row-go svg { width: 16px; height: 16px; }
 
 /* ── Experience ("Data") ── */
 .cr-mstat { position: relative; display: block; }
@@ -1696,87 +1728,135 @@ html.ga-np-open .craft-switch, html.ga-np-open .ga-brand { opacity: 0; visibilit
   .cr-hello-dots { bottom: 6px; }
 }
 
-/* ═════════════ Resonance player card ("Create a room" slot) ═════════════
-   Same player as the pill (useResonancePlayer): JS writes the line and the bars, these classes
-   only style the states. Dark green-tinted glass so white type holds on every wallpaper. */
+/* ═════════════ Resonance widget card (board slot) ═════════════
+   An iOS music widget: soft tint from the album art (--rp-tint, set by JS), art top-left, round
+   mark top-right, title + line bottom-left, round white play bottom-right, progress on the bottom
+   edge. Sizes are in container units so the same card fits every board size. JS writes the line
+   (.cr-rp-fill) and the waveform bars; these classes only style the states. */
 .cr-rp {
-  position: relative; isolation: isolate;
-  display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto minmax(0, 1fr) auto;
-  padding: 14px 14px 16px 15px; color: #fff; cursor: pointer;
+  --rp-tint: #467ca2;
+  --rp-pad: 9.5cqw;
+  container-type: size;
+  position: relative; isolation: isolate; color: #fff; cursor: pointer;
+  background: var(--rp-tint);
   background:
-    var(--g-sheen),
-    radial-gradient(130% 85% at 30% 118%, rgba(30, 215, 96, 0.30), rgba(30, 215, 96, 0) 62%),
-    linear-gradient(rgba(34, 46, 38, 0.30), rgba(26, 34, 30, 0.44));
-  border: 1px solid rgba(255, 255, 255, 0.30);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 -1px 0 rgba(255, 255, 255, 0.10), inset 0 0 24px rgba(255, 255, 255, 0.06), 0 10px 30px rgba(20, 10, 30, 0.10);
-  -webkit-backdrop-filter: blur(22px) saturate(1.6); backdrop-filter: blur(22px) saturate(1.6);
-  text-shadow: 0 1px 3px rgba(8, 14, 10, 0.32);
-  transition: translate 420ms var(--ease-arrive), box-shadow 420ms var(--ease-arrive);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0) 46%, rgba(0, 0, 0, 0.08)),
+    var(--rp-tint);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 10px 26px rgba(16, 28, 44, 0.16);
+  translate: 0 0; scale: 1;
+  transition:
+    translate 380ms cubic-bezier(0.16, 1, 0.3, 1),
+    scale 380ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 380ms cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 600ms ease;
   -webkit-tap-highlight-color: transparent;
 }
 .cr-rp:hover {
-  translate: 0 -3px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.12), inset 0 0 24px rgba(255, 255, 255, 0.08), 0 18px 38px rgba(20, 10, 30, 0.2);
+  translate: 0 -4px; scale: 1.025;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.26), inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 22px 44px rgba(16, 28, 44, 0.26);
 }
-.cr-rp:active { translate: 0 -1px; }
+.cr-rp:active:not(:has(.cr-rp-play:active)) {
+  translate: 0 -1px; scale: 0.975;
+  transition-duration: 160ms, 160ms, 160ms, 600ms;
+}
 .cr-rp:has(.cr-rp-open:focus-visible) { outline: 2px solid #fff; outline-offset: 3px; }
 .cr-rp-open { position: absolute; inset: 0; z-index: 1; padding: 0; border-radius: inherit; background: none; cursor: pointer; }
 .cr-rp-open:focus-visible { outline: none; }
-/* the album art, blurred, as a soft wash behind everything */
-.cr-rp-glow {
-  position: absolute; inset: -30%; z-index: -1; pointer-events: none;
-  background: url("../resonance/np-art.jpg") 30% 20% / cover no-repeat;
-  filter: blur(26px); opacity: 0.32;
-}
+
 .cr-rp-art {
-  grid-area: 1 / 1; justify-self: start; position: relative; pointer-events: none;
-  width: 76px; height: 76px; border-radius: 17px; overflow: hidden; background: #1a1a1a;
-  box-shadow: 0 8px 18px rgba(6, 10, 8, 0.32), inset 0 0 0 1px rgba(255, 255, 255, 0.14);
-  transition: transform 520ms var(--ease-pop);
+  position: absolute; left: var(--rp-pad); top: var(--rp-pad); pointer-events: none;
+  width: 50cqw; height: 50cqw; border-radius: 7.5cqw; overflow: hidden; background: #1a1a1a;
+  box-shadow: 0 6px 16px rgba(8, 18, 30, 0.26);
+  transition: scale 420ms cubic-bezier(0.16, 1, 0.3, 1);
 }
+.cr-rp:hover .cr-rp-art { scale: 1.03; }
 .cr-rp-art img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.cr-rp:hover .cr-rp-art { transform: scale(1.04) rotate(-2deg); }
+/* live waveform on the art, only while playing */
+.cr-rp-art::after {
+  content: ""; position: absolute; inset: 45% 0 0; pointer-events: none;
+  background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5));
+  opacity: 0; transition: opacity 360ms ease;
+}
+.cr-rp-wave {
+  position: absolute; z-index: 1; left: 10%; right: 10%; bottom: 9%; height: 22%;
+  display: flex; align-items: center; justify-content: space-between;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 22%, #000 100%); mask-image: linear-gradient(90deg, transparent, #000 22%, #000 100%);
+  opacity: 0; transition: opacity 360ms ease;
+}
+.cr-rp-wave i { flex: none; width: 2px; height: 100%; border-radius: 2px; background: #fff; transform: scaleY(0.12); }
+.cr-rp.is-playing .cr-rp-art::after, .cr-rp.is-playing .cr-rp-wave { opacity: 1; }
+.cr-rp.is-paused .cr-rp-wave i { transform: scaleY(0.12) !important; transition: transform 300ms ease; }
+
+.cr-rp-mark {
+  position: absolute; top: var(--rp-pad); right: var(--rp-pad); pointer-events: none;
+  display: grid; place-items: center; width: 16cqw; height: 16cqw; border-radius: 50%;
+  background: #fff; color: var(--rp-tint);
+  box-shadow: 0 2px 6px rgba(8, 18, 30, 0.16);
+  transition: color 600ms ease;
+}
+.cr-rp-mark svg { width: 70%; height: 70%; }
+
+.cr-rp-meta {
+  position: absolute; left: var(--rp-pad); right: 37cqw; bottom: calc(var(--rp-pad) + 1.5cqw);
+  display: flex; flex-direction: column; min-width: 0; pointer-events: none;
+}
+.cr-rp-title { font-size: 9.3cqw; line-height: 1.2; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cr-rp .cr-rp-sub { height: 1.3em; margin-top: 0.5cqw; font-size: 7.6cqw; line-height: 1.3; color: rgba(222, 236, 247, 0.8); }
+.cr-rp .cr-rp-sub > span { max-width: 100%; }
+.cr-rp .cr-rp-sub > span { transition: opacity 300ms ease, translate 300ms cubic-bezier(0.16, 1, 0.3, 1); }
+.cr-rp .cr-np-sub-b { translate: 0 30%; }
+.cr-rp .cr-np-sub-b { color: #fff; }
+.cr-rp.is-moment .cr-np-sub-a { opacity: 0; translate: 0 -30%; }
+.cr-rp.is-moment .cr-np-sub-b { opacity: 1; translate: 0 0; }
+
 .cr-rp-play {
-  grid-area: 1 / 2; align-self: start; position: relative; z-index: 2;
-  display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%;
-  background: #1ed760; color: #0b0b0b; cursor: pointer;
-  box-shadow: 0 6px 14px rgba(6, 30, 14, 0.3);
-  transition: transform var(--dur-snap) var(--ease-snap), background var(--dur-snap) ease;
+  position: absolute; z-index: 2; right: var(--rp-pad); bottom: calc(var(--rp-pad) - 1cqw);
+  display: grid; place-items: center; width: 28cqw; height: 28cqw; padding: 0; border-radius: 50%;
+  background: #fff; color: var(--rp-tint); cursor: pointer;
+  box-shadow: 0 6px 16px rgba(8, 18, 30, 0.22);
+  transition: scale 340ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 340ms cubic-bezier(0.16, 1, 0.3, 1), color 600ms ease;
+  -webkit-tap-highlight-color: transparent;
 }
-.cr-rp-play:hover { transform: scale(1.07); background: #3be477; }
-.cr-rp-play:active { transform: scale(0.93); }
+.cr-rp-play:hover { scale: 1.06; box-shadow: 0 10px 22px rgba(8, 18, 30, 0.28); }
+.cr-rp-play:active { scale: 0.9; transition-duration: 140ms; }
 .cr-rp-play:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
-.cr-rp-play svg { width: 17px; height: 17px; }
-.cr-rp.is-paused .cr-rp-play svg { transform: translateX(1px); }
-.cr-rp-meta { grid-area: 3 / 1 / 4 / 3; position: relative; pointer-events: none; display: flex; flex-direction: column; min-width: 0; }
-.cr-rp-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.cr-rp-title { font-size: 17.5px; line-height: 21px; letter-spacing: -0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.cr-rp .cr-rp-eq { width: 15px; height: 13px; margin: 0 1px 0 0; }
-.cr-rp .cr-rp-sub { margin-top: 2px; color: rgba(255, 255, 255, 0.84); }
-.cr-rp .cr-rp-track { margin-top: 11px; background: rgba(255, 255, 255, 0.26); }
-.cr-rp.is-moment .cr-np-sub-a { opacity: 0; }
-.cr-rp.is-moment .cr-np-sub-b { opacity: 1; }
-.cr-rp.is-playing .cr-np-eq i { transition: none; }
-.cr-rp.is-paused .cr-np-eq i { opacity: 0.7; }
-@media (prefers-reduced-motion: no-preference) {
-  .cr-rp.is-jumping .cr-np-fill { transition: transform 460ms cubic-bezier(0.16, 1, 0.3, 1); }
-  .cr-rp.is-pulse .cr-np-mark { animation: crNpMark 700ms var(--ease-snap, ease) 1; }
-  .cr-rp.is-eq-css.is-playing .cr-np-eq i { animation: crNpEq 900ms ease-in-out infinite alternate; }
-  .cr-rp.is-eq-css.is-playing .cr-np-eq i:nth-child(2) { animation-duration: 640ms; animation-delay: -200ms; }
-  .cr-rp.is-eq-css.is-playing .cr-np-eq i:nth-child(3) { animation-duration: 1080ms; animation-delay: -420ms; }
-  .cr-rp.is-eq-css.is-playing .cr-np-eq i:nth-child(4) { animation-duration: 760ms; animation-delay: -120ms; }
+.cr-rp-play svg { width: 46%; height: 46%; overflow: visible; }
+/* play <-> pause: both glyphs mounted, crossfade with a quarter turn and a scale */
+.cr-rp-play path {
+  transform-box: fill-box; transform-origin: 50% 50%;
+  transition: opacity 220ms ease, transform 380ms cubic-bezier(0.16, 1, 0.3, 1);
 }
+.cr-rp-g-play { translate: 1px 0; }
+.cr-rp-g-pause { opacity: 0; transform: rotate(-90deg) scale(0.4); }
+.cr-rp.is-playing .cr-rp-g-play { opacity: 0; transform: rotate(90deg) scale(0.4); }
+.cr-rp.is-playing .cr-rp-g-pause { opacity: 1; transform: none; }
+
+/* progress along the bottom edge; the drop is a faint tick */
+.cr-rp-track { position: absolute; left: 0; right: 0; bottom: 0; height: 2.2cqw; min-height: 3px; background: rgba(255, 255, 255, 0.2); pointer-events: none; }
+.cr-rp-fill { position: absolute; inset: 0; background: #fff; transform-origin: 0 50%; transform: scaleX(0); }
+.cr-rp-drop { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: rgba(255, 255, 255, 0.55); }
+@media (prefers-reduced-motion: no-preference) {
+  .cr-rp.is-jumping .cr-rp-fill { transition: transform 460ms cubic-bezier(0.16, 1, 0.3, 1); }
+  .cr-rp.is-pulse .cr-rp-drop { animation: crRpDrop 700ms cubic-bezier(0.16, 1, 0.3, 1) 1; }
+  .cr-rp.is-eq-css.is-playing .cr-rp-wave i { animation: crNpEq 900ms ease-in-out infinite alternate; }
+  .cr-rp.is-eq-css.is-playing .cr-rp-wave i:nth-child(3n) { animation-duration: 640ms; animation-delay: -200ms; }
+  .cr-rp.is-eq-css.is-playing .cr-rp-wave i:nth-child(3n+1) { animation-duration: 1080ms; animation-delay: -420ms; }
+}
+@keyframes crRpDrop { 0% { background: #fff; scale: 1 1; } 35% { background: #fff; scale: 2.5 2.4; } 100% { scale: 1 1; } }
 @media (prefers-reduced-motion: reduce) {
-  .cr-rp, .cr-rp-art { transition: none; }
-  .cr-rp:hover, .cr-rp:hover .cr-rp-art { translate: none; transform: none; }
-  .cr-rp .cr-np-eq i { animation: none !important; transform: scaleY(0.5) !important; }
+  .cr-rp, .cr-rp-art, .cr-rp-play, .cr-rp-play path, .cr-rp .cr-rp-sub > span { transition: none; }
+  .cr-rp:hover, .cr-rp:active, .cr-rp:hover .cr-rp-art { translate: none; scale: none; }
+  .cr-rp-wave { display: none; }
 }
 /* Portrait tablet: the slot is two cells wide, so art | text | play in one row */
-.cr-hero[data-cr-cols="2"] .cr-rp { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-rows: minmax(0, 1fr); column-gap: 16px; padding: 16px 18px 16px 16px; }
-.cr-hero[data-cr-cols="2"] .cr-rp-art { grid-area: 1 / 1; align-self: center; width: 92px; height: 92px; border-radius: 20px; }
-.cr-hero[data-cr-cols="2"] .cr-rp-meta { grid-area: 1 / 2; align-self: center; }
-.cr-hero[data-cr-cols="2"] .cr-rp-play { grid-area: 1 / 3; align-self: center; width: 50px; height: 50px; }
-.cr-hero[data-cr-cols="2"] .cr-rp-title { font-size: 20px; line-height: 24px; }
+.cr-hero[data-cr-cols="2"] .cr-rp { --rp-pad: 9.5cqh; }
+.cr-hero[data-cr-cols="2"] .cr-rp-art { width: 62cqh; height: 62cqh; top: 50%; translate: 0 -50%; border-radius: 9cqh; }
+.cr-hero[data-cr-cols="2"] .cr-rp-meta { left: calc(var(--rp-pad) + 62cqh + 6cqh); right: calc(var(--rp-pad) + 34cqh); top: 50%; bottom: auto; translate: 0 -50%; }
+.cr-hero[data-cr-cols="2"] .cr-rp-title { font-size: 12cqh; }
+.cr-hero[data-cr-cols="2"] .cr-rp .cr-rp-sub { font-size: 9.5cqh; }
+.cr-hero[data-cr-cols="2"] .cr-rp-mark { width: 15cqh; height: 15cqh; }
+.cr-hero[data-cr-cols="2"] .cr-rp-play { width: 30cqh; height: 30cqh; top: 50%; bottom: auto; translate: 0 -50%; right: calc(var(--rp-pad) + 4cqh); }
+.cr-hero[data-cr-cols="2"] .cr-rp-track { height: 2.2cqh; }
 
 /* ═════════════ Contextual Chat card: the assistant panel itself ═════════════ */
 .cr-pclip {
@@ -1791,3 +1871,87 @@ html.ga-np-open .craft-switch, html.ga-np-open .ga-brand { opacity: 0; visibilit
 .cr-preview:hover .cr-pclip { transform: translateY(-2px); box-shadow: 0 0 0 1px rgba(40, 30, 60, 0.07), 0 16px 34px rgba(50, 40, 80, 0.18), 0 2px 6px rgba(50, 40, 80, 0.06); }
 .cr-preview-shot[data-clip] .cr-cursor { z-index: 3; }
 @media (prefers-reduced-motion: reduce) { .cr-pclip, .cr-pclip video { transition: none; } .cr-preview:hover .cr-pclip { transform: none; } }
+
+/* ═════════════ Design notes pill (Craft.PhilosophyPill) ═════════════
+   Replaces the "Latest case study" notice: one idea at a time, the ring fills, the next idea rises in.
+   The text area gets an explicit width/height from JS (measured off .cr-philo-measure), so the pill eases
+   between sizes. --philo-max caps the text width per layout so the pill never reaches the tabs. */
+.cr-philo {
+  --philo-max: calc(614px * var(--cr-scale, 1) - 314px);
+  height: auto; min-height: 50px; padding-top: 6px; padding-bottom: 6px;
+  transform-origin: 50% 50%;
+}
+.cr-philo .cr-philo-mark {
+  position: relative; flex-shrink: 0; width: 30px; height: 30px; margin-left: 9px; border-radius: 50%;
+  display: grid; place-items: center; overflow: hidden;
+  font-size: 10.5px; font-weight: 600; letter-spacing: 0.03em; line-height: 1;
+  transition: background-color 420ms ease, color 420ms ease;
+}
+.cr-philo-mark[data-tone="blue"] { background: rgba(43, 85, 246, 0.11); color: var(--blue); }
+.cr-philo-mark[data-tone="orange"] { background: rgba(232, 100, 44, 0.13); color: #c4501a; }
+.cr-philo-mark[data-tone="ink"] { background: #1f1d22; color: #fff; }
+.cr-philo-mono, .cr-philo-glyph { animation: crPhiloMark 420ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+.cr-philo-glyph { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.cr-philo-glyph path[d*="L12"] { fill: currentColor; stroke-width: 1.2; }
+.cr-philo-stage {
+  position: relative; display: block; flex-shrink: 0; margin: 0 10px; min-width: 0; max-width: var(--philo-max);
+  overflow: hidden;
+  transition: width 420ms cubic-bezier(0.16, 1, 0.3, 1), height 420ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cr-philo-item, .cr-philo-measure { display: flex; flex-direction: column; gap: 1px; text-align: left; }
+.cr-philo-item { position: absolute; left: 0; top: 0; }
+.cr-philo-measure {
+  position: absolute; left: 0; top: 0; visibility: hidden; pointer-events: none;
+  width: max-content; max-width: var(--philo-max);
+}
+.cr-philo-idea {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+  font-size: 14px; line-height: 17px; font-weight: 500; letter-spacing: -0.01em; color: var(--ink);
+  overflow-wrap: anywhere; text-wrap: balance;
+}
+.cr-philo-credit {
+  display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  font-size: 12px; line-height: 15px; color: var(--ink-2);
+}
+.cr-philo-item.is-in { animation: crPhiloIn 420ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+.cr-philo-item.is-out { animation: crPhiloOut 420ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+.cr-philo-toggle {
+  position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; padding: 0; margin: 0;
+  border: 0; background: transparent; cursor: pointer; color: inherit;
+}
+.cr-philo-toggle:focus-visible { outline: none; }
+.cr-philo:has(.cr-philo-toggle:focus-visible) { outline: 2px solid var(--blue); outline-offset: 3px; }
+.cr-philo .cr-ring circle { transition: opacity 240ms ease; }
+.cr-philo.is-paused .cr-ring circle { opacity: 0.45; }
+.cr-philo.is-closing { pointer-events: none; animation: crPhiloClose 360ms cubic-bezier(0.7, 0, 0.84, 0) both; }
+.cr-philo.is-closing .cr-philo-stage { width: 0 !important; transition-duration: 360ms; }
+@keyframes crPhiloIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes crPhiloOut { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(-14px); } }
+@keyframes crPhiloMark { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: none; } }
+@keyframes crPhiloClose { to { opacity: 0; transform: translateY(-6px) scale(0.92); filter: blur(3px); } }
+
+/* Short desktop screens (flow fit) and the 1100-1260 squeeze: the mark and the book title step out */
+@media (min-width: 1100px) { .cr-hero[data-cr-fit] .cr-philo { --philo-max: 300px; } }
+@media (min-width: 1100px) and (max-width: 1260px) {
+  .cr-hero .cr-philo { --philo-max: calc(614px * var(--cr-scale, 1) - 275px); }
+  .cr-hero .cr-philo .cr-philo-mark { display: none; }
+  .cr-hero .cr-philo .cr-philo-work { display: none; }
+}
+/* Tablet: the pill has its own centred row */
+@media (min-width: 701px) and (max-width: 1099px) { .cr-hero .cr-philo { --philo-max: 400px; } }
+/* Phones: full width under the top row; the text area fills it, only its height animates */
+@media (max-width: 700px) {
+  .cr-hero .cr-philo { --philo-max: calc(min(420px, 100vw - 32px) - 117px); height: auto; min-height: 56px; }
+  .cr-hero .cr-philo .cr-philo-stage { flex: 1 1 auto; width: auto !important; }
+  .cr-hero .cr-philo .cr-philo-item { width: 100% !important; }
+  .cr-hero .cr-philo .cr-notice-close { margin-left: auto; }
+}
+@media (max-width: 480px) { .cr-hero .cr-philo .cr-philo-work { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .cr-philo-stage { transition: none; }
+  .cr-philo-item.is-in { animation: crPhiloFade 420ms ease both; }
+  .cr-philo-item.is-out { animation: crPhiloFade 420ms ease reverse both; }
+  .cr-philo-mono, .cr-philo-glyph { animation: crPhiloFade 240ms ease both; }
+  .cr-philo.is-closing { animation: none; }
+}
+@keyframes crPhiloFade { from { opacity: 0; } to { opacity: 1; } }

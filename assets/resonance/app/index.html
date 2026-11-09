@@ -25,14 +25,23 @@
     </style>
   <link rel="icon" href="./favicon.ico"/><link rel="preload" href="./s/global-98443a00241b75b1b9526cb157dd4fb6.css" as="style">
 <link rel="stylesheet" href="./s/global-98443a00241b75b1b9526cb157dd4fb6.css"><script>
-  /* Bundled copy of the Resonance prototype. Paths follow wherever this folder is served;
-     the full-length audio stays on the hosted build (same commit) to keep the portfolio light. */
+  /* Bundled copy of the Resonance prototype. Paths follow wherever this folder is served.
+     Audio: the tracks in the main demo flow play from short same-origin clips in m/ (0:00 to 40 s past
+     each track's first Resonance moment, so the app's own timings still line up). Hosts that block outside media (sandboxed previews) still get sound that way.
+     Every other track streams its full master from the hosted build (same commit). */
   (function () {
     var p = location.pathname;
-    window.__RS_BASE__ = p.slice(0, p.lastIndexOf("/"));
+    var base = p.slice(0, p.lastIndexOf("/"));
+    var clips = { "all-black": 1, "bairan": 1, "aari-aari": 1, "didi-sher-e-baloch": 1, "jaiye-sajana": 1, "bandhu-2": 1 };
+    window.__RS_BASE__ = base;
     window.__RS_AUDIO__ = /\.github\.io$/i.test(location.hostname)
       ? "https://gauravavinash44-blip.github.io/drop-mode"
       : "https://drop-mode.vercel.app";
+    /* file = "<name>.<md5>.mp3", as the Expo export names it */
+    window.__RS_SRC__ = function (file) {
+      var name = file.replace(/\.[0-9a-f]{32}\.mp3$/, "");
+      return clips[name] ? base + "/m/" + name + ".mp3" : window.__RS_AUDIO__ + "/assets/assets/audio/" + file;
+    };
   })();
   </script>
 </head>
@@ -44,6 +53,6 @@
     </noscript>
     <!-- The root element for your Expo app. -->
     <div id="root"></div>
-  <script src="./s/index-eb3d52c9a5b018ba092b30713ef59df9.js" defer></script>
+  <script src="./s/index-594d13b324b60b9ae1ff6953b17485ce.js" defer></script>
 </body>
 </html>

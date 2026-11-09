@@ -209,6 +209,141 @@
       h("style", null, "@keyframes crRing{from{stroke-dashoffset:0}to{stroke-dashoffset:" + c.toFixed(1) + "}}"));
   }
 
+  /* ───────── PhilosophyPill: rotating design notes in the top bar ─────────
+     props.items: [{ idea, who, work?, mark }], props.marks: { DN: { tone } }, props.seconds (per item).
+     One idea at a time; the ring around the close button fills, then the next idea comes in.
+     Pauses on mouse hover, keyboard focus, hidden tab, or a click on the text (WCAG 2.2.2 pause control:
+     a transparent toggle button over the text; the mark shows pause/play while hovered or paused).
+     Close hides it for the session (sessionStorage). */
+  function PhilosophyPill(props) {
+    var items = props.items || [];
+    var secs = props.seconds || 8;
+    var STORE = props.storageKey || "ga-craft-philo-closed";
+    var SWAP = 420;
+    var r = 21, c = 2 * Math.PI * r;
+    function wasClosed() { try { return window.sessionStorage.getItem(STORE) === "1"; } catch (e) { return false; } }
+    var _o = useState(function () { return wasClosed() ? "closed" : "open"; }), state = _o[0], setState = _o[1];
+    var _i = useState({ idx: 0, prev: null, n: 0 }), cur = _i[0], setCur = _i[1];
+    var _z = useState(null), size = _z[0], setSize = _z[1];
+    var _hv = useState(false), hover = _hv[0], setHover = _hv[1];
+    var _fc = useState(false), focus = _fc[0], setFocus = _fc[1];
+    var _up = useState(false), userPaused = _up[0], setUserPaused = _up[1];
+    var _hd = useState(function () { return typeof document !== "undefined" && document.hidden; }), hidden = _hd[0], setHidden = _hd[1];
+    var _ann = useState(""), said = _ann[0], setSaid = _ann[1];
+    var ringRef = useRef(null), measureRef = useRef(null), clock = useRef({ t: 0, last: 0 });
+    var paused = hover || focus || userPaused || hidden || state !== "open";
+    var pausedRef = useRef(paused); pausedRef.current = paused;
+    var curRef = useRef(cur); curRef.current = cur;
+
+    function advance() {
+      if (items.length < 2) return;
+      clock.current.t = 0;
+      var s = curRef.current, next = (s.idx + 1) % items.length, it = items[next];
+      setSaid(it.idea + (/[.!?]$/.test(it.idea) ? " " : ". ") + it.who + (it.work ? ", " + it.work : ""));
+      setCur({ idx: next, prev: s.idx, n: s.n + 1 });
+    }
+
+    /* Drop the outgoing copy once its exit animation is done */
+    useEffect(function () {
+      if (cur.prev == null) return;
+      var id = setTimeout(function () { setCur(function (s) { return s.n === cur.n ? { idx: s.idx, prev: null, n: s.n } : s; }); }, SWAP + 40);
+      return function () { clearTimeout(id); };
+    }, [cur.n]);
+
+    /* Timer: one rAF loop; progress only moves while nothing is pausing it */
+    useEffect(function () {
+      if (state === "closed") return;
+      var raf;
+      function tick(now) {
+        var k = clock.current;
+        if (k.last && !pausedRef.current) k.t += Math.min(now - k.last, 1000);
+        k.last = now;
+        var p = Math.min(1, k.t / (secs * 1000));
+        if (ringRef.current) ringRef.current.style.strokeDashoffset = (c * (1 - p)).toFixed(2);
+        if (p >= 1) advance();
+        raf = requestAnimationFrame(tick);
+      }
+      raf = requestAnimationFrame(tick);
+      return function () { cancelAnimationFrame(raf); };
+    }, [state, secs, items.length]);
+
+    useEffect(function () {
+      function vis() { setHidden(document.hidden); }
+      document.addEventListener("visibilitychange", vis);
+      return function () { document.removeEventListener("visibilitychange", vis); };
+    }, []);
+
+    /* Size the text area to the incoming idea, so the pill eases to its new width and height */
+    useLayoutEffect(function () {
+      function measure() {
+        var m = measureRef.current;
+        if (!m) return;
+        /* layout sizes, not getBoundingClientRect: the top bar scales in on entry */
+        var w = m.offsetWidth + 1, hh = m.offsetHeight;
+        setSize(function (s) { return s && s.w === w && s.h === hh ? s : { w: w, h: hh }; });
+      }
+      measure();
+      window.addEventListener("resize", measure);
+      var fonts = document.fonts && document.fonts.ready;
+      if (fonts) fonts.then(measure);
+      return function () { window.removeEventListener("resize", measure); };
+    }, [cur.idx, state]);
+
+    if (state === "closed" || !items.length) return null;
+    var item = items[cur.idx];
+    var mark = (props.marks && props.marks[item.mark]) || {};
+
+    function close() {
+      try { window.sessionStorage.setItem(STORE, "1"); } catch (e) { /* private mode */ }
+      setState("closing");
+      if (reduced()) finish(); else setTimeout(finish, 1500); /* fallback; normally the collapse's animationend */
+    }
+    function finish() {
+      setState(function (s) { if (s === "closing" && props.onClose) props.onClose(); return "closed"; });
+    }
+    function lines(it) {
+      return [
+        h("span", { key: "i", className: "cr-philo-idea" }, it.idea),
+        h("span", { key: "c", className: "cr-philo-credit" },
+          h("span", { className: "cr-philo-who" }, it.who),
+          it.work ? h("span", { className: "cr-philo-work" }, ", " + it.work) : null)
+      ];
+    }
+    var glyph = userPaused ? "play" : (hover ? "pause" : null);
+
+    return h("div", {
+        className: cx("cr-notice cr-philo", state === "closing" && "is-closing", paused && "is-paused"),
+        role: "group", "aria-label": props.label || "Design notes",
+        "data-cr-enter": props.enter ? "" : undefined,
+        onPointerEnter: function (ev) { if (ev.pointerType === "mouse") setHover(true); },
+        onPointerLeave: function (ev) { if (ev.pointerType === "mouse") setHover(false); },
+        onAnimationEnd: function (ev) { if (ev.target === ev.currentTarget && state === "closing") finish(); },
+        onFocus: function () { setFocus(true); },
+        onBlur: function (ev) { if (!ev.currentTarget.contains(ev.relatedTarget)) setFocus(false); }
+      },
+      h("span", { className: "cr-notice-bar", "aria-hidden": "true" }, h("i"), h("i")),
+      h("span", { className: "cr-philo-mark", "data-tone": mark.tone || "ink", "aria-hidden": "true" },
+        glyph
+          ? h("svg", { key: glyph, viewBox: "0 0 16 16", className: "cr-philo-glyph" },
+              glyph === "pause" ? h("path", { d: "M5.5 4v8M10.5 4v8" }) : h("path", { d: "M5.5 3.8v8.4L12 8z" }))
+          : h("span", { key: item.mark + cur.n, className: "cr-philo-mono" }, item.mark)),
+      h("span", { className: "cr-philo-stage", style: size ? { width: size.w, height: size.h } : null },
+        cur.prev != null ? h("span", { key: "o" + (cur.n - 1), className: "cr-philo-item is-out", "aria-hidden": "true",
+          style: size ? { width: size.w } : null }, lines(items[cur.prev])) : null,
+        h("span", { key: "i" + cur.n, className: cx("cr-philo-item", cur.prev != null && "is-in"),
+          style: size ? { width: size.w } : null }, lines(item)),
+        h("button", { type: "button", className: "cr-philo-toggle",
+          "aria-label": userPaused ? "Play design notes" : "Pause design notes",
+          title: userPaused ? "Play" : "Pause",
+          onClick: function () { setUserPaused(function (v) { return !v; }); } })),
+      h("span", { ref: measureRef, className: "cr-philo-measure", "aria-hidden": "true" }, lines(item)),
+      h("button", { type: "button", className: "cr-notice-close", "aria-label": "Hide design notes", onClick: close },
+        h("svg", { className: "cr-ring", viewBox: "0 0 44 44", "aria-hidden": "true" },
+          h("circle", { ref: ringRef, cx: 22, cy: 22, r: r, strokeDasharray: c, strokeDashoffset: c })),
+        h(Icon, { name: "close", className: "cr-x", stroke: 1.8 })),
+      h("span", { className: "cr-visually-hidden", "aria-live": "polite", "aria-atomic": "true" }, said));
+  }
+
   function TopBar(props) {
     var time = useClock(props.timeZone);
     return h("div", { className: "cr-topbar" },
@@ -216,7 +351,7 @@
         props.avatar ? h("span", { className: "cr-brandorb" }, h("img", { src: props.avatar, alt: "" })) : null,
         h("span", { className: "cr-clock" }, props.time || time),
         h("span", { className: "cr-topbar-id" }, h("span", null, props.title), h("span", null, props.subtitle))),
-      h("div", { "data-cr-enter": "" }, props.notice ? h(NotificationPill, props.notice) : null),
+      h("div", { "data-cr-enter": "" }, props.notice ? h(props.notice.items ? PhilosophyPill : NotificationPill, props.notice) : null),
       h("div", { className: "cr-topbar-right", "data-cr-enter": "" },
         h(SegmentedControl, { items: props.tabs || ["Home", "Projects"], value: props.tab || 0, onChange: props.onTab, label: props.tabsLabel || "Home or projects" }),
         h(IconButton, { variant: "glass", icon: "search", label: props.searchLabel || "Search", onClick: props.onSearch })));
@@ -232,28 +367,36 @@
       h("p", { className: "cr-agenda-label" }, props.label));
   }
 
+  /* One case-study row. Every row has the same trailing round arrow link; the row that is
+     hovered (mouse/pen) or holds keyboard focus is "active": its arrow fills Craft blue and
+     its orb wakes. Only one row is active at a time (the list card owns that state). */
   function FolderRow(props) {
     var r = props.row;
     var linkLabel = "Open " + r.title + " case study";
-    return h("li", { className: "cr-row", draggable: props.draggable ? "true" : undefined,
-      onDragStart: props.draggable ? function (ev) { ev.dataTransfer.setData("text/plain", r.title); } : undefined },
+    return h("li", { className: cx("cr-row", props.active && "is-active"), draggable: props.draggable ? "true" : undefined,
+      onDragStart: props.draggable ? function (ev) { ev.dataTransfer.setData("text/plain", r.title); } : undefined,
+      onPointerEnter: function (ev) { if (ev.pointerType !== "touch" && props.onActive) props.onActive(r.title, "hover"); },
+      onPointerLeave: function (ev) { if (ev.pointerType !== "touch" && props.onActive) props.onActive(null, "hover"); },
+      onFocus: function (ev) { if (props.onActive && ev.target.matches && ev.target.matches(":focus-visible")) props.onActive(r.title, "focus"); },
+      onBlur: function (ev) { if (props.onActive && !ev.currentTarget.contains(ev.relatedTarget)) props.onActive(null, "focus"); } },
       h("span", { className: "cr-row-av" },
-        r.icon ? h(ProjectWell, { icon: r.icon, tone: r.tone }) : h("img", { className: "cr-row-thumb", src: r.thumb, alt: "" }),
-        r.badge ? h("i", { className: "cr-row-badge", "aria-hidden": "true" }, h("b"), h("b"), h("b")) : null),
+        r.icon ? h(ProjectWell, { icon: r.icon, tone: r.tone }) : h("img", { className: "cr-row-thumb", src: r.thumb, alt: "" })),
       h("button", { type: "button", className: "cr-row-text", "aria-label": props.openLabel ? props.openLabel(r) : undefined, onClick: function (ev) { if (props.onOpen) props.onOpen(r, ev); } },
         h("b", null, r.title), h("span", null, r.sub)),
       r.locked
         ? h(IconButton, { icon: "lock", label: r.title + " is under NDA" })
-        : r.href && r.pill
-          /* Link drawn as the reference's "on" toggle: blue track, glyph left, knob right */
-          ? h("a", { className: "cr-row-pill", href: r.href, "aria-label": linkLabel, title: "Open case study" },
-              h(Icon, { name: "arrow", stroke: 2 }), h("span", { className: "cr-row-pill-knob" }))
-          : r.href
-            ? h("a", { className: "cr-iconbtn cr-iconbtn--well", href: r.href, "aria-label": linkLabel, title: "Open case study" }, h(Icon, { name: "arrow" }))
-            : h(Toggle, { defaultChecked: r.open !== false, label: "Show " + r.title }));
+        : r.href
+          ? h("a", { className: "cr-row-go", href: r.href, "aria-label": linkLabel, title: "Open case study" },
+              h("span", { className: "cr-row-go-fill", "aria-hidden": "true" }), h(Icon, { name: "arrow", stroke: 1.8 }))
+          : h(Toggle, { defaultChecked: r.open !== false, label: "Show " + r.title }));
   }
 
   function FolderListCard(props) {
+    /* hover wins over focus; leaving restores whichever row still holds keyboard focus */
+    var _h = useState(null), hov = _h[0], setHov = _h[1];
+    var _f = useState(null), foc = _f[0], setFoc = _f[1];
+    var active = hov || foc;
+    function onActive(title, why) { if (why === "hover") setHov(title); else setFoc(title); }
     return h("section", { className: cx("cr-card cr-solid cr-list", props.className), "data-cr-enter": "", "aria-label": props.title },
       h("header", { className: "cr-list-head" },
         h("h3", { className: "cr-t-title" }, props.title),
@@ -261,7 +404,7 @@
           ? h("button", { type: "button", className: "cr-chip cr-chip--outline cr-chip--btn", "aria-label": props.allLabel || ("View " + props.count), "aria-haspopup": "dialog", onClick: props.onAll }, props.count)
           : h(Chip, { variant: "outline" }, props.count)),
       h("ul", null, (props.rows || []).slice(0, 3).map(function (r) {
-        return h(FolderRow, { key: r.title, row: r, onOpen: props.onOpen, openLabel: props.openLabel, draggable: props.draggable });
+        return h(FolderRow, { key: r.title, row: r, active: active === r.title, onActive: onActive, onOpen: props.onOpen, openLabel: props.openLabel, draggable: props.draggable });
       })));
   }
 
@@ -742,8 +885,17 @@
         })));
   }
 
-  /* Round icon well for a project: 1.5px line icon on a faint tint */
+  /* Round well for a project. Projects get their orb (assets/craft/orb.js: a grainy
+     iridescent sphere, one colour trio per project, keyed by the project icon); anything
+     else (contact slides) keeps the 1.5px line icon on a faint tint. Pass orb: false to force the icon. */
   function ProjectWell(props) {
+    var O = window.CraftOrb;
+    var key = props.orb === false ? null : (typeof props.orb === "string" ? props.orb : props.icon);
+    var isOrb = !!(O && key && O.has(key));
+    var ref = useRef(null);
+    useEffect(function () { return isOrb ? O.mount(ref.current, key) : undefined; }, [isOrb, key]);
+    if (isOrb) return h("span", { className: cx("cr-pwell cr-pwell--orb", props.className), ref: ref, "aria-hidden": "true",
+      style: { backgroundImage: O.fallback(key) } });
     return h("span", { className: cx("cr-pwell", "cr-pwell--" + (props.tone || "plain"), props.className), "aria-hidden": "true" },
       h(Icon, { name: props.icon }));
   }
@@ -1066,12 +1218,13 @@
     var _j = useState(false), jumping = _j[0], setJumping = _j[1];
     var _u = useState(false), pulse = _u[0], setPulse = _u[1];
     var _c = useState(false), cssEq = _c[0], setCssEq = _c[1];
-    var fillRef = useRef(null), eqRef = useRef(null);
+    var fillRef = useRef(null), eqRef = useRef(null), waveRef = useRef(null);
     var api = useRef(null);
 
     useEffect(function () {
       var audio = null, ctx = null, gain = null, analyser = null, bins = null;
       var raf = 0, fadeRaf = 0, jumped = false, want = false, alive = true;
+      var waveAt = 0, waveHist = [];
       var timers = [];
       function later(fn, ms) { var t = setTimeout(fn, ms); timers.push(t); return t; }
       function clearTimers() { timers.forEach(clearTimeout); timers = []; }
@@ -1127,15 +1280,34 @@
         var k = Math.max(0, Math.min(1, audio.currentTime / dur()));
         if (fillRef.current) fillRef.current.style.transform = "scaleX(" + k.toFixed(4) + ")";
         var bars = eqRef.current ? eqRef.current.children : [];
-        if (analyser && bars.length && !reduced()) {
-          analyser.getByteFrequencyData(bins);
+        var wave = waveRef.current ? waveRef.current.children : [];
+        if (!analyser || reduced() || (!bars.length && !wave.length)) return;
+        analyser.getByteFrequencyData(bins);
+        if (bars.length) {
           /* four bands across the low and mid range, where this track lives */
           var bands = [[1, 2], [3, 5], [6, 9], [10, 16]];
-          for (var i = 0; i < bars.length; i++) {
+          for (var i = 0; i < bars.length && i < bands.length; i++) {
             var a = bands[i][0], b = bands[i][1], sum = 0;
             for (var j = a; j <= b; j++) sum += bins[j];
             var v = sum / ((b - a + 1) * 255);
             bars[i].style.transform = "scaleY(" + Math.max(0.18, Math.min(1, v * 1.35)).toFixed(3) + ")";
+          }
+        }
+        /* Scrolling waveform (idea from ElevenLabs UI's ScrollingWaveform, our own build): one new
+           level every ~70ms enters on the right and the history slides left. Transforms only. */
+        if (wave.length && want) {
+          var now = performance.now();
+          if (now - waveAt >= 70) {
+            waveAt = now;
+            var s = 0;
+            for (var q = 1; q <= 16; q++) s += bins[q];
+            var lvl = Math.min(1, Math.pow(s / (16 * 255), 1.6) * 1.45);
+            waveHist.push(lvl); if (waveHist.length > wave.length) waveHist.shift();
+            var off = wave.length - waveHist.length;
+            for (var m = 0; m < wave.length; m++) {
+              var hv = m < off ? 0 : waveHist[m - off];
+              wave[m].style.transform = "scaleY(" + Math.max(0.12, hv).toFixed(3) + ")";
+            }
           }
         }
       }
@@ -1196,6 +1368,7 @@
       function stop(hard) {
         var was = want;
         want = false;
+        waveHist = [];
         clearTimers();
         if (alive) { setPlaying(false); setMoment(false); setPulse(false); setJumping(false); }
         if (!audio) return;
@@ -1239,7 +1412,7 @@
     }, []);
     return {
       playing: playing, moment: moment, jumping: jumping, pulse: pulse, cssEq: cssEq,
-      fillRef: fillRef, eqRef: eqRef,
+      fillRef: fillRef, eqRef: eqRef, waveRef: waveRef,
       toggle: function () { if (api.current) api.current.toggle(); }
     };
   }
@@ -1279,39 +1452,97 @@
           h("path", { d: pl.playing ? NP_ICON.pause : NP_ICON.play }))));
   }
 
-  /* Board card ("Create a room" slot): the same player in a glass card. The card body opens the
-     Resonance popup, growing from the card; the play button only plays. */
+  /* Board card: an iOS-style music widget. The background is a soft tint sampled from the album
+     art (greyscale art falls back to a dusty blue), art top-left, a round mark top-right, title and
+     line bottom-left, a big round play button bottom-right, progress along the bottom edge.
+     The body opens the Resonance popup, which grows out of this card; the play button only plays. */
+  var RP_TINT = "#467ca2";
+  var RP_WAVE_BARS = 14;
+  var rpTintCache = {};
+  function rpSampleTint(src, done) {
+    if (rpTintCache[src]) { done(rpTintCache[src]); return; }
+    var img = new Image();
+    img.decoding = "async";
+    img.onload = function () {
+      try {
+        var c = document.createElement("canvas"); c.width = c.height = 12;
+        var g = c.getContext("2d"); g.drawImage(img, 0, 0, 12, 12);
+        var d = g.getImageData(0, 0, 12, 12).data, r = 0, gg = 0, b = 0, n = d.length / 4;
+        for (var i = 0; i < d.length; i += 4) { r += d[i]; gg += d[i + 1]; b += d[i + 2]; }
+        r /= n * 255; gg /= n * 255; b /= n * 255;
+        var mx = Math.max(r, gg, b), mn = Math.min(r, gg, b), l = (mx + mn) / 2, sat = mx === mn ? 0 : (mx - mn) / (1 - Math.abs(2 * l - 1));
+        var hue = 0;
+        if (mx !== mn) {
+          hue = mx === r ? ((gg - b) / (mx - mn)) % 6 : mx === gg ? (b - r) / (mx - mn) + 2 : (r - gg) / (mx - mn) + 4;
+          hue = (hue * 60 + 360) % 360;
+        }
+        /* too grey to carry a colour: keep the dusty blue */
+        var tint = sat < 0.14 ? RP_TINT : "hsl(" + Math.round(hue) + " " + Math.round(Math.min(0.46, Math.max(0.26, sat)) * 100) + "% " + Math.round(Math.min(0.42, Math.max(0.33, l)) * 100) + "%)";
+        rpTintCache[src] = tint; done(tint);
+      } catch (err) { done(RP_TINT); }
+    };
+    img.onerror = function () { done(RP_TINT); };
+    img.src = src;
+  }
+  /* Warm the popup's big images on intent (hover, focus, press) so the open morph never waits on a decode */
+  var rpWarmed = false;
+  function rpWarm() {
+    if (rpWarmed) return;
+    rpWarmed = true;
+    [RS_HOME, NP_FRAME].forEach(function (u) {
+      var im = new Image(); im.decoding = "async"; im.src = u;
+      if (im.decode) im.decode().catch(function () {});
+    });
+  }
+  var RP_MARK = "M7.5 10v4M10.5 7.5v9M13.5 9v6M16.5 11v2";
+  var RP_PAUSE = "M8.3 5h1.4c.7 0 1.3.6 1.3 1.3v11.4c0 .7-.6 1.3-1.3 1.3H8.3c-.7 0-1.3-.6-1.3-1.3V6.3C7 5.6 7.6 5 8.3 5zM14.3 5h1.4c.7 0 1.3.6 1.3 1.3v11.4c0 .7-.6 1.3-1.3 1.3h-1.4c-.7 0-1.3-.6-1.3-1.3V6.3c0-.7.6-1.3 1.3-1.3z";
+
   function ResonanceCard(props) {
     var pl = useResonancePlayer();
     var openRef = useRef(null);
+    var art = props.art || NP_ART;
+    var _t = useState(rpTintCache[art] || RP_TINT), tint = _t[0], setTint = _t[1];
+    useEffect(function () {
+      var alive = true;
+      rpSampleTint(art, function (c) { if (alive) setTint(c); });
+      return function () { alive = false; };
+    }, [art]);
     var title = props.title || "Resonance";
     function open(ev) {
       if (ev) ev.stopPropagation(); /* the stage treats bare taps as "change wallpaper" */
       if (ev && ev.target.closest && ev.target.closest(".cr-rp-play")) return;
       npPauseAll();
+      rpWarm();
       if (props.onOpen) props.onOpen(openRef.current);
     }
-    return h("div", { className: cx("cr-card cr-glass cr-rp", npStateClass(pl), props.className),
-        onClick: open, "data-cr-enter": "", "data-np-card": "", "data-drop": NP_DROP },
-      h("span", { className: "cr-rp-glow", "aria-hidden": "true" }),
+    var wave = [];
+    for (var i = 0; i < RP_WAVE_BARS; i++) wave.push(h("i", { key: i }));
+    return h("div", { className: cx("cr-card cr-rp", npStateClass(pl), props.className),
+        style: { "--rp-tint": tint },
+        onClick: open, onPointerEnter: rpWarm, onFocus: rpWarm,
+        "data-cr-enter": "", "data-np-card": "", "data-drop": NP_DROP },
       h("button", { type: "button", className: "cr-rp-open", ref: openRef, "aria-haspopup": "dialog",
         "aria-label": props.label || (title + " for Spotify. Open the live prototype") }),
       h("span", { className: "cr-rp-art", "aria-hidden": "true" },
-        h("img", { src: props.art || NP_ART, srcSet: (props.art || NP_ART) + " 1x, " + (props.artLg || NP_POSTER) + " 2.5x", alt: "", decoding: "async", draggable: false })),
+        h("img", { src: art, srcSet: art + " 1x, " + (props.artLg || NP_POSTER) + " 2.5x", alt: "", decoding: "async", draggable: false }),
+        h("span", { className: "cr-rp-wave", ref: pl.waveRef }, wave)),
+      h("span", { className: "cr-rp-mark", "aria-hidden": "true" },
+        h("svg", { viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2.2, strokeLinecap: "round" },
+          h("path", { d: RP_MARK }))),
+      h("span", { className: "cr-rp-meta", "aria-hidden": "true" },
+        h("span", { className: "cr-rp-title" }, title),
+        h("span", { className: "cr-np-sub cr-rp-sub" },
+          h("span", { className: "cr-np-sub-a" }, props.sub || "For Spotify"),
+          h("span", { className: "cr-np-sub-b" }, props.moment || "Your moment"))),
       h("button", { type: "button", className: "cr-rp-play", "aria-label": pl.playing ? "Pause Resonance preview" : "Play Resonance preview", "aria-pressed": pl.playing ? "true" : "false",
         onClick: function (ev) { ev.stopPropagation(); pl.toggle(); } },
-        h("svg", { viewBox: "0 0 24 24", width: 18, height: 18, "aria-hidden": "true", fill: "currentColor" },
-          h("path", { d: pl.playing ? NP_ICON.pause : NP_ICON.play }))),
-      h("span", { className: "cr-rp-meta", "aria-hidden": "true" },
-        h("span", { className: "cr-rp-row" },
-          h("span", { className: "cr-rp-title" }, title),
-          h("span", { className: "cr-np-eq cr-rp-eq", ref: pl.eqRef }, h("i"), h("i"), h("i"), h("i"))),
-        h("span", { className: "cr-np-sub cr-rp-sub" },
-          h("span", { className: "cr-np-sub-a" }, h("i", { className: "cr-np-dot" }), props.sub || "For Spotify"),
-          h("span", { className: "cr-np-sub-b" }, props.moment || "Your moment")),
-        h("span", { className: "cr-np-track cr-rp-track" },
-          h("i", { className: "cr-np-fill", ref: pl.fillRef }),
-          h("i", { className: "cr-np-mark", style: { left: NP_MARK_LEFT } }))));
+        /* both glyphs stay mounted; CSS crossfades them with a small turn and scale */
+        h("svg", { viewBox: "0 0 24 24", "aria-hidden": "true", fill: "currentColor" },
+          h("path", { className: "cr-rp-g-play", d: NP_ICON.play }),
+          h("path", { className: "cr-rp-g-pause", d: RP_PAUSE }))),
+      h("span", { className: "cr-rp-track", "aria-hidden": "true" },
+        h("i", { className: "cr-rp-fill", ref: pl.fillRef }),
+        h("i", { className: "cr-rp-drop", style: { left: NP_MARK_LEFT } })));
   }
 
   /* The phone in the popup runs the real prototype, as on resonance-short.html: it starts on the
@@ -1328,6 +1559,50 @@
   };
   function rsFresh(base, embed) { return base + "?fresh=1&t=" + Date.now() + (embed ? "&embed=1" : ""); }
 
+  var RS_OPEN_MS = 560;
+  var RS_CLOSE_MS = 480;
+  var RS_EASE_FOLD = "cubic-bezier(0.32, 0.72, 0, 1)";
+  function rsCardOf(el) { return el && el.closest ? el.closest(".cr-rp, .cr-np") : null; }
+  /* Morph keyframes from the card's rect to the open sheet, plus two layers inside the sheet:
+     a copy of the card pinned where the clip window starts, and a full layer in the card's tint.
+     Keyframes touch clip-path and transform only. */
+  function rsMorph(sheet, src, card) {
+    var r = sheet.getBoundingClientRect(), s = src.rect;
+    var w = Math.min(s.width, r.width), hh = Math.min(s.height, r.height);
+    var cl = Math.max(0, Math.min(s.left - r.left, r.width - w));
+    var ct = Math.max(0, Math.min(s.top - r.top, r.height - hh));
+    var tx = s.left - (r.left + cl), ty = s.top - (r.top + ct);
+    var cs = getComputedStyle(sheet), R = cs.borderTopLeftRadius || "0px";
+    var frames = [
+      { clipPath: "inset(" + ct + "px " + (r.width - cl - w) + "px " + (r.height - ct - hh) + "px " + cl + "px round " + src.radius + "px)", transform: "translate(" + tx + "px," + ty + "px)" },
+      { clipPath: "inset(0px 0px 0px 0px round " + R + ")", transform: "translate(0px,0px)" }
+    ];
+    var ghost = null, tint = null;
+    /* closing before the open morph ended: drop its layers so only one set is ever on screen */
+    Array.prototype.slice.call(sheet.querySelectorAll(":scope > .cr-np-ghost, :scope > .cr-np-morph-tint")).forEach(function (n) { n.remove(); });
+    if (card) {
+      var bl =parseFloat(cs.borderLeftWidth) || 0, bt = parseFloat(cs.borderTopWidth) || 0;
+      var tc = getComputedStyle(card).getPropertyValue("--rp-tint").trim();
+      if (tc) {
+        tint = document.createElement("div");
+        tint.className = "cr-np-morph-tint";
+        tint.setAttribute("aria-hidden", "true");
+        tint.style.background = tc;
+        sheet.appendChild(tint);
+      }
+      ghost = card.cloneNode(true);
+      ghost.removeAttribute("data-cr-enter");
+      ghost.setAttribute("aria-hidden", "true");
+      ghost.setAttribute("inert", "");
+      ghost.className = ghost.className.replace(/\bis-playing\b/, "is-paused").replace(/\bis-(moment|pulse|jumping)\b/g, "") + " cr-np-ghost";
+      var k = card.offsetWidth ? s.width / card.offsetWidth : 1;
+      ghost.style.cssText = card.style.cssText + ";visibility:visible;position:absolute;margin:0;left:" + (cl - bl) + "px;top:" + (ct - bt) +
+        "px;width:" + card.offsetWidth + "px;height:" + card.offsetHeight + "px;transform:scale(" + k + ");transform-origin:0 0;translate:none;scale:none;";
+      sheet.appendChild(ghost);
+    }
+    return { frames: frames, ghost: ghost, tint: tint };
+  }
+
   function ResonanceSheet(props) {
     var ref = useRef(null), scrimRef = useRef(null), screenRef = useRef(null);
     var appRef = useRef(null), homeRef = useRef(null), iframeRef = useRef(null);
@@ -1341,30 +1616,66 @@
 
     function fullHref() { return props.fullHref || rsFresh(hosted, false); }
 
-    /* Open: scrim fades, the sheet grows out of the pill, copy rises */
+    /* Open: a shared-element morph. The sheet is clipped to the card's rect and grows into the
+       panel (clip-path + translate, radius interpolated); a copy of the card and a layer in its
+       tint sit on top and fade, so the widget itself seems to open. The board dims and blurs in
+       step, then the phone and copy rise in. The real card hides until the sheet folds back. */
+    var settled = useRef(false), afterSettle = useRef([]), cardRef = useRef(null), launchSeq = useRef(0);
+    function whenSettled(fn) { if (settled.current) fn(); else afterSettle.current.push(fn); }
+    function settle() {
+      if (settled.current) return;
+      settled.current = true;
+      var q = afterSettle.current; afterSettle.current = [];
+      q.forEach(function (fn) { fn(); });
+    }
     useLayoutEffect(function () {
       var sheet = ref.current, root = document.documentElement;
       root.classList.add("ga-np-open");
       var prev = props.opener && props.opener.querySelector ? (props.opener.querySelector(".cr-np-open") || props.opener) : document.activeElement;
-      var src0 = sourceOf(props.opener), still = reduced();
-      if (scrimRef.current) scrimRef.current.animate([{ opacity: 0 }, { opacity: 1 }], { duration: still ? 160 : 420, easing: "ease", fill: "backwards" });
+      var card = rsCardOf(props.opener);
+      var src0 = sourceOf(card || props.opener), still = reduced();
+      var chrome = Array.prototype.slice.call(sheet.querySelectorAll("[data-np-chrome]"));
+      var fin;
       if (still || !src0) {
-        sheet.animate([{ opacity: 0, transform: still ? "none" : "scale(0.97)" }, { opacity: 1, transform: "none" }], { duration: still ? 160 : 420, easing: EASE_ARRIVE, fill: "backwards" });
+        if (scrimRef.current) scrimRef.current.animate([{ opacity: 0 }, { opacity: 1 }], { duration: still ? 160 : 420, easing: "ease", fill: "backwards" });
+        fin = sheet.animate([{ opacity: 0, transform: still ? "none" : "scale(0.97)" }, { opacity: 1, transform: "none" }], { duration: still ? 160 : 420, easing: EASE_ARRIVE, fill: "backwards" });
       } else {
-        sheet.animate(growFrames(sheet, src0), { duration: 520, easing: EASE_ARRIVE, fill: "backwards" });
-        Array.prototype.slice.call(sheet.querySelectorAll("[data-np-chrome]")).forEach(function (n, i) {
-          n.animate([{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "none" }], { duration: 520, delay: 120 + i * 50, easing: EASE_ARRIVE, fill: "backwards" });
+        var D = RS_OPEN_MS;
+        var m = rsMorph(sheet, src0, card);
+        cardRef.current = card;
+        if (card) card.style.visibility = "hidden";
+        sheet.style.willChange = "clip-path, transform";
+        if (scrimRef.current) scrimRef.current.animate([{ opacity: 0 }, { opacity: 1 }], { duration: D, easing: "cubic-bezier(0.33, 1, 0.68, 1)", fill: "backwards" });
+        fin = sheet.animate(m.frames, { duration: D, easing: EASE_ARRIVE, fill: "backwards" });
+        if (m.tint) m.tint.animate([{ opacity: 1 }, { opacity: 1, offset: 0.12 }, { opacity: 0 }], { duration: D * 0.72, easing: "ease-out", fill: "forwards" });
+        if (m.ghost) m.ghost.animate([{ opacity: 1 }, { opacity: 0 }], { duration: D * 0.34, easing: "ease-out", fill: "forwards" });
+        chrome.forEach(function (n, i) {
+          n.style.willChange = "transform, opacity";
+          n.animate([{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }],
+            { duration: 480, delay: D * 0.42 + i * 60, easing: EASE_ARRIVE, fill: "backwards" });
         });
+        fin.finished.then(function () {
+          if (m.ghost && m.ghost.parentNode) m.ghost.parentNode.removeChild(m.ghost);
+          if (m.tint && m.tint.parentNode) m.tint.parentNode.removeChild(m.tint);
+        }, function () {});
       }
+      var cleanup = function () {
+        sheet.style.willChange = "";
+        chrome.forEach(function (n) { n.style.willChange = ""; });
+        settle();
+      };
+      /* the chrome's stagger ends a little after the sheet; let both land before any heavy work */
+      var settleT = setTimeout(cleanup, still || !src0 ? 200 : RS_OPEN_MS * 0.42 + chrome.length * 60 + 480);
       npPauseAll(); /* the live prototype makes its own sound */
       var t = setTimeout(function () {
         var btn = sheet.querySelector(".cr-np-close");
         if (btn) btn.focus({ preventScroll: true });
       }, 60);
       return function () {
-        clearTimeout(t);
+        clearTimeout(t); clearTimeout(settleT);
         stopWatch();
         root.classList.remove("ga-np-open");
+        if (cardRef.current) cardRef.current.style.visibility = "";
         if (prev && prev.isConnected && prev.focus) prev.focus({ preventScroll: true });
       };
     }, []);
@@ -1448,17 +1759,22 @@
       if (phase === "app") return;
       npPauseAll();
       setPhase("app");
-      load("local");
+      setStatus("loading");
+      var seq = ++launchSeq.current;
       requestAnimationFrame(function () {
-        var app = appRef.current;
+        var app = appRef.current, zoom = null;
         if (app && !reduced()) {
-          app.animate([
-            { transform: "scale(" + (RS_ICON_AT.w / 100).toFixed(3) + ")", borderRadius: "22%", opacity: 0.2 },
-            { transform: "none", borderRadius: "0", opacity: 1 }
+          zoom = app.animate([
+            { transform: "scale(" + (RS_ICON_AT.w / 100).toFixed(3) + ")", clipPath: "inset(0 round 22%)", opacity: 0.2 },
+            { transform: "none", clipPath: "inset(0 round 0%)", opacity: 1 }
           ], { duration: 460, easing: EASE_ARRIVE });
         } else if (app) {
-          app.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160, easing: "ease" });
+          zoom = app.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160, easing: "ease" });
         }
+        /* start the iframe only once the popup has landed and the app has zoomed in: loading the
+           prototype (a big script) mid-animation is what made frames drop */
+        var go = function () { whenSettled(function () { if (appRef.current && launchSeq.current === seq) load("local"); }); };
+        if (zoom) zoom.finished.then(go, go); else go();
         var ctl = ref.current && ref.current.querySelector(".cr-np-ctl");
         if (ctl) ctl.focus({ preventScroll: true });
       });
@@ -1466,6 +1782,7 @@
     /* Back to the home screen: the app folds into the icon and stops (unloading it stops its audio) */
     function goHome() {
       if (phase !== "app") return;
+      launchSeq.current++;
       stopWatch();
       var app = appRef.current, still = reduced();
       setPhase("leaving");
@@ -1486,23 +1803,34 @@
       if (closing.current) return;
       closing.current = true;
       var sheet = ref.current, called = false;
-      var done = function () { if (called) return; called = true; props.onClose(); };
+      var card = cardRef.current || rsCardOf(props.opener);
+      var done = function () {
+        if (called) return; called = true;
+        if (card) card.style.visibility = "";
+        props.onClose();
+      };
       if (!sheet) { done(); return; }
-      setTimeout(done, 700);
       document.documentElement.classList.remove("ga-np-open");
       if (props.onClosing) props.onClosing();
-      var src0 = sourceOf(props.opener), still = reduced();
-      if (scrimRef.current) scrimRef.current.animate([{ opacity: 1 }, { opacity: 0 }], { duration: still ? 140 : 380, easing: "ease", fill: "forwards" });
+      if (card) card.style.visibility = "hidden";
+      var src0 = sourceOf(card || props.opener), still = reduced();
+      var D = still || !src0 ? (still ? 140 : 320) : RS_CLOSE_MS;
+      setTimeout(done, D + 400);
+      if (scrimRef.current) scrimRef.current.animate([{ opacity: 1 }, { opacity: 0 }], { duration: D, easing: "cubic-bezier(0.33, 0, 0.67, 1)", fill: "forwards" });
       Array.prototype.slice.call(sheet.querySelectorAll("[data-np-chrome]")).forEach(function (n) {
-        n.animate([{ opacity: 1 }, { opacity: 0 }], { duration: still ? 120 : 200, easing: "ease", fill: "forwards" });
+        n.animate([{ opacity: 1 }, { opacity: 0 }], { duration: still ? 120 : 160, easing: "ease-out", fill: "forwards" });
       });
       var anim;
       if (still || !src0) {
-        anim = sheet.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: still ? "none" : "scale(0.96)" }], { duration: still ? 140 : 320, easing: AW_EASE_BACK, fill: "forwards" });
+        anim = sheet.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: still ? "none" : "scale(0.96)" }], { duration: D, easing: AW_EASE_BACK, fill: "forwards" });
       } else {
-        var fr = growFrames(sheet, src0).reverse();
-        fr[1].opacity = 0.6;
-        anim = sheet.animate(fr, { duration: 440, easing: AW_EASE_BACK, fill: "forwards" });
+        /* the open morph, backwards: the panel folds into the card, the tint and the card fade back in */
+        var m = rsMorph(sheet, src0, card);
+        sheet.style.willChange = "clip-path, transform";
+        anim = sheet.animate(m.frames.slice().reverse(), { duration: D, easing: RS_EASE_FOLD, fill: "forwards" });
+        /* same clock as the fold: the panel takes the card's colour while it shrinks, the card's face lands with it */
+        if (m.tint) m.tint.animate([{ opacity: 0 }, { opacity: 1, offset: 0.55 }, { opacity: 1 }], { duration: D, easing: RS_EASE_FOLD, fill: "both" });
+        if (m.ghost) m.ghost.animate([{ opacity: 0 }, { opacity: 0, offset: 0.5 }, { opacity: 1, offset: 0.85 }, { opacity: 1 }], { duration: D, easing: RS_EASE_FOLD, fill: "both" });
       }
       anim.finished.then(done, done);
     }
@@ -1575,7 +1903,7 @@
 
   window.Craft = {
     Stage: Stage, Backdrop: Backdrop, Icon: Icon, Avatar: Avatar,
-    TopBar: TopBar, NotificationPill: NotificationPill, SegmentedControl: SegmentedControl,
+    TopBar: TopBar, NotificationPill: NotificationPill, PhilosophyPill: PhilosophyPill, SegmentedControl: SegmentedControl,
     IconButton: IconButton, Chip: Chip, Toggle: Toggle,
     AgendaCard: AgendaCard, FolderListCard: FolderListCard, DropZoneCard: DropZoneCard,
     PreviewCard: PreviewCard, CursorChip: CursorChip, ProfileOrb: ProfileOrb, HeadOrb: HeadOrb, StatCard: StatCard,
@@ -1599,7 +1927,7 @@
     } catch (e) { day = "Monday"; date = "27 April"; }
     var rows = [
       { title: "Contextual Chat", sub: "AI search", thumb: img.chat, icon: "chatSpark", tone: "blue" },
-      { title: "Deal Room", sub: "B2B SaaS", thumb: img.dealRoom, icon: "dealDoc", tone: "orange", pill: true, badge: true },
+      { title: "Deal Room", sub: "B2B SaaS", thumb: img.dealRoom, icon: "dealDoc", tone: "orange" },
       { title: "White Label", sub: "Fintech", thumb: img.whiteLabel, icon: "swatch", tone: "pink" }
     ];
     return {

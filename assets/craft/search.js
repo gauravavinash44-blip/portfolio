@@ -76,6 +76,8 @@
       h("path", { d: OWN[props.name] || "" }));
   }
   function Well(props) {
+    /* projects (case studies, playground explorations) show their orb from craft.js */
+    if (props.orb && window.Craft && window.Craft.ProjectWell) return h(window.Craft.ProjectWell, { icon: props.icon, tone: props.tone, className: "cs-well" });
     return h("span", { className: cx("cr-pwell", "cr-pwell--" + (props.tone || "plain"), "cs-well"), "aria-hidden": "true" }, h(Icon, { name: props.icon }));
   }
 
@@ -718,7 +720,7 @@
       var external = it.action === "resume" || it.action === "linkedin";
       var go = it.group === "action" ? (external ? "arrow" : "chevron") : "arrow";
       return optionRow(opt, [
-        h(Well, { key: "w", icon: it.group === "section" ? "hash" : it.icon, tone: it.tone }),
+        h(Well, { key: "w", icon: it.group === "section" ? "hash" : it.icon, tone: it.tone, orb: it.group === "case" || it.group === "playground" }),
         h("span", { key: "t", className: "cs-row-text" },
           h("b", null, marks(it.title, trimmed)),
           h("span", null, marks(it.sub, trimmed))),
@@ -822,7 +824,7 @@
                     typing.n < 0 ? h("span", { className: "cs-dots" }, h("i"), h("i"), h("i")) : h("span", { dangerouslySetInnerHTML: { __html: formatAnswer(shown) } }), typing.n >= 0 ? h("span", { className: "cs-caret" }) : null)
                 : h("div", { className: "cs-bubble cs-bubble--bot", dangerouslySetInnerHTML: { __html: formatAnswer(m.text) } }),
               rel ? h("a", { className: "cs-related", href: rel.href },
-                h(Well, { icon: rel.icon, tone: rel.tone }),
+                h(Well, { icon: rel.icon, tone: rel.tone, orb: true }),
                 h("span", { className: "cs-row-text" }, h("b", null, rel.title), h("span", null, "Read the case study")),
                 h("span", { className: "cs-go", "aria-hidden": "true" }, h(Icon, { name: "arrow", stroke: 1.8 }))) : null,
               showChips && (m.suggestions.length || m.fallback) ? h("div", { className: "cs-chips cs-chips--reply", role: "group", "aria-label": "Suggested questions" },

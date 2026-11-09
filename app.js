@@ -815,7 +815,35 @@
       clip: { poster: "./assets/craft/case/chat-panel-poster.jpg", video: "./assets/craft/case/chat-panel.mp4" },
       cursors: S.preview.cursors.map((c) => Object.assign({}, c, c.name === "You" ? { x: 58, y: 104 } : { x: 186, y: 184 })),
     });
-    S.topbar.notice.href = hrefs["Contextual Chat"];
+    /* Top bar pill: rotating design notes (rendered by Craft.PhilosophyPill). Interleaved Norman, Rams, Gaurav.
+       Norman and Rams lines are short paraphrases of their principles, not verbatim quotes.
+       DRAFT (needs Gaurav's OK): the four Gaurav lines marked "draft" below are new, written in his voice.
+       The first Gaurav line is his own stated principle. */
+    const DN = { who: "Don Norman", work: "The Design of Everyday Things", mark: "DN" };
+    const DR = { who: "Dieter Rams", mark: "DR" };
+    const GA = { who: "Gaurav Avinash", mark: "GA" };
+    S.topbar.notice = {
+      label: "Design notes",
+      seconds: 8,
+      marks: { DN: { tone: "blue" }, DR: { tone: "orange" }, GA: { tone: "ink" } },
+      items: [
+        Object.assign({ idea: "If it needs a manual, the design failed" }, DN), /* discoverability */
+        Object.assign({ idea: "Good design is honest" }, DR),
+        Object.assign({ idea: "I don't simplify flows blindly. I protect intent." }, GA),
+        Object.assign({ idea: "Show people what they can do" }, DN), /* affordances, signifiers */
+        Object.assign({ idea: "Less, but better" }, DR),
+        Object.assign({ idea: "I show where every number comes from" }, GA), /* draft: fintech trust */
+        Object.assign({ idea: "Every action needs a clear response" }, DN), /* feedback */
+        Object.assign({ idea: "Good design makes a product understandable" }, DR),
+        Object.assign({ idea: "I make the AI show its sources" }, GA), /* draft: AI interfaces */
+        Object.assign({ idea: "Controls should match what they move" }, DN), /* mapping */
+        Object.assign({ idea: "Good design is long-lasting" }, DR),
+        Object.assign({ idea: "I'll take dense data over a lost user" }, GA), /* draft: complex data workflows */
+        Object.assign({ idea: "Blame the design, not the person" }, DN), /* human error */
+        Object.assign({ idea: "Good design is unobtrusive" }, DR),
+        Object.assign({ idea: "I ship the rough version, then listen" }, GA), /* draft: 0 to 1 */
+      ],
+    };
     S.stat.linkLabel = "View all work";
     /* Experience keys: the two named segments, short enough for the small card (full label in the tooltip) */
     S.stat.segments = S.stat.segments.map((s) => Object.assign({}, s, { short: s.label === "Fintech AI" ? "Fintech" : s.label }));
