@@ -911,6 +911,21 @@
         sub: "One page, PDF", href: ASSETS.resume, external: true, action: "Open Gaurav's resume, PDF (new tab)" },
     ];
     S.stack.onClick = () => onExit("more-work");
+    /* Availability + booking on the date card (assets/craft/booking.js, Cal.com).
+       status: "open" | "booked" | "not-looking". until: "YYYY-MM-DD" shown as "Booked until 12 Jan".
+       Event type slugs must match Cal.com (cal.com/<calUsername>/<slug>). */
+    S.availability = {
+      calUsername: "gaurav-avinash-oqjm0c",
+      eventTypes: [
+        { slug: "15min", label: "15 min intro", minutes: 15 },
+        { slug: "30min", label: "30 min interview", minutes: 30 },
+      ],
+      status: "open",
+      until: null,
+      email: "gauravavinash3@gmail.com",
+      linkedin: "https://www.linkedin.com/in/gauravavinash",
+      fallbackHours: "Mon to Fri, 9:00 to 18:00 IST",
+    };
     S.profileSheet.links = [
       { label: "Resume", href: ASSETS.resume, external: true },
       { label: "LinkedIn", href: "https://www.linkedin.com/in/gauravavinash", external: true },
@@ -1113,7 +1128,7 @@
       if (t) t.setAttribute("aria-expanded", picker ? "true" : "false");
     }, [picker]);
     useEffect(() => {
-      if (!sheet || sheet.kind === "resonance" || sheet.kind === "search") return undefined; /* these sheets animate their own close */
+      if (!sheet || sheet.kind === "resonance" || sheet.kind === "search" || sheet.kind === "booking") return undefined; /* these sheets animate their own close */
       const onKey = (ev) => { if (ev.key === "Escape") setSheet(null); };
       window.addEventListener("keydown", onKey);
       return () => window.removeEventListener("keydown", onKey);
@@ -1179,6 +1194,8 @@
       ],
     };
 
+    const CB = window.CraftBooking;
+    const openBooking = (el) => { setPicker(false); setSheet({ kind: "booking", opener: el }); };
     const openResonance = (el) => { setPicker(false); setSheet({ kind: "resonance", opener: el }); };
     /* Board cards by slot (placement and order live in craft.css / BOARD_ORDER) */
     const pgCard = () => stageRef.current && stageRef.current.querySelector("[data-pg-card]");
@@ -1192,7 +1209,13 @@
         allLabel: "View all projects, " + data.caseStudies.length + " case studies",
       })),
       exp: () => e(C.MiniStatCard, Object.assign({}, data.stat, { onLink: (ev) => openProjects(ev) })),
-      date: () => e(C.AgendaCard, data.agenda),
+      /* Date card: date, next free Cal.com slot, status. Tap grows it into the booking sheet. */
+      date: () => (CB ? e(CB.AvailabilityCard, {
+        config: data.availability,
+        meta: data.agenda.day.slice(0, 3) + ", " + data.agenda.meta.replace(/(\d+ \w{3})\w*/, "$1"),
+        day: data.agenda.day,
+        onOpen: openBooking,
+      }) : e(C.AgendaCard, data.agenda)),
       orb: () => e(C.ProfileOrb, Object.assign({}, data.profile, {
         onOpen: () => setSheet({ kind: "profile" }),
         onEdit: () => setSheet({ kind: "profile" }),
@@ -1279,6 +1302,12 @@
         cases: data.caseStudies,
         aiWorks: data.aiWorks,
         onLive: (key) => key === "resonance" && !!C.ResonanceSheet,
+      }) : null,
+      sheet && sheet.kind === "booking" && CB ? e(CB.BookingSheet, {
+        config: data.availability,
+        opener: sheet.opener,
+        onClosing: () => setSheet((s) => (s ? Object.assign({}, s, { closing: true }) : s)),
+        onClose: () => setSheet(null),
       }) : null,
       sheet && sheet.kind === "search" && CS ? e(CS.SearchPopup, {
         mode: sheet.mode,
