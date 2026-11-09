@@ -994,9 +994,9 @@
 
   /* Card order per layout = reading order, so Tab follows what you see */
   const BOARD_ORDER = {
-    grid: ["cases", "date", "orb", "pg", "chat", "np", "hello"],
-    tablet: ["orb", "date", "chat", "pg", "cases", "np", "hello"],
-    stack: ["orb", "chat", "cases", "pg", "date", "np", "hello"],
+    grid: ["cases", "exp", "date", "orb", "pg", "chat", "np", "hello"],
+    tablet: ["orb", "exp", "chat", "pg", "date", "cases", "np", "hello"],
+    stack: ["orb", "chat", "cases", "exp", "pg", "date", "np", "hello"],
   };
 
   /* Design Playground explorations for search: titles and order from the
