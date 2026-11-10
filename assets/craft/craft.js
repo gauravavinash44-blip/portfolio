@@ -1250,7 +1250,7 @@
      clock, the bars follow real levels (AnalyserNode), and it loops back to the drop. */
   var NP_ART = "./assets/resonance/np-art.jpg";
   var NP_POSTER = "./assets/resonance/np-art-lg.jpg";
-  var NP_FRAME = "./assets/resonance/mockup/iphone-frame.png";
+  var NP_FRAME = "./assets/resonance/mockup/iphone-frame.webp";
   var NP_DESIGN_W = 390;
   /* Same host rule as resonance-short.html: GitHub Pages build next to the GitHub Pages portfolio */
   function resonanceBase() {
@@ -1781,7 +1781,7 @@
      iOS home screen, tapping Spotify launches the app from the start (splash, first-time education,
      Now Playing with Resonance). Primary source is the copy bundled in assets/resonance/app (same
      origin, so it works where outside frames are blocked); the hosted build is the fallback. */
-  var RS_HOME = "./assets/resonance/mockup/screen-homescreen.png";
+  var RS_HOME = "./assets/resonance/mockup/screen-homescreen.webp";
   var RS_LOCAL = "./assets/resonance/app/";
   /* Spotify icon on the home-screen export (693 × 1502): centre and width as % of the screen */
   var RS_ICON_AT = { x: 61.5, y: 36.8, w: 15.6 };

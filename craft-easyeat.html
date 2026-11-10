@@ -10,8 +10,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..500&display=swap">
   <link rel="stylesheet" href="./assets/craft/craft-tokens.css?v=1">
-  <link rel="stylesheet" href="./assets/craft/case/case-min.css?v=4">
+  <link rel="stylesheet" href="./assets/craft/case/case-min.css?v=5">
   <link rel="stylesheet" href="./assets/craft/case/ee-min.css?v=1">
+  <script>try{history.scrollRestoration="manual";if(!location.hash)window.scrollTo(0,0)}catch(e){}</script>
 </head>
 <!--
   EasyEat full case study on the case-min template plus cmd-* components (same format as
@@ -20,7 +21,7 @@
   the earlier Craft EasyEat page in git, app.js and the portfolio assistant knowledge base.
   Notes with class="cm-todo" are things the sources don't document yet.
 -->
-<body class="cr cm cmd ee">
+<body class="cr cm cmd ee" style="--pa:#b42f23">
   <a class="cm-skip" href="#main">Skip to content</a>
 
   <header class="cm-bar">
@@ -41,11 +42,14 @@
 
   <main id="main">
     <!-- Hero -->
-    <section class="cm-hero" aria-labelledby="h-title">
-      <div class="cm-col">
+    <section class="cm-hero cm-hero--proj" style="--p1:#f5845e;--p2:#ffd3bb;--p3:#cf3a2c" aria-labelledby="h-title">
+      <div class="cm-hero-top cm-wide">
+        <div class="cm-hero-text">
         <p class="cm-label"><span class="cm-orb" data-orb="bowl" aria-hidden="true"></span><span>Easy Eat · 2021-22 · UI/UX Designer</span></p>
         <h1 class="cm-title" id="h-title">EasyEat customization</h1>
         <p class="cm-lede">Diners ordering from a QR code had to build a dish through a chain of pop-ups and count their own picks. I put every option on one screen that does the counting for them.</p>
+        </div>
+        <figure class="cm-cover cm-cover--port"><picture><source srcset="./assets/craft/case/cover-ee.webp" type="image/webp"><img src="./assets/craft/case/cover-ee.jpg" alt="EasyEat customization card with a phone showing a restaurant menu" width="835" height="1024" fetchpriority="high" decoding="async"></picture></figure>
       </div>
 
       <ul class="cm-nums cm-wide" aria-label="Outcomes">
@@ -67,7 +71,7 @@
       </ul>
 
       <figure class="cm-shot cm-wide">
-        <div class="cm-shot-frame cm-fade"><img src="./assets/craft/case/ee-hero.jpg" alt="Three phone screens: the menu of The Manhattan Fish with a customisable DIY Salad, the DIY Salad customization screen with required Size and Base sections, and a Main section showing 3 of 3 picked with a green tick" width="1640" height="846" fetchpriority="high" decoding="async"></div>
+        <div class="cm-shot-frame cm-fade"><picture><source srcset="./assets/craft/case/ee-hero.webp" type="image/webp"><img src="./assets/craft/case/ee-hero.jpg" alt="Three phone screens: the menu of The Manhattan Fish with a customisable DIY Salad, the DIY Salad customization screen with required Size and Base sections, and a Main section showing 3 of 3 picked with a green tick" width="1640" height="846" fetchpriority="high" decoding="async" style="background-color:#e3dcd6"></picture></div>
         <figcaption>Menu, customization screen, finished section. One page, no pop-ups.</figcaption>
       </figure>
     </section>
@@ -96,8 +100,8 @@
     </section>
     <figure class="cm-pair cm-pair--narrow ee-pair cm-wide">
       <div class="cm-pair-row">
-        <div><img src="./assets/craft/case/ee-old-popup.jpg" alt="Old pop-up for Rabbit Salad: select at least 6 and at max 6 option, six of nine items ticked, Back and Next buttons" width="858" height="1124" loading="lazy" decoding="async"><p class="cm-tag"><b>Before</b> A pop-up per step</p></div>
-        <div><img src="./assets/craft/case/ee-old-bundle.jpg" alt="Old pop-up for Lokal Delight Bundle: select any option, five radio buttons for mains and a Next button" width="858" height="1124" loading="lazy" decoding="async"><p class="cm-tag"><b>Before</b> Rules in small print</p></div>
+        <div><picture><source srcset="./assets/craft/case/ee-old-popup.webp" type="image/webp"><img src="./assets/craft/case/ee-old-popup.jpg" alt="Old pop-up for Rabbit Salad: select at least 6 and at max 6 option, six of nine items ticked, Back and Next buttons" width="858" height="1124" loading="lazy" decoding="async" style="background-color:#e6e0e0"></picture><p class="cm-tag"><b>Before</b> A pop-up per step</p></div>
+        <div><picture><source srcset="./assets/craft/case/ee-old-bundle.webp" type="image/webp"><img src="./assets/craft/case/ee-old-bundle.jpg" alt="Old pop-up for Lokal Delight Bundle: select any option, five radio buttons for mains and a Next button" width="858" height="1124" loading="lazy" decoding="async" style="background-color:#eae0e0"></picture><p class="cm-tag"><b>Before</b> Rules in small print</p></div>
       </div>
       <figcaption>Two screens from my audit of the old customization flow.</figcaption>
     </figure>
@@ -250,8 +254,8 @@
         </div>
         <figure class="cm-pair ee-pair cm-wide">
           <div class="cm-pair-row">
-            <div><img src="./assets/craft/case/ee-wire-1.jpg" alt="Wireframe: grey blocks for the dish name, a Let's make it better heading, required sections and a quantity and Add to cart bar" width="750" height="1000" loading="lazy" decoding="async"><p class="cm-tag"><b>Wireframe</b> One scrolling page</p></div>
-            <div><img src="./assets/craft/case/ee-final-top.jpg" alt="Final design: DIY Salad, RM 150, Let's make it better, Size and Base marked Required, quantity stepper and Add to cart RM 300" width="750" height="1000" loading="lazy" decoding="async"><p class="cm-tag"><b>Final</b> Required sections first</p></div>
+            <div><picture><source srcset="./assets/craft/case/ee-wire-1.webp" type="image/webp"><img src="./assets/craft/case/ee-wire-1.jpg" alt="Wireframe: grey blocks for the dish name, a Let's make it better heading, required sections and a quantity and Add to cart bar" width="750" height="1000" loading="lazy" decoding="async" style="background-color:#cecece"></picture><p class="cm-tag"><b>Wireframe</b> One scrolling page</p></div>
+            <div><picture><source srcset="./assets/craft/case/ee-final-top.webp" type="image/webp"><img src="./assets/craft/case/ee-final-top.jpg" alt="Final design: DIY Salad, RM 150, Let's make it better, Size and Base marked Required, quantity stepper and Add to cart RM 300" width="750" height="1000" loading="lazy" decoding="async" style="background-color:#d8d2cb"></picture><p class="cm-tag"><b>Final</b> Required sections first</p></div>
           </div>
         </figure>
       </article>
@@ -270,7 +274,7 @@
           </dl>
         </div>
         <figure class="cm-shot ee-phone-shot cm-wide">
-          <div class="cm-shot-frame cm-fade"><img src="./assets/craft/case/ee-autoscroll.jpg" alt="Size picked as Rabbit Size with a green tick, and the page scrolled to Base, the next required section" width="750" height="1000" loading="lazy" decoding="async"></div>
+          <div class="cm-shot-frame cm-fade"><picture><source srcset="./assets/craft/case/ee-autoscroll.webp" type="image/webp"><img src="./assets/craft/case/ee-autoscroll.jpg" alt="Size picked as Rabbit Size with a green tick, and the page scrolled to Base, the next required section" width="750" height="1000" loading="lazy" decoding="async" style="background-color:#f9f8f8"></picture></div>
           <figcaption>Size is done and ticked. Base is next.</figcaption>
         </figure>
       </article>
@@ -291,8 +295,8 @@
         </div>
         <figure class="cm-pair ee-pair ee-pair--short cm-wide">
           <div class="cm-pair-row">
-            <div><img src="./assets/craft/case/ee-count-fixed.jpg" alt="Main section showing 3 of 3 with a green tick and three items checked" width="750" height="560" loading="lazy" decoding="async"><p class="cm-tag"><b>Fixed count</b> 3/3 and a tick</p></div>
-            <div><img src="./assets/craft/case/ee-count-minmax.jpg" alt="Prime section: select min 2 and max 3 options, two picked, and a green note saying You can add 1 more" width="750" height="560" loading="lazy" decoding="async"><p class="cm-tag"><b>Min and max</b> “You can add 1 more”</p></div>
+            <div><picture><source srcset="./assets/craft/case/ee-count-fixed.webp" type="image/webp"><img src="./assets/craft/case/ee-count-fixed.jpg" alt="Main section showing 3 of 3 with a green tick and three items checked" width="750" height="560" loading="lazy" decoding="async" style="background-color:#faf8f8"></picture><p class="cm-tag"><b>Fixed count</b> 3/3 and a tick</p></div>
+            <div><picture><source srcset="./assets/craft/case/ee-count-minmax.webp" type="image/webp"><img src="./assets/craft/case/ee-count-minmax.jpg" alt="Prime section: select min 2 and max 3 options, two picked, and a green note saying You can add 1 more" width="750" height="560" loading="lazy" decoding="async" style="background-color:#f8f7f7"></picture><p class="cm-tag"><b>Min and max</b> “You can add 1 more”</p></div>
           </div>
         </figure>
       </article>
@@ -312,8 +316,8 @@
         </div>
         <figure class="cm-pair ee-pair cm-wide">
           <div class="cm-pair-row">
-            <div><img src="./assets/craft/case/ee-wire-2.jpg" alt="Wireframe: a dark message above the bottom bar saying you have reached the maximum limit for this section" width="750" height="1000" loading="lazy" decoding="async"><p class="cm-tag"><b>Wireframe</b> Dark toast</p></div>
-            <div><img src="./assets/craft/case/ee-max-limit.jpg" alt="Final: a red banner inside the Prime section saying You have reached the maximum limit for this section" width="750" height="1000" loading="lazy" decoding="async"><p class="cm-tag"><b>Final</b> Red banner, 5 seconds</p></div>
+            <div><picture><source srcset="./assets/craft/case/ee-wire-2.webp" type="image/webp"><img src="./assets/craft/case/ee-wire-2.jpg" alt="Wireframe: a dark message above the bottom bar saying you have reached the maximum limit for this section" width="750" height="1000" loading="lazy" decoding="async" style="background-color:#c6c6c6"></picture><p class="cm-tag"><b>Wireframe</b> Dark toast</p></div>
+            <div><picture><source srcset="./assets/craft/case/ee-max-limit.webp" type="image/webp"><img src="./assets/craft/case/ee-max-limit.jpg" alt="Final: a red banner inside the Prime section saying You have reached the maximum limit for this section" width="750" height="1000" loading="lazy" decoding="async" style="background-color:#f6e8e8"></picture><p class="cm-tag"><b>Final</b> Red banner, 5 seconds</p></div>
           </div>
         </figure>
       </article>
@@ -332,7 +336,7 @@
           </dl>
         </div>
         <figure class="cm-shot ee-phone-shot cm-wide">
-          <div class="cm-shot-frame cm-fade"><img src="./assets/craft/case/ee-required-error.jpg" alt="Main section showing 0 of 3 with a red line: Select Any 3 Options, above the Supp section" width="750" height="1000" loading="lazy" decoding="async"></div>
+          <div class="cm-shot-frame cm-fade"><picture><source srcset="./assets/craft/case/ee-required-error.webp" type="image/webp"><img src="./assets/craft/case/ee-required-error.jpg" alt="Main section showing 0 of 3 with a red line: Select Any 3 Options, above the Supp section" width="750" height="1000" loading="lazy" decoding="async" style="background-color:#fafafa"></picture></div>
           <figcaption>Scrolled back to Main, with the rule in red.</figcaption>
         </figure>
       </article>
@@ -351,7 +355,7 @@
           </dl>
         </div>
         <figure class="cm-shot ee-phone-shot cm-wide">
-          <div class="cm-shot-frame"><img src="./assets/craft/case/ee-addons.jpg" alt="Add-Ons section marked Optional: Garlic Bread, Savoury Caesar and Smoky Honey Mustard with Add buttons and their max, and Soy Choptick with a stepper at 2" width="750" height="740" loading="lazy" decoding="async"></div>
+          <div class="cm-shot-frame"><picture><source srcset="./assets/craft/case/ee-addons.webp" type="image/webp"><img src="./assets/craft/case/ee-addons.jpg" alt="Add-Ons section marked Optional: Garlic Bread, Savoury Caesar and Smoky Honey Mustard with Add buttons and their max, and Soy Choptick with a stepper at 2" width="750" height="740" loading="lazy" decoding="async" style="background-color:#f9f9f9"></picture></div>
           <figcaption>Each add-on shows its max. Soy Choptick is at 2 of 2.</figcaption>
         </figure>
       </article>
@@ -361,7 +365,7 @@
         <div class="cm-body"><p>I set up the parts the screen needed: primary and secondary buttons, a stepper, selected and unselected states, the green tick, Required and Optional tags, and a popover.</p></div>
       </div>
       <figure class="cm-shot cmd-shot-sm cm-wide">
-        <div class="cm-shot-frame"><img src="./assets/craft/case/ee-system.jpg" alt="Design system sheet: Primary and Secondary buttons, a quantity stepper, selected and unselected radio buttons and checkboxes, a green tick, Required and Optional tags, and a popover" width="1822" height="1446" loading="lazy" decoding="async"></div>
+        <div class="cm-shot-frame"><picture><source srcset="./assets/craft/case/ee-system.webp" type="image/webp"><img src="./assets/craft/case/ee-system.jpg" alt="Design system sheet: Primary and Secondary buttons, a quantity stepper, selected and unselected radio buttons and checkboxes, a green tick, Required and Optional tags, and a popover" width="1822" height="1446" loading="lazy" decoding="async" style="background-color:#e3dede"></picture></div>
         <figcaption>Buttons, stepper, states, tick, tags, popover.</figcaption>
       </figure>
     </section>
@@ -456,6 +460,6 @@
   </main>
 
   <script src="./assets/craft/orb.js?v=1" defer></script>
-  <script src="./assets/craft/case/case-min.js?v=1" defer></script>
+  <script src="./assets/craft/case/case-min.js?v=2" defer></script>
 </body>
 </html>

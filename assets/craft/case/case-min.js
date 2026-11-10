@@ -3,6 +3,60 @@
 (function () {
   "use strict";
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var html = document.documentElement;
+
+  /* Always open at the top. The browser must not restore an old scroll, and smooth scrolling must not glide there. */
+  function toTop() {
+    if (location.hash && document.getElementById(location.hash.slice(1))) return;
+    var prev = html.style.scrollBehavior;
+    html.style.scrollBehavior = "auto";
+    window.scrollTo(0, 0);
+    html.style.scrollBehavior = prev;
+  }
+  try { history.scrollRestoration = "manual"; } catch (e) {}
+  toTop();
+  window.addEventListener("load", function () { toTop(); setTimeout(toTop, 60); });
+  window.addEventListener("pageshow", function (e) {
+    if (e.persisted) { document.body.classList.remove("is-leaving"); toTop(); }
+  });
+
+  /* Pictures: hold the space with a flat colour, then fade in when decoded */
+  [].forEach.call(document.querySelectorAll(".cm img"), function (img) {
+    if (img.complete && img.naturalWidth) return;
+    img.classList.add("lq-wait");
+    var done = function () { img.classList.remove("lq-wait"); };
+    img.addEventListener("load", done, { once: true });
+    img.addEventListener("error", done, { once: true });
+  });
+
+  /* Sections ease in as they arrive (never hides anything if scripting or motion is off) */
+  if ("IntersectionObserver" in window && !reduce.matches) {
+    var rev = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add("is-in"); rev.unobserve(e.target); }
+      });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.04 });
+    [].forEach.call(document.querySelectorAll("main .cm-sec"), function (sec) {
+      if (sec.getBoundingClientRect().top < innerHeight * 0.9) return;
+      sec.classList.add("cm-reveal");
+      rev.observe(sec);
+    });
+  }
+
+  /* Leaving: where the browser has no cross-page transition, fade the page out first, then go */
+  if (!("onpageswap" in window) && !reduce.matches) {
+    document.addEventListener("click", function (e) {
+      var a = e.target.closest && e.target.closest("a[href]");
+      if (!a || e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      if (a.target && a.target !== "_self") return;
+      var u;
+      try { u = new URL(a.href, location.href); } catch (x) { return; }
+      if (u.origin !== location.origin || (u.pathname === location.pathname && u.hash)) return;
+      e.preventDefault();
+      document.body.classList.add("is-leaving");
+      setTimeout(function () { location.href = a.href; }, 200);
+    });
+  }
 
   /* Project orbs: <span class="cm-orb" data-orb="chatSpark"></span>, painted by orb.js */
   var O = window.CraftOrb;

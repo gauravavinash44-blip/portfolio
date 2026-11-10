@@ -10,8 +10,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..500&display=swap">
   <link rel="stylesheet" href="./assets/craft/craft-tokens.css?v=1">
-  <link rel="stylesheet" href="./assets/craft/case/case-min.css?v=4">
+  <link rel="stylesheet" href="./assets/craft/case/case-min.css?v=5">
   <link rel="stylesheet" href="./assets/craft/case/wl-min.css?v=1">
+  <script>try{history.scrollRestoration="manual";if(!location.hash)window.scrollTo(0,0)}catch(e){}</script>
 </head>
 <!--
   White Label Setup, detailed case study. Same template as craft-contextual-chat-detailed.html (case-min + cmd-*),
@@ -19,7 +20,7 @@
   app.js and the real screens in assets/white-label/screens. No outcome numbers exist yet: the hero shows product
   facts and an honest "Not yet". Notes with class="cm-todo" are things still waiting on Gaurav's sources.
 -->
-<body class="cr cm cmd">
+<body class="cr cm cmd" style="--pa:#8a4f45">
   <a class="cm-skip" href="#main">Skip to content</a>
 
   <header class="cm-bar">
@@ -40,11 +41,14 @@
 
   <main id="main">
     <!-- Hero -->
-    <section class="cm-hero" aria-labelledby="h-title">
-      <div class="cm-col">
+    <section class="cm-hero cm-hero--proj" style="--p1:#e49a88;--p2:#b4aef4;--p3:#a8665c" aria-labelledby="h-title">
+      <div class="cm-hero-top cm-wide">
+        <div class="cm-hero-text">
         <p class="cm-label"><span class="cm-orb" data-orb="swatch" aria-hidden="true"></span><span>Systematic · 2025 · Product Designer II</span></p>
         <h1 class="cm-title" id="h-title">White Label Setup</h1>
         <p class="cm-lede">Investor firms set their own URL, logo and email sender here. The old page looked live before anything was set, so I rebuilt it to start empty and only look live once the work is done.</p>
+        </div>
+        <figure class="cm-cover cm-cover--land"><picture><source srcset="./assets/craft/case/cover-wl.webp" type="image/webp"><img src="./assets/craft/case/cover-wl.jpg" alt="White Label Setup title card beside the setup screen in Systematic" width="1400" height="1038" fetchpriority="high" decoding="async"></picture></figure>
       </div>
 
       <ul class="cm-nums cm-wide" aria-label="Product facts and outcome">
@@ -66,7 +70,7 @@
       </ul>
 
       <figure class="cm-shot cm-wide">
-        <div class="cm-shot-frame cm-fade"><img src="./assets/craft/case/wl-hero.jpg" alt="White Label Setup after setup: the firm logo in the sidebar, a live hve.systematicventures.com link, the uploaded Goldman Sachs logo and a sender row marked Verified" width="1640" height="820" fetchpriority="high" decoding="async"></div>
+        <div class="cm-shot-frame cm-fade"><picture><source srcset="./assets/craft/case/wl-hero.webp" type="image/webp"><img src="./assets/craft/case/wl-hero.jpg" alt="White Label Setup after setup: the firm logo in the sidebar, a live hve.systematicventures.com link, the uploaded Goldman Sachs logo and a sender row marked Verified" width="1640" height="820" fetchpriority="high" decoding="async" style="background-color:#fbfcfc"></picture></div>
         <figcaption>The shipped hub after setup. A live URL, the firm logo and a verified sender.</figcaption>
       </figure>
     </section>
@@ -100,11 +104,11 @@
       </div>
     </section>
     <figure class="cm-shot cm-shot--narrow cm-wide">
-      <div class="cm-shot-frame cm-fade"><img src="./assets/craft/case/wl-v1-logo.jpg" alt="The v1 page: radios for go.systematicventures.com and hve.systematicventures.com, a Goldman Sachs logo with Replace and Delete buttons, a sender row marked Verified, and Cancel and Update buttons" width="1600" height="1320" loading="lazy" decoding="async"></div>
+      <div class="cm-shot-frame cm-fade"><picture><source srcset="./assets/craft/case/wl-v1-logo.webp" type="image/webp"><img src="./assets/craft/case/wl-v1-logo.jpg" alt="The v1 page: radios for go.systematicventures.com and hve.systematicventures.com, a Goldman Sachs logo with Replace and Delete buttons, a sender row marked Verified, and Cancel and Update buttons" width="1600" height="1320" loading="lazy" decoding="async" style="background-color:#fafbfc"></picture></div>
       <figcaption>v1 with a logo set. Radios, Replace and Delete sit on the page. The sender says Verified, just as it did on first visit.</figcaption>
     </figure>
     <figure class="cm-shot cmd-shot-sm cm-wide">
-      <div class="cm-shot-frame"><img src="./assets/craft/case/wl-v1-logo-dialog.jpg" alt="The v1 Your Logo dialog: a crop area with a red bank logo, two small previews labelled Preview profile and Preview white label, and Cancel and Save" width="1324" height="924" loading="lazy" decoding="async"></div>
+      <div class="cm-shot-frame"><picture><source srcset="./assets/craft/case/wl-v1-logo-dialog.webp" type="image/webp"><img src="./assets/craft/case/wl-v1-logo-dialog.jpg" alt="The v1 Your Logo dialog: a crop area with a red bank logo, two small previews labelled Preview profile and Preview white label, and Cancel and Save" width="1324" height="924" loading="lazy" decoding="async" style="background-color:#f6f3f5"></picture></div>
       <figcaption>The v1 logo dialog. Crop, then two small previews.</figcaption>
     </figure>
 
@@ -209,7 +213,7 @@
         <p class="cmd-note cm-todo">When this frame was made and why it changed is not documented yet.</p>
       </div>
       <figure class="cm-shot cm-shot--narrow cm-wide">
-        <div class="cm-shot-frame"><img src="./assets/craft/case/wl-sender-alt.jpg" alt="A sender card headed Send Emails From Your Email Address, with a Resend verification email button and a 05:00 timer, a Pending Verification chip and a Refresh button" width="1520" height="248" loading="lazy" decoding="async"></div>
+        <div class="cm-shot-frame"><picture><source srcset="./assets/craft/case/wl-sender-alt.webp" type="image/webp"><img src="./assets/craft/case/wl-sender-alt.jpg" alt="A sender card headed Send Emails From Your Email Address, with a Resend verification email button and a 05:00 timer, a Pending Verification chip and a Refresh button" width="1520" height="248" loading="lazy" decoding="async" style="background-color:#f6f7f8"></picture></div>
         <figcaption>Pending with a 5 minute timer and Refresh. Not what shipped.</figcaption>
       </figure>
     </section>
@@ -237,8 +241,8 @@
         </div>
         <figure class="cm-pair cm-pair--narrow cm-wide">
           <div class="cm-pair-row">
-            <div><img src="./assets/craft/case/wl-v1-hub.jpg" alt="v1 on first visit: two domain radios, an Upload Logo slot, a sender row marked Verified, and Cancel and Update buttons" width="1600" height="1220" loading="lazy" decoding="async"><p class="cm-tag"><b>v1</b> First visit, looks done</p></div>
-            <div><img src="./assets/craft/case/wl-empty-hub.jpg" alt="Shipped first visit: a Custom Subdomain card with a Create Subdomain button and a Custom Sender card with a Create Sender button" width="1600" height="1220" loading="lazy" decoding="async"><p class="cm-tag"><b>Shipped</b> First visit, empty</p></div>
+            <div><picture><source srcset="./assets/craft/case/wl-v1-hub.webp" type="image/webp"><img src="./assets/craft/case/wl-v1-hub.jpg" alt="v1 on first visit: two domain radios, an Upload Logo slot, a sender row marked Verified, and Cancel and Update buttons" width="1600" height="1220" loading="lazy" decoding="async" style="background-color:#fafbfc"></picture><p class="cm-tag"><b>v1</b> First visit, looks done</p></div>
+            <div><picture><source srcset="./assets/craft/case/wl-empty-hub.webp" type="image/webp"><img src="./assets/craft/case/wl-empty-hub.jpg" alt="Shipped first visit: a Custom Subdomain card with a Create Subdomain button and a Custom Sender card with a Create Sender button" width="1600" height="1220" loading="lazy" decoding="async" style="background-color:#fdfefe"></picture><p class="cm-tag"><b>Shipped</b> First visit, empty</p></div>
           </div>
         </figure>
       </article>
@@ -259,8 +263,8 @@
         </div>
         <figure class="cm-pair cm-wide">
           <div class="cm-pair-row">
-            <div><img src="./assets/craft/case/wl-v1-subdomain.jpg" alt="v1 subdomain card: two radio options and an Upload Logo slot under the selected one" width="1552" height="748" loading="lazy" decoding="async"><p class="cm-tag"><b>v1</b> Logo slot under a radio</p></div>
-            <div><img src="./assets/craft/case/wl-url-logo.jpg" alt="Shipped subdomain card after save: the live hve.systematicventures.com link with Edit, and an Upload Logo slot under it" width="1552" height="748" loading="lazy" decoding="async"><p class="cm-tag"><b>Shipped</b> Logo slot under the live URL</p></div>
+            <div><picture><source srcset="./assets/craft/case/wl-v1-subdomain.webp" type="image/webp"><img src="./assets/craft/case/wl-v1-subdomain.jpg" alt="v1 subdomain card: two radio options and an Upload Logo slot under the selected one" width="1552" height="748" loading="lazy" decoding="async" style="background-color:#fbfcfc"></picture><p class="cm-tag"><b>v1</b> Logo slot under a radio</p></div>
+            <div><picture><source srcset="./assets/craft/case/wl-url-logo.webp" type="image/webp"><img src="./assets/craft/case/wl-url-logo.jpg" alt="Shipped subdomain card after save: the live hve.systematicventures.com link with Edit, and an Upload Logo slot under it" width="1552" height="748" loading="lazy" decoding="async" style="background-color:#fbfcfc"></picture><p class="cm-tag"><b>Shipped</b> Logo slot under the live URL</p></div>
           </div>
         </figure>
       </article>
@@ -281,8 +285,8 @@
         </div>
         <figure class="cm-pair cm-wide">
           <div class="cm-pair-row">
-            <div><img src="./assets/craft/case/wl-subdomain-create.jpg" alt="Create Custom Subdomain dialog: a note that links shared with the old subdomain will stop working, the prefix Hve, the locked suffix .systematicventures.com and Save" width="1328" height="614" loading="lazy" decoding="async"><p class="cm-tag"><b>Create</b> Prefix in, suffix locked</p></div>
-            <div><img src="./assets/craft/case/wl-subdomain-edit.jpg" alt="Edit Custom Subdomain dialog with the same old links note, the prefix field, Delete and Save" width="1328" height="614" loading="lazy" decoding="async"><p class="cm-tag"><b>Edit</b> Old links warning, Delete</p></div>
+            <div><picture><source srcset="./assets/craft/case/wl-subdomain-create.webp" type="image/webp"><img src="./assets/craft/case/wl-subdomain-create.jpg" alt="Create Custom Subdomain dialog: a note that links shared with the old subdomain will stop working, the prefix Hve, the locked suffix .systematicventures.com and Save" width="1328" height="614" loading="lazy" decoding="async" style="background-color:#f7f9fb"></picture><p class="cm-tag"><b>Create</b> Prefix in, suffix locked</p></div>
+            <div><picture><source srcset="./assets/craft/case/wl-subdomain-edit.webp" type="image/webp"><img src="./assets/craft/case/wl-subdomain-edit.jpg" alt="Edit Custom Subdomain dialog with the same old links note, the prefix field, Delete and Save" width="1328" height="614" loading="lazy" decoding="async" style="background-color:#f7f9fb"></picture><p class="cm-tag"><b>Edit</b> Old links warning, Delete</p></div>
           </div>
         </figure>
       </article>
@@ -302,15 +306,15 @@
           </dl>
         </div>
         <figure class="cm-shot cmd-shot-sm cm-wide">
-          <div class="cm-shot-frame"><img src="./assets/craft/case/wl-v1-sender.jpg" alt="v1 sender row: a placeholder sender name and address with a green Verified chip" width="1520" height="244" loading="lazy" decoding="async"></div>
+          <div class="cm-shot-frame"><picture><source srcset="./assets/craft/case/wl-v1-sender.webp" type="image/webp"><img src="./assets/craft/case/wl-v1-sender.jpg" alt="v1 sender row: a placeholder sender name and address with a green Verified chip" width="1520" height="244" loading="lazy" decoding="async" style="background-color:#f6f9fb"></picture></div>
           <figcaption>v1. Verified on first visit, before anyone typed an address.</figcaption>
         </figure>
         <figure class="wl-states cm-wide" aria-labelledby="wl-states-cap">
           <ol>
-            <li><p class="cm-tag"><b>01 Empty</b> Create Sender is the only action</p><picture><source media="(max-width: 719px)" srcset="./assets/craft/case/wl-sender-empty-sm.jpg" width="936" height="124"><img src="./assets/craft/case/wl-sender-empty.jpg" alt="Sender row with only a Create Sender button" width="1520" height="124" loading="lazy" decoding="async"></picture></li>
-            <li><p class="cm-tag"><b>02 Pending</b> Resend on a 60s clock, Edit already there</p><picture><source media="(max-width: 719px)" srcset="./assets/craft/case/wl-sender-pending-sm.jpg" width="936" height="124"><img src="./assets/craft/case/wl-sender-pending.jpg" alt="Sender row: sample@email.com, Pending Verification, Resend (60s) greyed out, a refresh icon and Edit" width="1520" height="124" loading="lazy" decoding="async"></picture></li>
-            <li><p class="cm-tag"><b>03 Resend ready</b> Clock done, still pending</p><picture><source media="(max-width: 719px)" srcset="./assets/craft/case/wl-sender-resend-sm.jpg" width="936" height="124"><img src="./assets/craft/case/wl-sender-resend.jpg" alt="Sender row: Pending Verification with Resend now active, a refresh icon and Edit" width="1520" height="124" loading="lazy" decoding="async"></picture></li>
-            <li><p class="cm-tag"><b>04 Verified</b> Edit stays for later changes</p><picture><source media="(max-width: 719px)" srcset="./assets/craft/case/wl-sender-verified-sm.jpg" width="936" height="124"><img src="./assets/craft/case/wl-sender-verified.jpg" alt="Sender row: sample@email.com with a green Verified chip and Edit" width="1520" height="124" loading="lazy" decoding="async"></picture></li>
+            <li><p class="cm-tag"><b>01 Empty</b> Create Sender is the only action</p><picture><source media="(max-width: 719px)" srcset="./assets/craft/case/wl-sender-empty-sm.webp" type="image/webp" width="936" height="124"><source media="(max-width: 719px)" srcset="./assets/craft/case/wl-sender-empty-sm.jpg" width="936" height="124"><source srcset="./assets/craft/case/wl-sender-empty.webp" type="image/webp"><img src="./assets/craft/case/wl-sender-empty.jpg" alt="Sender row with only a Create Sender button" width="1520" height="124" loading="lazy" decoding="async" style="background-color:#fcfdff"></picture></li>
+            <li><p class="cm-tag"><b>02 Pending</b> Resend on a 60s clock, Edit already there</p><picture><source media="(max-width: 719px)" srcset="./assets/craft/case/wl-sender-pending-sm.webp" type="image/webp" width="936" height="124"><source media="(max-width: 719px)" srcset="./assets/craft/case/wl-sender-pending-sm.jpg" width="936" height="124"><source srcset="./assets/craft/case/wl-sender-pending.webp" type="image/webp"><img src="./assets/craft/case/wl-sender-pending.jpg" alt="Sender row: sample@email.com, Pending Verification, Resend (60s) greyed out, a refresh icon and Edit" width="1520" height="124" loading="lazy" decoding="async" style="background-color:#fafaf9"></picture></li>
+            <li><p class="cm-tag"><b>03 Resend ready</b> Clock done, still pending</p><picture><source media="(max-width: 719px)" srcset="./assets/craft/case/wl-sender-resend-sm.webp" type="image/webp" width="936" height="124"><source media="(max-width: 719px)" srcset="./assets/craft/case/wl-sender-resend-sm.jpg" width="936" height="124"><source srcset="./assets/craft/case/wl-sender-resend.webp" type="image/webp"><img src="./assets/craft/case/wl-sender-resend.jpg" alt="Sender row: Pending Verification with Resend now active, a refresh icon and Edit" width="1520" height="124" loading="lazy" decoding="async" style="background-color:#fafafa"></picture></li>
+            <li><p class="cm-tag"><b>04 Verified</b> Edit stays for later changes</p><picture><source media="(max-width: 719px)" srcset="./assets/craft/case/wl-sender-verified-sm.webp" type="image/webp" width="936" height="124"><source media="(max-width: 719px)" srcset="./assets/craft/case/wl-sender-verified-sm.jpg" width="936" height="124"><source srcset="./assets/craft/case/wl-sender-verified.webp" type="image/webp"><img src="./assets/craft/case/wl-sender-verified.jpg" alt="Sender row: sample@email.com with a green Verified chip and Edit" width="1520" height="124" loading="lazy" decoding="async" style="background-color:#fafcfb"></picture></li>
           </ol>
           <figcaption id="wl-states-cap">The shipped row, in order. It's honest about where the address is.</figcaption>
         </figure>
@@ -332,8 +336,8 @@
         </div>
         <figure class="cm-pair cm-wide">
           <div class="cm-pair-row">
-            <div><img src="./assets/craft/case/wl-sender-create.jpg" alt="Create Custom Sender dialog: the email field in red with Invalid email address, empty name, street, country, state, city and zip fields, and Submit turned off" width="1544" height="1164" loading="lazy" decoding="async"><p class="cm-tag"><b>Create</b> Bad email, Submit stays off</p></div>
-            <div><img src="./assets/craft/case/wl-sender-edit.jpg" alt="Edit Custom Sender dialog with the note: if you update your email address, you will need to verify it again. Filled fields, Delete and Submit" width="1544" height="1164" loading="lazy" decoding="async"><p class="cm-tag"><b>Edit</b> Re-verify note, Delete</p></div>
+            <div><picture><source srcset="./assets/craft/case/wl-sender-create.webp" type="image/webp"><img src="./assets/craft/case/wl-sender-create.jpg" alt="Create Custom Sender dialog: the email field in red with Invalid email address, empty name, street, country, state, city and zip fields, and Submit turned off" width="1544" height="1164" loading="lazy" decoding="async" style="background-color:#fbfbfb"></picture><p class="cm-tag"><b>Create</b> Bad email, Submit stays off</p></div>
+            <div><picture><source srcset="./assets/craft/case/wl-sender-edit.webp" type="image/webp"><img src="./assets/craft/case/wl-sender-edit.jpg" alt="Edit Custom Sender dialog with the note: if you update your email address, you will need to verify it again. Filled fields, Delete and Submit" width="1544" height="1164" loading="lazy" decoding="async" style="background-color:#fafafa"></picture><p class="cm-tag"><b>Edit</b> Re-verify note, Delete</p></div>
           </div>
         </figure>
       </article>
@@ -363,7 +367,7 @@
         </ol>
       </div>
       <figure class="cm-shot cm-shot--narrow cm-wide">
-        <div class="cm-shot-frame"><img src="./assets/craft/case/wl-live-hub.jpg" alt="The shipped hub, live: Subdomain card with Edit and the hve.systematicventures.com link, the Goldman Sachs logo with an edit badge, and a Custom Sender row marked Verified with Edit" width="1600" height="1020" loading="lazy" decoding="async"></div>
+        <div class="cm-shot-frame"><picture><source srcset="./assets/craft/case/wl-live-hub.webp" type="image/webp"><img src="./assets/craft/case/wl-live-hub.jpg" alt="The shipped hub, live: Subdomain card with Edit and the hve.systematicventures.com link, the Goldman Sachs logo with an edit badge, and a Custom Sender row marked Verified with Edit" width="1600" height="1020" loading="lazy" decoding="async" style="background-color:#fbfcfc"></picture></div>
         <figcaption>The end of the line. Logo on the page, sender Verified, Edit on both.</figcaption>
       </figure>
 
@@ -444,6 +448,6 @@
   </main>
 
   <script src="./assets/craft/orb.js?v=1" defer></script>
-  <script src="./assets/craft/case/case-min.js?v=1" defer></script>
+  <script src="./assets/craft/case/case-min.js?v=2" defer></script>
 </body>
 </html>

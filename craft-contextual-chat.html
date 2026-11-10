@@ -10,14 +10,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..500&display=swap">
   <link rel="stylesheet" href="./assets/craft/craft-tokens.css?v=1">
-  <link rel="stylesheet" href="./assets/craft/case/case-min.css?v=4">
+  <link rel="stylesheet" href="./assets/craft/case/case-min.css?v=5">
+  <script>try{history.scrollRestoration="manual";if(!location.hash)window.scrollTo(0,0)}catch(e){}</script>
 </head>
 <!--
   Case study template (case-min). Same order on every case study:
   hero (label, title, one-line problem, 3 numbers with how measured, one visual) > meta > problem > 2-3 decisions > outcome > next > next case.
   Notes marked class="cm-todo" are numbers whose method is not written down in Gaurav's sources yet.
 -->
-<body class="cr cm">
+<body class="cr cm" style="--pa:#4f4fc9">
   <a class="cm-skip" href="#main">Skip to content</a>
 
   <header class="cm-bar">
@@ -36,12 +37,15 @@
 
   <main id="main">
     <!-- Hero -->
-    <section class="cm-hero" aria-labelledby="h-title">
-      <div class="cm-col">
+    <section class="cm-hero cm-hero--proj" style="--p1:#8a8af3;--p2:#f79ae4;--p3:#b3d5fb" aria-labelledby="h-title">
+      <div class="cm-hero-top cm-wide">
+        <div class="cm-hero-text">
         <nav class="cm-switch" aria-label="Case study length"><a href="./craft-contextual-chat.html" aria-current="page">Short read</a><a href="./craft-contextual-chat-detailed.html">Full case study</a></nav>
         <p class="cm-label"><span class="cm-orb" data-orb="chatSpark" aria-hidden="true"></span><span>Systematic · 2023 to now</span></p>
         <h1 class="cm-title" id="h-title">Contextual Chat</h1>
         <p class="cm-lede">Investors had all the data but had to know the exact filters to find anything, so one search took 30 to 40 minutes. I designed a chat assistant that answers in plain language.</p>
+        </div>
+        <figure class="cm-cover cm-cover--land"><picture><source srcset="./assets/craft/case/cover-cc.webp" type="image/webp"><img src="./assets/craft/case/cover-cc.jpg" alt="Contextual Chat Assistant title card with the Ask Systematic Agent search bar" width="1024" height="759" fetchpriority="high" decoding="async"></picture></figure>
       </div>
 
       <ul class="cm-nums cm-wide" aria-label="Outcomes">
@@ -114,7 +118,7 @@
           </dl>
         </div>
         <figure class="cm-shot cm-shot--narrow cm-wide">
-          <div class="cm-shot-frame cm-fade"><picture><source media="(max-width: 719px)" srcset="./assets/craft/case/cc-entry-bar-sm.jpg" width="1100" height="720"><img src="./assets/craft/case/cc-entry-bar.jpg" alt="The search bar typed with “stri”, offering Ask Systematic Agent at the top and regular company results below" width="1600" height="509" loading="lazy" decoding="async"></picture></div>
+          <div class="cm-shot-frame cm-fade"><picture><source media="(max-width: 719px)" srcset="./assets/craft/case/cc-entry-bar-sm.webp" type="image/webp" width="1100" height="720"><source media="(max-width: 719px)" srcset="./assets/craft/case/cc-entry-bar-sm.jpg" width="1100" height="720"><source srcset="./assets/craft/case/cc-entry-bar.webp" type="image/webp"><img src="./assets/craft/case/cc-entry-bar.jpg" alt="The search bar typed with “stri”, offering Ask Systematic Agent at the top and regular company results below" width="1600" height="509" loading="lazy" decoding="async" style="background-color:#f8fafb"></picture></div>
           <figcaption>Search and the agent share one bar. Regular results stay right below.</figcaption>
         </figure>
       </article>
@@ -132,8 +136,8 @@
         </div>
         <figure class="cm-pair cm-pair--narrow cm-wide">
           <div class="cm-pair-row">
-            <div><img src="./assets/craft/case/cc-v1-panel.jpg" alt="Version 1: an empty chat panel with only a Let's Chat button" width="1360" height="1276" loading="lazy" decoding="async"><p class="cm-tag"><b>v1</b> Empty panel</p></div>
-            <div><img src="./assets/craft/case/cc-v2-panel.jpg" alt="Version 2: prompt starters above an otherwise empty chat body" width="1360" height="1276" loading="lazy" decoding="async"><p class="cm-tag"><b>v2</b> Prompt starters</p></div>
+            <div><picture><source srcset="./assets/craft/case/cc-v1-panel.webp" type="image/webp"><img src="./assets/craft/case/cc-v1-panel.jpg" alt="Version 1: an empty chat panel with only a Let's Chat button" width="1360" height="1276" loading="lazy" decoding="async" style="background-color:#f4f6fc"></picture><p class="cm-tag"><b>v1</b> Empty panel</p></div>
+            <div><picture><source srcset="./assets/craft/case/cc-v2-panel.webp" type="image/webp"><img src="./assets/craft/case/cc-v2-panel.jpg" alt="Version 2: prompt starters above an otherwise empty chat body" width="1360" height="1276" loading="lazy" decoding="async" style="background-color:#fcfcfd"></picture><p class="cm-tag"><b>v2</b> Prompt starters</p></div>
           </div>
         </figure>
       </article>
@@ -151,8 +155,8 @@
         </div>
         <figure class="cm-pair cm-wide">
           <div class="cm-pair-row">
-            <div><img src="./assets/craft/case/cc-v3-panel.jpg" alt="Version 3: a history sidebar and table answers in a heavy overlay" width="1600" height="1039" loading="lazy" decoding="async"><p class="cm-tag"><b>v3</b> Heavy overlay</p></div>
-            <div><img src="./assets/craft/case/cc-v4-answer.jpg" alt="Version 4, shipped: an answer card with a summary, bullet points and numbered sources, then a loading state" width="1600" height="1039" loading="lazy" decoding="async"><p class="cm-tag"><b>v4, shipped</b> Sourced answers</p></div>
+            <div><picture><source srcset="./assets/craft/case/cc-v3-panel.webp" type="image/webp"><img src="./assets/craft/case/cc-v3-panel.jpg" alt="Version 3: a history sidebar and table answers in a heavy overlay" width="1600" height="1039" loading="lazy" decoding="async" style="background-color:#f7f8fa"></picture><p class="cm-tag"><b>v3</b> Heavy overlay</p></div>
+            <div><picture><source srcset="./assets/craft/case/cc-v4-answer.webp" type="image/webp"><img src="./assets/craft/case/cc-v4-answer.jpg" alt="Version 4, shipped: an answer card with a summary, bullet points and numbered sources, then a loading state" width="1600" height="1039" loading="lazy" decoding="async" style="background-color:#f5f6f7"></picture><p class="cm-tag"><b>v4, shipped</b> Sourced answers</p></div>
           </div>
         </figure>
       </article>
@@ -211,6 +215,6 @@
   </main>
 
   <script src="./assets/craft/orb.js?v=1" defer></script>
-  <script src="./assets/craft/case/case-min.js?v=1" defer></script>
+  <script src="./assets/craft/case/case-min.js?v=2" defer></script>
 </body>
 </html>

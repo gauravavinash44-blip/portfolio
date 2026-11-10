@@ -270,3 +270,94 @@ a.cm-pill:hover { background: rgba(255, 255, 255, 0.94); }
   .cmd-table td { margin-top: 8px; font-size: 14px; }
   .cmd-table td[data-k]::before { content: attr(data-k); display: block; font-size: 12px; color: var(--ink-2); margin-bottom: 2px; }
 }
+
+/* ══ Pass 2: project colour header, one width system, image loading, page transitions ══ */
+
+/* Project accent: each page sets --pa on <body>. It replaces the blue on bars, bullets and numbers. */
+body.cm[style*="--pa"] { --blue: var(--pa); --blue-text: var(--pa); --blue-strong: var(--pa); }
+
+/* Header: project colours from the orb wash the top, text on the left, the old project header image on the right */
+.cm-hero--proj { position: relative; isolation: isolate; }
+.cm-hero--proj::before { content: ""; position: absolute; z-index: -1; top: 0; left: 50%; width: 100vw; height: min(980px, 100%); transform: translateX(-50%); pointer-events: none;
+  background:
+    radial-gradient(60% 55% at 12% 8%, color-mix(in srgb, var(--p1) 46%, transparent), transparent 70%),
+    radial-gradient(55% 60% at 90% 14%, color-mix(in srgb, var(--p2) 52%, transparent), transparent 72%),
+    radial-gradient(50% 50% at 62% 70%, color-mix(in srgb, var(--p3) 22%, transparent), transparent 75%),
+    linear-gradient(var(--page), var(--page));
+  -webkit-mask-image: linear-gradient(#000 62%, transparent); mask-image: linear-gradient(#000 62%, transparent); }
+.cm-hero-top { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(28px, 4vw, 56px); align-items: center; }
+.cm-hero-text { min-width: 0; }
+.cm-hero--proj .cm-orb { --cm-ring: transparent; }
+.cm-hero--proj .cm-label { color: color-mix(in srgb, var(--ink) 70%, var(--p1)); }
+.cm-cover { margin: 0; justify-self: center; width: 100%; border-radius: 32px; overflow: hidden; background: color-mix(in srgb, var(--p2) 30%, #fff);
+  box-shadow: 0 24px 60px color-mix(in srgb, var(--p1) 34%, transparent), 0 2px 6px rgba(20, 16, 30, 0.08), inset 0 0 0 1px rgba(10, 10, 10, 0.05); }
+.cm-cover img { width: 100%; height: auto; }
+.cm-cover--port { max-width: 360px; }
+@media (min-width: 900px) {
+  .cm-hero-top { grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); }
+  .cm-cover--land { max-width: none; }
+  .cm-cover--port { max-width: 380px; justify-self: end; }
+  .cm-hero--proj .cm-title { font-size: clamp(44px, 5.4vw, 72px); }
+}
+@media (max-width: 899px) { .cm-hero-top { padding-top: 4px; } .cm-cover { border-radius: 26px; } .cm-cover--port { max-width: 320px; } }
+.cm-hero--proj .cm-nums { margin-top: clamp(32px, 5vw, 56px); }
+.cm-hero--proj .cm-num { box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 8px 26px color-mix(in srgb, var(--p1) 16%, transparent); }
+
+/* One width system: 680 text column, 880 medium frames, 1080 wide frames. All centred on the same axis. */
+.cm-hero .cm-shot-frame, .cm-shot--narrow .cm-shot-frame { max-width: 880px; }
+.cmd-shot-sm .cm-shot-frame, .cmd-pair-sm .cm-pair-row { max-width: var(--col); }
+.cm-pair--narrow .cm-pair-row { max-width: 880px; }
+.cm-meta { margin-top: clamp(40px, 5vw, 64px); }
+.cm-shot figcaption, .cm-pair figcaption { text-align: left; }
+.cm-hero .cm-shot figcaption, .cm-shot--narrow figcaption, .cmd-shot-sm figcaption { text-align: center; }
+
+/* Cards in one row share a height, and their footers line up */
+.cmd-cards > * { display: flex; flex-direction: column; }
+.cmd-card .cmd-then { margin-top: auto; }
+.cmd-card:has(.cmd-then) > :nth-last-child(2) { margin-bottom: 12px; }
+.cmd-cards .cmd-card-v { font-variant-numeric: tabular-nums lining-nums; }
+.cm-nums .cm-num-v, .cm-r-v, .cmd-card-v { font-feature-settings: "tnum", "lnum"; }
+.cm-results li, .cmd-rows > li, .cmd-quotes li { align-items: start; }
+.cm-results li { align-items: center; }
+.cm-shot-frame, .cm-pair-row > div { overflow: hidden; }
+
+/* Images: a flat colour holds the space (set per image in the page), then the picture fades in */
+.cm img { background-color: rgba(10, 10, 10, 0.04); transition: opacity .45s ease; }
+.cm img.lq-wait { opacity: 0; }
+.cm picture { display: block; }
+.cm-shot-frame picture, .cm-pair-row picture { display: block; border-radius: inherit; }
+
+/* Page in: the header rises in, once. Page out: a short fade before leaving. */
+@keyframes cm-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes cm-pop { from { opacity: 0; transform: translateY(20px) scale(.985); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: no-preference) {
+  .cm-hero-text > * { animation: cm-rise .7s var(--ease-arrive, cubic-bezier(.16, 1, .3, 1)) both; }
+  .cm-hero-text > :nth-child(2) { animation-delay: .06s; }
+  .cm-hero-text > :nth-child(3) { animation-delay: .12s; }
+  .cm-hero-text > :nth-child(4) { animation-delay: .18s; }
+  .cm-cover { animation: cm-pop .9s var(--ease-arrive, cubic-bezier(.16, 1, .3, 1)) .12s both; }
+  .cm-hero--proj .cm-num { animation: cm-rise .7s var(--ease-arrive, cubic-bezier(.16, 1, .3, 1)) both; }
+  .cm-hero--proj .cm-num:nth-child(1) { animation-delay: .28s; }
+  .cm-hero--proj .cm-num:nth-child(2) { animation-delay: .34s; }
+  .cm-hero--proj .cm-num:nth-child(3) { animation-delay: .4s; }
+  body.cm main { transition: opacity .22s ease, transform .22s ease; }
+  body.cm.is-leaving main { opacity: 0; transform: translateY(-8px); }
+  .cm-sec.cm-reveal { opacity: 0; transform: translateY(18px); }
+  .cm-sec.cm-reveal.is-in { opacity: 1; transform: none; transition: opacity .7s var(--ease-arrive, cubic-bezier(.16, 1, .3, 1)), transform .7s var(--ease-arrive, cubic-bezier(.16, 1, .3, 1)); }
+  .cm-next, .cm-pill { transition: transform .3s var(--ease-arrive, cubic-bezier(.16, 1, .3, 1)), box-shadow .3s ease, background .2s; }
+  .cm-next:active { transform: scale(.985); }
+}
+/* Cross-document transition where the browser supports it (Chrome, Edge). Others get the fade above. */
+@view-transition { navigation: auto; }
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(root) { animation: cm-vt-out .22s ease both; }
+  ::view-transition-new(root) { animation: cm-vt-in .5s var(--ease-arrive, cubic-bezier(.16, 1, .3, 1)) both; }
+}
+@keyframes cm-vt-out { to { opacity: 0; transform: translateY(-6px); } }
+@keyframes cm-vt-in { from { opacity: 0; transform: translateY(12px); } }
+@media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }
+/* no-JS and reduced motion: nothing is ever left hidden */
+
+/* Header screen spans the same wide edges as the number cards above it */
+.cm-hero--proj .cm-shot-frame { max-width: none; }
+.cm-hero--proj .cm-shot figcaption { text-align: left; margin-left: 0; }

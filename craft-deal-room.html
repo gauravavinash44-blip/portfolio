@@ -10,8 +10,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..500&display=swap">
   <link rel="stylesheet" href="./assets/craft/craft-tokens.css?v=1">
-  <link rel="stylesheet" href="./assets/craft/case/case-min.css?v=4">
+  <link rel="stylesheet" href="./assets/craft/case/case-min.css?v=5">
   <link rel="stylesheet" href="./assets/craft/case/dr-min.css?v=1">
+  <script>try{history.scrollRestoration="manual";if(!location.hash)window.scrollTo(0,0)}catch(e){}</script>
 </head>
 <!--
   Deal Room, detailed case study. Same template as craft-contextual-chat-detailed.html (case-min + cmd-*),
@@ -20,7 +21,7 @@
   app.js and the portfolio assistant knowledge base. Notes with class="cm-todo" are methods or numbers
   still waiting on Gaurav's sources.
 -->
-<body class="cr cm cmd dr">
+<body class="cr cm cmd dr" style="--pa:#b8430f">
   <a class="cm-skip" href="#main">Skip to content</a>
 
   <header class="cm-bar">
@@ -41,11 +42,14 @@
 
   <main id="main">
     <!-- Hero -->
-    <section class="cm-hero" aria-labelledby="h-title">
-      <div class="cm-col">
+    <section class="cm-hero cm-hero--proj" style="--p1:#ef6f2e;--p2:#f8c27c;--p3:#c03f18" aria-labelledby="h-title">
+      <div class="cm-hero-top cm-wide">
+        <div class="cm-hero-text">
         <p class="cm-label"><span class="cm-orb" data-orb="dealDoc" aria-hidden="true"></span><span>Systematic · 2023 to 2024</span></p>
         <h1 class="cm-title" id="h-title">Deal Room</h1>
         <p class="cm-lede">Founders and investors on Systematic were already talking, but the NDA, the documents and the status of a deal lived in email, Drive and WhatsApp. I moved deal creation onto the company profile and put the NDA inside the product.</p>
+        </div>
+        <figure class="cm-cover cm-cover--land"><picture><source srcset="./assets/craft/case/cover-dr.webp" type="image/webp"><img src="./assets/craft/case/cover-dr.jpg" alt="Deal Room title card beside the engagement table in Systematic" width="1024" height="759" fetchpriority="high" decoding="async"></picture></figure>
       </div>
 
       <ul class="cm-nums cm-wide" aria-label="Outcomes">
@@ -67,7 +71,7 @@
       </ul>
 
       <figure class="cm-shot cm-wide">
-        <div class="cm-shot-frame cm-fade"><picture><source media="(max-width: 719px)" srcset="./assets/craft/case/dr-hero-sm.jpg" width="1000" height="702"><img src="./assets/craft/case/dr-hero.jpg" alt="The Deal Room engagement tab: a table of invited investors with company, email, NDA signed, status, last viewed and access level, and Revoke or Give Full Access on each row" width="1640" height="801" fetchpriority="high" decoding="async"></picture></div>
+        <div class="cm-shot-frame cm-fade"><picture><source media="(max-width: 719px)" srcset="./assets/craft/case/dr-hero-sm.webp" type="image/webp" width="1000" height="702"><source media="(max-width: 719px)" srcset="./assets/craft/case/dr-hero-sm.jpg" width="1000" height="702"><source srcset="./assets/craft/case/dr-hero.webp" type="image/webp"><img src="./assets/craft/case/dr-hero.jpg" alt="The Deal Room engagement tab: a table of invited investors with company, email, NDA signed, status, last viewed and access level, and Revoke or Give Full Access on each row" width="1640" height="801" fetchpriority="high" decoding="async" style="background-color:#f6f7f8"></picture></div>
         <figcaption>The owner's view of a deal. Who signed, where each person is, and who gets full access.</figcaption>
       </figure>
     </section>
@@ -108,7 +112,7 @@
       </ol>
     </section>
     <figure class="cm-shot dr-map cm-wide">
-      <div class="cm-shot-frame"><img src="./assets/craft/case/dr-old-flow.jpg" alt="Flow map of the old process: browse companies, open a profile, jump between tabs, search for documents, create a data room, upload, set permissions. Sticky notes mark context switching, repeated searches, unclear state, upload errors, dead ends and people giving up." width="2048" height="1024" loading="lazy" decoding="async"></div>
+      <div class="cm-shot-frame"><picture><source srcset="./assets/craft/case/dr-old-flow.webp" type="image/webp"><img src="./assets/craft/case/dr-old-flow.jpg" alt="Flow map of the old process: browse companies, open a profile, jump between tabs, search for documents, create a data room, upload, set permissions. Sticky notes mark context switching, repeated searches, unclear state, upload errors, dead ends and people giving up." width="2048" height="1024" loading="lazy" decoding="async" style="background-color:#f4f3f2"></picture></div>
       <figcaption>The old path, mapped. Every sticky note is a place people lost the thread.</figcaption>
     </figure>
 
@@ -266,11 +270,11 @@
           </dl>
         </div>
         <figure class="cm-shot cm-shot--narrow cm-wide">
-          <div class="cm-shot-frame cm-fade"><picture><source media="(max-width: 719px)" srcset="./assets/craft/case/dr-profile-create-sm.jpg" width="1000" height="301"><img src="./assets/craft/case/dr-profile-create.jpg" alt="Company profile header with Actions, Share and a blue Create Deal Room button above the Overview, Industry, SWOT, AI Scores and other tabs" width="1640" height="557" loading="lazy" decoding="async"></picture></div>
+          <div class="cm-shot-frame cm-fade"><picture><source media="(max-width: 719px)" srcset="./assets/craft/case/dr-profile-create-sm.webp" type="image/webp" width="1000" height="301"><source media="(max-width: 719px)" srcset="./assets/craft/case/dr-profile-create-sm.jpg" width="1000" height="301"><source srcset="./assets/craft/case/dr-profile-create.webp" type="image/webp"><img src="./assets/craft/case/dr-profile-create.jpg" alt="Company profile header with Actions, Share and a blue Create Deal Room button above the Overview, Industry, SWOT, AI Scores and other tabs" width="1640" height="557" loading="lazy" decoding="async" style="background-color:#f6f7f9"></picture></div>
           <figcaption>Create Deal Room sits next to Share, on the page people already use.</figcaption>
         </figure>
         <figure class="cm-shot cm-wide">
-          <div class="cm-shot-frame"><img src="./assets/craft/case/dr-setup-steps.jpg" alt="Deal setup in five steps: the deals list, a first-run modal titled Get Deals Done Faster with Deal Rooms, choosing the company, creating a deal for an unlisted company, confirming, and the ready Deal Room" width="1940" height="1020" loading="lazy" decoding="async"></div>
+          <div class="cm-shot-frame"><picture><source srcset="./assets/craft/case/dr-setup-steps.webp" type="image/webp"><img src="./assets/craft/case/dr-setup-steps.jpg" alt="Deal setup in five steps: the deals list, a first-run modal titled Get Deals Done Faster with Deal Rooms, choosing the company, creating a deal for an unlisted company, confirming, and the ready Deal Room" width="1940" height="1020" loading="lazy" decoding="async" style="background-color:#f8f8f7"></picture></div>
           <figcaption>Setup at a glance, from the deals list to a ready room.</figcaption>
         </figure>
       </article>
@@ -290,13 +294,13 @@
           </dl>
         </div>
         <figure class="cm-shot cmd-shot-sm cm-wide">
-          <div class="cm-shot-frame"><img src="./assets/craft/case/dr-nda-gate.jpg" alt="A blurred deal page behind a card: Sign NDA to view deal details. This deal contains confidential information. A Review and Sign NDA button." width="1400" height="820" loading="lazy" decoding="async"></div>
+          <div class="cm-shot-frame"><picture><source srcset="./assets/craft/case/dr-nda-gate.webp" type="image/webp"><img src="./assets/craft/case/dr-nda-gate.jpg" alt="A blurred deal page behind a card: Sign NDA to view deal details. This deal contains confidential information. A Review and Sign NDA button." width="1400" height="820" loading="lazy" decoding="async" style="background-color:#f7f9fc"></picture></div>
           <figcaption>Before signing, the deal stays blurred. One action to move on.</figcaption>
         </figure>
         <figure class="cm-pair cm-wide">
           <div class="cm-pair-row">
-            <div><img src="./assets/craft/case/dr-nda-sign.jpg" alt="The signing step: the sender's company, name and title filled in automatically with their signature, and empty fields and a Signature box for the investor" width="1600" height="802" loading="lazy" decoding="async"><p class="cm-tag"><b>Sign</b> Sender's side already filled in</p></div>
-            <div><img src="./assets/craft/case/dr-nda-unlocked.jpg" alt="NDA Signed Successfully. You now have access to this deal. A View Deal button." width="1600" height="800" loading="lazy" decoding="async"><p class="cm-tag"><b>Unlock</b> Straight into the deal</p></div>
+            <div><picture><source srcset="./assets/craft/case/dr-nda-sign.webp" type="image/webp"><img src="./assets/craft/case/dr-nda-sign.jpg" alt="The signing step: the sender's company, name and title filled in automatically with their signature, and empty fields and a Signature box for the investor" width="1600" height="802" loading="lazy" decoding="async" style="background-color:#eef3fc"></picture><p class="cm-tag"><b>Sign</b> Sender's side already filled in</p></div>
+            <div><picture><source srcset="./assets/craft/case/dr-nda-unlocked.webp" type="image/webp"><img src="./assets/craft/case/dr-nda-unlocked.jpg" alt="NDA Signed Successfully. You now have access to this deal. A View Deal button." width="1600" height="800" loading="lazy" decoding="async" style="background-color:#f0f5f8"></picture><p class="cm-tag"><b>Unlock</b> Straight into the deal</p></div>
           </div>
         </figure>
       </article>
@@ -316,8 +320,8 @@
         </div>
         <figure class="cm-pair cm-pair--narrow cm-wide">
           <div class="cm-pair-row">
-            <div><img src="./assets/craft/case/dr-nda-select.jpg" alt="Select NDA for this deal: Systematic NDA marked Recommended, Default NDA with a note that none is saved yet, and Upload Custom NDA, with an empty preview panel" width="1200" height="820" loading="lazy" decoding="async"><p class="cm-tag"><b>Pick</b> No default saved yet</p></div>
-            <div><img src="./assets/craft/case/dr-nda-preview.jpg" alt="Make your deal secure and investor-ready: Default NDA selected with its PDF, and a full preview of the agreement on the right" width="1200" height="820" loading="lazy" decoding="async"><p class="cm-tag"><b>Preview</b> Default chosen, agreement shown</p></div>
+            <div><picture><source srcset="./assets/craft/case/dr-nda-select.webp" type="image/webp"><img src="./assets/craft/case/dr-nda-select.jpg" alt="Select NDA for this deal: Systematic NDA marked Recommended, Default NDA with a note that none is saved yet, and Upload Custom NDA, with an empty preview panel" width="1200" height="820" loading="lazy" decoding="async" style="background-color:#f9fafb"></picture><p class="cm-tag"><b>Pick</b> No default saved yet</p></div>
+            <div><picture><source srcset="./assets/craft/case/dr-nda-preview.webp" type="image/webp"><img src="./assets/craft/case/dr-nda-preview.jpg" alt="Make your deal secure and investor-ready: Default NDA selected with its PDF, and a full preview of the agreement on the right" width="1200" height="820" loading="lazy" decoding="async" style="background-color:#f7f7f8"></picture><p class="cm-tag"><b>Preview</b> Default chosen, agreement shown</p></div>
           </div>
         </figure>
       </article>
@@ -337,7 +341,7 @@
           </dl>
         </div>
         <figure class="cm-shot cm-shot--narrow cm-wide">
-          <div class="cm-shot-frame"><picture><source media="(max-width: 719px)" srcset="./assets/craft/case/dr-engagement-sm.jpg" width="1000" height="714"><img src="./assets/craft/case/dr-engagement.jpg" alt="Engagement table with six people. Four have signed the NDA, with statuses NDA Signed, LOI Signed, Subscribed and Fund Sent, full access and a Revoke button. Two are New with limited access and a Give Full Access button, one showing the tooltip Give access to private documents and financials." width="1640" height="639" loading="lazy" decoding="async"></picture></div>
+          <div class="cm-shot-frame"><picture><source media="(max-width: 719px)" srcset="./assets/craft/case/dr-engagement-sm.webp" type="image/webp" width="1000" height="714"><source media="(max-width: 719px)" srcset="./assets/craft/case/dr-engagement-sm.jpg" width="1000" height="714"><source srcset="./assets/craft/case/dr-engagement.webp" type="image/webp"><img src="./assets/craft/case/dr-engagement.jpg" alt="Engagement table with six people. Four have signed the NDA, with statuses NDA Signed, LOI Signed, Subscribed and Fund Sent, full access and a Revoke button. Two are New with limited access and a Give Full Access button, one showing the tooltip Give access to private documents and financials." width="1640" height="639" loading="lazy" decoding="async" style="background-color:#f4f4f6"></picture></div>
           <figcaption>One row per person. The action sits next to the status.</figcaption>
         </figure>
       </article>
@@ -351,11 +355,11 @@
         <li class="cmd-card"><p class="cmd-card-t">One step at a time</p><p>Each stage shows only what you can act on. NDA states show locked or unlocked without dumping the legal UI at once.</p></li>
       </ul>
       <figure class="cm-shot cm-shot--narrow cm-wide">
-        <div class="cm-shot-frame cm-fade"><picture><source media="(max-width: 719px)" srcset="./assets/craft/case/dr-deal-terms-sm.jpg" width="1000" height="397"><img src="./assets/craft/case/dr-deal-terms.jpg" alt="Deal Terms tracker above a deal profile: Upload NDA done, then Upload LOI, Collect Subscriptions, Receive Funds and Close Deal with dates, plus Mark Deal as Lost and Upload NDA buttons" width="1640" height="460" loading="lazy" decoding="async"></picture></div>
+        <div class="cm-shot-frame cm-fade"><picture><source media="(max-width: 719px)" srcset="./assets/craft/case/dr-deal-terms-sm.webp" type="image/webp" width="1000" height="397"><source media="(max-width: 719px)" srcset="./assets/craft/case/dr-deal-terms-sm.jpg" width="1000" height="397"><source srcset="./assets/craft/case/dr-deal-terms.webp" type="image/webp"><img src="./assets/craft/case/dr-deal-terms.jpg" alt="Deal Terms tracker above a deal profile: Upload NDA done, then Upload LOI, Collect Subscriptions, Receive Funds and Close Deal with dates, plus Mark Deal as Lost and Upload NDA buttons" width="1640" height="460" loading="lazy" decoding="async" style="background-color:#f4f7fa"></picture></div>
         <figcaption>Deal Terms, on the creator's side of the deal.</figcaption>
       </figure>
       <figure class="cm-shot cmd-shot-sm cm-wide">
-        <div class="cm-shot-frame"><img src="./assets/craft/case/dr-notify.jpg" alt="Notification card: Deal shared with you, with Dismiss and View File buttons" width="1400" height="381" loading="lazy" decoding="async"></div>
+        <div class="cm-shot-frame"><picture><source srcset="./assets/craft/case/dr-notify.webp" type="image/webp"><img src="./assets/craft/case/dr-notify.jpg" alt="Notification card: Deal shared with you, with Dismiss and View File buttons" width="1400" height="381" loading="lazy" decoding="async" style="background-color:#f6f7fa"></picture></div>
         <figcaption>The invite, in the app.</figcaption>
       </figure>
     </section>
@@ -456,6 +460,6 @@
   </main>
 
   <script src="./assets/craft/orb.js?v=1" defer></script>
-  <script src="./assets/craft/case/case-min.js?v=1" defer></script>
+  <script src="./assets/craft/case/case-min.js?v=2" defer></script>
 </body>
 </html>
