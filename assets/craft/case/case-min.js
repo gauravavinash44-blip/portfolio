@@ -43,6 +43,37 @@
     });
   }
 
+
+  /* Stagger reveal for media stages and tiles */
+  if ("IntersectionObserver" in window && !reduce.matches) {
+    var rv = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add("is-in"); rv.unobserve(e.target); }
+      });
+    }, { rootMargin: "0px 0px -6% 0px", threshold: 0.06 });
+    [].forEach.call(document.querySelectorAll("main .cm-shot-frame, main .cm-pair-row > div, main .cm-evidence, main .cm-hero--proj .cm-cover"), function (el, i) {
+      if (el.closest(".cm-hero-top") || el.getBoundingClientRect().top < innerHeight * 0.9) return;
+      el.style.setProperty("--d", (el.matches(".cm-pair-row > div:nth-child(2)") ? ".12s" : "0s"));
+      el.classList.add("cm-rv"); rv.observe(el);
+    });
+  }
+
+  /* Loader: once per visit, a short colour field with the project name */
+  try {
+    var hero = document.querySelector(".cm-hero--proj");
+    if (hero && !reduce.matches && !sessionStorage.getItem("cm-loaded")) {
+      sessionStorage.setItem("cm-loaded", "1");
+      var L = document.createElement("div");
+      L.className = "cm-load";
+      L.innerHTML = '<div class="cm-load-orb"></div><div class="cm-load-name"></div>';
+      var h1 = document.querySelector(".cm-title");
+      L.lastChild.textContent = h1 ? h1.textContent : "";
+      document.body.appendChild(L);
+      var out = function () { L.classList.add("is-out"); setTimeout(function () { L.remove(); }, 800); };
+      setTimeout(out, 650);
+    }
+  } catch (x) {}
+
   /* Leaving: where the browser has no cross-page transition, fade the page out first, then go */
   if (!("onpageswap" in window) && !reduce.matches) {
     document.addEventListener("click", function (e) {
