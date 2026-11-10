@@ -58,22 +58,6 @@
     });
   }
 
-  /* Loader: once per visit, a short colour field with the project name */
-  try {
-    var hero = document.querySelector(".cm-hero--proj");
-    if (hero && !reduce.matches && !sessionStorage.getItem("cm-loaded")) {
-      sessionStorage.setItem("cm-loaded", "1");
-      var L = document.createElement("div");
-      L.className = "cm-load";
-      L.innerHTML = '<div class="cm-load-orb"></div><div class="cm-load-name"></div>';
-      var h1 = document.querySelector(".cm-title");
-      L.lastChild.textContent = h1 ? h1.textContent : "";
-      document.body.appendChild(L);
-      var out = function () { L.classList.add("is-out"); setTimeout(function () { L.remove(); }, 800); };
-      setTimeout(out, 650);
-    }
-  } catch (x) {}
-
   /* Leaving: where the browser has no cross-page transition, fade the page out first, then go */
   if (!("onpageswap" in window) && !reduce.matches) {
     document.addEventListener("click", function (e) {

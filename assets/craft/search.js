@@ -24,7 +24,7 @@
   /* The KB links to the green site's pages; Craft has its own version of each case study */
   var LINK_MAP = {
     "./deal-room.html": "./craft-deal-room.html", "./deal-room-short.html": "./craft-deal-room.html", "./deal-room-case-study.html": "./craft-deal-room.html",
-    "./contextual-chat.html": "./craft-contextual-chat.html", "./contextual-chat-short.html": "./craft-contextual-chat.html",
+    "./contextual-chat.html": "./craft-contextual-chat-detailed.html", "./contextual-chat-short.html": "./craft-contextual-chat-detailed.html",
     "./white-label-short.html": "./craft-white-label.html",
     "./easyeat-case-study.html": "./craft-easyeat.html",
     "./resonance-short.html": "./craft-resonance.html"

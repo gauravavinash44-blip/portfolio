@@ -807,7 +807,7 @@
     S.agenda = Object.assign({}, S.agenda, { avatar: null });
     S.preview = Object.assign({}, S.preview, { avatar: null });
     const hrefs = {
-      "Contextual Chat": "./craft-contextual-chat.html",
+      "Contextual Chat": "./craft-contextual-chat-detailed.html",
       "Deal Room": "./craft-deal-room.html",
       "White Label": "./craft-white-label.html",
       "White Label Setup": "./craft-white-label.html",
