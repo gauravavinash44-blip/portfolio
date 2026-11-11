@@ -2144,3 +2144,15 @@ html:not(:has(.craft-switch)) .cr-hero[data-cr-fit="flow"] .cr-topbar { right: 2
 .cr-mstat.is-clickable:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 .cr-pt { scroll-margin-top: 28px; }
 @media (prefers-reduced-motion: reduce) { .cr-mstat.is-clickable { transition: none; } .cr-mstat.is-clickable:hover { transform: none; } }
+
+/* Say hello on the same liquid glass as the date card ("Open to new roles") */
+.cr-glass.cr-hello { background: var(--g-date); -webkit-backdrop-filter: var(--g-blur); backdrop-filter: var(--g-blur); color: var(--on-glass); }
+.cr-glass.cr-hello .cr-hello-icon { background: rgba(255, 255, 255, 0.16); color: var(--on-glass); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14); }
+.cr-glass.cr-hello .cr-hello-go { background: rgba(255, 255, 255, 0.16); color: var(--on-glass); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14); }
+.cr-glass.cr-hello .cr-hello-go:hover { background: rgba(255, 255, 255, 0.26); }
+.cr-glass.cr-hello .cr-hello-title { color: var(--on-glass); }
+.cr-glass.cr-hello .cr-hello-sub { color: var(--on-glass-2); }
+.cr-glass.cr-hello .cr-hello-dot::before { background: rgba(255, 255, 255, 0.35); }
+.cr-glass.cr-hello .cr-hello-dot.is-on::before { background: #fff; }
+.cr-glass.cr-hello .cr-hello-dot:hover::before { background: rgba(255, 255, 255, 0.6); }
+.cr-glass.cr-hello .cr-hello-slide:not(.is-on) { opacity: 0.25; }

@@ -686,7 +686,7 @@
       else if (ev.key === "ArrowLeft") { ev.preventDefault(); go(idx - 1); }
     }
     return h("section", {
-      className: cx("cr-card cr-solid cr-hello", props.className), "data-cr-enter": "",
+      className: cx("cr-card cr-glass cr-hello", props.className), "data-cr-enter": "",
       "aria-roledescription": "carousel", "aria-label": props.label || "Say hello",
       onKeyDown: onKey,
       onMouseEnter: function () { setHover(true); }, onMouseLeave: function () { setHover(false); },
