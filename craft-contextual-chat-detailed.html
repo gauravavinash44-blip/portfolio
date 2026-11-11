@@ -8,19 +8,19 @@
   <link rel="icon" href="./assets/logo-ga.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..500&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..500&display=swap">
   <link rel="stylesheet" href="./assets/craft/craft-tokens.css?v=1">
   <link rel="stylesheet" href="./assets/craft/case/case-min.css?v=6">
-  <link rel="stylesheet" href="./assets/craft/case/stage.css?v=2">
+  <link rel="stylesheet" href="./assets/craft/case/el.css?v=2">
+  <link rel="preload" as="image" href="./assets/craft/case/cc-motion-poster.webp" fetchpriority="high">
   <script>try{history.scrollRestoration="manual";if(!location.hash)window.scrollTo(0,0)}catch(e){}</script>
 </head>
 <!--
-  Detailed version of craft-contextual-chat.html. Same template (case-min) plus cmd-* components.
-  Facts come only from contextual-chat-short.html, contextual-chat.html, the earlier Craft page in git,
-  app.js and the portfolio assistant knowledge base. Notes with class="cm-todo" are numbers or claims
-  still waiting on Gaurav's sources.
+  Contextual Chat in the el-* layout (framed column, split intros, media cards, charts).
+  Facts come only from the earlier versions of this page. Notes with class="cm-todo" are numbers
+  or claims still waiting on Gaurav's sources.
 -->
-<body class="cr cm cmd" style="--pa:#4f4fc9;--p1:#8a8af3;--p2:#f79ae4;--p3:#b3d5fb">
+<body class="cr cm cmd el" style="--pa:#4f4fc9;--p1:#8a8af3;--p2:#f79ae4;--p3:#b3d5fb">
   <a class="cm-skip" href="#main">Skip to content</a>
 
   <header class="cm-bar">
@@ -39,485 +39,544 @@
     <div class="cm-progress" aria-hidden="true"></div>
   </header>
 
-  <main id="main">
+  <main id="main" class="el-frame">
+
     <!-- Hero -->
-    <section class="cm-hero cm-hero--proj" style="--p1:#8a8af3;--p2:#f79ae4;--p3:#b3d5fb" aria-labelledby="h-title">
-      <div class="cm-hero-top cm-wide">
-        <div class="cm-hero-text">
-        <p class="cm-label"><span class="cm-orb" data-orb="chatSpark" aria-hidden="true"></span><span>Systematic · 2023 to now</span></p>
-        <h1 class="cm-title" id="h-title">Contextual Chat</h1>
-        <p class="cm-lede">Investors had all the data but had to know the exact filters to find anything, so one search took 30 to 40 minutes. I designed a chat assistant that answers in plain language.</p>
+    <section class="el-hero" aria-labelledby="h-title">
+      <div class="el-split el-in">
+        <div>
+          <p class="el-label"><span class="cm-orb" data-orb="chatSpark" aria-hidden="true"></span><span>Systematic · 2023 to now</span></p>
+          <h1 class="el-h1" id="h-title">Contextual Chat<span>AI research for investors</span></h1>
         </div>
-        <figure class="cm-cover cm-cover--land"><picture><source srcset="./assets/craft/case/cover-cc.webp" type="image/webp"><img src="./assets/craft/case/cover-cc.jpg" alt="Contextual Chat Assistant title card with the Ask Systematic Agent search bar" width="1024" height="759" fetchpriority="high" decoding="async"></picture></figure>
+        <div class="el-body">
+          <p>Investors had all the data but had to know the exact filters to find anything, so one search took 30 to 40 minutes. I designed a chat assistant that answers in plain language.</p>
+          <p>It cites its sources and keeps classic search one click away.</p>
+        </div>
       </div>
 
-      <ul class="cm-nums cm-wide" aria-label="Outcomes">
-        <li class="cm-num">
-          <p class="cm-num-v">&lt;30 s</p>
-          <p class="cm-num-l">to an answer, down from 30 to 40 minutes</p>
-          <p class="cm-num-m cm-todo">After launch. Method not documented yet.</p>
-        </li>
-        <li class="cm-num">
-          <p class="cm-num-v">+25%</p>
-          <p class="cm-num-l">session time</p>
-          <p class="cm-num-m cm-todo">After launch. Baseline and method not documented yet.</p>
-        </li>
-        <li class="cm-num">
-          <p class="cm-num-v">70%</p>
-          <p class="cm-num-l">of users preferred the chat flow</p>
-          <p class="cm-num-m cm-todo">After launch. Sample and method not documented yet.</p>
-        </li>
+      <div class="el-grid">
+        <figure class="el-card">
+          <div class="el-card-m cm-media" style="padding:0">
+            <video muted loop playsinline preload="metadata" poster="./assets/craft/case/cc-motion-poster.webp" width="1920" height="988" aria-label="A plain-language question typed into the Systematic Agent bar, then a structured answer appearing" style="border-radius:0;box-shadow:none">
+              <source src="./assets/craft/case/cc-motion.mp4" type="video/mp4">
+            </video>
+            <button class="cm-play" type="button" aria-label="Play video" hidden><span aria-hidden="true"></span></button>
+          </div>
+        </figure>
+      </div>
+
+      <ul class="el-stats el-in" aria-label="Outcomes">
+        <li><p class="el-stat-v">&lt;30 s</p><p class="el-stat-l">to an answer, down from 30 to 40 minutes</p><p class="el-stat-m cm-todo">After launch. Method not documented yet.</p></li>
+        <li><p class="el-stat-v">+25%</p><p class="el-stat-l">session time</p><p class="el-stat-m cm-todo">After launch. Baseline and method not documented yet.</p></li>
+        <li><p class="el-stat-v">70%</p><p class="el-stat-l">of users preferred the chat flow</p><p class="el-stat-m cm-todo">After launch. Sample and method not documented yet.</p></li>
       </ul>
 
-      <figure class="cm-shot cm-wide">
-        <div class="cm-shot-frame cm-media">
-          <video muted loop playsinline preload="none" poster="./assets/craft/case/chat-panel-poster.jpg" width="720" height="342" aria-label="The chat panel: an analysis of Adobe with numbered sources, then the next question typed in plain language">
-            <source src="./assets/craft/case/chat-panel.mp4" type="video/mp4">
-          </video>
-          <button class="cm-play" type="button" aria-label="Play video" hidden><span aria-hidden="true"></span></button>
-        </div>
-        <figcaption>The shipped panel. Every answer cites its sources.</figcaption>
-      </figure>
-    </section>
+      <ul class="el-feat" aria-label="Project facts">
+        <li class="el-feat-h"><p class="el-feat-t">The project</p></li>
+        <li><b>Role</b><p>Product Designer II. Research through UI and handoff.</p></li>
+        <li><b>Team</b><p>PM, ML, engineering, data</p></li>
+        <li><b>Timeline</b><p>v1 shipped in 8 weeks</p></li>
+        <li><b>Built with</b><p>OpenAI and vector search</p></li>
+      </ul>
 
-    <div class="cm-col">
-      <dl class="cm-meta" aria-label="Project facts">
-        <div><dt>Role</dt><dd>Product Designer II. Research through UI and handoff.</dd></div>
-        <div><dt>Team</dt><dd>PM, ML, engineering, data</dd></div>
-        <div><dt>Timeline</dt><dd>v1 shipped in 8 weeks</dd></div>
-        <div><dt>Built with</dt><dd>OpenAI and vector search</dd></div>
-      </dl>
-      <div class="cmd-tldr">
-        <p>In short</p>
-        <p>Search on Systematic only worked if you already knew the filters. I ran the research, explored three directions with the team, and shipped a chat assistant on top of search in 8 weeks. It answers in plain language, cites its sources and keeps classic search one click away. Two test rounds reshaped the first screen, the answer format and how answers link back to data.</p>
+      <div class="el-split el-in el-sec--tight">
+        <h2 class="el-h3" style="color:var(--mute)">In short</h2>
+        <p class="el-p">Search on Systematic only worked if you already knew the filters. I ran the research, explored three directions with the team, and shipped a chat assistant on top of search in 8 weeks. It answers in plain language, cites its sources and keeps classic search one click away. Two test rounds reshaped the first screen, the answer format and how answers link back to data.</p>
       </div>
-    </div>
+    </section>
 
     <!-- 1. Context -->
-    <section class="cm-sec cm-col" id="context" aria-labelledby="h-context">
-      <p class="cm-eyebrow">Context</p>
-      <h2 class="cm-h2" id="h-context">Investors had the data, not a way in</h2>
-      <div class="cm-body">
-        <p>Systematic is a US fintech platform where investors discover, evaluate and track companies. One place, instead of scattered Excel workflows.</p>
-        <p>Search rewarded people who already knew the exact filters and labels. Everyone else re-ran searches, reopened tabs and rebuilt context from memory.</p>
+    <section class="el-sec" id="context" aria-labelledby="h-context">
+      <div class="el-split el-in">
+        <div>
+          <p class="el-eyebrow">Context</p>
+          <h2 class="el-h2" id="h-context">Investors had the data<span>not a way in</span></h2>
+        </div>
+        <div class="el-body">
+          <p>Systematic is a US fintech platform where investors discover, evaluate and track companies. One place, instead of scattered Excel workflows.</p>
+          <p>Search rewarded people who already knew the exact filters and labels. Everyone else re-ran searches, reopened tabs and rebuilt context from memory.</p>
+        </div>
       </div>
 
-      <h3 class="cmd-h3" id="search-before">How search worked before</h3>
-      <div class="cm-body">
-        <p>Investors typed broad terms like “innovative fintech”. The database matched exact strings, so results came back too broad or empty. The next stop was advanced search: 40+ filters with no hierarchy and no grouping that made sense for investing. Results were flat rows with no summary.</p>
+      <div class="el-grid">
+        <figure class="el-card">
+          <div class="el-card-m"><picture><source srcset="./assets/craft/case/cc-filters.webp" type="image/webp"><img src="./assets/craft/case/cc-filters.jpg" alt="The old Discovery form: empty fields for industry, country, state, city, series, round dates, investors, funds raised, valuation, founders and AI prediction ranges" width="1150" height="716" loading="lazy" decoding="async" style="max-width:860px;margin:0 auto"></picture></div>
+          <figcaption class="el-card-c"><b>How search worked before</b><span>Investors typed broad terms like “innovative fintech”. The database matched exact strings, so results came back too broad or empty. Then came advanced search: 40+ filters with no hierarchy and no grouping that made sense for investing.</span></figcaption>
+        </figure>
+      </div>
+
+      <ul class="el-feat el-feat--4" aria-label="User roles">
+        <li class="el-feat-h"><p class="el-feat-t">Who uses it</p><p style="margin-top:8px;color:var(--ink-2);font-size:15px">Three roles, same broken loop. Everyone started broad, then had to turn a hunch into filter vocabulary.</p></li>
+        <li><p class="el-k">Investor</p><b>VC or angel investor</b><p>Reviews 30 to 50 companies a week. Thesis, search, shortlist, partner meeting.</p><ul><li>Can't express a thesis as a search query</li><li>45 minutes per company across 5 to 7 tabs</li><li>Misses deals because research takes longer than the round</li></ul></li>
+        <li><p class="el-k">Analyst</p><b>Investment analyst</b><p>Owns a sector and turns findings into a partner-ready brief, often overnight.</p><ul><li>Copies data from profiles into spreadsheets by hand</li><li>Profiles have no shared structure, so comparing is slow</li><li>Every brief starts from scratch</li></ul></li>
+        <li><p class="el-k">Fund team</p><b>VC or PE researcher</b><p>Screens hundreds of companies and watches lists for new signals.</p><ul><li>AI answers had no sources, so they couldn't be trusted</li><li>No watchlist or portfolio-level view</li><li>Filters for EBITDA and margins were imprecise or missing</li></ul></li>
+      </ul>
+
+      <div class="el-sec--tight">
+        <p class="el-pull">“By the time I've gathered enough signal to feel confident making an intro, someone else already closed the round.”</p>
+        <cite>Managing director, PE fund</cite>
       </div>
     </section>
-    <figure class="cm-shot cm-shot--narrow cm-wide">
-      <div class="cm-shot-frame cm-fade"><picture><source srcset="./assets/craft/case/cc-filters.webp" type="image/webp"><img src="./assets/craft/case/cc-filters.jpg" alt="The old Discovery form: empty fields for industry, country, state, city, series, round dates, investors, funds raised, valuation, founders and AI prediction ranges" width="1150" height="716" loading="lazy" decoding="async" style="background-color:#fdfdfd"></picture></div>
-      <figcaption>The old Discovery form. Every field wants an exact value before you've seen a single company.</figcaption>
-    </figure>
-
-    <div class="cm-col">
-      <h3 class="cmd-h3" id="users">Who uses it</h3>
-      <div class="cm-body"><p>Three roles, same broken loop. Everyone started broad, then had to turn a hunch into filter vocabulary.</p></div>
-    </div>
-    <ul class="cmd-cards cm-wide" aria-label="User roles">
-      <li class="cmd-card">
-        <p class="cmd-card-k">Investor</p>
-        <p class="cmd-card-t">VC or angel investor</p>
-        <p>Reviews 30 to 50 companies a week. Thesis, search, shortlist, partner meeting.</p>
-        <ul><li>Can't express a thesis as a search query</li><li>45 minutes per company across 5 to 7 tabs</li><li>Misses deals because research takes longer than the round</li></ul>
-      </li>
-      <li class="cmd-card">
-        <p class="cmd-card-k">Analyst</p>
-        <p class="cmd-card-t">Investment analyst</p>
-        <p>Owns a sector and turns findings into a partner-ready brief, often overnight.</p>
-        <ul><li>Copies data from profiles into spreadsheets by hand</li><li>Profiles have no shared structure, so comparing is slow</li><li>Every brief starts from scratch</li></ul>
-      </li>
-      <li class="cmd-card">
-        <p class="cmd-card-k">Fund team</p>
-        <p class="cmd-card-t">VC or PE researcher</p>
-        <p>Screens hundreds of companies and watches lists for new signals.</p>
-        <ul><li>AI answers had no sources, so they couldn't be trusted</li><li>No watchlist or portfolio-level view</li><li>Filters for EBITDA and margins were imprecise or missing</li></ul>
-      </li>
-    </ul>
-
-    <div class="cm-col">
-      <h3 class="cmd-h3" id="stakes">Why it mattered</h3>
-      <div class="cm-body"><p>This wasn't only a UX fix. Faster time to insight tied straight to retention and to whether people would pay.</p></div>
-      <blockquote class="cmd-pull"><p>“By the time I've gathered enough signal to feel confident making an intro, someone else already closed the round.”</p></blockquote>
-      <p class="cmd-pull-by">Managing director, PE fund</p>
-    </div>
 
     <!-- 2. Research -->
-    <section class="cm-sec" id="research" aria-labelledby="h-research">
-      <div class="cm-col">
-        <p class="cm-eyebrow">Research</p>
-        <h2 class="cm-h2" id="h-research">Where people got stuck</h2>
-        <div class="cm-body"><p>I ran 18 user interviews and 6 stakeholder sessions, then mapped the research journey from first query to final decision.</p></div>
+    <section class="el-sec" id="research" aria-labelledby="h-research">
+      <div class="el-split el-in">
+        <div>
+          <p class="el-eyebrow">Research</p>
+          <h2 class="el-h2" id="h-research">Where people<span>got stuck</span></h2>
+        </div>
+        <div class="el-body">
+          <p>I ran 18 user interviews and 6 stakeholder sessions, then mapped the research journey from first query to final decision.</p>
+          <p>This wasn't only a UX fix. Faster time to insight tied straight to retention and to whether people would pay.</p>
+        </div>
       </div>
 
-      <ul class="cmd-cards cm-wide" style="--n:4" aria-label="Research numbers">
-        <li class="cmd-card"><p class="cmd-card-v">34%</p><p>of searches gave no usable result or forced a restart</p></li>
-        <li class="cmd-card"><p class="cmd-card-v">73%</p><p>of sessions ended without a shortlist, just closed tabs</p></li>
-        <li class="cmd-card"><p class="cmd-card-v">12+</p><p>profiles opened before shortlisting one company</p></li>
-        <li class="cmd-card"><p class="cmd-card-v">45–90 min</p><p>to evaluate one company, across 5 to 7 tabs</p></li>
+      <ul class="el-stats el-stats--4 el-in" aria-label="Research numbers">
+        <li><p class="el-stat-v">34%</p><p class="el-stat-l">of searches gave no usable result or forced a restart</p></li>
+        <li><p class="el-stat-v">73%</p><p class="el-stat-l">of sessions ended without a shortlist, just closed tabs</p></li>
+        <li><p class="el-stat-v">12+</p><p class="el-stat-l">profiles opened before shortlisting one company</p></li>
+        <li><p class="el-stat-v">45–90 min</p><p class="el-stat-l">to evaluate one company, across 5 to 7 tabs</p></li>
       </ul>
-      <div class="cm-col"><p class="cmd-note cm-todo">From research. How each number was counted is not documented yet.</p></div>
+      <p class="el-note el-in cm-todo">From research. How each number was counted is not documented yet.</p>
 
-      <div class="cm-col">
-        <h3 class="cmd-h3" id="heard">What I heard</h3>
-        <ul class="cmd-quotes">
-          <li><blockquote><p>“I don't know what I'm looking for until I see a pattern, but I can't see the pattern because I don't know what to search for.”</p></blockquote><p>Institutional investor, Series B</p></li>
-          <li><blockquote><p>“Filtering is too rigid. If my criteria is ‘innovative’ but the database only has ‘R&amp;D spend’, I miss the nuance entirely.”</p></blockquote><p>Angel investor, tech focus</p></li>
-          <li><blockquote><p>“The search returns names. What I need is context: stage, traction, why it's even relevant to my current thesis.”</p></blockquote><p>Investment associate, early-stage VC</p></li>
+      <div class="el-quote el-sec--tight" aria-roledescription="carousel" aria-label="What I heard">
+        <p class="el-eyebrow">What I heard</p>
+        <ul class="el-quote-list">
+          <li><blockquote><p>“I don't know what I'm looking for until I see a pattern, but I can't see the pattern because I don't know what to search for.”</p></blockquote><cite>Institutional investor, Series B</cite></li>
+          <li><blockquote><p>“Filtering is too rigid. If my criteria is ‘innovative’ but the database only has ‘R&amp;D spend’, I miss the nuance entirely.”</p></blockquote><cite>Angel investor, tech focus</cite></li>
+          <li><blockquote><p>“The search returns names. What I need is context: stage, traction, why it's even relevant to my current thesis.”</p></blockquote><cite>Investment associate, early-stage VC</cite></li>
         </ul>
-
-        <h3 class="cmd-h3" id="insights">What it meant for the design</h3>
+        <div class="el-dots">
+          <button class="el-arrow el-prev" type="button" aria-label="Previous quote"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+          <div class="el-pips"></div>
+          <button class="el-arrow el-next" type="button" aria-label="Next quote"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+        </div>
       </div>
-      <ul class="cmd-cards cmd-cards--2 cm-wide" style="max-width:calc(880px + 2 * var(--pad))" aria-label="Insights">
-        <li class="cmd-card"><p class="cmd-card-t">Broad, then narrow</p><p>People started with loose, exploratory language. The product was built filter-first.</p><p class="cmd-then"><b>So:</b> let people start vague.</p></li>
-        <li class="cmd-card"><p class="cmd-card-t">Translation fatigue</p><p>Most of the effort went into turning intent into the system's labels before any signal showed up.</p><p class="cmd-then"><b>So:</b> take questions in their words and map them to the data.</p></li>
-        <li class="cmd-card"><p class="cmd-card-t">Names aren't answers</p><p>A list of companies didn't say why any of them mattered for the thesis.</p><p class="cmd-then"><b>So:</b> answers carry context, not just rows.</p></li>
-        <li class="cmd-card"><p class="cmd-card-t">No source, no trust</p><p>Fund teams couldn't use AI output they couldn't check in a memo.</p><p class="cmd-then"><b>So:</b> every answer shows where it came from.</p></li>
+
+      <ul class="el-feat" aria-label="Insights">
+        <li class="el-feat-h"><p class="el-feat-t">What it meant for the design</p></li>
+        <li><b>Broad, then narrow</b><p>People started with loose, exploratory language. The product was built filter-first.</p><p class="el-then">So: let people start vague.</p></li>
+        <li><b>Translation fatigue</b><p>Most of the effort went into turning intent into the system's labels before any signal showed up.</p><p class="el-then">So: take questions in their words and map them to the data.</p></li>
+        <li><b>Names aren't answers</b><p>A list of companies didn't say why any of them mattered for the thesis.</p><p class="el-then">So: answers carry context, not just rows.</p></li>
+        <li><b>No source, no trust</b><p>Fund teams couldn't use AI output they couldn't check in a memo.</p><p class="el-then">So: every answer shows where it came from.</p></li>
       </ul>
 
-      <div class="cm-col">
-        <h3 class="cmd-h3" id="funnel">The jam was in the middle</h3>
-        <div class="cm-body"><p>Mapping the funnel showed people stalled at stage 3. They had a shortlist and no fast way to judge fit, so they read profiles, jumped tabs and still felt unsure. That's a synthesis problem, not a data problem.</p></div>
+      <div class="el-split el-in el-sec--tight">
+        <h3 class="el-h2" id="funnel">The jam was<span>in the middle</span></h3>
+        <div class="el-body">
+          <p>Mapping the funnel showed people stalled at stage 3. They had a shortlist and no fast way to judge fit, so they read profiles, jumped tabs and still felt unsure. That's a synthesis problem, not a data problem.</p>
+          <p>So the work split in two. Chat took on stages 1 and 2. AI insights on the company profile took on stage 3. This case is mostly about the chat.</p>
+        </div>
       </div>
-      <ol class="cmd-funnel cm-wide" aria-label="Investor research funnel">
+      <ol class="el-steps el-in" aria-label="Investor research funnel">
         <li><b>Search</b><span>State intent in keywords or plain language</span></li>
         <li><b>Filter</b><span>Narrow by sector, growth, geography</span></li>
-        <li class="is-peak"><b>Evaluate</b><span>Highest drop-off. Where AI could cut the most work</span></li>
+        <li class="is-peak"><b>Evaluate</b><span>Where AI could cut the most work</span></li>
         <li><b>Shortlist</b><span>Save and compare promising companies</span></li>
         <li><b>Deep dive</b><span>Final check before deciding</span></li>
       </ol>
-      <div class="cm-col">
-        <div class="cm-body"><p>So the work split in two. Chat took on stages 1 and 2. AI insights on the company profile took on stage 3. This case is mostly about the chat.</p></div>
-        <blockquote class="cmd-pull"><p>The UI asked for precision before investors had it.</p></blockquote>
-      </div>
+      <p class="el-pull el-sec--tight">The UI asked for precision before investors had it.</p>
     </section>
 
     <!-- 3. Goals -->
-    <section class="cm-sec" id="goals" aria-labelledby="h-goals">
-      <div class="cm-col">
-        <p class="cm-eyebrow">Goals and limits</p>
-        <h2 class="cm-h2" id="h-goals">Lower the cost of forming a view</h2>
-        <div class="cm-body"><p>The brief said “better search”. I reframed it as “lower cost of forming a view”. Three aims came out of that:</p></div>
-        <ul class="cm-list">
-          <li>Let investors start without knowing every filter, even if precision drops a little.</li>
-          <li>Show why a company came up, so answers can be checked.</li>
-          <li>Force nobody. Chat sits on top, classic search stays.</li>
-        </ul>
+    <section class="el-sec" id="goals" aria-labelledby="h-goals">
+      <div class="el-split el-in">
+        <div>
+          <p class="el-eyebrow">Goals and limits</p>
+          <h2 class="el-h2" id="h-goals">Lower the cost<span>of forming a view</span></h2>
+        </div>
+        <div class="el-body">
+          <p>The brief said “better search”. I reframed it as “lower cost of forming a view”. Three aims came out of that:</p>
+          <ul class="el-bul">
+            <li>Let investors start without knowing every filter, even if precision drops a little.</li>
+            <li>Show why a company came up, so answers can be checked.</li>
+            <li>Force nobody. Chat sits on top, classic search stays.</li>
+          </ul>
+        </div>
       </div>
-      <ul class="cmd-cards cm-wide" aria-label="Constraints">
-        <li class="cmd-card"><p class="cmd-card-k">Time</p><p class="cmd-card-v">8 weeks</p><p>to ship, set by a board deadline. Design, research and build ran in parallel. I tested with real users in week 3: rough, but early enough to steer.</p></li>
-        <li class="cmd-card"><p class="cmd-card-k">AI accuracy</p><p class="cmd-card-v">~74%</p><p>early on. Right on many queries, wrong often enough to plan for. So the design had to show confidence and make rephrasing easy.</p></li>
-        <li class="cmd-card"><p class="cmd-card-k">Engineering</p><p class="cmd-card-v">1 backend</p><p>shared by chat and search, and new ML work competed with a stretched team. v1 stayed simple and reused what we had.</p></li>
+      <ul class="el-outline" aria-label="Constraints">
+        <li><p class="el-k">Time</p><p class="el-v">8 weeks</p><p class="el-d">to ship, set by a board deadline. Design, research and build ran in parallel. I tested with real users in week 3: rough, but early enough to steer.</p></li>
+        <li><p class="el-k">AI accuracy</p><p class="el-v">~74%</p><p class="el-d">early on. Right on many queries, wrong often enough to plan for. So the design had to show confidence and make rephrasing easy.</p></li>
+        <li><p class="el-k">Engineering</p><p class="el-v">1 backend</p><p class="el-d">shared by chat and search, and new ML work competed with a stretched team. v1 stayed simple and reused what we had.</p></li>
       </ul>
-      <div class="cm-col"><p class="cmd-note">We tracked CSAT and retention from the start. “AI confidence” only became a metric midway.</p></div>
+      <p class="el-note el-in">We tracked CSAT and retention from the start. “AI confidence” only became a metric midway.</p>
     </section>
 
     <!-- 4. Exploration -->
-    <section class="cm-sec" id="exploration" aria-labelledby="h-exploration">
-      <div class="cm-col">
-        <p class="cm-eyebrow">Exploration</p>
-        <h2 class="cm-h2" id="h-exploration">Three directions before chat</h2>
-        <div class="cm-body"><p>The team had two obvious answers: better filters, or a chatbot. Filters without intelligence stay rigid. Chat without context turns generic. So we ran a 2-week sprint and took three concepts all the way.</p></div>
+    <section class="el-sec" id="exploration" aria-labelledby="h-exploration">
+      <div class="el-split el-in">
+        <div>
+          <p class="el-eyebrow">Exploration</p>
+          <h2 class="el-h2" id="h-exploration">Three directions<span>before chat</span></h2>
+        </div>
+        <div class="el-body"><p>The team had two obvious answers: better filters, or a chatbot. Filters without intelligence stay rigid. Chat without context turns generic. So we ran a 2-week sprint and took three concepts all the way.</p></div>
       </div>
-      <div class="cm-wide"><div class="cmd-tablewrap" role="region" aria-label="Comparison of three directions" tabindex="0">
-        <table class="cmd-table">
+      <div class="el-table-wrap el-in" role="region" aria-label="Comparison of three directions" tabindex="0">
+        <table class="el-table">
           <thead><tr><th scope="col">Direction</th><th scope="col">For</th><th scope="col">Against</th><th scope="col">Call</th></tr></thead>
           <tbody>
-            <tr><th scope="row">Smarter filters<br><span class="cmd-note">Groups, saved templates, tooltips</span></th><td data-k="For">Familiar. Fast to ship on what we had. Predictable.</td><td data-k="Against">Needs upfront knowledge. No room for fuzzy intent. More filters isn't less load.</td><td data-k="Call"><span class="cmd-verdict">Dropped</span></td></tr>
-            <tr><th scope="row">AI picks dashboard<br><span class="cmd-note">Home-screen picks from portfolio and behaviour</span></th><td data-k="For">No blank slate. No effort. Strong if the signals are right.</td><td data-k="Against">New investors have no signals. “Magic” picks weren't trusted. No thesis-led exploring.</td><td data-k="Call"><span class="cmd-verdict">Parked for phase 2</span></td></tr>
-            <tr><th scope="row">Chat<br><span class="cmd-note">Plain language mapped to company data</span></th><td data-k="For">Meets people while they explore. Handles vague intent. Reveals options step by step.</td><td data-k="Against">The first run makes or breaks it. More engineering. Error states need real care.</td><td data-k="Call"><span class="cmd-verdict cmd-verdict--yes">Chosen</span></td></tr>
+            <tr><th scope="row">Smarter filters<small>Groups, saved templates, tooltips</small></th><td data-k="For">Familiar. Fast to ship on what we had. Predictable.</td><td data-k="Against">Needs upfront knowledge. No room for fuzzy intent. More filters isn't less load.</td><td data-k="Call"><span class="el-tag">Dropped</span></td></tr>
+            <tr><th scope="row">AI picks dashboard<small>Home-screen picks from portfolio and behaviour</small></th><td data-k="For">No blank slate. No effort. Strong if the signals are right.</td><td data-k="Against">New investors have no signals. “Magic” picks weren't trusted. No thesis-led exploring.</td><td data-k="Call"><span class="el-tag">Parked for phase 2</span></td></tr>
+            <tr><th scope="row">Chat<small>Plain language mapped to company data</small></th><td data-k="For">Meets people while they explore. Handles vague intent. Reveals options step by step.</td><td data-k="Against">The first run makes or breaks it. More engineering. Error states need real care.</td><td data-k="Call"><span class="el-tag is-yes">Chosen</span></td></tr>
           </tbody>
         </table>
-      </div></div>
-      <div class="cm-col">
-        <h3 class="cmd-h3" id="context-defined">What “context” meant</h3>
-        <div class="cm-body"><p>We didn't want a chatbot. Context had a concrete definition, used on every answer:</p></div>
       </div>
-      <ul class="cmd-cards cm-wide" aria-label="Context inputs">
-        <li class="cmd-card"><p class="cmd-card-k">01</p><p class="cmd-card-t">Screen state</p><p>Which data, filters and companies are already open.</p></li>
-        <li class="cmd-card"><p class="cmd-card-k">02</p><p class="cmd-card-t">Behaviour</p><p>Patterns someone has shown in earlier interactions.</p></li>
-        <li class="cmd-card"><p class="cmd-card-k">03</p><p class="cmd-card-t">Intent</p><p>What the question implies, even when it's vague.</p></li>
+      <ul class="el-feat el-feat--4" aria-label="Context inputs">
+        <li class="el-feat-h"><p class="el-feat-t">What “context” meant</p><p style="margin-top:8px;color:var(--ink-2);font-size:15px">We didn't want a chatbot. Context had a concrete definition, used on every answer.</p></li>
+        <li><p class="el-k">01</p><b>Screen state</b><p>Which data, filters and companies are already open.</p></li>
+        <li><p class="el-k">02</p><b>Behaviour</b><p>Patterns someone has shown in earlier interactions.</p></li>
+        <li><p class="el-k">03</p><b>Intent</b><p>What the question implies, even when it's vague.</p></li>
       </ul>
     </section>
 
     <!-- 5. Decisions -->
-    <section class="cm-sec" id="decisions" aria-labelledby="h-decisions">
-      <div class="cm-col">
-        <p class="cm-eyebrow">Key decisions</p>
-        <h2 class="cm-h2" id="h-decisions">Six calls, in depth</h2>
+    <section class="el-sec" id="decisions" aria-labelledby="h-decisions">
+      <div class="el-in">
+        <p class="el-eyebrow">Key decisions</p>
+        <h2 class="el-h2" id="h-decisions">Six calls<span>in depth</span></h2>
       </div>
 
-      <article class="cm-dec" id="decision-entry" aria-labelledby="h-d1">
-        <div class="cm-col">
-          <p class="cm-dec-n">01</p>
-          <h3 class="cm-h3" id="h-d1">Chat on top of search, not a redesign</h3>
-          <div class="cm-body">
-            <p>Chat opens from the search bar or the Ask Agent button. Start typing and the first row offers “Ask Systematic Agent”, with company and investor results right below.</p>
-            <p>When the panel is collapsed and a reply lands, Ask Agent gets a bell and a highlight. It doesn't pull you out of what you're doing.</p>
+      <article class="el-dec el-sec--tight" id="decision-entry" aria-labelledby="h-d1">
+        <div class="el-split el-in">
+          <div><p class="el-dec-n">01</p><h3 class="el-h2" id="h-d1" style="font-size:clamp(24px,2.6vw,32px)">Chat on top of search<span>not a redesign</span></h3></div>
+          <div>
+            <div class="el-body">
+              <p>Chat opens from the search bar or the Ask Agent button. Start typing and the first row offers “Ask Systematic Agent”, with company and investor results right below.</p>
+              <p>When the panel is collapsed and a reply lands, Ask Agent gets a bell and a highlight. It doesn't pull you out of what you're doing.</p>
+            </div>
+            <dl class="el-tdw">
+              <div><dt>Tried</dt><dd>A full search redesign, and chat as an overlay</dd></div>
+              <div><dt>Dropped</dt><dd>The full redesign</dd></div>
+              <div><dt>Why</dt><dd>Lower adoption risk while the new flow proved itself. Nobody was forced into chat on day one.</dd></div>
+            </dl>
           </div>
-          <dl class="cm-tdw">
-            <div><dt>Tried</dt><dd>A full search redesign, and chat as an overlay</dd></div>
-            <div><dt>Dropped</dt><dd>The full redesign</dd></div>
-            <div><dt>Why</dt><dd>Lower adoption risk while the new flow proved itself. Nobody was forced into chat on day one.</dd></div>
-          </dl>
         </div>
-        <figure class="cm-shot cm-shot--narrow cm-wide">
-          <div class="cm-shot-frame cm-fade"><picture><source media="(max-width: 719px)" srcset="./assets/craft/case/cc-entry-bar-sm.webp" type="image/webp" width="1100" height="720"><source media="(max-width: 719px)" srcset="./assets/craft/case/cc-entry-bar-sm.jpg" width="1100" height="720"><source srcset="./assets/craft/case/cc-entry-bar.webp" type="image/webp"><img src="./assets/craft/case/cc-entry-bar.jpg" alt="The search bar typed with “stri”, offering Ask Systematic Agent at the top and regular company results below" width="1600" height="509" loading="lazy" decoding="async" style="background-color:#f8fafb"></picture></div>
-          <figcaption>Search and the agent share one bar.</figcaption>
-        </figure>
-        <figure class="cm-pair cmd-pair-sm cm-wide">
-          <div class="cm-pair-row">
-            <div><picture><source srcset="./assets/craft/case/cc-ask-access.webp" type="image/webp"><img src="./assets/craft/case/cc-ask-access.jpg" alt="The Ask Agent button in its default state" width="724" height="216" loading="lazy" decoding="async" style="background-color:#f2f6f9"></picture><p class="cm-tag"><b>Default</b></p></div>
-            <div><picture><source srcset="./assets/craft/case/cc-ask-bell.webp" type="image/webp"><img src="./assets/craft/case/cc-ask-bell.jpg" alt="The Ask Agent button with a bell icon and a green highlight" width="724" height="216" loading="lazy" decoding="async" style="background-color:#f2f5f4"></picture><p class="cm-tag"><b>New reply</b> while collapsed</p></div>
-          </div>
-        </figure>
+        <div class="el-grid el-grid--21">
+          <figure class="el-card">
+            <div class="el-card-m cm-media">
+              <video muted loop playsinline preload="none" poster="./assets/craft/case/cc-search-poster.webp" width="1220" height="672" aria-label="Typing “Stri” in the search bar: Ask Systematic Agent appears as the first row, with Stripe and Spotify in company results below">
+                <source src="./assets/craft/case/cc-search.mp4" type="video/mp4">
+              </video>
+              <button class="cm-play" type="button" aria-label="Play video" hidden><span aria-hidden="true"></span></button>
+            </div>
+            <figcaption class="el-card-c"><b>One bar for search and the agent</b><span>Type a name and the agent is the first suggestion.</span></figcaption>
+          </figure>
+          <figure class="el-card">
+            <div class="el-card-m">
+              <div class="el-stack">
+                <figure><picture><source srcset="./assets/craft/case/cc-ask-access.webp" type="image/webp"><img src="./assets/craft/case/cc-ask-access.jpg" alt="The Ask Agent button in its default state" width="724" height="216" loading="lazy" decoding="async"></picture><figcaption><b>Default</b></figcaption></figure>
+                <figure><picture><source srcset="./assets/craft/case/cc-ask-bell.webp" type="image/webp"><img src="./assets/craft/case/cc-ask-bell.jpg" alt="The Ask Agent button with a bell icon and a green highlight" width="724" height="216" loading="lazy" decoding="async"></picture><figcaption><b>New reply</b> while collapsed</figcaption></figure>
+              </div>
+            </div>
+            <figcaption class="el-card-c"><b>Ask Agent button</b><span>A bell, not a pop-up.</span></figcaption>
+          </figure>
+        </div>
       </article>
 
-      <article class="cm-dec" id="decision-start" aria-labelledby="h-d2">
-        <div class="cm-col">
-          <p class="cm-dec-n">02</p>
-          <h3 class="cm-h3" id="h-d2">Never open on an empty box</h3>
-          <div class="cm-body">
-            <p>v1 was an empty panel with one Let's Chat button. In round 1, 4 of 6 users stalled for 15+ seconds at “Ask anything”. It was too vague for professionals who arrive with a specific research question. We assumed investors would know how to start. They didn't.</p>
-            <p>v2 added three starters by role, and I rewrote the empty state to read as an invitation, not a blank form. A first-run tip on Ask Agent shows example questions.</p>
+      <article class="el-dec" id="decision-start" aria-labelledby="h-d2">
+        <div class="el-split el-in">
+          <div><p class="el-dec-n">02</p><h3 class="el-h2" id="h-d2" style="font-size:clamp(24px,2.6vw,32px)">Never open<span>on an empty box</span></h3></div>
+          <div>
+            <div class="el-body">
+              <p>v1 was an empty panel with one Let's Chat button. In round 1, 4 of 6 users stalled for 15+ seconds at “Ask anything”. It was too vague for professionals who arrive with a specific research question. We assumed investors would know how to start. They didn't.</p>
+              <p>v2 added three starters by role, and I rewrote the empty state to read as an invitation, not a blank form. A first-run tip on Ask Agent shows example questions.</p>
+            </div>
+            <dl class="el-tdw">
+              <div><dt>Tried</dt><dd>An empty panel with a single Let's Chat button</dd></div>
+              <div><dt>Dropped</dt><dd>The open “Ask anything” start</dd></div>
+              <div><dt>Why</dt><dd>People didn't know how to begin</dd></div>
+            </dl>
           </div>
-          <dl class="cm-tdw">
-            <div><dt>Tried</dt><dd>An empty panel with a single Let's Chat button</dd></div>
-            <div><dt>Dropped</dt><dd>The open “Ask anything” start</dd></div>
-            <div><dt>Why</dt><dd>People didn't know how to begin</dd></div>
-          </dl>
         </div>
-        <figure class="cm-pair cm-pair--narrow cm-wide">
-          <div class="cm-pair-row">
-            <div><picture><source srcset="./assets/craft/case/cc-v1-panel.webp" type="image/webp"><img src="./assets/craft/case/cc-v1-panel.jpg" alt="Version 1: an empty chat panel with only a Let's Chat button" width="1360" height="1276" loading="lazy" decoding="async" style="background-color:#f4f6fc"></picture><p class="cm-tag"><b>v1</b> Empty panel</p></div>
-            <div><picture><source srcset="./assets/craft/case/cc-v2-panel.webp" type="image/webp"><img src="./assets/craft/case/cc-v2-panel.jpg" alt="Version 2: prompt starters above an otherwise empty chat body" width="1360" height="1276" loading="lazy" decoding="async" style="background-color:#fcfcfd"></picture><p class="cm-tag"><b>v2</b> Prompt starters</p></div>
-          </div>
-        </figure>
-        <figure class="cm-shot cmd-shot-sm cm-wide">
-          <div class="cm-shot-frame"><picture><source srcset="./assets/craft/case/cc-ftue.webp" type="image/webp"><img src="./assets/craft/case/cc-ftue.jpg" alt="A first-run tip under the Ask Agent button: Search just got a whole lot smarter, with three example questions and an Okay, got it button" width="1400" height="745" loading="lazy" decoding="async" style="background-color:#e6e8ea"></picture></div>
-          <figcaption>First run. A tip on Ask Agent with three example questions.</figcaption>
-        </figure>
+        <div class="el-grid el-grid--2">
+          <figure class="el-card">
+            <div class="el-card-m"><picture><source srcset="./assets/craft/case/cc-v1-panel.webp" type="image/webp"><img src="./assets/craft/case/cc-v1-panel.jpg" alt="Version 1: an empty chat panel with only a Let's Chat button" width="1360" height="1276" loading="lazy" decoding="async"></picture></div>
+            <figcaption class="el-card-c"><b>v1</b><span>Empty panel</span></figcaption>
+          </figure>
+          <figure class="el-card">
+            <div class="el-card-m"><picture><source srcset="./assets/craft/case/cc-v2-panel.webp" type="image/webp"><img src="./assets/craft/case/cc-v2-panel.jpg" alt="Version 2: prompt starters above an otherwise empty chat body" width="1360" height="1276" loading="lazy" decoding="async"></picture></div>
+            <figcaption class="el-card-c"><b>v2</b><span>Prompt starters</span></figcaption>
+          </figure>
+        </div>
+        <div class="el-grid" style="margin-top:12px">
+          <figure class="el-card">
+            <div class="el-card-m"><picture><source srcset="./assets/craft/case/cc-ftue.webp" type="image/webp"><img src="./assets/craft/case/cc-ftue.jpg" alt="A first-run tip under the Ask Agent button: Search just got a whole lot smarter, with three example questions and an Okay, got it button" width="1866" height="994" loading="lazy" decoding="async" style="max-width:860px;margin:0 auto"></picture></div>
+            <figcaption class="el-card-c"><b>First run</b><span>A tip on Ask Agent with three example questions.</span></figcaption>
+          </figure>
+        </div>
       </article>
 
-      <article class="cm-dec" id="decision-format" aria-labelledby="h-d3">
-        <div class="cm-col">
-          <p class="cm-dec-n">03</p>
-          <h3 class="cm-h3" id="h-d3">Answers built to scan</h3>
-          <div class="cm-body">
-            <p>In round 2, investors wanted to scan results in under 10 seconds. Prose answers needed reading, so people skipped them and went straight to the company list.</p>
-            <p>Now every answer leads with a bold summary line, then bullets. Comparisons come as tables. If an answer runs long, “View all” opens the right profile tab. Each answer ends with a next step: Shortlist, Compare or View profile.</p>
+      <article class="el-dec" id="decision-format" aria-labelledby="h-d3">
+        <div class="el-split el-in">
+          <div><p class="el-dec-n">03</p><h3 class="el-h2" id="h-d3" style="font-size:clamp(24px,2.6vw,32px)">Answers<span>built to scan</span></h3></div>
+          <div>
+            <div class="el-body">
+              <p>In round 2, investors wanted to scan results in under 10 seconds. Prose answers needed reading, so people skipped them and went straight to the company list.</p>
+              <p>Now every answer leads with a bold summary line, then bullets. Comparisons come as tables. If an answer runs long, “View all” opens the right profile tab. Each answer ends with a next step: Shortlist, Compare or View profile.</p>
+            </div>
+            <dl class="el-tdw">
+              <div><dt>Tried</dt><dd>Narrative answers, then history and tables in a heavy overlay (v3)</dd></div>
+              <div><dt>Dropped</dt><dd>Prose answers and the heavy overlay</dd></div>
+              <div><dt>Why</dt><dd>Reading, not scanning. And v3 wasn't trusted enough for diligence.</dd></div>
+            </dl>
           </div>
-          <dl class="cm-tdw">
-            <div><dt>Tried</dt><dd>Narrative answers, then history and tables in a heavy overlay (v3)</dd></div>
-            <div><dt>Dropped</dt><dd>Prose answers and the heavy overlay</dd></div>
-            <div><dt>Why</dt><dd>Reading, not scanning. And v3 wasn't trusted enough for diligence.</dd></div>
-          </dl>
         </div>
-        <figure class="cm-pair cm-wide">
-          <div class="cm-pair-row">
-            <div><picture><source srcset="./assets/craft/case/cc-v3-panel.webp" type="image/webp"><img src="./assets/craft/case/cc-v3-panel.jpg" alt="Version 3: a history sidebar and table answers in a heavy overlay" width="1600" height="1039" loading="lazy" decoding="async" style="background-color:#f7f8fa"></picture><p class="cm-tag"><b>v3</b> Heavy overlay</p></div>
-            <div><picture><source srcset="./assets/craft/case/cc-v4-answer.webp" type="image/webp"><img src="./assets/craft/case/cc-v4-answer.jpg" alt="Version 4, shipped: an answer card with a summary, bullet points and numbered sources, then a loading state" width="1600" height="1039" loading="lazy" decoding="async" style="background-color:#f5f6f7"></picture><p class="cm-tag"><b>v4, shipped</b> Summary, bullets, sources</p></div>
-          </div>
-        </figure>
+        <div class="el-grid el-grid--2">
+          <figure class="el-card">
+            <div class="el-card-m"><picture><source srcset="./assets/craft/case/cc-v3-panel.webp" type="image/webp"><img src="./assets/craft/case/cc-v3-panel.jpg" alt="Version 3: a history sidebar and table answers in a heavy overlay" width="1600" height="1039" loading="lazy" decoding="async"></picture></div>
+            <figcaption class="el-card-c"><b>v3</b><span>Heavy overlay</span></figcaption>
+          </figure>
+          <figure class="el-card">
+            <div class="el-card-m"><picture><source srcset="./assets/craft/case/cc-v4-answer.webp" type="image/webp"><img src="./assets/craft/case/cc-v4-answer.jpg" alt="Version 4, shipped: an answer card with a summary, bullet points and numbered sources, then a loading state" width="1684" height="1094" loading="lazy" decoding="async"></picture></div>
+            <figcaption class="el-card-c"><b>v4, shipped</b><span>Summary, bullets, sources</span></figcaption>
+          </figure>
+        </div>
       </article>
 
-      <article class="cm-dec" id="decision-sources" aria-labelledby="h-d4">
-        <div class="cm-col">
-          <p class="cm-dec-n">04</p>
-          <h3 class="cm-h3" id="h-d4">Every claim points back to its data</h3>
-          <div class="cm-body">
-            <p>In round 2, people liked the AI summaries, then tried to fact-check them against the raw data in other tabs. The way back wasn't clear.</p>
-            <p>Chat answers now carry numbered citations and a Sources row. On the insights panel, each claim links to the tab and section where its data lives.</p>
+      <article class="el-dec" id="decision-sources" aria-labelledby="h-d4">
+        <div class="el-split el-in">
+          <div><p class="el-dec-n">04</p><h3 class="el-h2" id="h-d4" style="font-size:clamp(24px,2.6vw,32px)">Every claim points<span>back to its data</span></h3></div>
+          <div>
+            <div class="el-body">
+              <p>In round 2, people liked the AI summaries, then tried to fact-check them against the raw data in other tabs. The way back wasn't clear.</p>
+              <p>Chat answers now carry numbered citations and a Sources row. On the insights panel, each claim links to the tab and section where its data lives.</p>
+            </div>
+            <dl class="el-tdw">
+              <div><dt>Tried</dt><dd>Summaries with no path back to the data</dd></div>
+              <div><dt>Dropped</dt><dd>Unsourced answers</dd></div>
+              <div><dt>Why</dt><dd>Professionals need the reasoning, not just the conclusion</dd></div>
+            </dl>
           </div>
-          <dl class="cm-tdw">
-            <div><dt>Tried</dt><dd>Summaries with no path back to the data</dd></div>
-            <div><dt>Dropped</dt><dd>Unsourced answers</dd></div>
-            <div><dt>Why</dt><dd>Professionals need the reasoning, not just the conclusion</dd></div>
-          </dl>
         </div>
-        <figure class="cm-shot cm-shot--narrow cm-wide">
-          <div class="cm-shot-frame"><picture><source srcset="./assets/craft/case/cc-sources.webp" type="image/webp"><img src="./assets/craft/case/cc-sources.jpg" alt="Bullet points in an answer ending with citation numbers in brackets, and a row with feedback buttons and a Sources chip" width="1420" height="400" loading="lazy" decoding="async" style="background-color:#efefef"></picture></div>
-          <figcaption>Citations inline, sources one tap away.</figcaption>
-        </figure>
+        <div class="el-grid">
+          <figure class="el-card">
+            <div class="el-card-m"><picture><source srcset="./assets/craft/case/cc-sources.webp" type="image/webp"><img src="./assets/craft/case/cc-sources.jpg" alt="Bullet points in an answer ending with citation numbers in brackets, and a row with feedback buttons and a Sources chip" width="1420" height="400" loading="lazy" decoding="async"></picture></div>
+            <figcaption class="el-card-c"><b>Citations inline</b><span>Sources one tap away.</span></figcaption>
+          </figure>
+        </div>
+        <div class="el-grid" style="margin-top:12px">
+          <figure class="el-card">
+            <div class="el-card-m cm-media el-card-m--sm">
+              <video muted loop playsinline preload="none" poster="./assets/craft/case/chat-panel-poster.jpg" width="720" height="342" aria-label="The chat panel: an analysis of Adobe with numbered sources, then the next question typed in plain language" style="max-width:720px;margin:0 auto">
+                <source src="./assets/craft/case/chat-panel.mp4" type="video/mp4">
+              </video>
+              <button class="cm-play" type="button" aria-label="Play video" hidden><span aria-hidden="true"></span></button>
+            </div>
+            <figcaption class="el-card-c"><b>The shipped panel</b><span>Every answer cites its sources.</span></figcaption>
+          </figure>
+        </div>
       </article>
 
-      <article class="cm-dec" id="decision-wrong" aria-labelledby="h-d5">
-        <div class="cm-col">
-          <p class="cm-dec-n">05</p>
-          <h3 class="cm-h3" id="h-d5">Plan for the wrong answer</h3>
-          <div class="cm-body">
-            <p>At around 74% accuracy, the assistant would be wrong often enough to matter. Early on, too much AI freedom also made results feel inconsistent.</p>
-            <p>So the panel says up front that it may make mistakes and isn't a substitute for professional advice. Errors read as next steps: rephrase, retry, or ask something else. Slow answers say they're still working. Every answer has thumbs up, thumbs down and copy.</p>
+      <article class="el-dec" id="decision-wrong" aria-labelledby="h-d5">
+        <div class="el-split el-in">
+          <div><p class="el-dec-n">05</p><h3 class="el-h2" id="h-d5" style="font-size:clamp(24px,2.6vw,32px)">Plan for<span>the wrong answer</span></h3></div>
+          <div>
+            <div class="el-body">
+              <p>At around 74% accuracy, the assistant would be wrong often enough to matter. Early on, too much AI freedom also made results feel inconsistent.</p>
+              <p>So the panel says up front that it may make mistakes and isn't a substitute for professional advice. Errors read as next steps: rephrase, retry, or ask something else. Slow answers say they're still working. Every answer has thumbs up, thumbs down and copy.</p>
+            </div>
+            <dl class="el-tdw">
+              <div><dt>Tried</dt><dd>More freedom in how the AI answered</dd></div>
+              <div><dt>Dropped</dt><dd>Open-ended answers and generic errors</dd></div>
+              <div><dt>Why</dt><dd>Results felt random. Structure made them trustworthy.</dd></div>
+            </dl>
           </div>
-          <dl class="cm-tdw">
-            <div><dt>Tried</dt><dd>More freedom in how the AI answered</dd></div>
-            <div><dt>Dropped</dt><dd>Open-ended answers and generic errors</dd></div>
-            <div><dt>Why</dt><dd>Results felt random. Structure made them trustworthy.</dd></div>
-          </dl>
         </div>
-        <figure class="cm-shot cmd-shot-sm cm-wide">
-          <div class="cm-shot-frame"><picture><source srcset="./assets/craft/case/cc-errors.webp" type="image/webp"><img src="./assets/craft/case/cc-errors.jpg" alt="Six messages. Errors: Something went wrong. I didn't quite get that, try rephrasing or ask me something else. That data isn't available right now. Notices: Still working on it, thanks for your patience. Having trouble reaching servers, with Retry. You've used 3 chats this week, with Subscribe." width="1030" height="712" loading="lazy" decoding="async" style="background-color:#f8f3ef"></picture></div>
-          <figcaption>Errors with a way forward, then waits and limits.</figcaption>
-        </figure>
+        <div class="el-grid">
+          <figure class="el-card">
+            <div class="el-card-m"><picture><source srcset="./assets/craft/case/cc-errors.webp" type="image/webp"><img src="./assets/craft/case/cc-errors.jpg" alt="Six messages. Errors: Something went wrong. I didn't quite get that, try rephrasing or ask me something else. That data isn't available right now. Notices: Still working on it, thanks for your patience. Having trouble reaching servers, with Retry. You've used 3 chats this week, with Subscribe." width="1030" height="712" loading="lazy" decoding="async" style="max-width:640px;margin:0 auto"></picture></div>
+            <figcaption class="el-card-c"><b>Errors with a way forward</b><span>Then waits and limits.</span></figcaption>
+          </figure>
+        </div>
       </article>
 
-      <article class="cm-dec" id="decision-thread" aria-labelledby="h-d6">
-        <div class="cm-col">
-          <p class="cm-dec-n">06</p>
-          <h3 class="cm-h3" id="h-d6">A new chat is a fork, not a reset</h3>
-          <div class="cm-body">
-            <p>3 users hesitated before clicking New Chat. One said: “If I start over, I lose everything I've done.” We had built it as a reset.</p>
-            <p>I renamed it “Start new thread”, added a note that history is saved, and kept the history sidebar visible before the action. History lists the most recent first, opens on the latest message, supports rename and delete, and loads older chats in batches.</p>
+      <article class="el-dec" id="decision-thread" aria-labelledby="h-d6">
+        <div class="el-split el-in">
+          <div><p class="el-dec-n">06</p><h3 class="el-h2" id="h-d6" style="font-size:clamp(24px,2.6vw,32px)">A new chat is a fork<span>not a reset</span></h3></div>
+          <div>
+            <div class="el-body">
+              <p>3 users hesitated before clicking New Chat. One said: “If I start over, I lose everything I've done.” We had built it as a reset.</p>
+              <p>I renamed it “Start new thread”, added a note that history is saved, and kept the history sidebar visible before the action. History lists the most recent first, opens on the latest message, supports rename and delete, and loads older chats in batches.</p>
+            </div>
+            <dl class="el-tdw">
+              <div><dt>Tried</dt><dd>New Chat as a clean reset</dd></div>
+              <div><dt>Dropped</dt><dd>The “New Chat” label and the reset feel</dd></div>
+              <div><dt>Why</dt><dd>People feared losing their research</dd></div>
+            </dl>
+            <p class="el-note cm-todo">Not confirmed yet: whether memory across sessions shipped in v1. My notes disagree, so I'm not claiming it here.</p>
           </div>
-          <dl class="cm-tdw">
-            <div><dt>Tried</dt><dd>New Chat as a clean reset</dd></div>
-            <div><dt>Dropped</dt><dd>The “New Chat” label and the reset feel</dd></div>
-            <div><dt>Why</dt><dd>People feared losing their research</dd></div>
-          </dl>
-          <p class="cmd-note cm-todo">Not confirmed yet: whether memory across sessions shipped in v1. My notes disagree, so I'm not claiming it here.</p>
         </div>
-        <figure class="cm-shot cmd-shot-sm cm-wide">
-          <div class="cm-shot-frame cmd-fade-rb"><picture><source srcset="./assets/craft/case/cc-history.webp" type="image/webp"><img src="./assets/craft/case/cc-history.jpg" alt="The chat history sidebar with named threads such as Portfolio risk analysis and Series B deal pipeline, next to an answer about Adobe" width="1183" height="909" loading="lazy" decoding="async" style="background-color:#f6f6f7"></picture></div>
-          <figcaption>History stays in view, grouped by day.</figcaption>
-        </figure>
+        <div class="el-grid">
+          <figure class="el-card">
+            <div class="el-card-m"><picture><source srcset="./assets/craft/case/cc-history.webp" type="image/webp"><img src="./assets/craft/case/cc-history.jpg" alt="The chat history sidebar with named threads such as Portfolio risk analysis and Series B deal pipeline, next to an answer about Adobe" width="1183" height="909" loading="lazy" decoding="async" style="max-width:760px;margin:0 auto"></picture></div>
+            <figcaption class="el-card-c"><b>History stays in view</b><span>Grouped by day.</span></figcaption>
+          </figure>
+        </div>
       </article>
 
-      <div class="cm-col">
-        <h3 class="cmd-h3" id="details">Smaller details</h3>
-      </div>
-      <ul class="cmd-cards cm-wide" aria-label="Smaller details">
-        <li class="cmd-card"><p class="cmd-card-t">Free chat limits</p><p>A small weekly allowance for free users, with a banner before and after each chat. No surprise dead ends.</p></li>
-        <li class="cmd-card"><p class="cmd-card-t">Calm loading</p><p>Threaded replies with loading and typing states, so a wait looks like work, not a freeze.</p></li>
-        <li class="cmd-card"><p class="cmd-card-t">Opens in steps</p><p>The panel expands gradually, so dense data views don't jump.</p></li>
+      <ul class="el-feat el-feat--4" aria-label="Smaller details">
+        <li class="el-feat-h"><p class="el-feat-t">Smaller details</p></li>
+        <li><b>Free chat limits</b><p>A small weekly allowance for free users, with a banner before and after each chat. No surprise dead ends.</p></li>
+        <li><b>Calm loading</b><p>Threaded replies with loading and typing states, so a wait looks like work, not a freeze.</p></li>
+        <li><b>Opens in steps</b><p>The panel expands gradually, so dense data views don't jump.</p></li>
       </ul>
     </section>
 
     <!-- 6. Testing -->
-    <section class="cm-sec" id="testing" aria-labelledby="h-testing">
-      <div class="cm-col">
-        <p class="cm-eyebrow">Iteration and testing</p>
-        <h2 class="cm-h2" id="h-testing">Four versions, two test rounds</h2>
-        <div class="cm-body"><p>I tested to break it, not to confirm it.</p></div>
-
-        <h3 class="cmd-h3" id="versions">How the panel changed</h3>
-        <ol class="cmd-rows">
-          <li><p class="cmd-row-k">v1</p><div><p>Empty panel, one Let's Chat button. No prompts, no history.</p><p class="cmd-changed"><b>Removed.</b> The blank slate left people unsure how to start.</p></div></li>
-          <li><p class="cmd-row-k">v2</p><div><p>Prompt chips helped the start. The body stayed empty, with no session structure.</p><p class="cmd-changed"><b>Removed.</b> Better start, still weak for ongoing research.</p></div></li>
-          <li><p class="cmd-row-k">v3</p><div><p>History sidebar and table answers. Topics were placeholders and the overlay felt heavy.</p><p class="cmd-changed"><b>Removed.</b> Closer, not trusted enough for diligence.</p></div></li>
-          <li><p class="cmd-row-k">v4<small>Shipped</small></p><div><p>Real history, sourced answers, loading states, search and agent in the top nav.</p><p class="cmd-changed"><b>Kept.</b> It matched how investors explore and build conviction.</p></div></li>
-        </ol>
-
-        <h3 class="cmd-h3" id="rounds">Who tested it</h3>
+    <section class="el-sec" id="testing" aria-labelledby="h-testing">
+      <div class="el-split el-in">
+        <div>
+          <p class="el-eyebrow">Iteration and testing</p>
+          <h2 class="el-h2" id="h-testing">Four versions<span>two test rounds</span></h2>
+        </div>
+        <div class="el-body"><p>I tested to break it, not to confirm it.</p></div>
       </div>
-      <ul class="cmd-cards cmd-cards--2 cm-wide" style="max-width:calc(880px + 2 * var(--pad))" aria-label="Test rounds">
-        <li class="cmd-card"><p class="cmd-card-k">Round 1 · week 3</p><p class="cmd-card-t">Unmoderated Figma test</p><p>6 internal users, three tasks. Focus: first run and first chat question.</p></li>
-        <li class="cmd-card"><p class="cmd-card-k">Round 2 · week 6</p><p class="cmd-card-t">Moderated think-aloud</p><p>45-minute sessions with 8 investors on staging. Focus: the full flow and the AI insights panel.</p></li>
+
+      <ul class="el-outline" style="--n:2" aria-label="Test rounds">
+        <li><p class="el-k">Round 1 · week 3</p><p class="el-t">Unmoderated Figma test</p><p class="el-d">6 internal users, three tasks. Focus: first run and first chat question.</p></li>
+        <li><p class="el-k">Round 2 · week 6</p><p class="el-t">Moderated think-aloud</p><p class="el-d">45-minute sessions with 8 investors on staging. Focus: the full flow and the AI insights panel.</p></li>
       </ul>
 
-      <div class="cm-col">
-        <h3 class="cmd-h3" id="findings">What broke</h3>
-        <ol class="cmd-rows">
-          <li><p class="cmd-row-k">Critical<small>Round 1</small></p><div><p>The empty input froze people. 4 of 6 stalled for 15+ seconds.</p><p class="cmd-changed"><a href="#decision-start">See decision 02</a></p></div></li>
-          <li><p class="cmd-row-k">High<small>Round 2</small></p><div><p>Prose answers got skipped. People wanted to scan in under 10 seconds.</p><p class="cmd-changed"><a href="#decision-format">See decision 03</a></p></div></li>
-          <li><p class="cmd-row-k">High</p><div><p>“New Chat” felt like losing work. 3 users hesitated.</p><p class="cmd-changed"><a href="#decision-thread">See decision 06</a></p></div></li>
-          <li><p class="cmd-row-k">Medium</p><div><p>Insights felt cut off from the data. People couldn't fact-check them.</p><p class="cmd-changed"><a href="#decision-sources">See decision 04</a></p></div></li>
-        </ol>
-
-        <h3 class="cmd-h3" id="usability">Usability, between test rounds</h3>
-        <p class="cmd-note">Same tasks, different groups. Round 1 was 6 internal users on a Figma prototype. Round 2 was 8 investors on staging. Read these as direction, not a controlled comparison.</p>
-        <ol class="cm-results">
-          <li>
-            <p class="cm-r-k">SUS score</p>
-            <p class="cm-r-v"><span class="cm-before">54</span><span class="cm-arrow" aria-hidden="true">→</span><span class="cm-sr">to</span><span>72</span></p>
-            <p class="cm-r-m">Out of 100</p>
-          </li>
-          <li>
-            <p class="cm-r-k">Task completion</p>
-            <p class="cm-r-v"><span class="cm-before">61%</span><span class="cm-arrow" aria-hidden="true">→</span><span class="cm-sr">to</span><span>89%</span></p>
-            <p class="cm-r-m">Finished the flow without getting stuck</p>
-          </li>
-          <li>
-            <p class="cm-r-k">Time on task</p>
-            <p class="cm-r-v"><span class="cm-before">4m 20s</span><span class="cm-arrow" aria-hidden="true">→</span><span class="cm-sr">to</span><span>1m 55s</span></p>
-            <p class="cm-r-m">Lower is better</p>
-          </li>
-        </ol>
-
-        <h3 class="cmd-h3" id="team">Working with the team</h3>
-        <ul class="cm-list">
-          <li>Product manager: a weekly sync on scope and priority. I owned design strategy, the PM owned the business case.</li>
-          <li>ML and engineering: I joined the bi-weekly ML reviews and turned user needs into API constraints early, which meant less rework later.</li>
-          <li>Data: we picked the insight signals investors actually use, not vanity metrics.</li>
-        </ul>
+      <div class="el-grid el-grid--21">
+        <figure class="el-card el-chart">
+          <p class="el-chart-k"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 11v5M12 8h.01"/></svg>Usability, round 1 and round 2</p>
+          <div>
+            <div class="el-group">
+              <p class="el-group-h">SUS score <span>out of 100</span></p>
+              <div class="el-row"><div class="el-row-b"><div class="el-track"><span class="el-bar" style="--w:54%"></span></div><p class="el-row-v">54</p></div></div>
+              <div class="el-row is-hi"><div class="el-row-b"><div class="el-track"><span class="el-bar" style="--w:72%;--d:.25s"></span></div><p class="el-row-v" data-to="72">72</p></div></div>
+            </div>
+            <div class="el-group">
+              <p class="el-group-h">Task completion <span>finished without getting stuck</span></p>
+              <div class="el-row"><div class="el-row-b"><div class="el-track"><span class="el-bar" style="--w:61%"></span></div><p class="el-row-v">61%</p></div></div>
+              <div class="el-row is-hi"><div class="el-row-b"><div class="el-track"><span class="el-bar" style="--w:89%;--d:.25s"></span></div><p class="el-row-v" data-to="89" data-suf="%">89%</p></div></div>
+            </div>
+          </div>
+          <div class="el-legend"><span><i></i>Round 1</span><span><i class="is-hi"></i>Round 2</span></div>
+        </figure>
+        <figure class="el-card el-big">
+          <div class="el-card-m" style="place-items:center start">
+            <div>
+              <p class="el-p" style="color:var(--mute);font-size:13px">Time on task</p>
+              <p class="el-big-v" style="font-size:clamp(48px,5.4vw,76px);margin-top:10px" data-to="115" data-from="260" data-fmt="ms">1m 55s</p>
+              <p class="el-p" style="margin-top:10px">down from 4m 20s</p>
+            </div>
+          </div>
+          <figcaption class="el-card-c"><b>Lower is better</b><span>Same tasks, round 2.</span></figcaption>
+        </figure>
       </div>
+      <p class="el-note el-in">Same tasks, different groups. Round 1 was 6 internal users on a Figma prototype. Round 2 was 8 investors on staging. Read these as direction, not a controlled comparison.</p>
+
+      <div class="el-split el-in el-sec--tight">
+        <h3 class="el-h3" id="versions">How the panel changed</h3>
+        <ol class="el-list" style="margin-top:0">
+          <li><p class="el-k">v1</p><div><p>Empty panel, one Let's Chat button. No prompts, no history.</p><p><b>Removed.</b> The blank slate left people unsure how to start.</p></div></li>
+          <li><p class="el-k">v2</p><div><p>Prompt chips helped the start. The body stayed empty, with no session structure.</p><p><b>Removed.</b> Better start, still weak for ongoing research.</p></div></li>
+          <li><p class="el-k">v3</p><div><p>History sidebar and table answers. Topics were placeholders and the overlay felt heavy.</p><p><b>Removed.</b> Closer, not trusted enough for diligence.</p></div></li>
+          <li><p class="el-k">v4<small>Shipped</small></p><div><p>Real history, sourced answers, loading states, search and agent in the top nav.</p><p><b>Kept.</b> It matched how investors explore and build conviction.</p></div></li>
+        </ol>
+      </div>
+
+      <div class="el-split el-in el-sec--tight">
+        <h3 class="el-h3" id="findings">What broke</h3>
+        <ol class="el-list" style="margin-top:0">
+          <li><p class="el-k">Critical<small>Round 1</small></p><div><p>The empty input froze people. 4 of 6 stalled for 15+ seconds.</p><p><a href="#decision-start">See decision 02</a></p></div></li>
+          <li><p class="el-k">High<small>Round 2</small></p><div><p>Prose answers got skipped. People wanted to scan in under 10 seconds.</p><p><a href="#decision-format">See decision 03</a></p></div></li>
+          <li><p class="el-k">High</p><div><p>“New Chat” felt like losing work. 3 users hesitated.</p><p><a href="#decision-thread">See decision 06</a></p></div></li>
+          <li><p class="el-k">Medium</p><div><p>Insights felt cut off from the data. People couldn't fact-check them.</p><p><a href="#decision-sources">See decision 04</a></p></div></li>
+        </ol>
+      </div>
+
+      <ul class="el-feat el-feat--4" aria-label="Working with the team">
+        <li class="el-feat-h"><p class="el-feat-t">Working with the team</p></li>
+        <li><b>Product manager</b><p>A weekly sync on scope and priority. I owned design strategy, the PM owned the business case.</p></li>
+        <li><b>ML and engineering</b><p>I joined the bi-weekly ML reviews and turned user needs into API constraints early, which meant less rework later.</p></li>
+        <li><b>Data</b><p>We picked the insight signals investors actually use, not vanity metrics.</p></li>
+      </ul>
     </section>
 
     <!-- 7. Outcome -->
-    <section class="cm-sec cm-col" id="outcome" aria-labelledby="h-outcome">
-      <p class="cm-eyebrow">Outcome</p>
-      <h2 class="cm-h2" id="h-outcome">What changed after launch</h2>
-      <ol class="cm-results">
-        <li>
-          <p class="cm-r-k">Time to an answer</p>
-          <p class="cm-r-v"><span class="cm-before">30–40 min</span><span class="cm-arrow" aria-hidden="true">→</span><span class="cm-sr">to</span><span>&lt;30 s</span></p>
-          <p class="cm-r-m cm-todo">Method not documented yet.</p>
-        </li>
-        <li>
-          <p class="cm-r-k">Session time</p>
-          <p class="cm-r-v"><span>+25%</span></p>
-          <p class="cm-r-m cm-todo">Baseline and method not documented yet.</p>
-        </li>
-        <li>
-          <p class="cm-r-k">Preferred the chat flow</p>
-          <p class="cm-r-v"><span>70%</span></p>
-          <p class="cm-r-m cm-todo">Sample and method not documented yet.</p>
-        </li>
-      </ol>
+    <section class="el-sec" id="outcome" aria-labelledby="h-outcome">
+      <div class="el-split el-in">
+        <div>
+          <p class="el-eyebrow">Outcome</p>
+          <h2 class="el-h2" id="h-outcome">What changed<span>after launch</span></h2>
+        </div>
+        <div class="el-body"><p>Answers that took a session of filters now take a question. People spent longer in the product, and most preferred the chat flow.</p></div>
+      </div>
 
-      <h3 class="cmd-h3" id="didnt-work">What didn't work</h3>
-      <ul class="cm-list">
-        <li>Wall-of-text answers were technically correct and useless in practice.</li>
-        <li>Early chat felt detached from what was on screen and repeated the obvious.</li>
-        <li>Too much AI freedom made results feel inconsistent. Each of these pushed me toward more structure.</li>
+      <div class="el-grid el-grid--21">
+        <figure class="el-card el-chart">
+          <p class="el-chart-k"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 11v5M12 8h.01"/></svg>Time to an answer</p>
+          <ul class="el-rows">
+            <li class="el-row is-hi"><p class="el-row-n">Contextual Chat</p><div class="el-row-b"><div class="el-track"><span class="el-bar" style="--w:2%"></span></div><p class="el-row-v">&lt;30 s</p></div></li>
+            <li class="el-row"><p class="el-row-n">Filters and tabs <small>before</small></p><div class="el-row-b"><div class="el-track"><span class="el-bar" style="--w:100%;--d:.2s"></span></div><p class="el-row-v">30–40 min</p></div></li>
+          </ul>
+          <figcaption class="el-card-c"><b>Minutes became seconds</b><span class="cm-todo">Method not documented yet.</span></figcaption>
+        </figure>
+        <figure class="el-card el-big">
+          <div class="el-card-m">
+            <svg class="el-ring" viewBox="0 0 120 120" role="img" aria-label="70%" style="--len:220px">
+              <circle class="t" cx="60" cy="60" r="50"/>
+              <circle class="v" cx="60" cy="60" r="50"/>
+              <text x="60" y="62" text-anchor="middle" dominant-baseline="middle">70%</text>
+            </svg>
+          </div>
+          <figcaption class="el-card-c el-card-c--center"><b>Preferred the chat flow</b><span class="cm-todo">Sample and method not documented yet.</span></figcaption>
+        </figure>
+      </div>
+
+      <ul class="el-feat el-feat--1" aria-label="More results">
+        <li class="el-feat-h"><p class="el-feat-t">Also after launch</p></li>
+        <li><b>+25% session time</b><p class="cm-todo">Baseline and method not documented yet.</p></li>
+        <li><b>What didn't work</b><ul><li>Wall-of-text answers were technically correct and useless in practice.</li><li>Early chat felt detached from what was on screen and repeated the obvious.</li><li>Too much AI freedom made results feel inconsistent. Each of these pushed me toward more structure.</li></ul></li>
       </ul>
 
-      <div class="cmd-separate" role="group" aria-labelledby="h-agent">
-        <p class="cmd-separate-k">From the Systematic Agent launch (separate measurement)</p>
-        <h3 class="cmd-h3" id="h-agent">The same product, measured another way</h3>
-        <p class="cmd-note">My Systematic Agent write-up covers the same assistant plus AI insights on the profile. Its numbers were measured separately from the ones above, and I haven't reconciled the two sets.</p>
-        <ul class="cmd-cards" aria-label="Systematic Agent launch numbers">
-          <li class="cmd-card"><p class="cmd-card-v">3x</p><p>faster discovery, from query to shortlist</p></li>
-          <li class="cmd-card"><p class="cmd-card-v">85%</p><p>CSAT. Post-launch survey, n=120</p></li>
-          <li class="cmd-card"><p class="cmd-card-v">+12%</p><p>retention, month-over-month active users</p></li>
-          <li class="cmd-card"><p class="cmd-card-v">40%</p><p>lower cognitive load, measured through task completion and SUS</p></li>
+      <div class="el-sep" role="group" aria-labelledby="h-agent">
+        <div class="el-split el-in">
+          <div>
+            <p class="el-eyebrow">From the Systematic Agent launch (separate measurement)</p>
+            <h3 class="el-h2" id="h-agent" style="font-size:clamp(24px,2.6vw,32px)">The same product<span>measured another way</span></h3>
+          </div>
+          <p class="el-p">My Systematic Agent write-up covers the same assistant plus AI insights on the profile. Its numbers were measured separately from the ones above, and I haven't reconciled the two sets.</p>
+        </div>
+        <ul class="el-stats el-stats--4 el-in" aria-label="Systematic Agent launch numbers">
+          <li><p class="el-stat-v">3x</p><p class="el-stat-l">faster discovery, from query to shortlist</p></li>
+          <li><p class="el-stat-v">85%</p><p class="el-stat-l">CSAT. Post-launch survey, n=120</p></li>
+          <li><p class="el-stat-v">+12%</p><p class="el-stat-l">retention, month-over-month active users</p></li>
+          <li><p class="el-stat-v">40%</p><p class="el-stat-l">lower cognitive load, measured through task completion and SUS</p></li>
         </ul>
       </div>
     </section>
 
     <!-- 8. Next steps -->
-    <section class="cm-sec cm-col" id="next-steps" aria-labelledby="h-nextsteps">
-      <p class="cm-eyebrow">Looking back</p>
-      <h2 class="cm-h2" id="h-nextsteps">What I'd change, and what's next</h2>
-
-      <h3 class="cmd-h3" id="change">What I'd do differently</h3>
-      <ul class="cm-list">
-        <li>Test the first chat earlier. It was hard even for experts, and it cost a full iteration.</li>
-        <li>Ideate with 2 or 3 investors, not just research with them. The “plain language thesis” idea would have come sooner.</li>
-        <li>Define AI confidence as a metric from day one. It only became one midway.</li>
-      </ul>
-
-      <h3 class="cmd-h3" id="next">Where it goes next</h3>
-      <ul class="cm-list">
-        <li>Proactive alerts, like new funding at companies that match your last query.</li>
-        <li>Prompts tuned by role.</li>
-        <li>Portfolio-level analysis: overlaps, risks and spread across holdings.</li>
-        <li>Shared chats and notes. Decisions rarely happen alone.</li>
-      </ul>
+    <section class="el-sec" id="next-steps" aria-labelledby="h-nextsteps">
+      <div class="el-in">
+        <p class="el-eyebrow">Looking back</p>
+        <h2 class="el-h2" id="h-nextsteps">What I'd change<span>and what's next</span></h2>
+      </div>
+      <div class="el-split el-in" style="margin-top:clamp(32px,4vw,48px)">
+        <div>
+          <h3 class="el-h3" id="change">What I'd do differently</h3>
+          <ul class="el-bul">
+            <li>Test the first chat earlier. It was hard even for experts, and it cost a full iteration.</li>
+            <li>Ideate with 2 or 3 investors, not just research with them. The “plain language thesis” idea would have come sooner.</li>
+            <li>Define AI confidence as a metric from day one. It only became one midway.</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="el-h3" id="next">Where it goes next</h3>
+          <ul class="el-bul">
+            <li>Proactive alerts, like new funding at companies that match your last query.</li>
+            <li>Prompts tuned by role.</li>
+            <li>Portfolio-level analysis: overlaps, risks and spread across holdings.</li>
+            <li>Shared chats and notes. Decisions rarely happen alone.</li>
+          </ul>
+        </div>
+      </div>
     </section>
 
-    <nav class="cm-end cm-col" aria-label="More case studies">
+    <nav class="cm-end" aria-label="More case studies">
       <a class="cm-next" href="./craft-deal-room.html">
         <span class="cm-orb cm-orb--lg" data-orb="dealDoc" aria-hidden="true"></span>
         <span>
@@ -533,5 +592,6 @@
 
   <script src="./assets/craft/orb.js?v=1" defer></script>
   <script src="./assets/craft/case/case-min.js?v=4" defer></script>
+  <script src="./assets/craft/case/el.js?v=1" defer></script>
 </body>
 </html>
