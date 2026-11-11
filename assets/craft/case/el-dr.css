@@ -36,3 +36,8 @@
 
 /* Bleed image card: room between the image and its caption */
 .dr.el .el-card-m--bleed + .el-card-c { padding-top: clamp(16px, 2vw, 22px); }
+
+/* Hero: one image only, shown near its native 1024px so it stays sharp */
+.el-hero-cover { background: #eef1fb; }
+.el-hero-cover picture { display: block; width: 100%; }
+.el-hero-cover img { display: block; width: 100%; height: auto; }
