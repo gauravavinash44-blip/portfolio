@@ -1,5 +1,6 @@
 /* Live profile character for the Craft board orb.
-   Plays Gaurav's animated character clip (silent, looping) with a transparent background.
+   Plays a silent looping clip of Gaurav's character, built by morphing between his nine head renders,
+   with a transparent background.
    The clip is one mp4 with the picture on top and its matte underneath; each frame is
    composited onto a canvas, so it works in every browser without alpha-video support.
    On top of the clip a small spring rig leans the character toward the pointer, lifts it on
