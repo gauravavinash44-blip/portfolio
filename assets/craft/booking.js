@@ -349,20 +349,18 @@
     } else if (st.phase === "loading") {
       k = status === "booked" ? "Still open" : "Next slot";
       v = h("span", { className: "cb-skel", "aria-hidden": "true" });
-      sub = h("span", { className: "cb-skel cb-skel--sub", "aria-hidden": "true" });
       say = label + ". Checking Gaurav's calendar. " + bookAction;
     } else if (st.phase === "ready") {
       var nd = new Date(st.next), today = dayKey(nd, tz) === dayKey(new Date(), tz);
       k = status === "booked" ? (today ? "Still open today" : "Still open") : (today ? "Today" : "Next slot");
       v = today ? h(Time, { date: nd, tz: tz }) : h(React.Fragment, null, weekday(nd, tz), ", ", h(Time, { date: nd, tz: tz }));
-      if (!ist) sub = "(" + timeStr(nd, IST) + " IST)";
       say = label + ". Next interview slot " + longDay(nd, tz) + ", " + timeStr(nd, tz) + (ist ? " IST" : " your time") + ". " + bookAction;
     } else if (st.phase === "empty") {
-      k = "Next 2 weeks"; v = "Fully booked"; sub = "Email me instead";
+      k = "Next 2 weeks"; v = "Fully booked";
       say = label + ". Fully booked for 2 weeks. Email " + cfg.email + " or see later dates";
     } else {
-      var fh = splitHours(cfg.fallbackHours);
-      k = "Interview hours"; v = fh[0]; sub = fh[1] || null;
+      /* keep the small card to one line of time; the sheet shows the full hours */
+      k = "Book a call"; v = splitHours(cfg.fallbackHours)[0];
       say = label + ". Interview hours " + cfg.fallbackHours + ". " + bookAction;
     }
 
