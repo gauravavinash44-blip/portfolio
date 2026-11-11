@@ -361,3 +361,8 @@ body.cm[style*="--pa"] { --blue: var(--pa); --blue-text: var(--pa); --blue-stron
 /* Header screen spans the same wide edges as the number cards above it */
 .cm-hero--proj .cm-shot-frame { max-width: none; }
 .cm-hero--proj .cm-shot figcaption { text-align: left; margin-left: 0; }
+
+/* Inside the dashboard sheet: the sheet has its own close button, so Home hides and the section nav makes room */
+.cm-embed .cm-bar > a.cm-pill:first-child { visibility: hidden; }
+.cm-embed .cm-bar { padding-right: 72px; }
+.cm-embed .cm-home { display: none; }

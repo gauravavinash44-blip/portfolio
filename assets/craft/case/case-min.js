@@ -58,6 +58,31 @@
     });
   }
 
+
+  /* Inside the dashboard's case sheet: Home closes the sheet, Esc too */
+  var embedded = false;
+  try { embedded = window.self !== window.top && window.parent.location.origin === location.origin; } catch (x) { embedded = false; }
+  if (embedded) {
+    document.documentElement.classList.add("cm-embed");
+    document.addEventListener("click", function (e) {
+      var a = e.target.closest && e.target.closest("a[href]");
+      if (!a) return;
+      var u; try { u = new URL(a.href, location.href); } catch (x) { return; }
+      if (u.origin !== location.origin) return;
+      if (/\/(index\.html)?$/.test(u.pathname) && !u.hash) {
+        e.preventDefault(); e.stopImmediatePropagation();
+        window.parent.postMessage({ type: "case-close" }, location.origin);
+      } else if (u.pathname !== location.pathname && /craft-[a-z-]+\.html$/.test(u.pathname)) {
+        /* next case: swap in place so the sheet doesn't stack browser history */
+        e.preventDefault(); e.stopImmediatePropagation();
+        location.replace(u.href);
+      }
+    }, true);
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !document.querySelector(".el-zoom")) window.parent.postMessage({ type: "case-key", key: "Escape" }, location.origin);
+    });
+  }
+
   /* Leaving: where the browser has no cross-page transition, fade the page out first, then go */
   if (!("onpageswap" in window) && !reduce.matches) {
     document.addEventListener("click", function (e) {
