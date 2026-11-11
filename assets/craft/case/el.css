@@ -290,3 +290,8 @@ body.el .cm-end { max-width: none; padding-left: clamp(0px, 1.5vw, 16px); paddin
 .el-zoom img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; border-radius: 10px; box-shadow: 0 0 0 1px rgba(0,0,0,.08), 0 20px 60px -20px rgba(0,0,0,.25); background: #fff; image-rendering: auto; }
 .el-zoom-x { position: absolute; top: 16px; right: 16px; width: 40px; height: 40px; border-radius: 50%; border: 0; background: #fff; color: var(--ink); display: grid; place-items: center; cursor: pointer; box-shadow: 0 0 0 1px rgba(0,0,0,.08), 0 2px 8px rgba(0,0,0,.08); }
 @media (prefers-reduced-motion: reduce) { .el-zoom { transition: none; } }
+
+/* Single hero image */
+.el-hero-cover { background: var(--surface); }
+.el-hero-cover picture { display: block; width: 100%; }
+.el-hero-cover img { display: block; width: 100%; height: auto; }
