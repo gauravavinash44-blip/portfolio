@@ -2156,3 +2156,13 @@ html:not(:has(.craft-switch)) .cr-hero[data-cr-fit="flow"] .cr-topbar { right: 2
 .cr-glass.cr-hello .cr-hello-dot.is-on::before { background: #fff; }
 .cr-glass.cr-hello .cr-hello-dot:hover::before { background: rgba(255, 255, 255, 0.6); }
 .cr-glass.cr-hello .cr-hello-slide:not(.is-on) { opacity: 0.25; }
+/* Say hello: same liquid glass edge as the "Open to new roles" card */
+.cr-glass.cr-hello {
+  border: 1px solid rgba(255, 255, 255, 0.30);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.10),
+    inset 0 0 24px rgba(255, 255, 255, 0.06),
+    0 10px 30px rgba(20, 10, 30, 0.10);
+  text-shadow: 0 1px 3px rgba(20, 10, 20, 0.22);
+}
