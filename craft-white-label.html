@@ -8,20 +8,20 @@
   <link rel="icon" href="./assets/logo-ga.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..500&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..500&display=swap">
   <link rel="stylesheet" href="./assets/craft/craft-tokens.css?v=1">
   <link rel="stylesheet" href="./assets/craft/case/case-min.css?v=6">
-  <link rel="stylesheet" href="./assets/craft/case/stage.css?v=2">
-  <link rel="stylesheet" href="./assets/craft/case/wl-min.css?v=1">
+  <link rel="stylesheet" href="./assets/craft/case/el.css?v=4">
+  <link rel="stylesheet" href="./assets/craft/case/el-wl.css?v=1">
   <script>try{history.scrollRestoration="manual";if(!location.hash)window.scrollTo(0,0)}catch(e){}</script>
 </head>
 <!--
-  White Label Setup, detailed case study. Same template as craft-contextual-chat-detailed.html (case-min + cmd-*),
-  page-only additions in wl-min.css. Facts come only from white-label-short.html, the earlier Craft page in git,
+  White Label Setup in the el-* layout (framed column, split intros, media cards, one chart).
+  Page-only additions in el-wl.css. Facts come only from white-label-short.html, the earlier Craft page in git,
   app.js and the real screens in assets/white-label/screens. No outcome numbers exist yet: the hero shows product
   facts and an honest "Not yet". Notes with class="cm-todo" are things still waiting on Gaurav's sources.
 -->
-<body class="cr cm cmd" style="--pa:#8a4f45;--p1:#e49a88;--p2:#b4aef4;--p3:#a8665c">
+<body class="cr cm cmd el" style="--pa:#8a4f45;--p1:#e49a88;--p2:#b4aef4;--p3:#a8665c">
   <a class="cm-skip" href="#main">Skip to content</a>
 
   <header class="cm-bar">
@@ -40,148 +40,143 @@
     <div class="cm-progress" aria-hidden="true"></div>
   </header>
 
-  <main id="main">
+  <main id="main" class="el-frame">
+
     <!-- Hero -->
-    <section class="cm-hero cm-hero--proj" style="--p1:#e49a88;--p2:#b4aef4;--p3:#a8665c" aria-labelledby="h-title">
-      <div class="cm-hero-top cm-wide">
-        <div class="cm-hero-text">
-        <p class="cm-label"><span class="cm-orb" data-orb="swatch" aria-hidden="true"></span><span>Systematic · 2025 · Product Designer II</span></p>
-        <h1 class="cm-title" id="h-title">White Label Setup</h1>
-        <p class="cm-lede">Investor firms set their own URL, logo and email sender here. The old page looked live before anything was set, so I rebuilt it to start empty and only look live once the work is done.</p>
+    <section class="el-hero" aria-labelledby="h-title">
+      <div class="el-split el-in">
+        <div>
+          <p class="el-label"><span class="cm-orb" data-orb="swatch" aria-hidden="true"></span><span>Systematic · 2025 · Product Designer II</span></p>
+          <h1 class="el-h1" id="h-title">White Label Setup<span>URL, logo and sender</span></h1>
         </div>
-        <figure class="cm-cover cm-cover--land"><picture><source srcset="./assets/craft/case/cover-wl.webp" type="image/webp"><img src="./assets/craft/case/cover-wl.jpg" alt="White Label Setup title card beside the setup screen in Systematic" width="1400" height="1038" fetchpriority="high" decoding="async"></picture></figure>
+        <div class="el-body">
+          <p>Investor firms set their own URL, logo and email sender here. The old page looked live before anything was set, so I rebuilt it to start empty and only look live once the work is done.</p>
+        </div>
       </div>
 
-      <ul class="cm-nums cm-wide" aria-label="Product facts and outcome">
-        <li class="cm-num">
-          <p class="cm-num-v">3</p>
-          <p class="cm-num-l">steps to live: URL, logo, sender</p>
-          <p class="cm-num-m">Product fact. Nothing looks live until all three are done.</p>
-        </li>
-        <li class="cm-num">
-          <p class="cm-num-v">4</p>
-          <p class="cm-num-l">sender states: empty, pending, resend ready, verified</p>
-          <p class="cm-num-m">Product fact, from the shipped screens.</p>
-        </li>
-        <li class="cm-num">
-          <p class="cm-num-v wl-word">Not yet</p>
-          <p class="cm-num-l">completion and drop-off</p>
-          <p class="cm-num-m cm-todo">Not measured yet. I'd track drop-off between URL, logo and sender.</p>
-        </li>
+      <div class="el-grid el-grid--21">
+        <figure class="el-card">
+          <div class="el-card-m"><picture><source srcset="./assets/craft/case/wl-hero.webp" type="image/webp"><img src="./assets/craft/case/wl-hero.jpg" alt="White Label Setup after setup: the firm logo in the sidebar, a live hve.systematicventures.com link, the uploaded Goldman Sachs logo and a sender row marked Verified" width="1640" height="820" fetchpriority="high" decoding="async"></picture></div>
+          <figcaption class="el-card-c"><b>The shipped hub after setup</b><span>A live URL, the firm logo and a verified sender.</span></figcaption>
+        </figure>
+        <figure class="el-card">
+          <div class="el-card-m"><picture><source srcset="./assets/craft/case/cover-wl.webp" type="image/webp"><img src="./assets/craft/case/cover-wl.jpg" alt="White Label Setup title card beside the setup screen in Systematic" width="1400" height="1038" fetchpriority="high" decoding="async"></picture></div>
+          <figcaption class="el-card-c"><b>White Label Setup</b><span>Settings in Systematic</span></figcaption>
+        </figure>
+      </div>
+
+      <ul class="el-stats el-in" aria-label="Product facts and outcome">
+        <li><p class="el-stat-v">3</p><p class="el-stat-l">steps to live: URL, logo, sender</p><p class="el-stat-m">Product fact. Nothing looks live until all three are done.</p></li>
+        <li><p class="el-stat-v">4</p><p class="el-stat-l">sender states: empty, pending, resend ready, verified</p><p class="el-stat-m">Product fact, from the shipped screens.</p></li>
+        <li><p class="el-stat-v wl-word">Not yet</p><p class="el-stat-l">completion and drop-off</p><p class="el-stat-m cm-todo">Not measured yet. I'd track drop-off between URL, logo and sender.</p></li>
       </ul>
 
-      <figure class="cm-shot cm-wide">
-        <div class="cm-shot-frame cm-fade"><picture><source srcset="./assets/craft/case/wl-hero.webp" type="image/webp"><img src="./assets/craft/case/wl-hero.jpg" alt="White Label Setup after setup: the firm logo in the sidebar, a live hve.systematicventures.com link, the uploaded Goldman Sachs logo and a sender row marked Verified" width="1640" height="820" fetchpriority="high" decoding="async" style="background-color:#fbfcfc"></picture></div>
-        <figcaption>The shipped hub after setup. A live URL, the firm logo and a verified sender.</figcaption>
-      </figure>
-    </section>
+      <ul class="el-feat" aria-label="Project facts">
+        <li class="el-feat-h"><p class="el-feat-t">The project</p></li>
+        <li><b>Role</b><p>Product Designer II. I owned the Settings hub.</p></li>
+        <li><b>Scope</b><p>Subdomain, custom logo, sender</p></li>
+        <li><b>Timeline</b><p>1 month, 2025</p></li>
+        <li><b>Built with</b><p>The components Settings already uses</p></li>
+      </ul>
 
-    <div class="cm-col">
-      <dl class="cm-meta" aria-label="Project facts">
-        <div><dt>Role</dt><dd>Product Designer II. I owned the Settings hub.</dd></div>
-        <div><dt>Scope</dt><dd>Subdomain, custom logo, sender</dd></div>
-        <div><dt>Timeline</dt><dd>1 month, 2025</dd></div>
-        <div><dt>Built with</dt><dd>The components Settings already uses</dd></div>
-      </dl>
-      <div class="cmd-tldr">
-        <p>In short</p>
-        <p>Firms on Systematic can put their own URL, logo and sender on the invites they send, so guests see the firm. v1 looked finished on first visit: domain radios, a logo slot and a sender already marked Verified. In one month I rebuilt the hub with the parts Settings already had. It now starts empty, opens the logo slot only after a URL exists, and gives the sender real states. It shipped. I don't have completion numbers yet.</p>
+      <div class="el-split el-in el-sec--tight">
+        <h2 class="el-h3" style="color:var(--mute)">In short</h2>
+        <p class="el-p">Firms on Systematic can put their own URL, logo and sender on the invites they send, so guests see the firm. v1 looked finished on first visit: domain radios, a logo slot and a sender already marked Verified. In one month I rebuilt the hub with the parts Settings already had. It now starts empty, opens the logo slot only after a URL exists, and gives the sender real states. It shipped. I don't have completion numbers yet.</p>
       </div>
-    </div>
+    </section>
 
     <!-- 1. Context -->
-    <section class="cm-sec cm-col" id="context" aria-labelledby="h-context">
-      <p class="cm-eyebrow">Context</p>
-      <h2 class="cm-h2" id="h-context">Guests see the firm, so the page has to be true</h2>
-      <div class="cm-body">
-        <p>Systematic is a US fintech platform where investors discover and evaluate companies. An investor invites a company in. That guest lands on the investor's URL, sees the firm logo and gets mail from the firm.</p>
-        <p>White Label Setup is the Settings page that makes those three things real. Login, signup and email templates were already built. My part was the hub: subdomain, logo and sender.</p>
+    <section class="el-sec" id="context" aria-labelledby="h-context">
+      <div class="el-split el-in">
+        <div>
+          <p class="el-eyebrow">Context</p>
+          <h2 class="el-h2" id="h-context">Guests see the firm<span>so the page has to be true</span></h2>
+        </div>
+        <div class="el-body">
+          <p>Systematic is a US fintech platform where investors discover and evaluate companies. An investor invites a company in. That guest lands on the investor's URL, sees the firm logo and gets mail from the firm.</p>
+          <p>White Label Setup is the Settings page that makes those three things real. Login, signup and email templates were already built. My part was the hub: subdomain, logo and sender.</p>
+        </div>
       </div>
 
-      <h3 class="cmd-h3" id="h-problem">How the page worked before</h3>
-      <div class="cm-body">
-        <p>v1 had shipped as a packed form. Domain radios with no way to create a domain. An Upload Logo slot before any URL existed. A sender row that said Verified on first visit, with no pending state and no resend. One Update button for all three.</p>
-        <p>So an admin with nothing set up still looked like a firm that was done. Guests would have seen that as the firm.</p>
+      <div class="el-split el-in el-sec--tight">
+        <h3 class="el-h2" id="h-problem" style="font-size:clamp(24px,2.6vw,32px)">How the page<span>worked before</span></h3>
+        <div class="el-body">
+          <p>v1 had shipped as a packed form. Domain radios with no way to create a domain. An Upload Logo slot before any URL existed. A sender row that said Verified on first visit, with no pending state and no resend. One Update button for all three.</p>
+          <p>So an admin with nothing set up still looked like a firm that was done. Guests would have seen that as the firm.</p>
+        </div>
+      </div>
+
+      <div class="el-grid el-grid--21">
+        <figure class="el-card">
+          <div class="el-card-m"><picture><source srcset="./assets/craft/case/wl-v1-logo.webp" type="image/webp"><img src="./assets/craft/case/wl-v1-logo.jpg" alt="The v1 page: radios for go.systematicventures.com and hve.systematicventures.com, a Goldman Sachs logo with Replace and Delete buttons, a sender row marked Verified, and Cancel and Update buttons" width="1600" height="1320" loading="lazy" decoding="async"></picture></div>
+          <figcaption class="el-card-c"><b>v1 with a logo set</b><span>Radios, Replace and Delete sit on the page. The sender says Verified, just as it did on first visit.</span></figcaption>
+        </figure>
+        <figure class="el-card">
+          <div class="el-card-m"><picture><source srcset="./assets/craft/case/wl-v1-logo-dialog.webp" type="image/webp"><img src="./assets/craft/case/wl-v1-logo-dialog.jpg" alt="The v1 Your Logo dialog: a crop area with a red bank logo, two small previews labelled Preview profile and Preview white label, and Cancel and Save" width="1324" height="924" loading="lazy" decoding="async"></picture></div>
+          <figcaption class="el-card-c"><b>The v1 logo dialog</b><span>Crop, then two small previews.</span></figcaption>
+        </figure>
+      </div>
+
+      <div class="el-sec--tight">
+        <p class="el-pull">Live is a result, not a skin.</p>
+        <cite>My point of view going in</cite>
       </div>
     </section>
-    <figure class="cm-shot cm-shot--narrow cm-wide">
-      <div class="cm-shot-frame cm-fade"><picture><source srcset="./assets/craft/case/wl-v1-logo.webp" type="image/webp"><img src="./assets/craft/case/wl-v1-logo.jpg" alt="The v1 page: radios for go.systematicventures.com and hve.systematicventures.com, a Goldman Sachs logo with Replace and Delete buttons, a sender row marked Verified, and Cancel and Update buttons" width="1600" height="1320" loading="lazy" decoding="async" style="background-color:#fafbfc"></picture></div>
-      <figcaption>v1 with a logo set. Radios, Replace and Delete sit on the page. The sender says Verified, just as it did on first visit.</figcaption>
-    </figure>
-    <figure class="cm-shot cmd-shot-sm cm-wide">
-      <div class="cm-shot-frame"><picture><source srcset="./assets/craft/case/wl-v1-logo-dialog.webp" type="image/webp"><img src="./assets/craft/case/wl-v1-logo-dialog.jpg" alt="The v1 Your Logo dialog: a crop area with a red bank logo, two small previews labelled Preview profile and Preview white label, and Cancel and Save" width="1324" height="924" loading="lazy" decoding="async" style="background-color:#f6f3f5"></picture></div>
-      <figcaption>The v1 logo dialog. Crop, then two small previews.</figcaption>
-    </figure>
-
-    <div class="cm-col">
-      <blockquote class="cmd-pull"><p>Live is a result, not a skin.</p></blockquote>
-      <p class="cmd-pull-by">My point of view going in</p>
-    </div>
 
     <!-- 2. Research -->
-    <section class="cm-sec" id="research" aria-labelledby="h-research">
-      <div class="cm-col">
-        <p class="cm-eyebrow">Research</p>
-        <h2 class="cm-h2" id="h-research">One person sets it. Everyone else sees it.</h2>
-        <div class="cm-body"><p>One person uses this page. Two other groups live with whatever that person saves.</p></div>
+    <section class="el-sec" id="research" aria-labelledby="h-research">
+      <div class="el-split el-in">
+        <div>
+          <p class="el-eyebrow">Research</p>
+          <h2 class="el-h2" id="h-research">One person sets it.<span>Everyone else sees it.</span></h2>
+        </div>
+        <div class="el-body"><p>One person uses this page. Two other groups live with whatever that person saves.</p></div>
       </div>
 
-      <ul class="cmd-cards cm-wide" aria-label="Who this is for">
-        <li class="cmd-card">
-          <p class="cmd-card-k">Primary</p>
-          <p class="cmd-card-t" id="h-users">Investor or firm admin</p>
-          <p>Opens Settings. Sets a prefix, a logo and a sender.</p>
-          <ul><li>Changing the prefix breaks old invite links</li><li>Needs to see that before saving</li></ul>
-        </li>
-        <li class="cmd-card">
-          <p class="cmd-card-k">Affected</p>
-          <p class="cmd-card-t">Invited company or co-investor</p>
-          <p>Never opens this page. Gets an invite, lands on the firm URL, reads mail from the firm.</p>
-          <ul><li>If the hub is fake, they see the fake</li></ul>
-        </li>
-        <li class="cmd-card">
-          <p class="cmd-card-k">Internal</p>
-          <p class="cmd-card-t">Product and engineering</p>
-          <p>DNS for the subdomain, file storage for the logo, a verification wait for the sender.</p>
-          <ul><li>The UI has to hold empty, pending and verified</li><li>Not one pretty row</li></ul>
-        </li>
+      <ul class="el-feat el-feat--4" aria-label="Who this is for">
+        <li class="el-feat-h"><p class="el-feat-t">Who this is for</p></li>
+        <li><p class="el-k">Primary</p><b id="h-users">Investor or firm admin</b><p>Opens Settings. Sets a prefix, a logo and a sender.</p><ul><li>Changing the prefix breaks old invite links</li><li>Needs to see that before saving</li></ul></li>
+        <li><p class="el-k">Affected</p><b>Invited company or co-investor</b><p>Never opens this page. Gets an invite, lands on the firm URL, reads mail from the firm.</p><ul><li>If the hub is fake, they see the fake</li></ul></li>
+        <li><p class="el-k">Internal</p><b>Product and engineering</b><p>DNS for the subdomain, file storage for the logo, a verification wait for the sender.</p><ul><li>The UI has to hold empty, pending and verified</li><li>Not one pretty row</li></ul></li>
       </ul>
-      <div class="cm-col"><p class="cmd-note cm-todo">Method not documented yet. I don't have interview or test notes for this project, so this section is the roles and what each one needs.</p></div>
+      <p class="el-note el-in cm-todo">Method not documented yet. I don't have interview or test notes for this project, so this section is the roles and what each one needs.</p>
 
-      <div class="cm-col">
-        <h3 class="cmd-h3" id="h-insight">What it meant for the design</h3>
-      </div>
-      <ul class="cmd-cards cmd-cards--2 cm-wide" style="max-width:calc(880px + 2 * var(--pad))" aria-label="Insights">
-        <li class="cmd-card"><p class="cmd-card-t">Live came for free</p><p>v1 showed a finished firm before any work was done.</p><p class="cmd-then"><b>So:</b> start empty. Each piece earns its live look.</p></li>
-        <li class="cmd-card"><p class="cmd-card-t">A logo needs a home</p><p>Guests see the mark on the firm URL. With no URL, an upload has nowhere to go.</p><p class="cmd-then"><b>So:</b> open the logo slot after the URL is saved.</p></li>
-        <li class="cmd-card"><p class="cmd-card-t">Mail waits on an inbox</p><p>Sender verification takes real time on the engineering side. A badge can't skip it.</p><p class="cmd-then"><b>So:</b> the row shows where the address actually is.</p></li>
-        <li class="cmd-card"><p class="cmd-card-t">Some edits break things</p><p>A new prefix kills old invite links. A new email has to verify again.</p><p class="cmd-then"><b>So:</b> warnings and Delete live in the edit dialog.</p></li>
+      <ul class="el-feat" aria-label="Insights">
+        <li class="el-feat-h"><p class="el-feat-t" id="h-insight">What it meant for the design</p></li>
+        <li><b>Live came for free</b><p>v1 showed a finished firm before any work was done.</p><p class="el-then">So: start empty. Each piece earns its live look.</p></li>
+        <li><b>A logo needs a home</b><p>Guests see the mark on the firm URL. With no URL, an upload has nowhere to go.</p><p class="el-then">So: open the logo slot after the URL is saved.</p></li>
+        <li><b>Mail waits on an inbox</b><p>Sender verification takes real time on the engineering side. A badge can't skip it.</p><p class="el-then">So: the row shows where the address actually is.</p></li>
+        <li><b>Some edits break things</b><p>A new prefix kills old invite links. A new email has to verify again.</p><p class="el-then">So: warnings and Delete live in the edit dialog.</p></li>
       </ul>
     </section>
 
     <!-- 3. Goals -->
-    <section class="cm-sec" id="goals" aria-labelledby="h-limits">
-      <div class="cm-col">
-        <p class="cm-eyebrow">Goals and limits</p>
-        <h2 class="cm-h2" id="h-limits">Make one page tell the truth</h2>
-        <div class="cm-body"><p>I wasn't rebuilding identity. v1 was already in the product. Three aims:</p></div>
-        <ul class="cm-list">
-          <li>First visit looks like work still to do.</li>
-          <li>Each piece looks live only once it is: URL, then logo, then sender.</li>
-          <li>Anything that breaks links or mail gets said before Save.</li>
-        </ul>
+    <section class="el-sec" id="goals" aria-labelledby="h-limits">
+      <div class="el-split el-in">
+        <div>
+          <p class="el-eyebrow">Goals and limits</p>
+          <h2 class="el-h2" id="h-limits">Make one page<span>tell the truth</span></h2>
+        </div>
+        <div class="el-body">
+          <p>I wasn't rebuilding identity. v1 was already in the product. Three aims:</p>
+          <ul class="el-bul">
+            <li>First visit looks like work still to do.</li>
+            <li>Each piece looks live only once it is: URL, then logo, then sender.</li>
+            <li>Anything that breaks links or mail gets said before Save.</li>
+          </ul>
+        </div>
       </div>
-      <ul class="cmd-cards cm-wide" aria-label="Constraints">
-        <li class="cmd-card"><p class="cmd-card-k">Time</p><p class="cmd-card-v">4 weeks</p><p>for the hub only. Login, signup and email templates stayed as they were.</p></li>
-        <li class="cmd-card"><p class="cmd-card-k">Logo</p><p class="cmd-card-v">5MB</p><p>SVG, PNG, JPEG or HEIC. No URL, no upload.</p></li>
-        <li class="cmd-card"><p class="cmd-card-k">Components</p><p class="cmd-card-v">Same kit</p><p>The parts Settings already uses. Not a one-off kit for this page.</p></li>
+      <ul class="el-outline" aria-label="Constraints">
+        <li><p class="el-k">Time</p><p class="el-v">4 weeks</p><p class="el-d">for the hub only. Login, signup and email templates stayed as they were.</p></li>
+        <li><p class="el-k">Logo</p><p class="el-v">5MB</p><p class="el-d">SVG, PNG, JPEG or HEIC. No URL, no upload.</p></li>
+        <li><p class="el-k">Components</p><p class="el-v">Same kit</p><p class="el-d">The parts Settings already uses. Not a one-off kit for this page.</p></li>
       </ul>
 
-      <div class="cm-col">
-        <h3 class="cmd-h3" id="h-flow">The path to live</h3>
-        <div class="cm-body"><p>The admin path is a line. The guest path is what that line produces.</p></div>
+      <div class="el-split el-in el-sec--tight">
+        <h3 class="el-h2" id="h-flow" style="font-size:clamp(24px,2.6vw,32px)">The path<span>to live</span></h3>
+        <div class="el-body"><p>The admin path is a line. The guest path is what that line produces.</p></div>
       </div>
-      <ol class="cmd-funnel wl-funnel cm-wide" aria-label="Steps from empty to live">
+      <ol class="el-steps wl-steps el-in" aria-label="Steps from empty to live">
         <li><b>Domain</b><span>Create a subdomain</span></li>
         <li><b>Logo</b><span>Opens after the URL exists</span></li>
         <li><b>Sender</b><span>Empty, pending, then verified</span></li>
@@ -190,251 +185,302 @@
     </section>
 
     <!-- 4. Exploration -->
-    <section class="cm-sec" id="exploration" aria-labelledby="h-process">
-      <div class="cm-col">
-        <p class="cm-eyebrow">Exploration</p>
-        <h2 class="cm-h2" id="h-process">Three fights, picked on purpose</h2>
-        <div class="cm-body"><p>I didn't reopen login or mail templates. For each piece of the hub I weighed keeping v1 against changing it. The packed form was faster to leave alone. It also told a lie on day one.</p></div>
+    <section class="el-sec" id="exploration" aria-labelledby="h-process">
+      <div class="el-split el-in">
+        <div>
+          <p class="el-eyebrow">Exploration</p>
+          <h2 class="el-h2" id="h-process">Three fights<span>picked on purpose</span></h2>
+        </div>
+        <div class="el-body"><p>I didn't reopen login or mail templates. For each piece of the hub I weighed keeping v1 against changing it. The packed form was faster to leave alone. It also told a lie on day one.</p></div>
       </div>
-      <div class="cm-wide"><div class="cmd-tablewrap" role="region" aria-label="Keep v1 or change it, per piece of the hub" tabindex="0">
-        <table class="cmd-table">
+      <div class="el-table-wrap el-in" role="region" aria-label="Keep v1 or change it, per piece of the hub" tabindex="0">
+        <table class="el-table">
           <thead><tr><th scope="col">Piece</th><th scope="col">Keep v1</th><th scope="col">Change it</th><th scope="col">Call</th></tr></thead>
           <tbody>
-            <tr><th scope="row">First visit</th><td data-k="Keep v1">Radios, logo slot, Verified row. Admins still have no create path. Guests still see a finished firm.</td><td data-k="Change it">Two create buttons: Create Subdomain, Create Sender. Nothing looks live until those jobs are done.</td><td data-k="Call"><span class="cmd-verdict cmd-verdict--yes">Changed</span></td></tr>
-            <tr><th scope="row">Logo</th><td data-k="Keep v1">Upload on the empty page. Looks complete, then saves a logo no invite can point at.</td><td data-k="Change it">Unlock after save. Prefix in, suffix locked, then Upload Logo sits under the live URL.</td><td data-k="Call"><span class="cmd-verdict cmd-verdict--yes">Changed</span></td></tr>
-            <tr><th scope="row">Sender</th><td data-k="Keep v1">Verified as the default. Pretty. False. No resend, no reason to Edit.</td><td data-k="Change it">Empty, pending, resend, verified. Edit on every state.</td><td data-k="Call"><span class="cmd-verdict cmd-verdict--yes">Changed</span></td></tr>
-            <tr><th scope="row">Login, signup, mail</th><td data-k="Keep v1">Already built and working.</td><td data-k="Change it">Out of scope for this pass.</td><td data-k="Call"><span class="cmd-verdict">Kept</span></td></tr>
+            <tr><th scope="row">First visit</th><td data-k="Keep v1">Radios, logo slot, Verified row. Admins still have no create path. Guests still see a finished firm.</td><td data-k="Change it">Two create buttons: Create Subdomain, Create Sender. Nothing looks live until those jobs are done.</td><td data-k="Call"><span class="el-tag is-yes">Changed</span></td></tr>
+            <tr><th scope="row">Logo</th><td data-k="Keep v1">Upload on the empty page. Looks complete, then saves a logo no invite can point at.</td><td data-k="Change it">Unlock after save. Prefix in, suffix locked, then Upload Logo sits under the live URL.</td><td data-k="Call"><span class="el-tag is-yes">Changed</span></td></tr>
+            <tr><th scope="row">Sender</th><td data-k="Keep v1">Verified as the default. Pretty. False. No resend, no reason to Edit.</td><td data-k="Change it">Empty, pending, resend, verified. Edit on every state.</td><td data-k="Call"><span class="el-tag is-yes">Changed</span></td></tr>
+            <tr><th scope="row">Login, signup, mail</th><td data-k="Keep v1">Already built and working.</td><td data-k="Change it">Out of scope for this pass.</td><td data-k="Call"><span class="el-tag">Kept</span></td></tr>
           </tbody>
         </table>
-      </div></div>
-
-      <div class="cm-col">
-        <h3 class="cmd-h3" id="h-trade">Another sender frame in my files</h3>
-        <div class="cm-body"><p>One frame keeps the v1 header and adds Pending Verification, a 05:00 resend timer and a Refresh button. The page there is titled Customize profile. The shipped row is simpler: one chip, a 60 second resend, and Edit.</p></div>
-        <p class="cmd-note cm-todo">When this frame was made and why it changed is not documented yet.</p>
       </div>
-      <figure class="cm-shot cm-shot--narrow cm-wide">
-        <div class="cm-shot-frame"><picture><source srcset="./assets/craft/case/wl-sender-alt.webp" type="image/webp"><img src="./assets/craft/case/wl-sender-alt.jpg" alt="A sender card headed Send Emails From Your Email Address, with a Resend verification email button and a 05:00 timer, a Pending Verification chip and a Refresh button" width="1520" height="248" loading="lazy" decoding="async" style="background-color:#f6f7f8"></picture></div>
-        <figcaption>Pending with a 5 minute timer and Refresh. Not what shipped.</figcaption>
-      </figure>
+
+      <div class="el-split el-in el-sec--tight">
+        <h3 class="el-h2" id="h-trade" style="font-size:clamp(24px,2.6vw,32px)">Another sender frame<span>in my files</span></h3>
+        <div>
+          <div class="el-body"><p>One frame keeps the v1 header and adds Pending Verification, a 05:00 resend timer and a Refresh button. The page there is titled Customize profile. The shipped row is simpler: one chip, a 60 second resend, and Edit.</p></div>
+          <p class="el-note cm-todo">When this frame was made and why it changed is not documented yet.</p>
+        </div>
+      </div>
+      <div class="el-grid el-grid--21">
+        <figure class="el-card">
+          <div class="el-card-m"><picture><source srcset="./assets/craft/case/wl-sender-alt.webp" type="image/webp"><img src="./assets/craft/case/wl-sender-alt.jpg" alt="A sender card headed Send Emails From Your Email Address, with a Resend verification email button and a 05:00 timer, a Pending Verification chip and a Refresh button" width="1520" height="248" loading="lazy" decoding="async"></picture></div>
+          <figcaption class="el-card-c"><b>The other sender frame</b><span>Pending with a 5 minute timer and Refresh. Not what shipped.</span></figcaption>
+        </figure>
+        <figure class="el-card el-chart">
+          <p class="el-chart-k"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 11v5M12 8h.01"/></svg>Resend clock</p>
+          <ul class="el-rows">
+            <li class="el-row is-hi"><p class="el-row-n">Shipped row</p><div class="el-row-b"><div class="el-track"><span class="el-bar" style="--w:20%"></span></div><p class="el-row-v" data-to="60" data-suf=" s">60 s</p></div></li>
+            <li class="el-row"><p class="el-row-n">Other frame <small>not shipped</small></p><div class="el-row-b"><div class="el-track"><span class="el-bar" style="--w:100%;--d:.2s"></span></div><p class="el-row-v">5 min</p></div></li>
+          </ul>
+          <figcaption class="el-card-c"><b>Wait before Resend</b><span>From the two sender frames.</span></figcaption>
+        </figure>
+      </div>
     </section>
 
     <!-- 5. Decisions -->
-    <section class="cm-sec" id="decisions" aria-labelledby="h-decisions">
-      <div class="cm-col">
-        <p class="cm-eyebrow">Key decisions</p>
-        <h2 class="cm-h2" id="h-decisions">Five calls, in depth</h2>
+    <section class="el-sec" id="decisions" aria-labelledby="h-decisions">
+      <div class="el-in">
+        <p class="el-eyebrow">Key decisions</p>
+        <h2 class="el-h2" id="h-decisions">Five calls<span>in depth</span></h2>
       </div>
 
-      <article class="cm-dec" id="decision-empty" aria-labelledby="h-d1">
-        <div class="cm-col">
-          <p class="cm-dec-n">01</p>
-          <h3 class="cm-h3" id="h-d1">Empty first, not a filled form</h3>
-          <div class="cm-body">
-            <p>I needed a first visit that looks like work still to do. The hub now opens on two cards, each with one button: Create Subdomain and Create Sender.</p>
-            <p>There's no logo slot yet and no badge. Nothing on the page looks live until those jobs are done.</p>
+      <article class="el-dec el-sec--tight" id="decision-empty" aria-labelledby="h-d1">
+        <div class="el-split el-in">
+          <div><p class="el-dec-n">01</p><h3 class="el-h2" id="h-d1" style="font-size:clamp(24px,2.6vw,32px)">Empty first<span>not a filled form</span></h3></div>
+          <div>
+            <div class="el-body">
+              <p>I needed a first visit that looks like work still to do. The hub now opens on two cards, each with one button: Create Subdomain and Create Sender.</p>
+              <p>There's no logo slot yet and no badge. Nothing on the page looks live until those jobs are done.</p>
+            </div>
+            <dl class="el-tdw">
+              <div><dt>Tried</dt><dd>Keeping v1: radios, a logo slot and a Verified row</dd></div>
+              <div><dt>Dropped</dt><dd>The packed form and its one Update button for all three</dd></div>
+              <div><dt>Why</dt><dd>Admins had no create path, and guests would see a finished firm</dd></div>
+            </dl>
           </div>
-          <dl class="cm-tdw">
-            <div><dt>Tried</dt><dd>Keeping v1: radios, a logo slot and a Verified row</dd></div>
-            <div><dt>Dropped</dt><dd>The packed form and its one Update button for all three</dd></div>
-            <div><dt>Why</dt><dd>Admins had no create path, and guests would see a finished firm</dd></div>
-          </dl>
         </div>
-        <figure class="cm-pair cm-pair--narrow cm-wide">
-          <div class="cm-pair-row">
-            <div><picture><source srcset="./assets/craft/case/wl-v1-hub.webp" type="image/webp"><img src="./assets/craft/case/wl-v1-hub.jpg" alt="v1 on first visit: two domain radios, an Upload Logo slot, a sender row marked Verified, and Cancel and Update buttons" width="1600" height="1220" loading="lazy" decoding="async" style="background-color:#fafbfc"></picture><p class="cm-tag"><b>v1</b> First visit, looks done</p></div>
-            <div><picture><source srcset="./assets/craft/case/wl-empty-hub.webp" type="image/webp"><img src="./assets/craft/case/wl-empty-hub.jpg" alt="Shipped first visit: a Custom Subdomain card with a Create Subdomain button and a Custom Sender card with a Create Sender button" width="1600" height="1220" loading="lazy" decoding="async" style="background-color:#fdfefe"></picture><p class="cm-tag"><b>Shipped</b> First visit, empty</p></div>
-          </div>
-        </figure>
+        <div class="el-grid el-grid--2">
+          <figure class="el-card">
+            <div class="el-card-m"><picture><source srcset="./assets/craft/case/wl-v1-hub.webp" type="image/webp"><img src="./assets/craft/case/wl-v1-hub.jpg" alt="v1 on first visit: two domain radios, an Upload Logo slot, a sender row marked Verified, and Cancel and Update buttons" width="1600" height="1220" loading="lazy" decoding="async"></picture></div>
+            <figcaption class="el-card-c"><b>v1</b><span>First visit, looks done</span></figcaption>
+          </figure>
+          <figure class="el-card">
+            <div class="el-card-m"><picture><source srcset="./assets/craft/case/wl-empty-hub.webp" type="image/webp"><img src="./assets/craft/case/wl-empty-hub.jpg" alt="Shipped first visit: a Custom Subdomain card with a Create Subdomain button and a Custom Sender card with a Create Sender button" width="1600" height="1220" loading="lazy" decoding="async"></picture></div>
+            <figcaption class="el-card-c"><b>Shipped</b><span>First visit, empty</span></figcaption>
+          </figure>
+        </div>
       </article>
 
-      <article class="cm-dec" id="decision-logo" aria-labelledby="h-d2">
-        <div class="cm-col">
-          <p class="cm-dec-n">02</p>
-          <h3 class="cm-h3" id="h-d2">Logo only after a URL</h3>
-          <div class="cm-body">
-            <p>A logo with no domain is a sticker. Guests see the mark on the firm URL. If that URL doesn't exist yet, the upload has nowhere to go.</p>
-            <p>So Upload Logo stays hidden until the subdomain is saved. Then it sits right under the live URL, with the file types and the 5MB limit next to it.</p>
+      <article class="el-dec" id="decision-logo" aria-labelledby="h-d2">
+        <div class="el-split el-in">
+          <div><p class="el-dec-n">02</p><h3 class="el-h2" id="h-d2" style="font-size:clamp(24px,2.6vw,32px)">Logo only<span>after a URL</span></h3></div>
+          <div>
+            <div class="el-body">
+              <p>A logo with no domain is a sticker. Guests see the mark on the firm URL. If that URL doesn't exist yet, the upload has nowhere to go.</p>
+              <p>So Upload Logo stays hidden until the subdomain is saved. Then it sits right under the live URL, with the file types and the 5MB limit next to it.</p>
+            </div>
+            <dl class="el-tdw">
+              <div><dt>Tried</dt><dd>Upload Logo on the empty page</dd></div>
+              <div><dt>Dropped</dt><dd>The logo slot before a URL</dd></div>
+              <div><dt>Why</dt><dd>It looks complete, then saves a logo no invite can point at</dd></div>
+            </dl>
           </div>
-          <dl class="cm-tdw">
-            <div><dt>Tried</dt><dd>Upload Logo on the empty page</dd></div>
-            <div><dt>Dropped</dt><dd>The logo slot before a URL</dd></div>
-            <div><dt>Why</dt><dd>It looks complete, then saves a logo no invite can point at</dd></div>
-          </dl>
         </div>
-        <figure class="cm-pair cm-wide">
-          <div class="cm-pair-row">
-            <div><picture><source srcset="./assets/craft/case/wl-v1-subdomain.webp" type="image/webp"><img src="./assets/craft/case/wl-v1-subdomain.jpg" alt="v1 subdomain card: two radio options and an Upload Logo slot under the selected one" width="1552" height="748" loading="lazy" decoding="async" style="background-color:#fbfcfc"></picture><p class="cm-tag"><b>v1</b> Logo slot under a radio</p></div>
-            <div><picture><source srcset="./assets/craft/case/wl-url-logo.webp" type="image/webp"><img src="./assets/craft/case/wl-url-logo.jpg" alt="Shipped subdomain card after save: the live hve.systematicventures.com link with Edit, and an Upload Logo slot under it" width="1552" height="748" loading="lazy" decoding="async" style="background-color:#fbfcfc"></picture><p class="cm-tag"><b>Shipped</b> Logo slot under the live URL</p></div>
-          </div>
-        </figure>
+        <div class="el-grid el-grid--2">
+          <figure class="el-card">
+            <div class="el-card-m"><picture><source srcset="./assets/craft/case/wl-v1-subdomain.webp" type="image/webp"><img src="./assets/craft/case/wl-v1-subdomain.jpg" alt="v1 subdomain card: two radio options and an Upload Logo slot under the selected one" width="1552" height="748" loading="lazy" decoding="async"></picture></div>
+            <figcaption class="el-card-c"><b>v1</b><span>Logo slot under a radio</span></figcaption>
+          </figure>
+          <figure class="el-card">
+            <div class="el-card-m"><picture><source srcset="./assets/craft/case/wl-url-logo.webp" type="image/webp"><img src="./assets/craft/case/wl-url-logo.jpg" alt="Shipped subdomain card after save: the live hve.systematicventures.com link with Edit, and an Upload Logo slot under it" width="1552" height="748" loading="lazy" decoding="async"></picture></div>
+            <figcaption class="el-card-c"><b>Shipped</b><span>Logo slot under the live URL</span></figcaption>
+          </figure>
+        </div>
       </article>
 
-      <article class="cm-dec" id="decision-subdomain" aria-labelledby="h-subdomain">
-        <div class="cm-col">
-          <p class="cm-dec-n">03</p>
-          <h3 class="cm-h3" id="h-subdomain">The prefix is theirs. The suffix is ours.</h3>
-          <div class="cm-body">
-            <p>Admins type a prefix. The suffix stays locked: .systematicventures.com.</p>
-            <p>Changing the prefix kills old invite links, so the dialog says that before Save. Edit adds Delete. Create doesn't.</p>
+      <article class="el-dec" id="decision-subdomain" aria-labelledby="h-subdomain">
+        <div class="el-split el-in">
+          <div><p class="el-dec-n">03</p><h3 class="el-h2" id="h-subdomain" style="font-size:clamp(24px,2.6vw,32px)">The prefix is theirs.<span>The suffix is ours.</span></h3></div>
+          <div>
+            <div class="el-body">
+              <p>Admins type a prefix. The suffix stays locked: .systematicventures.com.</p>
+              <p>Changing the prefix kills old invite links, so the dialog says that before Save. Edit adds Delete. Create doesn't.</p>
+            </div>
+            <dl class="el-tdw">
+              <div><dt>Tried</dt><dd>Radios that picked between domains already on the page (v1)</dd></div>
+              <div><dt>Dropped</dt><dd>Picking without a way to create</dd></div>
+              <div><dt>Why</dt><dd>Admins need to name the URL and see what a change breaks before they save</dd></div>
+            </dl>
           </div>
-          <dl class="cm-tdw">
-            <div><dt>Tried</dt><dd>Radios that picked between domains already on the page (v1)</dd></div>
-            <div><dt>Dropped</dt><dd>Picking without a way to create</dd></div>
-            <div><dt>Why</dt><dd>Admins need to name the URL and see what a change breaks before they save</dd></div>
-          </dl>
         </div>
-        <figure class="cm-pair cm-wide">
-          <div class="cm-pair-row">
-            <div><picture><source srcset="./assets/craft/case/wl-subdomain-create.webp" type="image/webp"><img src="./assets/craft/case/wl-subdomain-create.jpg" alt="Create Custom Subdomain dialog: a note that links shared with the old subdomain will stop working, the prefix Hve, the locked suffix .systematicventures.com and Save" width="1328" height="614" loading="lazy" decoding="async" style="background-color:#f7f9fb"></picture><p class="cm-tag"><b>Create</b> Prefix in, suffix locked</p></div>
-            <div><picture><source srcset="./assets/craft/case/wl-subdomain-edit.webp" type="image/webp"><img src="./assets/craft/case/wl-subdomain-edit.jpg" alt="Edit Custom Subdomain dialog with the same old links note, the prefix field, Delete and Save" width="1328" height="614" loading="lazy" decoding="async" style="background-color:#f7f9fb"></picture><p class="cm-tag"><b>Edit</b> Old links warning, Delete</p></div>
-          </div>
-        </figure>
+        <div class="el-grid el-grid--2">
+          <figure class="el-card">
+            <div class="el-card-m"><picture><source srcset="./assets/craft/case/wl-subdomain-create.webp" type="image/webp"><img src="./assets/craft/case/wl-subdomain-create.jpg" alt="Create Custom Subdomain dialog: a note that links shared with the old subdomain will stop working, the prefix Hve, the locked suffix .systematicventures.com and Save" width="1328" height="614" loading="lazy" decoding="async"></picture></div>
+            <figcaption class="el-card-c"><b>Create</b><span>Prefix in, suffix locked</span></figcaption>
+          </figure>
+          <figure class="el-card">
+            <div class="el-card-m"><picture><source srcset="./assets/craft/case/wl-subdomain-edit.webp" type="image/webp"><img src="./assets/craft/case/wl-subdomain-edit.jpg" alt="Edit Custom Subdomain dialog with the same old links note, the prefix field, Delete and Save" width="1328" height="614" loading="lazy" decoding="async"></picture></div>
+            <figcaption class="el-card-c"><b>Edit</b><span>Old links warning, Delete</span></figcaption>
+          </figure>
+        </div>
       </article>
 
-      <article class="cm-dec" id="decision-sender" aria-labelledby="h-sender">
-        <div class="cm-col">
-          <p class="cm-dec-n">04</p>
-          <h3 class="cm-h3" id="h-sender">The sender has its own states</h3>
-          <div class="cm-body">
-            <p>Mail from the firm is the third thing guests see. A Verified badge on an empty row skips the wait engineering actually has.</p>
-            <p>Now the row starts with Create Sender. Then Pending Verification, with Resend on a 60 second clock. When the clock runs out, Resend is live and the row is still pending. Then Verified. Edit stays on every state, so an admin can fix a typo without losing the sender.</p>
+      <article class="el-dec" id="decision-sender" aria-labelledby="h-sender">
+        <div class="el-split el-in">
+          <div><p class="el-dec-n">04</p><h3 class="el-h2" id="h-sender" style="font-size:clamp(24px,2.6vw,32px)">The sender has<span>its own states</span></h3></div>
+          <div>
+            <div class="el-body">
+              <p>Mail from the firm is the third thing guests see. A Verified badge on an empty row skips the wait engineering actually has.</p>
+              <p>Now the row starts with Create Sender. Then Pending Verification, with Resend on a 60 second clock. When the clock runs out, Resend is live and the row is still pending. Then Verified. Edit stays on every state, so an admin can fix a typo without losing the sender.</p>
+            </div>
+            <dl class="el-tdw">
+              <div><dt>Tried</dt><dd>Verified as the default</dd></div>
+              <div><dt>Dropped</dt><dd>A badge with no wait behind it</dd></div>
+              <div><dt>Why</dt><dd>Pretty and false. No resend, and no reason to Edit.</dd></div>
+            </dl>
           </div>
-          <dl class="cm-tdw">
-            <div><dt>Tried</dt><dd>Verified as the default</dd></div>
-            <div><dt>Dropped</dt><dd>A badge with no wait behind it</dd></div>
-            <div><dt>Why</dt><dd>Pretty and false. No resend, and no reason to Edit.</dd></div>
-          </dl>
         </div>
-        <figure class="cm-shot cmd-shot-sm cm-wide">
-          <div class="cm-shot-frame"><picture><source srcset="./assets/craft/case/wl-v1-sender.webp" type="image/webp"><img src="./assets/craft/case/wl-v1-sender.jpg" alt="v1 sender row: a placeholder sender name and address with a green Verified chip" width="1520" height="244" loading="lazy" decoding="async" style="background-color:#f6f9fb"></picture></div>
-          <figcaption>v1. Verified on first visit, before anyone typed an address.</figcaption>
-        </figure>
-        <figure class="wl-states cm-wide" aria-labelledby="wl-states-cap">
-          <ol>
-            <li><p class="cm-tag"><b>01 Empty</b> Create Sender is the only action</p><picture><source media="(max-width: 719px)" srcset="./assets/craft/case/wl-sender-empty-sm.webp" type="image/webp" width="936" height="124"><source media="(max-width: 719px)" srcset="./assets/craft/case/wl-sender-empty-sm.jpg" width="936" height="124"><source srcset="./assets/craft/case/wl-sender-empty.webp" type="image/webp"><img src="./assets/craft/case/wl-sender-empty.jpg" alt="Sender row with only a Create Sender button" width="1520" height="124" loading="lazy" decoding="async" style="background-color:#fcfdff"></picture></li>
-            <li><p class="cm-tag"><b>02 Pending</b> Resend on a 60s clock, Edit already there</p><picture><source media="(max-width: 719px)" srcset="./assets/craft/case/wl-sender-pending-sm.webp" type="image/webp" width="936" height="124"><source media="(max-width: 719px)" srcset="./assets/craft/case/wl-sender-pending-sm.jpg" width="936" height="124"><source srcset="./assets/craft/case/wl-sender-pending.webp" type="image/webp"><img src="./assets/craft/case/wl-sender-pending.jpg" alt="Sender row: sample@email.com, Pending Verification, Resend (60s) greyed out, a refresh icon and Edit" width="1520" height="124" loading="lazy" decoding="async" style="background-color:#fafaf9"></picture></li>
-            <li><p class="cm-tag"><b>03 Resend ready</b> Clock done, still pending</p><picture><source media="(max-width: 719px)" srcset="./assets/craft/case/wl-sender-resend-sm.webp" type="image/webp" width="936" height="124"><source media="(max-width: 719px)" srcset="./assets/craft/case/wl-sender-resend-sm.jpg" width="936" height="124"><source srcset="./assets/craft/case/wl-sender-resend.webp" type="image/webp"><img src="./assets/craft/case/wl-sender-resend.jpg" alt="Sender row: Pending Verification with Resend now active, a refresh icon and Edit" width="1520" height="124" loading="lazy" decoding="async" style="background-color:#fafafa"></picture></li>
-            <li><p class="cm-tag"><b>04 Verified</b> Edit stays for later changes</p><picture><source media="(max-width: 719px)" srcset="./assets/craft/case/wl-sender-verified-sm.webp" type="image/webp" width="936" height="124"><source media="(max-width: 719px)" srcset="./assets/craft/case/wl-sender-verified-sm.jpg" width="936" height="124"><source srcset="./assets/craft/case/wl-sender-verified.webp" type="image/webp"><img src="./assets/craft/case/wl-sender-verified.jpg" alt="Sender row: sample@email.com with a green Verified chip and Edit" width="1520" height="124" loading="lazy" decoding="async" style="background-color:#fafcfb"></picture></li>
-          </ol>
-          <figcaption id="wl-states-cap">The shipped row, in order. It's honest about where the address is.</figcaption>
-        </figure>
+        <div class="el-grid">
+          <figure class="el-card">
+            <div class="el-card-m"><picture><source srcset="./assets/craft/case/wl-v1-sender.webp" type="image/webp"><img src="./assets/craft/case/wl-v1-sender.jpg" alt="v1 sender row: a placeholder sender name and address with a green Verified chip" width="1520" height="244" loading="lazy" decoding="async" style="max-width:760px;margin:0 auto"></picture></div>
+            <figcaption class="el-card-c"><b>v1</b><span>Verified on first visit, before anyone typed an address.</span></figcaption>
+          </figure>
+        </div>
+        <div class="el-grid" style="margin-top:12px">
+          <figure class="el-card wl-states" aria-labelledby="wl-states-cap">
+            <div class="el-card-m">
+              <ol>
+                <li><p class="wl-tag"><b>01 Empty</b> Create Sender is the only action</p><picture><source media="(max-width: 719px)" srcset="./assets/craft/case/wl-sender-empty-sm.webp" type="image/webp" width="936" height="124"><source media="(max-width: 719px)" srcset="./assets/craft/case/wl-sender-empty-sm.jpg" width="936" height="124"><source srcset="./assets/craft/case/wl-sender-empty.webp" type="image/webp"><img src="./assets/craft/case/wl-sender-empty.jpg" alt="Sender row with only a Create Sender button" width="1520" height="124" loading="lazy" decoding="async"></picture></li>
+                <li><p class="wl-tag"><b>02 Pending</b> Resend on a 60s clock, Edit already there</p><picture><source media="(max-width: 719px)" srcset="./assets/craft/case/wl-sender-pending-sm.webp" type="image/webp" width="936" height="124"><source media="(max-width: 719px)" srcset="./assets/craft/case/wl-sender-pending-sm.jpg" width="936" height="124"><source srcset="./assets/craft/case/wl-sender-pending.webp" type="image/webp"><img src="./assets/craft/case/wl-sender-pending.jpg" alt="Sender row: sample@email.com, Pending Verification, Resend (60s) greyed out, a refresh icon and Edit" width="1520" height="124" loading="lazy" decoding="async"></picture></li>
+                <li><p class="wl-tag"><b>03 Resend ready</b> Clock done, still pending</p><picture><source media="(max-width: 719px)" srcset="./assets/craft/case/wl-sender-resend-sm.webp" type="image/webp" width="936" height="124"><source media="(max-width: 719px)" srcset="./assets/craft/case/wl-sender-resend-sm.jpg" width="936" height="124"><source srcset="./assets/craft/case/wl-sender-resend.webp" type="image/webp"><img src="./assets/craft/case/wl-sender-resend.jpg" alt="Sender row: Pending Verification with Resend now active, a refresh icon and Edit" width="1520" height="124" loading="lazy" decoding="async"></picture></li>
+                <li><p class="wl-tag"><b>04 Verified</b> Edit stays for later changes</p><picture><source media="(max-width: 719px)" srcset="./assets/craft/case/wl-sender-verified-sm.webp" type="image/webp" width="936" height="124"><source media="(max-width: 719px)" srcset="./assets/craft/case/wl-sender-verified-sm.jpg" width="936" height="124"><source srcset="./assets/craft/case/wl-sender-verified.webp" type="image/webp"><img src="./assets/craft/case/wl-sender-verified.jpg" alt="Sender row: sample@email.com with a green Verified chip and Edit" width="1520" height="124" loading="lazy" decoding="async"></picture></li>
+              </ol>
+            </div>
+            <figcaption class="el-card-c" id="wl-states-cap"><b>The shipped row, in order</b><span>It's honest about where the address is.</span></figcaption>
+          </figure>
+        </div>
       </article>
 
-      <article class="cm-dec" id="decision-dialogs" aria-labelledby="h-d5">
-        <div class="cm-col">
-          <p class="cm-dec-n">05</p>
-          <h3 class="cm-h3" id="h-d5">Risky changes live in the dialog</h3>
-          <div class="cm-body">
-            <p>The sender form asks for email, name, street, country, state, city and zip. A bad email keeps Submit off.</p>
-            <p>The edit dialog says up front that a new email has to verify again. Delete sits there too, for the sender and for the subdomain. In v1, Replace and Delete sat right on the page under the logo.</p>
+      <article class="el-dec" id="decision-dialogs" aria-labelledby="h-d5">
+        <div class="el-split el-in">
+          <div><p class="el-dec-n">05</p><h3 class="el-h2" id="h-d5" style="font-size:clamp(24px,2.6vw,32px)">Risky changes<span>live in the dialog</span></h3></div>
+          <div>
+            <div class="el-body">
+              <p>The sender form asks for email, name, street, country, state, city and zip. A bad email keeps Submit off.</p>
+              <p>The edit dialog says up front that a new email has to verify again. Delete sits there too, for the sender and for the subdomain. In v1, Replace and Delete sat right on the page under the logo.</p>
+            </div>
+            <dl class="el-tdw">
+              <div><dt>Tried</dt><dd>Replace and Delete on the page (v1)</dd></div>
+              <div><dt>Dropped</dt><dd>Delete on the hub</dd></div>
+              <div><dt>Why</dt><dd>The dangerous stuff belongs in the dialog, not on the hub</dd></div>
+            </dl>
           </div>
-          <dl class="cm-tdw">
-            <div><dt>Tried</dt><dd>Replace and Delete on the page (v1)</dd></div>
-            <div><dt>Dropped</dt><dd>Delete on the hub</dd></div>
-            <div><dt>Why</dt><dd>The dangerous stuff belongs in the dialog, not on the hub</dd></div>
-          </dl>
         </div>
-        <figure class="cm-pair cm-wide">
-          <div class="cm-pair-row">
-            <div><picture><source srcset="./assets/craft/case/wl-sender-create.webp" type="image/webp"><img src="./assets/craft/case/wl-sender-create.jpg" alt="Create Custom Sender dialog: the email field in red with Invalid email address, empty name, street, country, state, city and zip fields, and Submit turned off" width="1544" height="1164" loading="lazy" decoding="async" style="background-color:#fbfbfb"></picture><p class="cm-tag"><b>Create</b> Bad email, Submit stays off</p></div>
-            <div><picture><source srcset="./assets/craft/case/wl-sender-edit.webp" type="image/webp"><img src="./assets/craft/case/wl-sender-edit.jpg" alt="Edit Custom Sender dialog with the note: if you update your email address, you will need to verify it again. Filled fields, Delete and Submit" width="1544" height="1164" loading="lazy" decoding="async" style="background-color:#fafafa"></picture><p class="cm-tag"><b>Edit</b> Re-verify note, Delete</p></div>
-          </div>
-        </figure>
+        <div class="el-grid el-grid--2">
+          <figure class="el-card">
+            <div class="el-card-m"><picture><source srcset="./assets/craft/case/wl-sender-create.webp" type="image/webp"><img src="./assets/craft/case/wl-sender-create.jpg" alt="Create Custom Sender dialog: the email field in red with Invalid email address, empty name, street, country, state, city and zip fields, and Submit turned off" width="1544" height="1164" loading="lazy" decoding="async"></picture></div>
+            <figcaption class="el-card-c"><b>Create</b><span>Bad email, Submit stays off</span></figcaption>
+          </figure>
+          <figure class="el-card">
+            <div class="el-card-m"><picture><source srcset="./assets/craft/case/wl-sender-edit.webp" type="image/webp"><img src="./assets/craft/case/wl-sender-edit.jpg" alt="Edit Custom Sender dialog with the note: if you update your email address, you will need to verify it again. Filled fields, Delete and Submit" width="1544" height="1164" loading="lazy" decoding="async"></picture></div>
+            <figcaption class="el-card-c"><b>Edit</b><span>Re-verify note, Delete</span></figcaption>
+          </figure>
+        </div>
       </article>
 
-      <div class="cm-col">
-        <h3 class="cmd-h3" id="details">Smaller details</h3>
-      </div>
-      <ul class="cmd-cards cm-wide" aria-label="Smaller details">
-        <li class="cmd-card"><p class="cmd-card-t">The URL is a link</p><p>Once saved, the subdomain shows as a real link with Edit next to it, so an admin can open it.</p></li>
-        <li class="cmd-card"><p class="cmd-card-t">Limits up front</p><p>File types and the 5MB cap sit right next to the logo slot, before anyone picks a file.</p></li>
-        <li class="cmd-card"><p class="cmd-card-t">One kit</p><p>Cards, dialogs and chips are the ones Settings already uses. Not a one-off kit.</p></li>
+      <ul class="el-feat el-feat--4" aria-label="Smaller details">
+        <li class="el-feat-h"><p class="el-feat-t" id="details">Smaller details</p></li>
+        <li><b>The URL is a link</b><p>Once saved, the subdomain shows as a real link with Edit next to it, so an admin can open it.</p></li>
+        <li><b>Limits up front</b><p>File types and the 5MB cap sit right next to the logo slot, before anyone picks a file.</p></li>
+        <li><b>One kit</b><p>Cards, dialogs and chips are the ones Settings already uses. Not a one-off kit.</p></li>
       </ul>
     </section>
 
     <!-- 6. Iteration -->
-    <section class="cm-sec" id="testing" aria-labelledby="h-testing">
-      <div class="cm-col">
-        <p class="cm-eyebrow">Iteration and testing</p>
-        <h2 class="cm-h2" id="h-testing">Same page, different first visit</h2>
-
-        <h3 class="cmd-h3" id="versions">How the page changed</h3>
-        <ol class="cmd-rows">
-          <li><p class="cmd-row-k">Subdomain</p><div><p>Before: domain radios, no create path.</p><p class="cmd-changed"><b>Now:</b> Create Subdomain. Empty first, then a live URL.</p></div></li>
-          <li><p class="cmd-row-k">Logo</p><div><p>Before: a logo slot from the start, before any subdomain.</p><p class="cmd-changed"><b>Now:</b> Upload Logo only once the URL exists.</p></div></li>
-          <li><p class="cmd-row-k">Sender</p><div><p>Before: already Verified. No pending, no resend.</p><p class="cmd-changed"><b>Now:</b> empty, pending, resend, verified. Edit stays.</p></div></li>
-          <li><p class="cmd-row-k">Saving</p><div><p>Before: one Update button for all three.</p><p class="cmd-changed"><b>Now:</b> each piece saves in its own dialog, with Delete, the old links warning and the re-verify note.</p></div></li>
-        </ol>
+    <section class="el-sec" id="testing" aria-labelledby="h-testing">
+      <div class="el-split el-in">
+        <div>
+          <p class="el-eyebrow">Iteration and testing</p>
+          <h2 class="el-h2" id="h-testing">Same page<span>different first visit</span></h2>
+        </div>
+        <div>
+          <h3 class="el-h3" id="versions">How the page changed</h3>
+          <ol class="el-list">
+            <li><p class="el-k">Subdomain</p><div><p>Before: domain radios, no create path.</p><p><b>Now:</b> Create Subdomain. Empty first, then a live URL.</p></div></li>
+            <li><p class="el-k">Logo</p><div><p>Before: a logo slot from the start, before any subdomain.</p><p><b>Now:</b> Upload Logo only once the URL exists.</p></div></li>
+            <li><p class="el-k">Sender</p><div><p>Before: already Verified. No pending, no resend.</p><p><b>Now:</b> empty, pending, resend, verified. Edit stays.</p></div></li>
+            <li><p class="el-k">Saving</p><div><p>Before: one Update button for all three.</p><p><b>Now:</b> each piece saves in its own dialog, with Delete, the old links warning and the re-verify note.</p></div></li>
+          </ol>
+        </div>
       </div>
-      <figure class="cm-shot cm-shot--narrow cm-wide">
-        <div class="cm-shot-frame"><picture><source srcset="./assets/craft/case/wl-live-hub.webp" type="image/webp"><img src="./assets/craft/case/wl-live-hub.jpg" alt="The shipped hub, live: Subdomain card with Edit and the hve.systematicventures.com link, the Goldman Sachs logo with an edit badge, and a Custom Sender row marked Verified with Edit" width="1600" height="1020" loading="lazy" decoding="async" style="background-color:#fbfcfc"></picture></div>
-        <figcaption>The end of the line. Logo on the page, sender Verified, Edit on both.</figcaption>
-      </figure>
 
-      <div class="cm-col">
-        <h3 class="cmd-h3" id="rounds">Testing</h3>
-        <div class="cm-body"><p>I don't have a test round on record for this project. I'm not going to claim sessions I can't point to.</p></div>
-        <p class="cmd-note cm-todo">Testing method not documented yet.</p>
+      <div class="el-grid">
+        <figure class="el-card">
+          <div class="el-card-m"><picture><source srcset="./assets/craft/case/wl-live-hub.webp" type="image/webp"><img src="./assets/craft/case/wl-live-hub.jpg" alt="The shipped hub, live: Subdomain card with Edit and the hve.systematicventures.com link, the Goldman Sachs logo with an edit badge, and a Custom Sender row marked Verified with Edit" width="1600" height="1020" loading="lazy" decoding="async" style="max-width:860px;margin:0 auto"></picture></div>
+          <figcaption class="el-card-c"><b>The end of the line</b><span>Logo on the page, sender Verified, Edit on both.</span></figcaption>
+        </figure>
+      </div>
+
+      <div class="el-split el-in el-sec--tight">
+        <h3 class="el-h3" id="rounds">Testing</h3>
+        <div>
+          <div class="el-body"><p>I don't have a test round on record for this project. I'm not going to claim sessions I can't point to.</p></div>
+          <p class="el-note cm-todo">Testing method not documented yet.</p>
+        </div>
       </div>
     </section>
 
     <!-- 7. Outcome -->
-    <section class="cm-sec cm-col" id="outcome" aria-labelledby="h-outcome">
-      <p class="cm-eyebrow">Outcome</p>
-      <h2 class="cm-h2" id="h-outcome">Shipped. No number yet.</h2>
-      <div class="cm-body"><p>The hub is in the product. First visit is empty. After the work, guests get a real URL, a real logo and mail from a verified sender.</p></div>
-      <ol class="cm-results">
-        <li>
-          <p class="cm-r-k">Steps to live</p>
-          <p class="cm-r-v"><span>3</span></p>
-          <p class="cm-r-m">URL, logo, sender. Product fact.</p>
-        </li>
-        <li>
-          <p class="cm-r-k">Sender states</p>
-          <p class="cm-r-v"><span>4</span></p>
-          <p class="cm-r-m">Empty, pending, resend ready, verified. Product fact.</p>
-        </li>
-        <li>
-          <p class="cm-r-k">Completion rate</p>
-          <p class="cm-r-v"><span>Not yet</span></p>
-          <p class="cm-r-m cm-todo">Not measured yet. I don't have completion or drop-off numbers, so I'm not inventing one.</p>
-        </li>
-      </ol>
+    <section class="el-sec" id="outcome" aria-labelledby="h-outcome">
+      <div class="el-split el-in">
+        <div>
+          <p class="el-eyebrow">Outcome</p>
+          <h2 class="el-h2" id="h-outcome">Shipped.<span>No number yet.</span></h2>
+        </div>
+        <div class="el-body"><p>The hub is in the product. First visit is empty. After the work, guests get a real URL, a real logo and mail from a verified sender.</p></div>
+      </div>
 
-      <h3 class="cmd-h3" id="measure">What I'd measure</h3>
-      <ul class="cm-list">
-        <li>Drop-off between subdomain, logo and sender.</li>
-        <li>Who stops after the URL.</li>
-        <li>Who never uploads a logo.</li>
-        <li>Who never verifies mail.</li>
+      <ul class="el-outline" aria-label="Results">
+        <li><p class="el-k">Steps to live</p><p class="el-v">3</p><p class="el-d">URL, logo, sender. Product fact.</p></li>
+        <li><p class="el-k">Sender states</p><p class="el-v">4</p><p class="el-d">Empty, pending, resend ready, verified. Product fact.</p></li>
+        <li><p class="el-k">Completion rate</p><p class="el-v">Not yet</p><p class="el-d cm-todo">Not measured yet. I don't have completion or drop-off numbers, so I'm not inventing one.</p></li>
       </ul>
 
-      <h3 class="cmd-h3" id="h-shipped">What this case doesn't cover</h3>
-      <div class="cm-body"><p>This case is the hub. The invite landing and the mail itself are the next pass. I didn't fake those screens.</p></div>
+      <div class="el-split el-in el-sec--tight">
+        <div>
+          <h3 class="el-h3" id="measure">What I'd measure</h3>
+          <ul class="el-bul">
+            <li>Drop-off between subdomain, logo and sender.</li>
+            <li>Who stops after the URL.</li>
+            <li>Who never uploads a logo.</li>
+            <li>Who never verifies mail.</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="el-h3" id="h-shipped">What this case doesn't cover</h3>
+          <p class="el-p" style="margin-top:14px">This case is the hub. The invite landing and the mail itself are the next pass. I didn't fake those screens.</p>
+        </div>
+      </div>
     </section>
 
     <!-- 8. Next steps -->
-    <section class="cm-sec cm-col" id="next-steps" aria-labelledby="h-learned">
-      <p class="cm-eyebrow">Looking back</p>
-      <h2 class="cm-h2" id="h-learned">What I'd keep, and what's still open</h2>
-
-      <h3 class="cmd-h3" id="keep">What I'd keep</h3>
-      <ul class="cm-list">
-        <li>The empty start. Two create buttons, logo after the URL. The page doesn't pretend.</li>
-        <li>Sender states, with Edit on every one of them.</li>
-        <li>Edit dialogs that hold the dangerous stuff: Delete, the old links warning, the re-verify note.</li>
-      </ul>
-
-      <h3 class="cmd-h3" id="next">Where it goes next</h3>
-      <ul class="cm-list">
-        <li>Track drop-off between subdomain, logo and sender, then add the number here.</li>
-        <li>Preview the logo on the live URL, still inside Settings, so admins don't have to leave to check it.</li>
-        <li>Design the guest side: the invite landing and the mail.</li>
-      </ul>
+    <section class="el-sec" id="next-steps" aria-labelledby="h-learned">
+      <div class="el-in">
+        <p class="el-eyebrow">Looking back</p>
+        <h2 class="el-h2" id="h-learned">What I'd keep<span>and what's still open</span></h2>
+      </div>
+      <div class="el-split el-in" style="margin-top:clamp(32px,4vw,48px)">
+        <div>
+          <h3 class="el-h3" id="keep">What I'd keep</h3>
+          <ul class="el-bul">
+            <li>The empty start. Two create buttons, logo after the URL. The page doesn't pretend.</li>
+            <li>Sender states, with Edit on every one of them.</li>
+            <li>Edit dialogs that hold the dangerous stuff: Delete, the old links warning, the re-verify note.</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="el-h3" id="next">Where it goes next</h3>
+          <ul class="el-bul">
+            <li>Track drop-off between subdomain, logo and sender, then add the number here.</li>
+            <li>Preview the logo on the live URL, still inside Settings, so admins don't have to leave to check it.</li>
+            <li>Design the guest side: the invite landing and the mail.</li>
+          </ul>
+        </div>
+      </div>
     </section>
 
-    <nav class="cm-end cm-col" aria-label="More case studies">
+    <nav class="cm-end" aria-label="More case studies">
       <a class="cm-next" href="./craft-easyeat.html">
         <span class="cm-orb cm-orb--lg" data-orb="bowl" aria-hidden="true"></span>
         <span>
@@ -450,5 +496,6 @@
 
   <script src="./assets/craft/orb.js?v=1" defer></script>
   <script src="./assets/craft/case/case-min.js?v=4" defer></script>
+  <script src="./assets/craft/case/el.js?v=2" defer></script>
 </body>
 </html>

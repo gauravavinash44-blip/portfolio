@@ -1,0 +1,38 @@
+/* Deal Room in the el-* layout: page-only restyle of the dr-min.css step chains and paths.
+   Loaded after el.css, only by craft-deal-room.html (body.dr.el). */
+
+.dr.el { --acc: var(--pa); }
+
+/* Headings used as feature-grid titles */
+.dr.el h3.el-feat-t { margin: 0; }
+
+/* Step chains: neutral cards, ink for the new steps, outline for the stalls */
+.dr.el .dr-chain { margin-top: clamp(24px, 3vw, 32px); padding-left: 0; padding-right: 0; gap: 12px; }
+.dr.el .dr-chain > li { background: var(--surface); border-radius: 16px; padding: 20px 24px 22px; }
+.dr.el .dr-chain-k { font-size: 13px; color: var(--mute); }
+.dr.el .dr-chain-k b { color: var(--ink); font-weight: 400; margin-right: 4px; }
+.dr.el .dr-steps { gap: 8px 4px; font-size: 14px; }
+.dr.el .dr-steps li span { background: #fff; box-shadow: inset 0 0 0 1px var(--hairline); color: var(--ink-2); }
+.dr.el .dr-steps li + li::before { color: var(--mute); }
+.dr.el .dr-steps .is-new span { background: var(--ink); color: #fff; box-shadow: none; }
+.dr.el .dr-steps .is-stuck span { box-shadow: inset 0 0 0 1px var(--ink); color: var(--ink); }
+
+/* Numbered paths inside outline cards */
+.dr.el .el-outline .dr-path { margin-top: 14px; padding: 0; gap: 8px; font-size: 15px; line-height: 1.5; }
+.dr.el .el-outline .dr-path li { color: var(--ink-2); }
+.dr.el .el-outline .dr-path li::before { color: var(--mute); font-size: 13px; }
+
+/* Outline cards that follow a short heading */
+.dr.el .el-outline--top { margin-top: 20px; }
+
+/* Outcome cards: long labels on the stat value cards */
+.dr.el .el-outline .el-k { line-height: 1.4; }
+
+/* Notes inside a body column keep note styling */
+.dr.el .el-body p.el-note { font-size: 13px; line-height: 1.5; color: var(--mute); margin-top: 14px; }
+
+/* The quote block sets its own margin, so restore the tight section gap */
+.dr.el .el-quote.el-sec--tight { margin-top: clamp(56px, 7vw, 88px); }
+
+/* Bleed image card: room between the image and its caption */
+.dr.el .el-card-m--bleed + .el-card-c { padding-top: clamp(16px, 2vw, 22px); }

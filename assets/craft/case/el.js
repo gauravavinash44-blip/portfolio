@@ -70,3 +70,52 @@
     q.addEventListener("pointerenter", stop);
   });
 })();
+
+/* Version viewer: auto-cycles every N ms, hover or focus a row to show it and pause, leave to resume from there */
+(function () {
+  [].forEach.call(document.querySelectorAll(".el-ver"), function (box) {
+    var imgs = [].slice.call(box.querySelectorAll(".el-ver-img"));
+    var rows = [].slice.call(box.querySelectorAll(".el-ver-list > li"));
+    var cap = box.querySelector(".el-ver-cap span");
+    var ms = +box.getAttribute("data-interval") || 5000;
+    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var i = 0, timer = null, held = false, visible = true;
+    box.classList.add("is-js");
+    box.style.setProperty("--t", ms + "ms");
+    // load all four up front so swaps never wait on the network
+    imgs.forEach(function (p) { var im = p.querySelector("img"); if (im) im.loading = "eager"; });
+
+    function show(n) {
+      i = (n + rows.length) % rows.length;
+      imgs.forEach(function (p, k) { p.setAttribute("aria-hidden", k === i ? "false" : "true"); });
+      rows.forEach(function (r, k) {
+        r.classList.toggle("is-on", k === i);
+        var bar = r.querySelector(".el-ver-bar");
+        if (bar && k === i) { bar.style.animation = "none"; void bar.offsetWidth; bar.style.animation = ""; }
+      });
+      if (cap) cap.textContent = rows[i].querySelector(".el-k").firstChild.textContent;
+    }
+    function stop() { if (timer) clearInterval(timer); timer = null; box.classList.remove("is-run"); }
+    function start() {
+      stop();
+      if (reduce || held || !visible) return;
+      box.classList.add("is-run");
+      show(i); // restart the progress line on the current row
+      timer = setInterval(function () { show(i + 1); }, ms);
+    }
+    rows.forEach(function (r, k) {
+      r.addEventListener("mouseenter", function () { held = true; stop(); show(k); });
+      r.addEventListener("focus", function () { held = true; stop(); show(k); });
+      r.addEventListener("click", function () { held = false; show(k); start(); });
+      r.addEventListener("blur", function () { held = false; start(); });
+    });
+    box.querySelector(".el-ver-list").addEventListener("mouseleave", function () { held = false; start(); });
+    show(0);
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (es) {
+        visible = es[0].isIntersecting;
+        if (visible) start(); else stop();
+      }, { threshold: 0 }).observe(box);
+    } else start();
+  });
+})();

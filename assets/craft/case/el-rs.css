@@ -1,0 +1,23 @@
+/* Resonance in the el-* layout: page-only tweaks, loaded after el.css and rs-min.css. */
+
+/* Live prototype: same card language as el-card */
+body.el .rs-proto { margin-top: clamp(32px, 4vw, 48px); gap: 12px; }
+body.el .rs-stage { border-radius: 16px; }
+body.el .rs-guide { border-radius: 16px; padding: clamp(22px, 3vw, 32px); }
+body.el .rs-guide .el-h3 { margin: 0; }
+body.el .rs-steps { margin: 16px 0 0; padding: 0; font-size: 15px; color: var(--ink-2); }
+body.el .rs-steps li::before { background: #fff; box-shadow: inset 0 0 0 1px var(--hairline); color: var(--ink-2); }
+body.el .rs-full { font-weight: 400; height: 40px; margin-top: 20px; }
+
+/* Feature headings rendered as h3 keep the el-feat-t look */
+body.el h3.el-feat-t { margin: 0; }
+
+/* Outline cards right under a small heading */
+body.el .el-outline--first { margin-top: 20px; }
+
+@media (max-width: 859px) {
+  body.el .rs-proto { gap: 12px; }
+}
+
+/* Keep the phone's drop shadow inside the dark stage (no shadows on the page itself) */
+body.el .rs-stage { overflow: hidden; }

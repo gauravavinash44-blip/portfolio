@@ -1,0 +1,31 @@
+/* EasyEat (craft-easyeat.html) additions on top of el.css.
+   Phone screens are 375 px wide at 1x, so they sit narrower inside the cards. */
+
+/* Phone screens inside cards */
+body.el .ee-phone img { max-width: 320px; margin: 0 auto; }
+body.el .ee-phone--short img { max-width: 380px; }
+
+/* Hero cover: fills the side card without setting the row height */
+body.el .ee-cover-m { padding: 0; position: relative; min-height: 260px; }
+body.el .ee-cover-m picture { position: absolute; inset: 0; }
+body.el .ee-cover-m img { width: 100%; height: 100%; object-fit: cover; border-radius: 0; box-shadow: none; }
+@media (max-width: 859px) {
+  body.el .ee-cover-m { min-height: 0; }
+  body.el .ee-cover-m picture { position: static; }
+  body.el .ee-cover-m img { height: auto; aspect-ratio: 4 / 3; object-position: 50% 30%; }
+}
+
+/* Headings used as feature-grid titles */
+body.el h3.el-feat-t { margin: 0; }
+body.el .el-feat-h .el-p { margin-top: 8px; font-size: 15px; }
+
+/* Personas: bullets in outline cards */
+body.el .el-outline .el-bul { margin-top: 12px; }
+body.el .el-outline .el-bul li { font-size: 14px; }
+
+/* Before value in outline numbers */
+body.el .ee-before { color: var(--mute); }
+body.el .ee-arrow { color: var(--mute); font-size: .7em; margin: 0 .2em; vertical-align: .1em; }
+
+/* Outcome numbers: smaller so before and after fit on one line */
+body.el .ee-results .el-v { font-size: clamp(26px, 2.6vw, 34px); }

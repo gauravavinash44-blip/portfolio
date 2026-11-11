@@ -1,0 +1,16 @@
+/* White Label Setup in the el-* layout: page-only additions, loaded after el.css. */
+
+body.el { --acc: #8a4f45; }
+
+/* Path to live: four steps, and the last one is the goal, not a drop-off */
+@media (min-width: 860px) { .wl-steps { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.wl-steps li.is-peak::before { content: "0" counter(s); }
+
+/* Sender states: four thin rows stacked inside one card, label above each */
+.wl-states ol { list-style: none; padding: 0; margin: 0 auto; width: 100%; max-width: 760px; display: grid; gap: 16px; }
+.wl-tag { margin: 0 0 8px; font-size: 13px; color: var(--ink-2); }
+.wl-tag b { font-weight: 400; color: var(--ink); margin-right: 6px; }
+.wl-states .el-card-m img { border-radius: 8px; }
+
+/* "Not yet" is a word, not a number */
+.el-stat-v.wl-word { font-size: clamp(36px, 4vw, 52px); }

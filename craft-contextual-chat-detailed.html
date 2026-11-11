@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..500&display=swap">
   <link rel="stylesheet" href="./assets/craft/craft-tokens.css?v=1">
   <link rel="stylesheet" href="./assets/craft/case/case-min.css?v=6">
-  <link rel="stylesheet" href="./assets/craft/case/el.css?v=2">
+  <link rel="stylesheet" href="./assets/craft/case/el.css?v=4">
   <link rel="preload" as="image" href="./assets/craft/case/cc-motion-poster.webp" fetchpriority="high">
   <script>try{history.scrollRestoration="manual";if(!location.hash)window.scrollTo(0,0)}catch(e){}</script>
 </head>
@@ -175,7 +175,7 @@
         <li><b>Shortlist</b><span>Save and compare promising companies</span></li>
         <li><b>Deep dive</b><span>Final check before deciding</span></li>
       </ol>
-      <p class="el-pull el-sec--tight">The UI asked for precision before investors had it.</p>
+      <div class="el-sec--tight"><p class="el-pull">The UI asked for precision before investors had it.</p></div>
     </section>
 
     <!-- 3. Goals -->
@@ -467,13 +467,22 @@
       </div>
       <p class="el-note el-in">Same tasks, different groups. Round 1 was 6 internal users on a Figma prototype. Round 2 was 8 investors on staging. Read these as direction, not a controlled comparison.</p>
 
-      <div class="el-split el-in el-sec--tight">
-        <h3 class="el-h3" id="versions">How the panel changed</h3>
-        <ol class="el-list" style="margin-top:0">
-          <li><p class="el-k">v1</p><div><p>Empty panel, one Let's Chat button. No prompts, no history.</p><p><b>Removed.</b> The blank slate left people unsure how to start.</p></div></li>
-          <li><p class="el-k">v2</p><div><p>Prompt chips helped the start. The body stayed empty, with no session structure.</p><p><b>Removed.</b> Better start, still weak for ongoing research.</p></div></li>
-          <li><p class="el-k">v3</p><div><p>History sidebar and table answers. Topics were placeholders and the overlay felt heavy.</p><p><b>Removed.</b> Closer, not trusted enough for diligence.</p></div></li>
-          <li><p class="el-k">v4<small>Shipped</small></p><div><p>Real history, sourced answers, loading states, search and agent in the top nav.</p><p><b>Kept.</b> It matched how investors explore and build conviction.</p></div></li>
+      <div class="el-ver el-in el-sec--tight" data-interval="5000">
+        <div class="el-ver-side">
+          <h3 class="el-h3" id="versions">How the panel changed</h3>
+          <div class="el-ver-stage" aria-live="polite">
+            <picture class="el-ver-img" data-v="0"><source srcset="./assets/craft/case/cc-ver-v1.webp" type="image/webp"><img src="./assets/craft/case/cc-ver-v1.jpg" alt="Version 1: an empty Systematic Answers panel with only a Let's Chat button, over a company profile" width="1600" height="1178" loading="lazy" decoding="async"></picture>
+            <picture class="el-ver-img" data-v="1" aria-hidden="true"><source srcset="./assets/craft/case/cc-ver-v2.webp" type="image/webp"><img src="./assets/craft/case/cc-ver-v2.jpg" alt="Version 2: the same panel with three prompt starters above the input" width="1600" height="1178" loading="lazy" decoding="async"></picture>
+            <picture class="el-ver-img" data-v="2" aria-hidden="true"><source srcset="./assets/craft/case/cc-ver-v3.webp" type="image/webp"><img src="./assets/craft/case/cc-ver-v3.jpg" alt="Version 3: the Systematic Agent overlay with a history sidebar and a table answer" width="1600" height="1178" loading="lazy" decoding="async"></picture>
+            <picture class="el-ver-img" data-v="3" aria-hidden="true"><source srcset="./assets/craft/case/cc-ver-v4.webp" type="image/webp"><img src="./assets/craft/case/cc-ver-v4.jpg" alt="Version 4, shipped: history sidebar with named threads and a sourced answer about Adobe" width="1600" height="1178" loading="lazy" decoding="async"></picture>
+            <p class="el-ver-cap" aria-hidden="true"><span>v1</span></p>
+          </div>
+        </div>
+        <ol class="el-list el-ver-list" aria-labelledby="versions">
+          <li data-v="0" tabindex="0"><p class="el-k">v1</p><div><p>Empty panel, one Let's Chat button. No prompts, no history.</p><p><b>Removed.</b> The blank slate left people unsure how to start.</p></div><span class="el-ver-bar" aria-hidden="true"></span></li>
+          <li data-v="1" tabindex="0"><p class="el-k">v2</p><div><p>Prompt chips helped the start. The body stayed empty, with no session structure.</p><p><b>Removed.</b> Better start, still weak for ongoing research.</p></div><span class="el-ver-bar" aria-hidden="true"></span></li>
+          <li data-v="2" tabindex="0"><p class="el-k">v3</p><div><p>History sidebar and table answers. Topics were placeholders and the overlay felt heavy.</p><p><b>Removed.</b> Closer, not trusted enough for diligence.</p></div><span class="el-ver-bar" aria-hidden="true"></span></li>
+          <li data-v="3" tabindex="0"><p class="el-k">v4<small>Shipped</small></p><div><p>Real history, sourced answers, loading states, search and agent in the top nav.</p><p><b>Kept.</b> It matched how investors explore and build conviction.</p></div><span class="el-ver-bar" aria-hidden="true"></span></li>
         </ol>
       </div>
 
@@ -592,6 +601,6 @@
 
   <script src="./assets/craft/orb.js?v=1" defer></script>
   <script src="./assets/craft/case/case-min.js?v=4" defer></script>
-  <script src="./assets/craft/case/el.js?v=1" defer></script>
+  <script src="./assets/craft/case/el.js?v=2" defer></script>
 </body>
 </html>
