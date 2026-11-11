@@ -83,7 +83,7 @@
     box.classList.add("is-js");
     box.style.setProperty("--t", ms + "ms");
     // load all four up front so swaps never wait on the network
-    imgs.forEach(function (p) { var im = p.querySelector("img"); if (im) im.loading = "eager"; });
+    imgs.forEach(function (p) { [].forEach.call(p.querySelectorAll("img"), function (im) { im.loading = "eager"; }); });
 
     function show(n) {
       i = (n + rows.length) % rows.length;
@@ -93,7 +93,7 @@
         var bar = r.querySelector(".el-ver-bar");
         if (bar && k === i) { bar.style.animation = "none"; void bar.offsetWidth; bar.style.animation = ""; }
       });
-      if (cap) cap.textContent = rows[i].querySelector(".el-k").firstChild.textContent;
+      if (cap) cap.textContent = rows[i].querySelector(".el-k").firstChild.textContent.trim();
     }
     function stop() { if (timer) clearInterval(timer); timer = null; box.classList.remove("is-run"); }
     function start() {
@@ -118,4 +118,37 @@
       }, { threshold: 0 }).observe(box);
     } else start();
   });
+})();
+
+/* Click any design image to see it at full size (Esc, click or the close button to leave) */
+(function () {
+  var sel = ".el-card-m img, .el-ver-stage img, .el-hero-cover img";
+  var box = null, prev = null;
+  function close() {
+    if (!box) return;
+    box.classList.remove("is-open");
+    var b = box; box = null;
+    setTimeout(function () { b.remove(); }, 250);
+    document.documentElement.style.overflow = "";
+    if (prev) prev.focus();
+  }
+  document.addEventListener("click", function (e) {
+    var img = e.target.closest && e.target.closest(sel);
+    if (!img || img.closest(".cm-media")) return;
+    prev = img.closest("[tabindex]") || null;
+    box = document.createElement("div");
+    box.className = "el-zoom"; box.setAttribute("role", "dialog"); box.setAttribute("aria-modal", "true");
+    box.setAttribute("aria-label", img.alt || "Image");
+    var big = document.createElement("img");
+    big.src = img.currentSrc || img.src; big.alt = img.alt || "";
+    var x = document.createElement("button");
+    x.type = "button"; x.className = "el-zoom-x"; x.setAttribute("aria-label", "Close");
+    x.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+    box.appendChild(big); box.appendChild(x);
+    box.addEventListener("click", close);
+    document.body.appendChild(box);
+    document.documentElement.style.overflow = "hidden";
+    requestAnimationFrame(function () { box.classList.add("is-open"); x.focus(); });
+  });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
 })();

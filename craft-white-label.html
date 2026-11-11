@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..500&display=swap">
   <link rel="stylesheet" href="./assets/craft/craft-tokens.css?v=1">
   <link rel="stylesheet" href="./assets/craft/case/case-min.css?v=6">
-  <link rel="stylesheet" href="./assets/craft/case/el.css?v=4">
+  <link rel="stylesheet" href="./assets/craft/case/el.css?v=5">
   <link rel="stylesheet" href="./assets/craft/case/el-wl.css?v=1">
   <script>try{history.scrollRestoration="manual";if(!location.hash)window.scrollTo(0,0)}catch(e){}</script>
 </head>
@@ -389,20 +389,28 @@
 
     <!-- 6. Iteration -->
     <section class="el-sec" id="testing" aria-labelledby="h-testing">
-      <div class="el-split el-in">
-        <div>
-          <p class="el-eyebrow">Iteration and testing</p>
-          <h2 class="el-h2" id="h-testing">Same page<span>different first visit</span></h2>
-        </div>
-        <div>
+      <div class="el-in">
+        <p class="el-eyebrow">Iteration and testing</p>
+        <h2 class="el-h2" id="h-testing">Same page<span>different first visit</span></h2>
+      </div>
+
+      <div class="el-ver el-ver--fit el-in el-sec--tight" data-interval="5000">
+        <div class="el-ver-side">
           <h3 class="el-h3" id="versions">How the page changed</h3>
-          <ol class="el-list">
-            <li><p class="el-k">Subdomain</p><div><p>Before: domain radios, no create path.</p><p><b>Now:</b> Create Subdomain. Empty first, then a live URL.</p></div></li>
-            <li><p class="el-k">Logo</p><div><p>Before: a logo slot from the start, before any subdomain.</p><p><b>Now:</b> Upload Logo only once the URL exists.</p></div></li>
-            <li><p class="el-k">Sender</p><div><p>Before: already Verified. No pending, no resend.</p><p><b>Now:</b> empty, pending, resend, verified. Edit stays.</p></div></li>
-            <li><p class="el-k">Saving</p><div><p>Before: one Update button for all three.</p><p><b>Now:</b> each piece saves in its own dialog, with Delete, the old links warning and the re-verify note.</p></div></li>
-          </ol>
+          <div class="el-ver-stage" aria-live="polite">
+            <div class="el-ver-img" data-v="0"><picture><source srcset="./assets/craft/case/wl-subdomain-create.webp" type="image/webp"><img src="./assets/craft/case/wl-subdomain-create.jpg" alt="Create Custom Subdomain dialog: a note that links shared with the old subdomain will stop working, the prefix Hve, the locked suffix .systematicventures.com and Save" width="1328" height="614" loading="lazy" decoding="async"></picture></div>
+            <div class="el-ver-img" data-v="1" aria-hidden="true"><picture><source srcset="./assets/craft/case/wl-url-logo.webp" type="image/webp"><img src="./assets/craft/case/wl-url-logo.jpg" alt="Shipped subdomain card after save: the live hve.systematicventures.com link with Edit, and an Upload Logo slot under it" width="1552" height="748" loading="lazy" decoding="async"></picture></div>
+            <div class="el-ver-img el-ver-rows" data-v="2" aria-hidden="true"><picture><source srcset="./assets/craft/case/wl-sender-empty.webp" type="image/webp"><img src="./assets/craft/case/wl-sender-empty.jpg" alt="Sender row with only a Create Sender button" width="1520" height="124" loading="lazy" decoding="async"></picture><picture><source srcset="./assets/craft/case/wl-sender-pending.webp" type="image/webp"><img src="./assets/craft/case/wl-sender-pending.jpg" alt="Sender row: sample@email.com, Pending Verification, Resend (60s) greyed out, a refresh icon and Edit" width="1520" height="124" loading="lazy" decoding="async"></picture><picture><source srcset="./assets/craft/case/wl-sender-resend.webp" type="image/webp"><img src="./assets/craft/case/wl-sender-resend.jpg" alt="Sender row: Pending Verification with Resend now active, a refresh icon and Edit" width="1520" height="124" loading="lazy" decoding="async"></picture><picture><source srcset="./assets/craft/case/wl-sender-verified.webp" type="image/webp"><img src="./assets/craft/case/wl-sender-verified.jpg" alt="Sender row: sample@email.com with a green Verified chip and Edit" width="1520" height="124" loading="lazy" decoding="async"></picture></div>
+            <div class="el-ver-img" data-v="3" aria-hidden="true"><picture><source srcset="./assets/craft/case/wl-sender-edit.webp" type="image/webp"><img src="./assets/craft/case/wl-sender-edit.jpg" alt="Edit Custom Sender dialog with the note: if you update your email address, you will need to verify it again. Filled fields, Delete and Submit" width="1544" height="1164" loading="lazy" decoding="async"></picture></div>
+            <p class="el-ver-cap" aria-hidden="true"><span>Subdomain</span></p>
+          </div>
         </div>
+        <ol class="el-list el-ver-list" aria-labelledby="versions">
+          <li data-v="0" tabindex="0"><p class="el-k">Subdomain</p><div><p>Before: domain radios, no create path.</p><p><b>Now:</b> Create Subdomain. Empty first, then a live URL.</p></div><span class="el-ver-bar" aria-hidden="true"></span></li>
+          <li data-v="1" tabindex="0"><p class="el-k">Logo</p><div><p>Before: a logo slot from the start, before any subdomain.</p><p><b>Now:</b> Upload Logo only once the URL exists.</p></div><span class="el-ver-bar" aria-hidden="true"></span></li>
+          <li data-v="2" tabindex="0"><p class="el-k">Sender</p><div><p>Before: already Verified. No pending, no resend.</p><p><b>Now:</b> empty, pending, resend, verified. Edit stays.</p></div><span class="el-ver-bar" aria-hidden="true"></span></li>
+          <li data-v="3" tabindex="0"><p class="el-k">Saving</p><div><p>Before: one Update button for all three.</p><p><b>Now:</b> each piece saves in its own dialog, with Delete, the old links warning and the re-verify note.</p></div><span class="el-ver-bar" aria-hidden="true"></span></li>
+        </ol>
       </div>
 
       <div class="el-grid">
@@ -496,6 +504,6 @@
 
   <script src="./assets/craft/orb.js?v=1" defer></script>
   <script src="./assets/craft/case/case-min.js?v=4" defer></script>
-  <script src="./assets/craft/case/el.js?v=2" defer></script>
+  <script src="./assets/craft/case/el.js?v=3" defer></script>
 </body>
 </html>
