@@ -18,7 +18,7 @@
 
     var rig = document.createElement("div"); rig.className = "cr-avl-rig";
     var poster = new Image(); poster.alt = ""; poster.decoding = "async"; poster.draggable = false;
-    poster.className = "cr-avl-poster"; poster.src = base + "poster.webp";
+    poster.className = "cr-avl-poster"; poster.src = base + "poster.webp?v=2";
     var canvas = document.createElement("canvas"); canvas.className = "cr-avl-canvas";
     rig.appendChild(poster); rig.appendChild(canvas); root.appendChild(rig);
 
@@ -30,7 +30,7 @@
       video = document.createElement("video");
       video.muted = true; video.defaultMuted = true; video.loop = true; video.playsInline = true;
       video.setAttribute("muted", ""); video.setAttribute("playsinline", ""); video.preload = "auto";
-      video.src = base + "character.mp4";
+      video.src = base + "character.mp4?v=2";
       video.addEventListener("loadeddata", function () {
         if (dead) return;
         W = video.videoWidth; H = video.videoHeight >> 1;
