@@ -41,7 +41,8 @@
     "deal-room": "deals deal execution fundraising nda investors commitments company profile systematic",
     "white-label": "white label branding brand subdomain url logo sender email settings hub systematic",
     "easyeat": "easy eat food restaurant ordering qr mobile customization monetisation monetization",
-    "resonance": "spotify music playback songs drop moment ai concept personal"
+    "resonance": "spotify music playback songs drop moment ai concept personal",
+    "splitly": "split bill expenses money group trip friends claude cursor ai agents prototype live"
   };
   var PG_WORDS = {
     "craft-mode": "this page glass widgets wallpaper home board",

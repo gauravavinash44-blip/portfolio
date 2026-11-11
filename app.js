@@ -813,6 +813,7 @@
       "White Label Setup": "./craft-white-label.html",
       "EasyEat": "./craft-easyeat.html",
       "Resonance": "./craft-resonance.html",
+      "Splitly": "./craft-splitly.html",
     };
     S.files = S.files.map((f) => (hrefs[f.title]
       ? Object.assign({}, f, { href: hrefs[f.title] })
@@ -852,6 +853,11 @@
         description: "A speculative, personal playback idea for Spotify that starts songs closer to the moment you actually want to hear. Not affiliated with Spotify.",
         facts: [["Context", "For Spotify, personal"], ["Type", "Speculative product"], ["Prototype", "Live in the browser"]],
         live: "resonance" },
+      { id: "splitly", title: "Splitly", href: hrefs["Splitly"], image: "./assets/craft/case/sp-cover-sm.jpg", icon: "receipt", tone: "orange",
+        sub: "Personal project", domain: "Fintech, AI-built", summary: "Split a bill and see who pays whom. Built with AI.",
+        metric: { value: "Live", label: "AI-built prototype", word: true },
+        description: "A split-the-bill app for friends in India. One of my first AI-driven design problems: designed in Figma, built with Claude, Cursor and AI agents.",
+        facts: [["Context", "Personal project"], ["Built with", "Claude, Cursor, AI agents"], ["Prototype", "Live in the browser"]] },
     ];
     const asCase = (c) => Object.assign({ group: "case", label: "Open " + c.title + " case study" }, c);
     S.caseStudies = caseStudies.map(asCase);

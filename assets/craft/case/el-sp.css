@@ -1,0 +1,22 @@
+/* Splitly in the el-* layout: page-only tweaks, loaded after el.css, rs-min.css and el-rs.css.
+   The live prototype reuses the Resonance phone frame (rs-*); the poster is the Splitly home screen. */
+.spd .rs-stage { background: #161816; }
+.spd .sp-poster { background: #1b1b1b; }
+.spd .sp-poster img { opacity: .5; transition: opacity .3s ease; }
+.spd .sp-poster:hover img { opacity: .62; }
+.spd .sp-tap {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px;
+  border-radius: 999px; background: rgba(255, 255, 255, 0.92); color: #111; font-size: 13px; white-space: nowrap;
+  box-shadow: 0 0 0 0 rgba(47, 191, 122, 0.8); animation: sp-pulse 2.2s ease-out infinite; pointer-events: none;
+}
+@keyframes sp-pulse { 0% { box-shadow: 0 0 0 0 rgba(47, 191, 122, 0.8); } 70% { box-shadow: 0 0 0 10px rgba(47, 191, 122, 0); } 100% { box-shadow: 0 0 0 0 rgba(47, 191, 122, 0); } }
+.spd .rs-app, .spd .rs-app iframe, .spd .rs-state { background: #1b1b1b; }
+.spd .rs-app { transform-origin: 50% 50%; }
+.spd .rs-hint i, .spd .rs-spin { border-top-color: #2fbf7a; }
+.spd .rs-hint i { background: #2fbf7a; }
+.spd .rs-state-link { background: #2fbf7a; }
+.spd .rs-home:focus-visible, .spd .rs-stage :focus-visible { outline-color: #2fbf7a; }
+@media (prefers-reduced-motion: reduce) { .spd .sp-tap { animation: none; } }
+.spd .el-steps { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 719px) { .spd .el-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 20px; } }

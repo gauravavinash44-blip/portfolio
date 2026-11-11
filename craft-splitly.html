@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Splitly, full case study · Craft · Gaurav Avinash</title>
+  <meta name="description" content="Splitly, a split-the-bill app for friends in India. One of my first AI-driven design problems, designed in Figma and built with Claude, Cursor and AI agents. A live prototype you can use.">
+  <link rel="icon" href="./assets/logo-ga.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..500&display=swap">
+  <link rel="stylesheet" href="./assets/craft/craft-tokens.css?v=1">
+  <link rel="stylesheet" href="./assets/craft/case/case-min.css?v=7">
+  <link rel="stylesheet" href="./assets/craft/case/el.css?v=7">
+  <link rel="stylesheet" href="./assets/craft/case/rs-min.css?v=1">
+  <link rel="stylesheet" href="./assets/craft/case/el-rs.css?v=1">
+  <link rel="stylesheet" href="./assets/craft/case/el-sp.css?v=1">
+  <script>try{history.scrollRestoration="manual";if(!location.hash)window.scrollTo(0,0)}catch(e){}</script>
+</head>
+<!--
+  Splitly, detailed case study. Same el-* layout and live-prototype frame as craft-resonance.html
+  (el.css, el.js, rs-min.css), Splitly tweaks in el-sp.css, the phone embed in sp-min.js.
+  Facts come from Gaurav's Splitly deck, his design notes and the live build at splitmate-blue-five.vercel.app.
+  Screens are from his Figma file. No users, no tests, no metrics are claimed.
+-->
+<body class="cr cm cmd rsd el spd" style="--pa:#0d6b47;--p1:#2fbf7a;--p2:#d4f2e2;--p3:#0b5a3c">
+  <a class="cm-skip" href="#main">Skip to content</a>
+
+  <header class="cm-bar">
+    <a class="cm-pill" href="./index.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+      <span>Home</span>
+    </a>
+    <nav class="cm-pill cm-toc" aria-label="Sections">
+      <a href="#context">Context</a>
+      <a href="#scope">Scope</a>
+      <a href="#decisions">Decisions</a>
+      <a href="#ai">AI</a>
+      <a href="#prototype">Prototype</a>
+      <a href="#next-steps">Next steps</a>
+    </nav>
+    <div class="cm-progress" aria-hidden="true"></div>
+  </header>
+
+  <main id="main" class="el-frame">
+
+    <!-- Hero -->
+    <section class="el-hero" aria-labelledby="h-title">
+      <div class="el-split el-in">
+        <div>
+          <p class="el-label"><span class="cm-orb" data-orb="receipt" aria-hidden="true"></span><span>Fintech · Personal project · AI-built</span></p>
+          <h1 class="el-h1" id="h-title">Splitly<span>Split the bill, without the maths</span></h1>
+        </div>
+        <div class="el-body">
+          <p>Friends split dinners, trips and rent all the time. Most apps can do it, but they ask a lot when all you want is to log a bill and know who pays whom. I designed a simpler one, then built it with Claude, Cursor and a few AI agents.</p>
+        </div>
+      </div>
+
+      <div class="el-grid">
+        <figure class="el-card el-hero-cover" style="background:#24453a">
+          <picture><source media="(max-width: 719px)" srcset="./assets/craft/case/sp-cover-sm.webp" type="image/webp" width="1200" height="883"><source media="(max-width: 719px)" srcset="./assets/craft/case/sp-cover-sm.jpg" width="1200" height="883"><source srcset="./assets/craft/case/sp-cover.webp" type="image/webp"><img src="./assets/craft/case/sp-cover.jpg" alt="An iPhone on a green gradient showing the Splitly home screen: Hey Gaurav, You will Receive ₹8,450 and You will Pay ₹2,300, three groups and an Add New Expense button. Beside it: Shared expenses, Smarter workflow, More time together." width="2000" height="1472" fetchpriority="high" decoding="async" style="background-color:#24453a"></picture>
+        </figure>
+      </div>
+
+      <ul class="el-stats el-in" aria-label="Project numbers">
+        <li><p class="el-stat-v">4</p><p class="el-stat-l">steps: group, expense, split, balances</p><p class="el-stat-m">The whole journey</p></li>
+        <li><p class="el-stat-v">4</p><p class="el-stat-l">ways to split, all visible. Equal is the default.</p><p class="el-stat-m">Equal, amount, share, percentage</p></li>
+        <li><p class="el-stat-v">Live</p><p class="el-stat-l">prototype you can use on this page</p><p class="el-stat-m">Not shipped, not measured</p></li>
+      </ul>
+
+      <ul class="el-feat" aria-label="Project facts">
+        <li class="el-feat-h"><p class="el-feat-t">The project</p></li>
+        <li><b>Role</b><p>Solo. Product design, Figma and the prototype.</p></li>
+        <li><b>For</b><p>Friends aged 20 to 35 in India, splitting everyday costs</p></li>
+        <li><b>Timeline</b><p>About three days, end to end</p></li>
+        <li><b>Built with</b><p>Figma, then React with Claude, Cursor and AI agents</p></li>
+      </ul>
+
+      <div class="el-split el-in el-sec--tight">
+        <h2 class="el-h3" style="color:var(--mute)">In short</h2>
+        <p class="el-p">This was one of my first design problems where AI did most of the building. I designed the screens in Figma, then directed Claude and Cursor to turn them into a working app. The design calls stayed mine. The hardest part wasn't drawing screens. It was deciding what not to build.</p>
+      </div>
+    </section>
+
+    <!-- 1. Context -->
+    <section class="el-sec" id="context" aria-labelledby="h-context">
+      <div class="el-split el-in">
+        <div>
+          <p class="el-eyebrow">Context</p>
+          <h2 class="el-h2" id="h-context">Splitting is easy.<span>Understanding it isn't.</span></h2>
+        </div>
+        <div class="el-body">
+          <p>A Goa trip. A flat with three people. A Friday dinner where one person skipped the drinks. Someone pays, and then the group needs to know who owes what.</p>
+          <p>Existing apps handle this, but they can feel heavy. Most of the time people want three things and nothing else.</p>
+        </div>
+      </div>
+
+      <ul class="el-outline" aria-label="What people want">
+        <li><p class="el-k">01</p><p class="el-t">Record an expense</p><p class="el-d">Amount, what it was for, who paid. Fast.</p></li>
+        <li><p class="el-k">02</p><p class="el-t">Handle uneven cases</p><p class="el-d">Someone didn't eat, someone joined late, two people paid.</p></li>
+        <li><p class="el-k">03</p><p class="el-t">Know who pays whom</p><p class="el-d">Without reading a ledger to work it out.</p></li>
+      </ul>
+
+      <div class="el-in el-sec--tight">
+        <h3 class="el-h3" id="limits">What I was working with</h3>
+      </div>
+      <ul class="el-outline el-outline--first" aria-label="Limits">
+        <li><p class="el-k">Device</p><p class="el-v">Mobile first</p><p class="el-d">It also had to work on desktop.</p></li>
+        <li><p class="el-k">Backend</p><p class="el-v">None</p><p class="el-d">No login. Everything lives in the browser.</p></li>
+        <li><p class="el-k">Time</p><p class="el-v">About 3 days</p><p class="el-d">Design, build and deploy, on my own.</p></li>
+      </ul>
+    </section>
+
+    <!-- 2. Principles and scope -->
+    <section class="el-sec" id="scope" aria-labelledby="h-scope">
+      <div class="el-split el-in">
+        <div>
+          <p class="el-eyebrow">Principles and scope</p>
+          <h2 class="el-h2" id="h-scope">Three rules<span>and a short list</span></h2>
+        </div>
+        <div class="el-body"><p>Before any screen, I wrote three rules. Every feature had to pass them or wait.</p></div>
+      </div>
+
+      <ul class="el-feat el-feat--4" aria-label="Principles">
+        <li class="el-feat-h"><h3 class="el-feat-t" id="h-rules">Rules for every screen</h3></li>
+        <li><p class="el-k">01</p><b>Easy to understand</b><p>You should see where you stand at a glance, not decode a web of debts.</p></li>
+        <li><p class="el-k">02</p><b>Common path first</b><p>Advanced options show up only when needed. Most splits are just equal.</p></li>
+        <li><p class="el-k">03</p><b>Everyday situations</b><p>Late joiners, skipped meals and different payers, without long forms.</p></li>
+      </ul>
+
+      <ol class="el-steps el-in" aria-label="The journey">
+        <li><b>Create a group</b><span>A trip, a flat or one dinner</span></li>
+        <li><b>Add an expense</b><span>Amount and what it was for</span></li>
+        <li><b>Split it</b><span>Who paid, who was in, and how</span></li>
+        <li><b>Review balances</b><span>Pay or receive, then settle up</span></li>
+      </ol>
+
+      <div class="el-split el-in el-sec--tight">
+        <div>
+          <h3 class="el-h3" id="built">What I built</h3>
+          <ul class="el-bul">
+            <li>Groups and members, including adding someone later</li>
+            <li>Expenses with equal, amount, share and percentage splits</li>
+            <li>More than one payer on the same bill</li>
+            <li>Balances per group and a settle-up flow</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="el-h3" id="cut">What I left out, on purpose</h3>
+          <ul class="el-bul">
+            <li>Login, real-time sync and UPI payments</li>
+            <li>Notifications and recurring expenses</li>
+            <li>Budgets and analytics</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="el-sec--tight"><p class="el-pull">The hardest part was deciding what not to build.</p></div>
+    </section>
+
+    <!-- 3. Decisions -->
+    <section class="el-sec" id="decisions" aria-labelledby="h-decisions">
+      <div class="el-split el-in">
+        <div>
+          <p class="el-eyebrow">Key decisions</p>
+          <h2 class="el-h2" id="h-decisions">Two calls<span>I changed my mind on</span></h2>
+        </div>
+        <p class="el-p">Both started as the cleaner-looking option. Both got worse the more I used them.</p>
+      </div>
+
+      <article class="el-dec el-sec--tight" id="decision-split" aria-labelledby="h-d1">
+        <div class="el-split el-in">
+          <div><p class="el-dec-n">01</p><h3 class="el-h2" id="h-d1" style="font-size:clamp(24px,2.6vw,32px)">Equal by default<span>every option in sight</span></h3></div>
+          <div>
+            <div class="el-body">
+              <p>My first version hid amount, share and percentage behind a More Options button. It looked tidy. It also meant people who needed an uneven split had to know it was there. Now Equal is selected by default, and the other three sit right beside it. One tap to switch.</p>
+            </div>
+            <dl class="el-tdw">
+              <div><dt>Considered</dt><dd>A More Options button for advanced splits</dd></div>
+              <div><dt>Dropped</dt><dd>Hiding the methods</dd></div>
+              <div><dt>Why</dt><dd>Clean isn't the same as easy. A hidden option is a missing option.</dd></div>
+            </dl>
+          </div>
+        </div>
+        <div class="el-grid el-grid--2">
+          <figure class="el-card">
+            <div class="el-card-m"><picture><source srcset="./assets/craft/case/sp-split-first.webp" type="image/webp"><img src="./assets/craft/case/sp-split-first.jpg" alt="First idea: a split card with Equal and a More Options button. Gaurav, Rahul and Ankit at ₹413.33 each, Avinash not included at ₹0." width="828" height="855" loading="lazy" decoding="async" style="background-color:#fff;max-width:360px"></picture></div>
+            <figcaption class="el-card-c"><b>First idea</b><span>Advanced splits behind More Options</span></figcaption>
+          </figure>
+          <figure class="el-card">
+            <div class="el-card-m"><picture><source srcset="./assets/craft/case/sp-split-final.webp" type="image/webp"><img src="./assets/craft/case/sp-split-final.jpg" alt="Final design: Equal, Amount, Share and Percentage tabs all visible, with Equal selected. Same four people and amounts." width="828" height="855" loading="lazy" decoding="async" style="background-color:#fff;max-width:360px"></picture></div>
+            <figcaption class="el-card-c"><b>Final design</b><span>Equal selected, all four methods visible</span></figcaption>
+          </figure>
+        </div>
+      </article>
+
+      <article class="el-dec" id="decision-balance" aria-labelledby="h-d2">
+        <div class="el-split el-in">
+          <div><p class="el-dec-n">02</p><h3 class="el-h2" id="h-d2" style="font-size:clamp(24px,2.6vw,32px)">Pay and Receive<span>not owe and owed</span></h3></div>
+          <div>
+            <div class="el-body">
+              <p>The first home screen said "You are owed" and "You owe". Accurate, but you have to think about who owes whom before you know what to do. People open the app with a simpler question: do I need to pay, or will I get money? So the home screen now says Pay and Receive. The detailed who-owes-whom stays inside each group.</p>
+            </div>
+            <dl class="el-tdw">
+              <div><dt>Considered</dt><dd>You are owed / You owe on the home screen</dd></div>
+              <div><dt>Dropped</dt><dd>Relationship wording up front</dd></div>
+              <div><dt>Why</dt><dd>Lead with the action. Details can wait one tap.</dd></div>
+            </dl>
+          </div>
+        </div>
+        <div class="el-grid el-grid--2">
+          <figure class="el-card">
+            <div class="el-card-m"><picture><source srcset="./assets/craft/case/sp-bal-first.webp" type="image/webp"><img src="./assets/craft/case/sp-bal-first.jpg" alt="First idea: balance card reading You are owed ₹10,750.05 and You owe ₹2,380.95, with Goa Trip +₹8,450, Flatmates −₹2,300 and Friday Dinner ₹0." width="828" height="894" loading="lazy" decoding="async" style="background-color:#fff;max-width:360px"></picture></div>
+            <figcaption class="el-card-c"><b>First idea</b><span>Owe and owed</span></figcaption>
+          </figure>
+          <figure class="el-card">
+            <div class="el-card-m"><picture><source srcset="./assets/craft/case/sp-bal-final.webp" type="image/webp"><img src="./assets/craft/case/sp-bal-final.jpg" alt="Final design: You will Receive ₹8,450 and You will Pay ₹2,300. Goa Trip ₹8,450 Receive, Flatmates ₹2,300 Pay, Friday Dinner ₹0 Settled." width="828" height="894" loading="lazy" decoding="async" style="background-color:#fff;max-width:360px"></picture></div>
+            <figcaption class="el-card-c"><b>Final design</b><span>Pay and Receive, with a settled state</span></figcaption>
+          </figure>
+        </div>
+      </article>
+
+      <ul class="el-feat el-feat--4" aria-label="Smaller details">
+        <li class="el-feat-h"><h3 class="el-feat-t" id="details">Smaller details</h3></li>
+        <li><b>Not included</b><p>Untick someone who skipped the meal. Their share drops to ₹0 and the rest update.</p></li>
+        <li><b>More than one payer</b><p>Two people can cover one bill without logging it twice.</p></li>
+        <li><b>Settled, not zero</b><p>A finished group says Settled, so ₹0 doesn't look like a mistake.</p></li>
+      </ul>
+    </section>
+
+    <!-- 4. AI -->
+    <section class="el-sec" id="ai" aria-labelledby="h-ai">
+      <div class="el-split el-in">
+        <div>
+          <p class="el-eyebrow">Working with AI</p>
+          <h2 class="el-h2" id="h-ai">AI built it fast.<span>I decided what it built.</span></h2>
+        </div>
+        <div class="el-body">
+          <p>I gave Claude and Cursor my Figma screens and asked for a responsive React app with reusable parts, thinking through common flows and edge cases. Several AI agents worked alongside them. As the build grew, my prompts got narrower.</p>
+        </div>
+      </div>
+
+      <div class="el-table-wrap el-in" role="region" aria-label="What AI suggested and what I changed" tabindex="0">
+        <table class="el-table">
+          <thead><tr><th scope="col">AI suggested</th><th scope="col">What I changed</th><th scope="col">Call</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Complex layouts<small>Lots of panels per screen</small></th><td data-k="Changed">Simplified the flow and cut steps</td><td data-k="Call"><span class="el-tag">Rewrote</span></td></tr>
+            <tr><th scope="row">Feature-heavy ideas<small>Budgets, charts, reminders</small></th><td data-k="Changed">Held the line on the core journey</td><td data-k="Call"><span class="el-tag">Cut</span></td></tr>
+            <tr><th scope="row">Generic copy<small>Ledger language</small></th><td data-k="Changed">Rewrote the microcopy to sound like people talk</td><td data-k="Call"><span class="el-tag">Rewrote</span></td></tr>
+            <tr><th scope="row">A solid base<small>Components, state, splits maths</small></th><td data-k="Changed">Kept, then tuned spacing and type to match Figma</td><td data-k="Call"><span class="el-tag is-yes">Kept</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="el-split el-in el-sec--tight">
+        <div>
+          <h3 class="el-h3" id="prompts">What I steered it toward</h3>
+          <ul class="el-bul">
+            <li>Keep Equal as the default, with every split method visible</li>
+            <li>Ask for less input: fewer fields, smarter defaults</li>
+            <li>Support more than one payer and adding members later</li>
+            <li>Match spacing, type and layout to the Figma file</li>
+            <li>Review missing edge cases before calling a screen done</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="el-h3" id="by-hand">What I fixed by hand</h3>
+          <ul class="el-bul">
+            <li>Finished the Add Member flow</li>
+            <li>Moved components back to where the design had them</li>
+            <li>Removed duplicate expense details on Add Expense</li>
+            <li>Reworked the desktop layout</li>
+            <li>Tuned participant picking and the advanced split interactions</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="el-grid el-sec--tight">
+        <figure class="el-card">
+          <div class="el-card-m"><picture><source srcset="./assets/craft/case/sp-group.webp" type="image/webp"><img src="./assets/craft/case/sp-group.jpg" alt="Goa Trip group screen: outstanding balance ₹8,450, four members, a Settle Up button, and expense history with two Friday Dinner entries of ₹2,450 and ₹1,200, plus Add Another Expense." width="860" height="1660" loading="lazy" decoding="async" style="background-color:#fff;max-width:300px"></picture></div>
+          <figcaption class="el-card-c"><b>Inside a group</b><span>Who owes whom lives here, not on Home</span></figcaption>
+        </figure>
+      </div>
+
+      <div class="el-sec--tight"><p class="el-pull">AI helped me think faster. Judgement decided what stayed.</p></div>
+    </section>
+
+    <!-- 5. Live prototype -->
+    <section class="el-sec" id="prototype" aria-labelledby="h-prototype">
+      <div class="el-split el-in">
+        <div>
+          <p class="el-eyebrow">The live prototype</p>
+          <h2 class="el-h2" id="h-prototype">Try it<span>in the phone</span></h2>
+        </div>
+        <div class="el-body"><p>This is the real build. Nothing loads until you tap. Everything stays in your browser.</p></div>
+      </div>
+
+      <div class="rs-proto">
+        <div class="rs-stage">
+          <div class="rs-phone" role="group" aria-label="Splitly prototype in an iPhone frame">
+            <div class="rs-phone-shell">
+              <div class="rs-screen" id="sp-screen" data-phase="home" data-status="idle">
+                <button type="button" class="rs-home sp-poster" id="sp-home" aria-label="Open the Splitly prototype" aria-describedby="sp-hint">
+                  <picture><source srcset="./assets/craft/case/sp-screen-home.webp" type="image/webp"><img src="./assets/craft/case/sp-screen-home.jpg" alt="" width="804" height="1748" loading="lazy" decoding="async"></picture>
+                  <span class="sp-tap" aria-hidden="true">Tap to open</span>
+                </button>
+                <div class="rs-app" id="sp-app" hidden></div>
+                <div class="rs-state rs-state--loading" aria-hidden="true"><i class="rs-spin"></i><span>Opening Splitly</span></div>
+                <div class="rs-state rs-state--failed">
+                  <p>The prototype didn't load here.</p>
+                  <a class="rs-state-link" href="https://splitmate-blue-five.vercel.app/" target="_blank" rel="noreferrer">Open full screen <span aria-hidden="true">↗</span></a>
+                </div>
+              </div>
+              <picture><source srcset="./assets/resonance/mockup/iphone-frame.webp" type="image/webp"><img class="rs-phone-frame" src="./assets/resonance/mockup/iphone-frame.png" alt="" width="1294" height="2656" loading="lazy" decoding="async" aria-hidden="true"></picture>
+            </div>
+          </div>
+          <div class="rs-bar">
+            <p class="rs-hint" id="sp-hint"><i aria-hidden="true"></i>Tap the screen to start</p>
+            <div class="rs-ctls" id="sp-ctls" hidden>
+              <button type="button" class="rs-ctl" id="sp-close"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>Close</button>
+              <button type="button" class="rs-ctl" id="sp-restart"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12a7 7 0 1 0 2.1-5M5 4.5V8h3.5"/></svg>Restart</button>
+            </div>
+          </div>
+          <p class="cm-sr" id="sp-status" role="status" aria-live="polite"></p>
+        </div>
+
+        <div class="rs-guide">
+          <h3 class="el-h3" id="try">What to try</h3>
+          <ol class="rs-steps">
+            <li>Tap Add New Expense and pick Goa Trip.</li>
+            <li>Enter an amount and what it was for, then Save &amp; Continue.</li>
+            <li>Keep Equal, or switch to Amount, Share or Percentage.</li>
+            <li>Untick someone who wasn't there and watch the shares update.</li>
+            <li>Open the group to see who pays whom, then Settle Up.</li>
+          </ol>
+          <p class="el-note">Your changes stay in this browser only. Prefer full screen on a real phone if you want more room.</p>
+          <a class="rs-full" href="https://splitmate-blue-five.vercel.app/" target="_blank" rel="noreferrer">Open full screen <span aria-hidden="true">↗</span><span class="cm-sr"> (opens in a new tab)</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Outcome -->
+    <section class="el-sec" id="outcome" aria-labelledby="h-outcome">
+      <div class="el-in">
+        <p class="el-eyebrow">Outcome</p>
+        <h2 class="el-h2" id="h-outcome">What exists<span>and what doesn't</span></h2>
+      </div>
+      <ul class="el-outline" aria-label="Results">
+        <li><p class="el-k">Live prototype</p><p class="el-v">1</p><p class="el-d">Groups, expenses, four split methods, balances and settle up. Usable above.</p></li>
+        <li><p class="el-k">Built in</p><p class="el-v">~3 days</p><p class="el-d">From Figma to a deployed app, with AI doing most of the code</p></li>
+        <li><p class="el-k">Impact</p><p class="el-v" style="color:var(--mute)">None claimed</p><p class="el-d">Not tested with users. Not measured.</p></li>
+      </ul>
+    </section>
+
+    <!-- 7. Next steps -->
+    <section class="el-sec" id="next-steps" aria-labelledby="h-nextsteps">
+      <div class="el-in">
+        <p class="el-eyebrow">Looking back</p>
+        <h2 class="el-h2" id="h-nextsteps">What I learned<span>and what's next</span></h2>
+      </div>
+      <div class="el-split el-in" style="margin-top:clamp(32px,4vw,48px)">
+        <div>
+          <h3 class="el-h3" id="learned">What I'd keep doing</h3>
+          <ul class="el-bul">
+            <li>Design first, then hand AI a clear picture. Vague prompts gave me busy screens.</li>
+            <li>Treat AI output as a draft. It was good at structure and weak at interaction details and layout consistency.</li>
+            <li>Use what I cut as a design decision, not a gap.</li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="el-h3" id="next">Where it goes next</h3>
+          <ul class="el-bul">
+            <li>Scan a receipt to fill in the expense, so there's less to type</li>
+            <li>Test Pay and Receive, and the always-visible split methods, with real groups</li>
+            <li>More polish on motion and interactions</li>
+            <li>Keep fixing edge cases as people use it</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <nav class="cm-end" aria-label="More case studies">
+      <a class="cm-next" href="./craft-contextual-chat-detailed.html">
+        <span class="cm-orb cm-orb--lg" data-orb="chatSpark" aria-hidden="true"></span>
+        <span>
+          <span class="cm-next-k">Next case study</span>
+          <span class="cm-next-t" id="h-next">Contextual Chat</span>
+          <span class="cm-next-s">Investors search companies in plain language. Search went from 30 to 40 minutes to under 30 seconds.</span>
+        </span>
+        <span class="cm-next-go" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </a>
+      <a class="cm-home" href="./index.html">Back to Home</a>
+    </nav>
+  </main>
+
+  <script src="./assets/craft/orb.js?v=1" defer></script>
+  <script src="./assets/craft/case/case-min.js?v=6" defer></script>
+  <script src="./assets/craft/case/sp-min.js?v=1" defer></script>
+  <script src="./assets/craft/case/el.js?v=3" defer></script>
+</body>
+</html>

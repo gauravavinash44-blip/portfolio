@@ -3,7 +3,7 @@
    case page's own colour, then the browser goes to the real case-study page, whose content rises in.
    It is a normal page load: the case study has its own URL, Back returns to the dashboard. */
 (function () {
-  var CASES = /(^|\/)craft-(contextual-chat(-detailed)?|deal-room|white-label|easyeat|resonance)\.html$/;
+  var CASES = /(^|\/)craft-(contextual-chat(-detailed)?|deal-room|white-label|easyeat|resonance|splitly)\.html$/;
   var EASE_ARRIVE = "cubic-bezier(0.16, 1, 0.3, 1)";
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
   var going = false, cover = null;
