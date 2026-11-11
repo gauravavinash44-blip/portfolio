@@ -295,3 +295,13 @@ body.el .cm-end { max-width: none; padding-left: clamp(0px, 1.5vw, 16px); paddin
 .el-hero-cover { background: var(--surface); }
 .el-hero-cover picture { display: block; width: 100%; }
 .el-hero-cover img { display: block; width: 100%; height: auto; }
+
+/* Arrival: header content rises in, staggered, like the profile sheet's contents */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes el-arrive { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  .el-hero .el-split > *, .el-hero > .el-grid, .el-hero > .el-stats { animation: el-arrive 560ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .el-hero .el-split > :nth-child(1) { animation-delay: 120ms; }
+  .el-hero .el-split > :nth-child(2) { animation-delay: 180ms; }
+  .el-hero > .el-grid { animation-delay: 260ms; }
+  .el-hero > .el-stats { animation-delay: 340ms; }
+}
