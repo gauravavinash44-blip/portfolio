@@ -800,7 +800,7 @@
       image: "./assets/craft/avatar/gaurav-3d-shirt-520.webp",
       imageSet: "./assets/craft/avatar/gaurav-3d-shirt-520.webp 520w, ./assets/craft/avatar/gaurav-3d-shirt-1040.webp 1040w",
       imageSizes: "(max-width: 700px) 186px, 200px",
-      cutout: true, head: null, figure: "bust",
+      cutout: true, head: null, figure: "bust", live: { base: "./assets/craft/avatar/live/" },
     });
     S.profileSheet = Object.assign({}, S.profileSheet, profileHistory());
     S.topbar = Object.assign({}, S.topbar, { avatar: ASSETS.logo });

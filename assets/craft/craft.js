@@ -546,9 +546,22 @@
 
   function ProfileOrb(props) {
     if (props.head) return h(HeadOrb, props);
-    var ref = useRef(null);
+    var ref = useRef(null), liveRef = useRef(null), apiRef = useRef(null);
+    var live = !!(props.live && window.CraftLiveAvatar);
+    useEffect(function () {
+      if (!live || !liveRef.current) return undefined;
+      apiRef.current = window.CraftLiveAvatar.mount(liveRef.current, { base: props.live.base });
+      return function () { if (apiRef.current) apiRef.current.destroy(); apiRef.current = null; };
+    }, [live]);
+    /* a pointer click lets the character laugh for a beat before the sheet covers it; keys open at once */
+    function onClick(ev) {
+      if (!live || !apiRef.current || !ev.detail || reduced()) { if (props.onOpen) props.onOpen(ev); return; }
+      apiRef.current.react();
+      var btn = ev.currentTarget;
+      setTimeout(function () { if (props.onOpen) props.onOpen({ currentTarget: btn, target: btn }); }, 280);
+    }
     function onMove(ev) {
-      if (reduced() || !ref.current) return;
+      if (live || reduced() || !ref.current) return;
       var r = ref.current.getBoundingClientRect();
       var dx = (ev.clientX - r.left - r.width / 2) / r.width, dy = (ev.clientY - r.top - r.height / 2) / r.height;
       ref.current.style.transform = "perspective(800px) rotateY(" + (dx * 8).toFixed(2) + "deg) rotateX(" + (-dy * 8).toFixed(2) + "deg)";
@@ -556,8 +569,10 @@
     function onLeave() { if (ref.current) ref.current.style.transform = ""; }
     return h("div", { className: cx("cr-orb-slot", props.className), "data-cr-enter": "", "data-cr-orb": "" },
       h("button", { type: "button", className: "cr-orb cr-glass", ref: ref, onMouseMove: onMove, onMouseLeave: onLeave,
-        onClick: props.onOpen, "aria-label": "Open profile of " + (props.name || "") },
-        props.cutout
+        onClick: onClick, "aria-label": "Open profile of " + (props.name || "") },
+        live
+          ? h("span", { className: "cr-orb-figure", "data-figure": "live" }, h("span", { className: "cr-avl", ref: liveRef, "aria-hidden": "true" }))
+          : props.cutout
           ? h("span", { className: "cr-orb-figure", "data-figure": props.figure }, h("img", { className: "cr-orb-avatar", src: props.image, srcSet: props.imageSet, sizes: props.imageSet ? props.imageSizes : undefined, alt: "", decoding: "async" }))
           : h("img", { className: "cr-orb-photo", src: props.image, alt: "" }),
         props.name ? h("span", { className: "cr-orb-name" }, props.name) : null),
