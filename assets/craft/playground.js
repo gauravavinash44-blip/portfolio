@@ -1187,6 +1187,9 @@
 
     return h("div", { className: cx("cpb", cur && "has-sheet"), ref: rootRef, role: "region", "aria-label": "Design Playground" },
       h("div", { className: "cpb-grid", ref: gridRef, inert: cur ? "" : undefined, style: { gap: gap + "px" } },
+        /* Its own control, top middle, just above the cards: glass round back to Home */
+        h("button", { type: "button", className: "cr-iconbtn cr-iconbtn--glass cr-glass-light cpb-back", onClick: close, "aria-label": "Back to Home", title: "Back to Home" },
+          h(Icon, { name: "back", size: 20, stroke: 1.7 })),
         rows.map(function (row, ri) {
           return h("div", { key: ri, className: "cpb-row", style: { gap: gap + "px" } }, row.map(function (it) {
             var span = Math.min(it.span, cols);
@@ -1201,9 +1204,6 @@
               h("span", { className: "cr-chip cr-glass-light cpb-cap", "aria-hidden": "true" }, it.title));
           }));
         })),
-      /* Its own control, lower middle: a liquid glass pill back to Home */
-      h("button", { type: "button", className: "cr-iconbtn cr-iconbtn--glass cr-glass-light cpb-back", onClick: close, "aria-label": "Back to Home", title: "Back to Home", inert: cur ? "" : undefined },
-        h(Icon, { name: "back", size: 20, stroke: 1.7 })),
       cur ? h("div", { className: "cpb-scrim", onClick: closeSheet, "aria-hidden": "true" }) : null,
       sheet);
   }
