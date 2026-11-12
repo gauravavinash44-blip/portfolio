@@ -1173,6 +1173,22 @@
       })));
   }
 
+  /* Profile photos: one photo at a time, a round arrow on the right moves to the next (and loops) */
+  function ProfilePhotos(props) {
+    var list = (props.images && props.images.length) ? props.images : [{ src: props.image, alt: props.name }];
+    var _i = useState(0), idx = _i[0], setIdx = _i[1];
+    function go(d) { setIdx(function (i) { return (i + d + list.length) % list.length; }); }
+    return h("div", { className: "cr-profile-photo" },
+      list.map(function (im, i) {
+        return h("img", { key: im.src, className: cx("cr-pp-slide", i === idx && "is-on"), src: im.src, alt: i === idx ? (im.alt || props.name) : "", "aria-hidden": i === idx ? undefined : "true",
+          style: im.pos ? { objectPosition: im.pos } : undefined, decoding: "async" });
+      }),
+      list.length > 1 ? h("div", { className: "cr-pp-nav" },
+        h("button", { type: "button", className: "cr-pp-btn cr-pp-btn--prev cr-glass-light", "aria-label": "Previous photo", onClick: function () { go(-1); } }, h(Icon, { name: "chevron", stroke: 2 })),
+        h("div", { className: "cr-pp-dots", "aria-hidden": "true" }, list.map(function (im, i) { return h("i", { key: im.src, className: i === idx ? "is-on" : "" }); })),
+        h("button", { type: "button", className: "cr-pp-btn cr-pp-btn--next cr-glass-light", "aria-label": "Next photo", onClick: function () { go(1); } }, h(Icon, { name: "chevron", stroke: 2 }))) : null);
+  }
+
   function ProfileSheet(props) {
     var ref = useRef(null);
     useDialogFocus(ref);
@@ -1215,7 +1231,7 @@
       h("div", { className: "cr-profile-head" },
         h(LiveStatus, { label: props.status || "Open to work" }),
         h(IconButton, { variant: "solid", icon: "close", label: "Close profile", onClick: close })),
-      h("div", { className: "cr-profile-photo" }, h("img", { src: props.image, alt: props.name })),
+      h(ProfilePhotos, { images: props.images, image: props.image, name: props.name }),
       h("div", { className: "cr-profile-body" },
         h("div", { className: "cr-profile-scroll", tabIndex: -1 },
           h("p", { className: "cr-sheet-title" }, props.name),

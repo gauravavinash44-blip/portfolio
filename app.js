@@ -5,6 +5,8 @@
   const ASSETS = {
     profile: "./assets/profile.png",
     profileFriends: "./assets/about-friends.png",
+    profileDoor: "./assets/profile-door.webp",
+    profileFriendsCraft: "./assets/profile-friends.webp",
     dealRoom: "./assets/deal-room-engagement-showcase.png",
     chat: "./assets/contextual-chat-assistant-showcase.png",
     chatMotion: "./assets/contextual-chat-motion/contextual-chat-motion.mp4?v=2",
@@ -802,7 +804,13 @@
       imageSizes: "(max-width: 700px) 186px, 200px",
       cutout: true, head: null, figure: "bust",
     });
-    S.profileSheet = Object.assign({}, S.profileSheet, profileHistory());
+    S.profileSheet = Object.assign({}, S.profileSheet, profileHistory(), {
+      image: ASSETS.profileDoor,
+      images: [
+        { src: ASSETS.profileDoor, alt: "Gaurav Avinash leaning on a wooden door in a white linen shirt", pos: "center 20%" },
+        { src: ASSETS.profileFriendsCraft, alt: "Gaurav with three friends outdoors", pos: "center 50%" },
+      ],
+    });
     S.topbar = Object.assign({}, S.topbar, { avatar: ASSETS.logo });
     S.agenda = Object.assign({}, S.agenda, { avatar: null });
     S.preview = Object.assign({}, S.preview, { avatar: null });

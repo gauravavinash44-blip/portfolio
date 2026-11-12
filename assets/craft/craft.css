@@ -2182,3 +2182,18 @@ html:not(:has(.craft-switch)) .cr-hero[data-cr-fit="flow"] .cr-topbar { right: 2
 .cr-avl-canvas { opacity: 0; }
 .cr-avl-rig.is-live .cr-avl-canvas { opacity: 1; }
 .cr-avl-rig.is-live .cr-avl-poster { opacity: 0; }
+
+/* Profile photos: crossfading slides with a round arrow on the right (and one on the left) */
+.cr-profile-photo .cr-pp-slide { position: absolute; inset: 0; opacity: 0; transition: opacity 420ms ease, transform 620ms var(--ease-arrive); transform: scale(1.03); }
+.cr-profile-photo .cr-pp-slide.is-on { opacity: 1; transform: none; }
+.cr-pp-nav { position: absolute; left: 0; right: 0; bottom: 18px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; pointer-events: none; }
+.cr-pp-btn { pointer-events: auto; width: 40px; height: 40px; border-radius: 50%; border: 0; padding: 0; display: grid; place-items: center; color: var(--ink, #1a1a1a); cursor: pointer; transition: transform 200ms var(--ease-arrive); }
+.cr-pp-btn:hover { transform: scale(1.08); }
+.cr-pp-btn:active { transform: scale(0.94); }
+.cr-pp-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.cr-pp-btn svg { width: 20px; height: 20px; }
+.cr-pp-btn--prev svg { transform: scaleX(-1); }
+.cr-pp-dots { display: flex; gap: 6px; padding: 6px 9px; border-radius: 999px; background: rgba(20,14,24,.28); }
+.cr-pp-dots i { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.55); transition: background 200ms, transform 200ms; }
+.cr-pp-dots i.is-on { background: #fff; transform: scale(1.2); }
+@media (prefers-reduced-motion: reduce) { .cr-profile-photo .cr-pp-slide, .cr-pp-btn { transition: none; } }
