@@ -34,7 +34,6 @@
     { id: "health-karma", look: "image", label: "Interface", focus: 0.66, stops: [0.21, 0.4, 0.6, 0.79] },
     { id: "swaply", look: "image", label: "Interface", focus: 0.33, stops: [0.157, 0.387, 0.61, 0.84] },
     { id: "moov", look: "image", label: "Interface", focus: 0.95, stops: [0.16, 0.41, 0.76] },
-    { id: "craft-mode", look: "type", label: "This page", stops: [0.27, 0.5, 0.73] },
     { id: "splitly", look: "live", label: "Live prototype", focus: 0.5, stops: [0.27, 0.5, 0.72] }
   ];
 
@@ -75,7 +74,6 @@
       (json.interface || []).forEach(function (p) { byId[p.id] = Object.assign({}, byId[p.id], p, { kind: "interface" }); });
       (json.motion || []).forEach(function (p) { byId[p.id] = Object.assign({}, byId[p.id], p, { kind: "motion" }); });
     }
-    byId["craft-mode"] = CRAFT_ITEM;
     return LAYOUT.map(function (l) {
       var it = Object.assign({}, byId[l.id] || { id: l.id, title: l.id }, l);
       var vid = it.media && it.media.type === "video";
@@ -1103,7 +1101,7 @@
         var hit = items.filter(function (x) { return x.id === props.startId; })[0];
         if (hit) setTimeout(function () { setOpen(hit.id); }, still ? 0 : 520);
       }
-      var back = document.querySelector(".cr-topbar .cr-iconbtn--back");
+      var back = rootRef.current && rootRef.current.querySelector(".cpb-back");
       if (back) back.focus({ preventScroll: true });
     }, [W]);
 
@@ -1112,7 +1110,7 @@
       if (leaving.current) return;
       leaving.current = true;
       if (props.onClosing) props.onClosing();
-      var cards = rootRef.current ? Array.prototype.slice.call(rootRef.current.querySelectorAll(".cpb-card")) : [];
+      var cards = rootRef.current ? Array.prototype.slice.call(rootRef.current.querySelectorAll(".cpb-card, .cpb-back")) : [];
       if (still || !cards.length) { props.onClose(); return; }
       var anims = cards.map(function (el, i) {
         return el.animate([{ opacity: 1, filter: "blur(0px)", transform: "none" }, { opacity: 0, filter: "blur(14px)", transform: "scale(0.9)" }],
@@ -1120,8 +1118,6 @@
       });
       Promise.all(anims).then(props.onClose, props.onClose);
     }, [props.onClose]);
-    /* The top bar's back button (where search sits) closes the board the same way */
-    if (props.closeRef) props.closeRef.current = close;
     var cols = dims ? dims.cols : 5, gap = dims ? dims.gap : 23;
     var unit = W ? (W - gap * (cols - 1)) / cols : 0;
     var rows = W ? packRows(items, cols) : [];
@@ -1198,6 +1194,9 @@
               h("span", { className: "cr-chip cr-glass-light cpb-cap", "aria-hidden": "true" }, it.title));
           }));
         })),
+      /* Its own control, lower middle: a liquid glass pill back to Home */
+      h("button", { type: "button", className: "cr-chip cr-glass-light cpb-back", onClick: close, "aria-label": "Back to Home", inert: cur ? "" : undefined },
+        h(Icon, { name: "back", size: 18, stroke: 2 }), h("span", null, "Back")),
       cur ? h("div", { className: "cpb-scrim", onClick: closeSheet, "aria-hidden": "true" }) : null,
       sheet);
   }

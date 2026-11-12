@@ -22,7 +22,6 @@
     plus: "M12 5v14M5 12h14",
     close: "M6.5 6.5l11 11M17.5 6.5l-11 11",
     chevron: "M9 6l6 6-6 6",
-    back: "M15 6l-6 6 6 6",
     pen: "M4 20l4-1 10-10-3-3L5 16zM13.5 6.5l3 3",
     folder: "M3.5 7.5a2 2 0 0 1 2-2h4l2 2h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z",
     mail: "M4 6.5h16v11H4zM4.5 7l7.5 6 7.5-6",
@@ -359,10 +358,7 @@
         props.notice ? h(props.notice.items ? PhilosophyPill : NotificationPill, Object.assign({}, props.notice, { hidden: !!props.noticeHidden })) : null),
       h("div", { className: "cr-topbar-right", "data-cr-enter": "" },
         h(SegmentedControl, { items: props.tabs || ["Home", "Projects"], value: props.tab || 0, onChange: props.onTab, label: props.tabsLabel || "Home or projects" }),
-        /* back: Design Playground is open. The same liquid glass button turns into Back to Home. */
-        props.back
-          ? h(IconButton, { key: "back", variant: "glass", icon: "back", className: "cr-iconbtn--back", label: props.back.label || "Back", onClick: props.back.onClick })
-          : h(IconButton, { key: "search", variant: "glass", icon: "search", label: props.searchLabel || "Search", onClick: props.onSearch })));
+        h(IconButton, { variant: "glass", icon: "search", label: props.searchLabel || "Search", onClick: props.onSearch })));
   }
 
   /* ───────── LiveStatus: an "active" availability chip, green dot with a soft pulsing halo ─────────
