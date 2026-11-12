@@ -614,8 +614,10 @@
         })),
       h("div", { className: "cr-stat-bars", "aria-hidden": "true" },
         segs.map(function (s, i) {
-          var anim = props.animate === false || reduced() ? null : { animation: "crBar 1.2s " + (0.3 + i * 0.12) + "s " + EASE_ARRIVE + " both" };
-          return h("i", { key: s.label, style: Object.assign({ flex: s.value, background: s.color }, anim) });
+          /* Colour in motion: each bar keeps its colour and lets lighter and deeper tints of it flow through.
+             It grows in first (--bd), unless the card is static. */
+          var still = props.animate === false || reduced();
+          return h("i", { key: s.label, className: cx("cr-flow", still && "is-still"), style: { flex: s.value, "--c": s.color, "--d": (i * -2.3) + "s", "--bd": (0.3 + i * 0.12) + "s" } });
         })),
       h("div", { className: "cr-stat-keys" },
         segs.map(function (s) { return h("span", { key: s.label }, h("i", { style: { background: s.color } }), s.label); })),
@@ -642,8 +644,10 @@
       h("p", { className: "cr-mstat-value" }, val, props.unit || ""),
       h("div", { className: "cr-mstat-bars", role: "img", "aria-label": segs.map(function (s) { return s.label + " " + (s.caption || s.value); }).join(", ") },
         segs.map(function (s, i) {
-          var anim = props.animate === false || reduced() ? null : { animation: "crBar 1.2s " + (0.3 + i * 0.12) + "s " + EASE_ARRIVE + " both" };
-          return h("i", { key: s.label, style: Object.assign({ flex: s.value, background: s.color }, anim) });
+          /* Colour in motion: each bar keeps its colour and lets lighter and deeper tints of it flow through.
+             It grows in first (--bd), unless the card is static. */
+          var still = props.animate === false || reduced();
+          return h("i", { key: s.label, className: cx("cr-flow", still && "is-still"), style: { flex: s.value, "--c": s.color, "--d": (i * -2.3) + "s", "--bd": (0.3 + i * 0.12) + "s" } });
         })),
       h("p", { className: "cr-mstat-keys", "aria-hidden": "true" },
         keys.map(function (s) { return h("span", { key: s.label, title: s.label + ", " + (s.caption || "") }, h("i", { style: { background: s.color } }), s.short || s.label); })),

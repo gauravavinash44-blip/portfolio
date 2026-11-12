@@ -2197,3 +2197,37 @@ html:not(:has(.craft-switch)) .cr-hero[data-cr-fit="flow"] .cr-topbar { right: 2
 .cr-pp-dots i { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.55); transition: background 200ms, transform 200ms; }
 .cr-pp-dots i.is-on { background: #fff; transform: scale(1.2); }
 @media (prefers-reduced-motion: reduce) { .cr-profile-photo .cr-pp-slide, .cr-pp-btn { transition: none; } }
+
+/* Experience bars: the colour moves the way the case study orbs do. Same three colours,
+   tints drift through each bar and a soft light passes along it. */
+.cr-mstat-bars i.cr-flow {
+  position: relative; overflow: hidden;
+  background:
+    linear-gradient(100deg,
+      var(--c) 0%,
+      color-mix(in oklab, var(--c), #fff 38%) 18%,
+      var(--c) 36%,
+      color-mix(in oklab, var(--c), #000 14%) 54%,
+      color-mix(in oklab, var(--c), #fff 24%) 72%,
+      var(--c) 100%);
+  background-size: 320% 100%;
+  animation-name: crBar, crFlow;
+  animation-duration: 1.2s, 7s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1), ease-in-out;
+  animation-delay: var(--bd, 0s), var(--d, 0s);
+  animation-iteration-count: 1, infinite;
+  animation-direction: normal, alternate;
+  animation-fill-mode: both, none;
+}
+.cr-mstat-bars i.cr-flow::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.55) 50%, transparent 100%);
+  background-size: 40% 100%; background-repeat: no-repeat;
+  animation: crSheen 4.6s ease-in-out var(--d, 0s) infinite;
+  mix-blend-mode: soft-light;
+}
+.cr-mstat-bars i.cr-flow.is-still { animation-name: none, crFlow; }
+@keyframes crFlow { from { background-position: 0% 50%; } to { background-position: 100% 50%; } }
+@keyframes crSheen { 0% { background-position: -60% 0; } 60%, 100% { background-position: 160% 0; } }
+@supports not (background: color-mix(in oklab, red, white)) { .cr-mstat-bars i.cr-flow { background: var(--c); } }
+@media (prefers-reduced-motion: reduce) { .cr-mstat-bars i.cr-flow, .cr-mstat-bars i.cr-flow::after { animation: none; } }

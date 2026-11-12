@@ -141,6 +141,7 @@
   /* ───────── Icons ───────── */
   var PATHS = {
     back: "M14.5 6l-6 6 6 6",
+    close: "M6 6l12 12M18 6L6 18",
     grid: "M5 5h5.5v5.5H5zM13.5 5H19v5.5h-5.5zM5 13.5h5.5V19H5zM13.5 13.5H19V19h-5.5z",
     folder: "M3.5 7.5a2 2 0 0 1 2-2h4l2 2h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z",
     download: "M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14",
@@ -1015,5 +1016,177 @@
         h("span", { className: "cr-visually-hidden" }, "Back to Home")));
   }
 
-  window.CraftPlayground = { PlaygroundCard: PlaygroundCard, PlaygroundView: PlaygroundView, preload: preload, items: function () { return buildItems(null); } };
+
+  /* ───────── Design Playground on the Home board ─────────
+     The dashboard cards blur away and the explorations blur in, in the same spot, on the same wallpaper.
+     Rows are justified so every project keeps its real aspect ratio. A card opens in a sheet. */
+  function justify(list, W, gap, target) {
+    var rows = [], row = [], sum = 0;
+    list.forEach(function (it, i) {
+      row.push(it); sum += it.ratio;
+      var natural = sum * target + gap * (row.length - 1);
+      if (natural >= W || i === list.length - 1) {
+        var hgt = natural >= W ? (W - gap * (row.length - 1)) / sum : target;
+        rows.push({ items: row, h: Math.floor(hgt) });
+        row = []; sum = 0;
+      }
+    });
+    /* A lone item on the last row looks stranded: pull it up into the row before */
+    if (rows.length > 1 && rows[rows.length - 1].items.length === 1) {
+      var last = rows.pop(), prev = rows[rows.length - 1], items = prev.items.concat(last.items);
+      var sm = items.reduce(function (a, it) { return a + it.ratio; }, 0);
+      rows[rows.length - 1] = { items: items, h: Math.floor((W - gap * (items.length - 1)) / sm) };
+    }
+    return rows;
+  }
+
+  /* Motion pieces sized from the real video, not the poster. Space Between is cropped to the design
+     itself (the source frame is mostly empty canvas). */
+  var BOARD_MEDIA = {
+    "space-between": { src: DIR + "space-between-crop.mp4", poster: DIR + "space-between-crop.jpg", w: 572, h: 332 },
+    "loading-range": { w: 1216, h: 664 }
+  };
+  function boardItem(it) {
+    var vid = it.media && it.media.type === "video", bm = BOARD_MEDIA[it.id] || {};
+    return Object.assign({}, it, {
+      ratio: bm.w ? bm.w / bm.h : it.ratio,
+      src: vid ? (bm.src || it.media.src) : null,
+      still: vid ? (bm.poster || it.media.poster || it.image) : it.image,
+      kindLabel: it.kind === "motion" ? "Motion" : it.kind === "prototype" ? "Prototype" : "Interface"
+    });
+  }
+
+  function PlaygroundBoard(props) {
+    var _i = useState(function () { return buildItems(null).map(boardItem); }), items = _i[0], setItems = _i[1];
+    var _w = useState(0), W = _w[0], setW = _w[1];
+    var _o = useState(null), open = _o[0], setOpen = _o[1];
+    var rootRef = useRef(null), gridRef = useRef(null), sheetRef = useRef(null), leaving = useRef(false), opener = useRef(null);
+    var still = reduced();
+
+    useEffect(function () { preload().then(function (j) { if (j) setItems(buildItems(j).map(boardItem)); }); }, []);
+    useLayoutEffect(function () {
+      var el = gridRef.current; if (!el) return undefined;
+      var on = function () { setW(el.clientWidth); };
+      on();
+      var ro = window.ResizeObserver ? new ResizeObserver(on) : null;
+      if (ro) ro.observe(el); else window.addEventListener("resize", on);
+      return function () { if (ro) ro.disconnect(); else window.removeEventListener("resize", on); };
+    }, []);
+
+    /* Arrive: each card comes out of a blur, leaning in from the board's centre */
+    var arrived = useRef(false);
+    useLayoutEffect(function () {
+      if (arrived.current || !W || !gridRef.current) return;
+      arrived.current = true;
+      var box = gridRef.current.getBoundingClientRect(), cx0 = box.left + box.width / 2, cy0 = box.top + box.height / 2;
+      Array.prototype.slice.call(gridRef.current.querySelectorAll(".cpb-card")).forEach(function (el, i) {
+        if (still) { el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, delay: i * 20, fill: "backwards" }); return; }
+        var r = el.getBoundingClientRect(), dx = (r.left + r.width / 2 - cx0) * 0.18, dy = (r.top + r.height / 2 - cy0) * 0.18;
+        el.animate([
+          { opacity: 0, filter: "blur(16px)", transform: "translate3d(" + dx.toFixed(1) + "px," + dy.toFixed(1) + "px,0) scale(0.86)" },
+          { opacity: 1, offset: 0.5 },
+          { opacity: 1, filter: "blur(0px)", transform: "none" }
+        ], { duration: 680, delay: 170 + i * 45, easing: EASE, fill: "backwards" });
+      });
+      var head = rootRef.current && rootRef.current.querySelector(".cpb-head");
+      if (head) head.animate([{ opacity: 0, transform: "translateY(-8px)" }, { opacity: 1, transform: "none" }], { duration: 460, delay: 140, easing: EASE, fill: "backwards" });
+      if (props.startId) {
+        var hit = items.filter(function (x) { return x.id === props.startId; })[0];
+        if (hit) setTimeout(function () { setOpen(hit.id); }, still ? 0 : 520);
+      }
+      var back = rootRef.current && rootRef.current.querySelector(".cpb-back");
+      if (back) back.focus({ preventScroll: true });
+    }, [W]);
+
+    /* Leave: the cards blur away, then Home brings its own cards back */
+    var close = useCallback(function () {
+      if (leaving.current) return;
+      leaving.current = true;
+      if (props.onClosing) props.onClosing();
+      var cards = rootRef.current ? Array.prototype.slice.call(rootRef.current.querySelectorAll(".cpb-card, .cpb-head")) : [];
+      if (still || !cards.length) { props.onClose(); return; }
+      var anims = cards.map(function (el, i) {
+        return el.animate([{ opacity: 1, filter: "blur(0px)", transform: "none" }, { opacity: 0, filter: "blur(14px)", transform: "scale(0.9)" }],
+          { duration: 300, delay: i * 18, easing: EASE_IN, fill: "forwards" }).finished;
+      });
+      Promise.all(anims).then(props.onClose, props.onClose);
+    }, [props.onClose]);
+
+    var idx = items.findIndex(function (x) { return x.id === open; });
+    var cur = idx >= 0 ? items[idx] : null;
+    function step(d) { if (!cur) return; setOpen(items[(idx + d + items.length) % items.length].id); }
+    function closeSheet() {
+      var sh = sheetRef.current;
+      var done = function () { setOpen(null); var o = opener.current; if (o && o.isConnected) o.focus({ preventScroll: true }); };
+      if (!sh || still) { done(); return; }
+      sh.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "scale(0.96)" }], { duration: 220, easing: EASE_IN, fill: "forwards" }).finished.then(done, done);
+    }
+    useEffect(function () {
+      var fn = function (ev) {
+        if (ev.key === "Escape") { ev.preventDefault(); if (cur) closeSheet(); else close(); }
+        else if (cur && ev.key === "ArrowRight") step(1);
+        else if (cur && ev.key === "ArrowLeft") step(-1);
+      };
+      document.addEventListener("keydown", fn);
+      return function () { document.removeEventListener("keydown", fn); };
+    });
+    useLayoutEffect(function () {
+      var sh = sheetRef.current; if (!sh || !cur) return;
+      var from = opener.current && opener.current.isConnected ? opener.current.getBoundingClientRect() : null, r = sh.getBoundingClientRect();
+      if (still || !from) { sh.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 180 }); return; }
+      var k = r.width / sh.offsetWidth || 1;
+      sh.animate([
+        { clipPath: "inset(" + ((from.top - r.top) / k) + "px " + ((r.right - from.right) / k) + "px " + ((r.bottom - from.bottom) / k) + "px " + ((from.left - r.left) / k) + "px round 22px)", opacity: 0.6 },
+        { clipPath: "inset(0px 0px 0px 0px round 28px)", opacity: 1 }
+      ], { duration: 560, easing: EASE });
+    }, [open && !!cur]);
+
+    var gap = W < 520 ? 12 : 16, target = W < 520 ? 120 : W < 760 ? 150 : 168;
+    var rows = W ? justify(items, W, gap, target) : [];
+
+    var media = function (it, big) {
+      if (it.src) return h("video", { className: "cpb-media", src: it.src, poster: it.still, muted: true, loop: true, playsInline: true, autoPlay: !still, preload: big ? "auto" : "metadata", "aria-hidden": big ? undefined : "true", "aria-label": big ? it.title + ", silent loop" : undefined });
+      return h("img", { className: "cpb-media", src: it.still, alt: big ? it.alt : "", decoding: "async", draggable: false });
+    };
+
+    var sheet = null;
+    if (cur) {
+      var desc = cur.description || (cur.kind === "motion" ? "A short motion study, no write-up yet." : "");
+      sheet = h("section", { className: "cr-sheet cpb-sheet", ref: sheetRef, role: "dialog", "aria-modal": "true", "aria-label": cur.title, key: "sheet" },
+        h("div", { className: "cpb-sheet-media", style: { "--r": cur.ratio } }, media(cur, true)),
+        h("div", { className: "cpb-sheet-body" },
+          h("div", { className: "cpb-sheet-top" },
+            h("span", { className: "cr-chip" }, cur.kindLabel + " · " + (idx + 1) + " of " + items.length),
+            h("button", { type: "button", className: "cr-iconbtn cr-iconbtn--solid", "aria-label": "Close " + cur.title, onClick: closeSheet }, h(Icon, { name: "close", size: 18 }))),
+          h("p", { className: "cr-sheet-title" }, cur.title),
+          desc ? h("p", { className: "cr-t-body" }, desc) : null,
+          cur.tools && cur.tools.length ? h("ul", { className: "cpb-tools", "aria-label": "Tools" }, cur.tools.map(function (t) { return h("li", { key: t, className: "cr-chip" }, t); })) : null,
+          h("div", { className: "cpb-sheet-foot" },
+            cur.prototype ? h("a", { className: "cr-chip cpb-cta", href: cur.prototype, target: "_blank", rel: "noopener" }, "Open live prototype", h(Icon, { name: "open", size: 15 })) : h("span"),
+            h("span", { className: "cpb-steps" },
+              h("button", { type: "button", className: "cr-iconbtn cr-iconbtn--solid", "aria-label": "Previous project", onClick: function () { step(-1); } }, h(Icon, { name: "back", size: 18 })),
+              h("button", { type: "button", className: "cr-iconbtn cr-iconbtn--solid cpb-next", "aria-label": "Next project", onClick: function () { step(1); } }, h(Icon, { name: "back", size: 18 }))))));
+    }
+
+    return h("div", { className: cx("cpb", cur && "has-sheet"), ref: rootRef, role: "region", "aria-label": "Design Playground" },
+      h("div", { className: "cpb-head", inert: cur ? "" : undefined },
+        h("button", { type: "button", className: "cr-chip cr-glass-light cpb-back", onClick: close, "aria-label": "Back to Home" }, h(Icon, { name: "back", size: 16, stroke: 2 }), "Home"),
+        h("h2", { className: "cr-chip cr-glass-light cpb-title" }, "Design Playground")),
+      h("div", { className: "cpb-grid", ref: gridRef, inert: cur ? "" : undefined },
+        rows.map(function (row, ri) {
+          return h("div", { key: ri, className: "cpb-row", style: { gap: gap + "px" } }, row.items.map(function (it) {
+            return h("button", {
+              key: it.id, type: "button", className: "cr-card cr-solid cpb-card", style: { width: Math.round(it.ratio * row.h) + "px" },
+              "aria-label": it.title + ", " + it.kindLabel + ". Open",
+              onClick: function (ev) { opener.current = ev.currentTarget; setOpen(it.id); }
+            },
+              h("span", { className: "cpb-frame", style: { height: row.h + "px" } }, media(it, false)),
+              h("span", { className: "cpb-cap" }, h("b", null, it.title), h("span", null, it.kindLabel)));
+          }));
+        })),
+      cur ? h("div", { className: "cpb-scrim", onClick: closeSheet, "aria-hidden": "true" }) : null,
+      sheet);
+  }
+
+  window.CraftPlayground = { PlaygroundBoard: PlaygroundBoard, PlaygroundCard: PlaygroundCard, PlaygroundView: PlaygroundView, preload: preload, items: function () { return buildItems(null); } };
 })();

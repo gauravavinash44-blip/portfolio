@@ -1074,6 +1074,9 @@
     const [shuffleTick, setShuffleTick] = useState(0); /* bumps to restart the timer after a manual change */
     const [playground, setPlayground] = useState(false); /* Design Playground gallery open */
     const pgOpener = useRef(null);
+    const [pgBoard, setPgBoard] = useState(null); /* Design Playground on the board: { startId } */
+    const [pgBoardOut, setPgBoardOut] = useState(false);
+    const openPgBoard = (startId) => { setPicker(false); setSheet(null); setPgBoardOut(false); setPgBoard({ startId: startId || null }); };
     const [pgStart, setPgStart] = useState(null); /* { tab, startId, from } for the next open */
     const [pgClosing, setPgClosing] = useState(false); /* Home is rising back: the top bar tab returns to Home */
     const data = React.useMemo(() => craftData(onExit), [onExit]);
@@ -1195,7 +1198,7 @@
     if (CS) CS.useShortcut((btn) => openSearch(btn, "search"), !(sheet && sheet.kind !== "search"));
     const topbar = Object.assign({}, data.topbar, {
       tab: playground && !pgClosing && !(pgStart && pgStart.mode === "playground") ? 1 : 0,
-      onTab: (i, label, ev) => (i === 1 ? openProjects(ev) : setSheet(null)),
+      onTab: (i, label, ev) => { if (pgBoard) { setPgBoard(null); setPgBoardOut(false); } return i === 1 ? openProjects(ev) : setSheet(null); },
       onSearch: CS ? (ev) => openSearch(fromEvent(ev), "search") : openAssistant,
       searchLabel: CS ? "Search the portfolio" : "Ask the portfolio assistant",
       /* Pill only on bare Home: any sheet (search, profile, open Resonance), Projects,
@@ -1245,7 +1248,7 @@
         count: 8,
         label: "Open Design Playground, 8 interface and motion studies",
         attrs: { "data-pg-card": "" },
-        onOpen: (ev) => openPlayground({ tab: "playground", from: fromEvent(ev) }),
+        onOpen: () => openPgBoard(),
         onDrop: () => openProjects(pgCard()),
         dropHint: "Drop to see all projects",
       }),
@@ -1266,10 +1269,15 @@
       hint ? e("p", { className: "cr-wp-hint", role: "status" }, "Tap the wallpaper to change it") : null,
       e("h1", { className: "cr-visually-hidden" }, "Gaurav Avinash, Product Designer"),
       e(C.TopBar, topbar),
-      e("div", { className: "cr-board" },
-        e("div", { className: "cr-grid" + (sheet && !sheet.closing ? " cr-dimmed" : "") },
+      e("div", { className: "cr-board" + (pgBoard ? " is-pgb" : "") },
+        e("div", { className: "cr-grid" + (sheet && !sheet.closing ? " cr-dimmed" : "") + (pgBoard && !pgBoardOut ? " cr-pg-out" : ""), inert: pgBoard ? "" : undefined },
           BOARD_ORDER[layout].map((slot) => e("div", { key: slot, className: "cr-dim cr-slot cr-slot--" + slot, "data-cr-drop": slot === "pg" ? "" : undefined }, boardCards[slot]()))
         ),
+        pgBoard && CP && CP.PlaygroundBoard ? e(CP.PlaygroundBoard, {
+          startId: pgBoard.startId,
+          onClosing: () => setPgBoardOut(true),
+          onClose: () => { setPgBoard(null); setPgBoardOut(false); const c = pgCard(); if (c) c.focus({ preventScroll: true }); },
+        }) : null,
         sheet && sheet.kind === "profile" ? e(C.ProfileSheet, Object.assign({
           stageRef, style: {}, focus: sheet.focus, onClose: () => setSheet(null),
         }, data.profileSheet)) : null
@@ -1318,9 +1326,8 @@
           setPgQueue({ tab: "cases", from: stageRef.current && stageRef.current.querySelector(".cr-list .cr-chip--btn") });
         },
         onPlayground: (id) => {
-          if (playground && !id) return;
           if (playground) { setPlayground(false); setPgStart(null); }
-          setPgQueue({ tab: "playground", startId: id || null, from: pgCard() });
+          openPgBoard(id);
         },
         onClassic: () => onExit(),
         onClosing: () => setSheet((s) => (s ? Object.assign({}, s, { closing: true }) : s)),
