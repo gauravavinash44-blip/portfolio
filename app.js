@@ -1160,7 +1160,8 @@
       pgOpener.current = o.from || document.activeElement;
       setPicker(false);
       setSheet(null);
-      setPgStart({ startId: o.startId || null, tab: o.startId ? "playground" : (o.tab || null), from: o.from || null });
+      const mode = o.startId || o.tab === "playground" ? "playground" : "projects";
+      setPgStart({ mode, startId: o.startId || null, tab: mode === "playground" ? "playground" : (o.tab || null), from: o.from || null });
       setPgClosing(false);
       setPlayground(true);
     };
@@ -1193,7 +1194,7 @@
     }, [pgQueue, playground]);
     if (CS) CS.useShortcut((btn) => openSearch(btn, "search"), !(sheet && sheet.kind !== "search"));
     const topbar = Object.assign({}, data.topbar, {
-      tab: playground && !pgClosing ? 1 : 0,
+      tab: playground && !pgClosing && !(pgStart && pgStart.mode === "playground") ? 1 : 0,
       onTab: (i, label, ev) => (i === 1 ? openProjects(ev) : setSheet(null)),
       onSearch: CS ? (ev) => openSearch(fromEvent(ev), "search") : openAssistant,
       searchLabel: CS ? "Search the portfolio" : "Ask the portfolio assistant",
@@ -1294,6 +1295,7 @@
         onClosing: () => setPgClosing(true),
         startId: pgStart && pgStart.startId,
         tab: pgStart && pgStart.tab,
+        mode: pgStart && pgStart.mode,
         from: pgStart && pgStart.from,
         cases: data.caseStudies,
         aiWorks: data.aiWorks,

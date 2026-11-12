@@ -394,7 +394,7 @@
       onFocus: function (ev) { if (props.onActive && ev.target.matches && ev.target.matches(":focus-visible")) props.onActive(r.title, "focus"); },
       onBlur: function (ev) { if (props.onActive && !ev.currentTarget.contains(ev.relatedTarget)) props.onActive(null, "focus"); } },
       h("span", { className: "cr-row-av" },
-        r.icon ? h(ProjectWell, { icon: r.icon, tone: r.tone }) : h("img", { className: "cr-row-thumb", src: r.thumb, alt: "" })),
+        r.icon ? h(ProjectWell, { icon: r.icon, tone: r.tone, badge: false }) : h("img", { className: "cr-row-thumb", src: r.thumb, alt: "" })),
       h("button", { type: "button", className: "cr-row-text", "aria-label": props.openLabel ? props.openLabel(r) : undefined, onClick: function (ev) { if (props.onOpen) props.onOpen(r, ev); } },
         h("b", null, r.title), h("span", null, r.sub)),
       r.locked
@@ -499,7 +499,7 @@
           : h("img", { src: props.image, alt: props.alt || "" }),
         (props.cursors || []).map(function (c, i) { return h(CursorChip, Object.assign({ key: c.name, wander: (i % 2) + 1 }, c)); })),
       h("div", { className: "cr-preview-foot" + (props.avatar || props.icon ? "" : " cr-preview-foot--noavatar") },
-        props.icon ? h(ProjectWell, { icon: props.icon, tone: props.tone })
+        props.icon ? h(ProjectWell, { icon: props.icon, tone: props.tone, badge: false })
           : props.avatar ? h(Avatar, { src: props.avatar, size: 50 }) : null,
         h("span", { className: "cr-row-text" }, h("b", null, props.title), h("span", null, props.subtitle)),
         props.arrowHref ? h("a", { className: "cr-chip cr-chip--count cr-preview-go", href: props.arrowHref, "aria-label": "Open " + props.title + " case study", title: "Open case study" }, h(Icon, { name: "arrow" }))
@@ -663,7 +663,6 @@
       onDrop: function (ev) { ev.preventDefault(); setOver(false); props.onDrop(ev.dataTransfer.getData("text/plain")); }
     } : {}),
       h("span", { className: "cr-team-title" }, props.title),
-      h(Icon, { name: "wave", className: "cr-team-glyph", stroke: 1.8 }),
       h("span", { className: "cr-team-sub" }, over && props.dropHint ? props.dropHint : props.subtitle),
       h("span", { className: "cr-team-foot", "aria-hidden": "true" },
         h("span", { className: "cr-team-faces" }, (props.thumbs || []).slice(0, 3).map(function (src, i) {

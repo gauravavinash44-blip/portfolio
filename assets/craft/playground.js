@@ -1,5 +1,6 @@
-/* Craft mode: Projects (case studies, Design Playground, AI works).
-   Home slides down into a bottom sheet, a dark gallery opens behind it with three tabs,
+/* Craft mode: Projects (case studies, AI works) and Design Playground.
+   Projects: Home slides down to a bar at the bottom. Playground: Home slides up to a bar at the top.
+   A dark gallery waits behind it;
    and a card grows into a story viewer.
    Exposes window.CraftPlayground = { PlaygroundCard, PlaygroundView, preload }. */
 (function () {
@@ -101,9 +102,9 @@
      description, facts: [[label, value]], live?, prototype? }. */
   var TABS = [
     { id: "cases", label: "Case studies", plural: "case studies" },
-    { id: "playground", label: "Design Playground", plural: "explorations" },
     { id: "ai", label: "AI works", plural: "AI works" }
   ];
+  var PG_TAB = { id: "playground", label: "Design Playground", plural: "explorations" };
   var TAB_KEY = "ga-craft-pg-tab";
   var lastTab = null;
   function rememberedTab() {
@@ -247,13 +248,11 @@
      story slide are the same picture at two sizes. */
   function CaseFace(props) {
     var it = props.item, m = it.metric;
-    var Well = window.Craft && window.Craft.ProjectWell;
     return h(React.Fragment, null,
       h("span", { className: "cpg-cs-media" },
         h("img", { src: it.image, alt: props.active ? it.alt : "", decoding: "async", draggable: false, style: it.coverPos ? { objectPosition: it.coverPos } : null })),
       h("span", { className: "cpg-cs-body" },
         h("span", { className: "cpg-cs-head" },
-          Well ? h(Well, { icon: it.icon, tone: it.tone, className: "cpg-cs-orb" }) : h("span", { className: "cpg-cs-orb cpg-cs-orb--plain", "aria-hidden": "true" }),
           h("span", { className: "cpg-cs-name" }, h("b", null, it.title), h("span", null, it.summary))),
         h("span", { className: "cpg-cs-foot" },
           h("span", { className: "cpg-cs-tags" },
@@ -337,11 +336,17 @@
   }
   /* Poses. The stage scales from its top edge (transform-origin 50% 0), so "lift" poses
      shift it to keep the scale centred on the viewport. */
+  /* DIR_UP: Design Playground mirrors Projects. Home slides UP to a bar at the top instead of down. */
+  var DIR_UP = false;
   function stagePose(name, base, m) {
     var W = window.innerWidth, H = window.innerHeight;
     var bar = W <= 700 ? 84 : 96, s = W <= 700 ? 0.94 : 0.96;
     if (name === "home") return { t: "translate3d(0,0,0) scale(1)", r: "0px" };
     if (name === "lift") { m = m || 0.97; return { t: "translate3d(0," + ((H / 2 - base) * (1 - m)).toFixed(1) + "px,0) scale(" + m + ")", r: "34px" }; }
+    if (DIR_UP) {
+      if (name === "sheet") return { t: "translate3d(0," + (bar - H * s - base).toFixed(1) + "px,0) scale(" + s + ")", r: "36px" };
+      return { t: "translate3d(0," + (-40 - H * s - base).toFixed(1) + "px,0) scale(" + s + ")", r: "36px" }; /* away */
+    }
     if (name === "sheet") return { t: "translate3d(0," + (H - bar - base).toFixed(1) + "px,0) scale(" + s + ")", r: "36px" };
     return { t: "translate3d(0," + (H + 40 - base).toFixed(1) + "px,0) scale(" + s + ")", r: "36px" }; /* away */
   }
@@ -379,10 +384,13 @@
     var _x = useState(0), index = _x[0], setIndex = _x[1];
     /* Which tab: the opener's pick, else the last one this session, else the playground */
     var _t = useState(function () {
-      var t = props.startId ? "playground" : (validTab(props.tab) || validTab(rememberedTab()) || "playground");
+      if (props.mode === "playground") return "playground";
+      var t = validTab(props.tab) || validTab(rememberedTab()) || "cases";
       rememberTab(t);
       return t;
     }), tab = _t[0], setTab = _t[1];
+    var up = props.mode === "playground";
+    DIR_UP = up;
     var _s = useState(0), seg = _s[0], setSeg = _s[1];
     var still = reduced();
     var _p = useState(still), paused = _p[0], setPaused = _p[1];
@@ -450,6 +458,7 @@
       stageBase.current = stageGeom(stage);
       stage.style.setProperty("--pg-scroll", Math.max(0, -stageBase.current) + "px");
       stage.classList.add("is-pg");
+      stage.classList.toggle("is-pg-up", up);
       stage.setAttribute("inert", "");
       stage.style.transformOrigin = "50% 0";
       stageState.current = "sheet";
@@ -494,7 +503,7 @@
     function resetStage(stage) {
       if (!stage) return;
       stage.getAnimations().forEach(function (a) { a.cancel(); });
-      stage.classList.remove("is-pg");
+      stage.classList.remove("is-pg", "is-pg-up");
       stage.removeAttribute("inert");
       ["transform", "border-radius", "transform-origin", "--pg-scroll"].forEach(function (p) { stage.style.removeProperty(p); });
     }
@@ -680,9 +689,9 @@
     function startStory(i) {
       var el = list[i] && cardRefs.current[list[i].id], sc = scrollRef.current;
       if (el && sc) {
-        var r = el.getBoundingClientRect(), bar = vp.W <= 700 ? 84 : 96, topSafe = vp.W <= 700 ? 80 : 110;
-        var delta = 0;
-        if (r.bottom > vp.H - bar - 16) delta = r.bottom - (vp.H - bar - 16);
+        var r = el.getBoundingClientRect(), bar = vp.W <= 700 ? 84 : 96, topSafe = up ? bar + (vp.W <= 700 ? 70 : 90) : (vp.W <= 700 ? 80 : 110);
+        var low = up ? vp.H - 16 : vp.H - bar - 16, delta = 0;
+        if (r.bottom > low) delta = r.bottom - low;
         if (r.top - delta < topSafe) delta = r.top - topSafe;
         if (delta) sc.scrollTop += delta;
       }
@@ -855,10 +864,10 @@
       return h("button", { key: o.key || o.label, type: "button", className: cls, "aria-label": o.label, title: o.label, onClick: o.onClick, disabled: o.disabled, "aria-current": o.current ? "page" : undefined, "aria-pressed": o.pressed, "data-cpg-chrome": o.chrome ? "" : undefined }, inner);
     }
 
-    var tabInfo = TABS.filter(function (t) { return t.id === tab; })[0] || TABS[1];
+    var tabInfo = up ? PG_TAB : (TABS.filter(function (t) { return t.id === tab; })[0] || TABS[0]);
     var grid = h("div", {
       className: "cpg-scroll", ref: scrollRef, inert: isStory ? "" : undefined, "aria-hidden": isStory ? "true" : undefined,
-      role: "tabpanel", id: "cpg-tabpanel", "aria-labelledby": "cpg-tab-" + tab
+      role: up ? undefined : "tabpanel", id: "cpg-tabpanel", "aria-labelledby": up ? undefined : "cpg-tab-" + tab
     },
       h("ul", {
         className: cx("cpg-grid", isCase && "cpg-grid--cs"), "aria-label": tabInfo.label,
@@ -869,12 +878,12 @@
           return h("li", { key: tab + "-" + it.id, className: "cpg-cell cpg-cell--" + it.look, "data-id": it.id },
             h("span", { className: "cpg-date", "aria-hidden": "true" }, it.label),
             h("button", {
-              type: "button", className: "cpg-card cpg-card--" + it.look,
+              type: "button", className: "cpg-card cpg-card--" + it.look, "data-href": caseCard ? it.href : undefined,
               ref: function (n) { cardRefs.current[it.id] = n; },
               "aria-label": caseCard
-                ? it.title + ", " + it.label + ". " + (it.metric ? it.metric.value + " " + it.metric.label + ". " : "") + "Open"
+                ? it.title + ", " + it.label + ". " + (it.metric ? it.metric.value + " " + it.metric.label + ". " : "") + "Open case study"
                 : it.title + ", " + it.label + (it.video ? ", video" : "") + ". Open",
-              onClick: function () { openStory(i); }
+              onClick: function () { if (caseCard && it.href) window.location.href = it.href; else openStory(i); }
             }, caseCard
               ? h("span", { className: "cpg-cs" }, h(CaseFace, { item: it, go: true }))
               : h(CardFace, { item: it, wallpaper: props.wallpaper, videoRef: it.video ? function (n) { gridVideos.current[it.id] = n; } : undefined })));
@@ -981,17 +990,13 @@
     }
 
     return h("div", {
-      className: cx("cpg", isStory && "is-story", closing && "is-closing"), ref: rootRef,
-      role: "dialog", "aria-modal": "true", "aria-label": "Projects", tabIndex: -1
+      className: cx("cpg", up && "cpg--up", isStory && "is-story", closing && "is-closing"), ref: rootRef,
+      role: "dialog", "aria-modal": "true", "aria-label": up ? "Design Playground" : "Projects", tabIndex: -1
     },
       h("div", { className: "cpg-gallery", ref: galleryRef },
-        h("h2", { className: "cr-visually-hidden" }, "Projects"),
+        h("h2", { className: "cr-visually-hidden" }, up ? "Design Playground" : "Projects"),
         roundBtn({ icon: "back", label: isStory ? "Back to all " + tabInfo.plural : "Back to Home", className: "cpg-back", chrome: true, onClick: function () { if (isStory) closeStory(); else closeHome(); } }),
-        h("nav", { className: "cpg-rail", "aria-label": "Craft mode", "data-cpg-chrome": "" },
-          roundBtn({ icon: "grid", label: "Design Playground", current: tab === "playground", onClick: function () { if (isStory) closeStory(); else switchTab("playground"); } }),
-          roundBtn({ icon: "folder", label: "Case studies", current: tab === "cases", onClick: function () { if (isStory) closeStory(); else switchTab("cases"); } }),
-          roundBtn({ icon: "download", label: "Download resume", href: props.resumeHref, external: true }),
-          roundBtn({ icon: "chat", label: "Ask the portfolio assistant", onClick: props.onAssistant })),
+        up ? h("p", { className: "cpg-title", "data-cpg-chrome": "", inert: isStory ? "" : undefined }, "Design Playground") :
         h("div", { className: "cpg-tabs", role: "tablist", "aria-label": "Projects", "data-cpg-chrome": "", inert: isStory ? "" : undefined },
           h("span", { className: "cpg-tabs-pill", ref: pillRef, "aria-hidden": "true" }),
           TABS.map(function (t, i) {
@@ -1004,9 +1009,6 @@
             }, t.label);
           })),
         h("div", { className: "cpg-ghosts", ref: ghostRef, "aria-hidden": "true" }),
-        h("div", { className: "cpg-tools", "data-cpg-chrome": "", inert: isStory ? "" : undefined },
-          roundBtn({ icon: "plus", label: "Suggest an exploration by email", href: "mailto:gauravavinash3@gmail.com?subject=Design%20Playground%20idea", className: "cpg-round--blue" }),
-          roundBtn({ icon: "search", label: "Ask the portfolio assistant", onClick: props.onAssistant, className: "cpg-tools-search" })),
         grid,
         story),
       h("button", { type: "button", className: "cpg-homebar", "aria-label": "Back to Home", title: "Back to Home", onClick: function () { closeHome(); }, tabIndex: isStory ? -1 : 0 },
