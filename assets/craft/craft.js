@@ -2218,9 +2218,9 @@
       date = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", timeZone: "Asia/Kolkata" }).format(now);
     } catch (e) { day = "Monday"; date = "27 April"; }
     var rows = [
-      { title: "Contextual Chat", sub: "AI search", thumb: img.chat, icon: "chatSpark", tone: "blue" },
-      { title: "Deal Room", sub: "B2B SaaS", thumb: img.dealRoom, icon: "dealDoc", tone: "orange" },
-      { title: "White Label", sub: "Fintech", thumb: img.whiteLabel, icon: "swatch", tone: "pink" }
+      { title: "Contextual Chat", sub: "AI search · +25%", thumb: img.chat, icon: "chatSpark", tone: "blue" },
+      { title: "Deal Room", sub: "B2B SaaS · +32% adoption", thumb: img.dealRoom, icon: "dealDoc", tone: "orange" },
+      { title: "White Label", sub: "Fintech · 3 steps to live", thumb: img.whiteLabel, icon: "swatch", tone: "pink" }
     ];
     return {
       topbar: {
