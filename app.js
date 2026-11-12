@@ -1076,6 +1076,7 @@
     const pgOpener = useRef(null);
     const [pgBoard, setPgBoard] = useState(null); /* Design Playground on the board: { startId } */
     const [pgBoardOut, setPgBoardOut] = useState(false);
+    const pgCloseRef = useRef(null); /* the board's own blur-out close, for the top bar back button */
     const openPgBoard = (startId) => { setPicker(false); setSheet(null); setPgBoardOut(false); setPgBoard({ startId: startId || null }); };
     const [pgStart, setPgStart] = useState(null); /* { tab, startId, from } for the next open */
     const [pgClosing, setPgClosing] = useState(false); /* Home is rising back: the top bar tab returns to Home */
@@ -1201,6 +1202,8 @@
       onTab: (i, label, ev) => { if (pgBoard) { setPgBoard(null); setPgBoardOut(false); } return i === 1 ? openProjects(ev) : setSheet(null); },
       onSearch: CS ? (ev) => openSearch(fromEvent(ev), "search") : openAssistant,
       searchLabel: CS ? "Search the portfolio" : "Ask the portfolio assistant",
+      /* Design Playground open: the search button becomes Back to Home */
+      back: pgBoard && !pgBoardOut ? { label: "Back to Home", onClick: () => pgCloseRef.current && pgCloseRef.current() } : null,
       /* Pill only on bare Home: any sheet (search, profile, open Resonance), Projects,
          or phone width hides it. A parked Resonance popup is not a sheet, so the pill comes back. */
       noticeHidden: phone || !!sheet || playground,
@@ -1275,6 +1278,7 @@
         ),
         pgBoard && CP && CP.PlaygroundBoard ? e(CP.PlaygroundBoard, {
           startId: pgBoard.startId,
+          closeRef: pgCloseRef,
           onClosing: () => setPgBoardOut(true),
           onClose: () => { setPgBoard(null); setPgBoardOut(false); const c = pgCard(); if (c) c.focus({ preventScroll: true }); },
         }) : null,

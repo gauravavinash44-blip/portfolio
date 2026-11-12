@@ -1020,22 +1020,22 @@
   /* ───────── Design Playground on the Home board ─────────
      The dashboard cards blur away and the explorations blur in, in the same spot, on the same wallpaper.
      Rows are justified so every project keeps its real aspect ratio. A card opens in a sheet. */
-  function justify(list, W, gap, target) {
-    var rows = [], row = [], sum = 0;
-    list.forEach(function (it, i) {
-      row.push(it); sum += it.ratio;
-      var natural = sum * target + gap * (row.length - 1);
-      if (natural >= W || i === list.length - 1) {
-        var hgt = natural >= W ? (W - gap * (row.length - 1)) / sum : target;
-        rows.push({ items: row, h: Math.floor(hgt) });
-        row = []; sum = 0;
+  /* Rooms grid, like the reference: the same square unit as the Home board. Motion pieces take two
+     units side by side (landscape), everything else one (square). Rows are packed so each fills its
+     columns, at most one landscape per row while squares remain, then centred. */
+  function packRows(list, cols) {
+    var left = list.slice(), rows = [];
+    while (left.length) {
+      var row = [], used = 0, wide = false;
+      for (var i = 0; i < left.length && used < cols;) {
+        var it = left[i], span = Math.min(it.span, cols);
+        var squaresLeft = left.some(function (x) { return x.span === 1 && row.indexOf(x) < 0; });
+        if (used + span <= cols && !(span > 1 && wide && squaresLeft)) {
+          row.push(it); used += span; if (span > 1) wide = true; left.splice(i, 1);
+        } else i++;
       }
-    });
-    /* A lone item on the last row looks stranded: pull it up into the row before */
-    if (rows.length > 1 && rows[rows.length - 1].items.length === 1) {
-      var last = rows.pop(), prev = rows[rows.length - 1], items = prev.items.concat(last.items);
-      var sm = items.reduce(function (a, it) { return a + it.ratio; }, 0);
-      rows[rows.length - 1] = { items: items, h: Math.floor((W - gap * (items.length - 1)) / sm) };
+      if (!row.length) row.push(left.shift());
+      rows.push(row);
     }
     return rows;
   }
@@ -1046,19 +1046,23 @@
     "space-between": { src: DIR + "space-between-crop.mp4", poster: DIR + "space-between-crop.jpg", w: 572, h: 332 },
     "loading-range": { w: 1216, h: 664 }
   };
+  /* Square crops picked by eye from each mockup: the strongest one or two screens stay whole */
+  var BOARD_POS = { "health-karma": "50% 50%", swaply: "0% 50%", moov: "0% 50%", splitly: "50% 50%", nomad: "50% 50%" };
   function boardItem(it) {
     var vid = it.media && it.media.type === "video", bm = BOARD_MEDIA[it.id] || {};
     return Object.assign({}, it, {
       ratio: bm.w ? bm.w / bm.h : it.ratio,
       src: vid ? (bm.src || it.media.src) : null,
       still: vid ? (bm.poster || it.media.poster || it.image) : it.image,
-      kindLabel: it.kind === "motion" ? "Motion" : it.kind === "prototype" ? "Prototype" : "Interface"
+      kindLabel: it.kind === "motion" ? "Motion" : it.kind === "prototype" ? "Prototype" : "Interface",
+      span: it.kind === "motion" || vid ? 2 : 1,
+      pos: BOARD_POS[it.id] || (it.focus != null ? Math.round(it.focus * 100) + "% 50%" : "50% 50%")
     });
   }
 
   function PlaygroundBoard(props) {
     var _i = useState(function () { return buildItems(null).map(boardItem); }), items = _i[0], setItems = _i[1];
-    var _w = useState(0), W = _w[0], setW = _w[1];
+    var _w = useState(null), dims = _w[0], setDims = _w[1], W = dims ? dims.w : 0;
     var _o = useState(null), open = _o[0], setOpen = _o[1];
     var rootRef = useRef(null), gridRef = useRef(null), sheetRef = useRef(null), leaving = useRef(false), opener = useRef(null);
     var still = reduced();
@@ -1066,7 +1070,14 @@
     useEffect(function () { preload().then(function (j) { if (j) setItems(buildItems(j).map(boardItem)); }); }, []);
     useLayoutEffect(function () {
       var el = gridRef.current; if (!el) return undefined;
-      var on = function () { setW(el.clientWidth); };
+      /* Columns follow the Home board: 5 on desktop, 4 on the portrait-tablet board, 2 on phones */
+      var on = function () {
+        var hero = el.closest(".cr-hero"), fit = hero && hero.getAttribute("data-cr-fit");
+        var cols = fit === "stack" || el.clientWidth < 520 ? 2 : hero && hero.getAttribute("data-cr-cols") === "2" ? 4 : 5;
+        var cs = getComputedStyle(el), gap = cols === 2 ? 14 : parseFloat(cs.getPropertyValue("--gutter")) || 23;
+        var w = el.clientWidth;
+        setDims(function (d) { return d && d.w === w && d.cols === cols && d.gap === gap ? d : { w: w, cols: cols, gap: gap }; });
+      };
       on();
       var ro = window.ResizeObserver ? new ResizeObserver(on) : null;
       if (ro) ro.observe(el); else window.addEventListener("resize", on);
@@ -1088,13 +1099,11 @@
           { opacity: 1, filter: "blur(0px)", transform: "none" }
         ], { duration: 680, delay: 170 + i * 45, easing: EASE, fill: "backwards" });
       });
-      var head = rootRef.current && rootRef.current.querySelector(".cpb-head");
-      if (head) head.animate([{ opacity: 0, transform: "translateY(-8px)" }, { opacity: 1, transform: "none" }], { duration: 460, delay: 140, easing: EASE, fill: "backwards" });
       if (props.startId) {
         var hit = items.filter(function (x) { return x.id === props.startId; })[0];
         if (hit) setTimeout(function () { setOpen(hit.id); }, still ? 0 : 520);
       }
-      var back = rootRef.current && rootRef.current.querySelector(".cpb-back");
+      var back = document.querySelector(".cr-topbar .cr-iconbtn--back");
       if (back) back.focus({ preventScroll: true });
     }, [W]);
 
@@ -1103,7 +1112,7 @@
       if (leaving.current) return;
       leaving.current = true;
       if (props.onClosing) props.onClosing();
-      var cards = rootRef.current ? Array.prototype.slice.call(rootRef.current.querySelectorAll(".cpb-card, .cpb-head")) : [];
+      var cards = rootRef.current ? Array.prototype.slice.call(rootRef.current.querySelectorAll(".cpb-card")) : [];
       if (still || !cards.length) { props.onClose(); return; }
       var anims = cards.map(function (el, i) {
         return el.animate([{ opacity: 1, filter: "blur(0px)", transform: "none" }, { opacity: 0, filter: "blur(14px)", transform: "scale(0.9)" }],
@@ -1111,10 +1120,18 @@
       });
       Promise.all(anims).then(props.onClose, props.onClose);
     }, [props.onClose]);
+    /* The top bar's back button (where search sits) closes the board the same way */
+    if (props.closeRef) props.closeRef.current = close;
+    var cols = dims ? dims.cols : 5, gap = dims ? dims.gap : 23;
+    var unit = W ? (W - gap * (cols - 1)) / cols : 0;
+    var rows = W ? packRows(items, cols) : [];
+    /* Prev / next follow the grid as you read it, row by row */
+    var order = rows.length ? rows.reduce(function (acc, r) { return acc.concat(r); }, []) : items;
+    var idx = order.findIndex(function (x) { return x.id === open; });
+    var cur = idx >= 0 ? order[idx] : null;
+    function step(d) { if (!cur) return; setOpen(order[(idx + d + order.length) % order.length].id); }
 
-    var idx = items.findIndex(function (x) { return x.id === open; });
-    var cur = idx >= 0 ? items[idx] : null;
-    function step(d) { if (!cur) return; setOpen(items[(idx + d + items.length) % items.length].id); }
+
     function closeSheet() {
       var sh = sheetRef.current;
       var done = function () { setOpen(null); var o = opener.current; if (o && o.isConnected) o.focus({ preventScroll: true }); };
@@ -1141,12 +1158,10 @@
       ], { duration: 560, easing: EASE });
     }, [open && !!cur]);
 
-    var gap = W < 520 ? 12 : 16, target = W < 520 ? 120 : W < 760 ? 150 : 168;
-    var rows = W ? justify(items, W, gap, target) : [];
 
     var media = function (it, big) {
       if (it.src) return h("video", { className: "cpb-media", src: it.src, poster: it.still, muted: true, loop: true, playsInline: true, autoPlay: !still, preload: big ? "auto" : "metadata", "aria-hidden": big ? undefined : "true", "aria-label": big ? it.title + ", silent loop" : undefined });
-      return h("img", { className: "cpb-media", src: it.still, alt: big ? it.alt : "", decoding: "async", draggable: false });
+      return h("img", { className: "cpb-media", src: it.still, alt: big ? it.alt : "", decoding: "async", draggable: false, style: big ? null : { objectPosition: it.pos } });
     };
 
     var sheet = null;
@@ -1156,7 +1171,7 @@
         h("div", { className: "cpb-sheet-media", style: { "--r": cur.ratio } }, media(cur, true)),
         h("div", { className: "cpb-sheet-body" },
           h("div", { className: "cpb-sheet-top" },
-            h("span", { className: "cr-chip" }, cur.kindLabel + " · " + (idx + 1) + " of " + items.length),
+            h("span", { className: "cr-chip" }, cur.kindLabel + " · " + (idx + 1) + " of " + order.length),
             h("button", { type: "button", className: "cr-iconbtn cr-iconbtn--solid", "aria-label": "Close " + cur.title, onClick: closeSheet }, h(Icon, { name: "close", size: 18 }))),
           h("p", { className: "cr-sheet-title" }, cur.title),
           desc ? h("p", { className: "cr-t-body" }, desc) : null,
@@ -1169,19 +1184,18 @@
     }
 
     return h("div", { className: cx("cpb", cur && "has-sheet"), ref: rootRef, role: "region", "aria-label": "Design Playground" },
-      h("div", { className: "cpb-head", inert: cur ? "" : undefined },
-        h("button", { type: "button", className: "cr-chip cr-glass-light cpb-back", onClick: close, "aria-label": "Back to Home" }, h(Icon, { name: "back", size: 16, stroke: 2 }), "Home"),
-        h("h2", { className: "cr-chip cr-glass-light cpb-title" }, "Design Playground")),
-      h("div", { className: "cpb-grid", ref: gridRef, inert: cur ? "" : undefined },
+      h("div", { className: "cpb-grid", ref: gridRef, inert: cur ? "" : undefined, style: { gap: gap + "px" } },
         rows.map(function (row, ri) {
-          return h("div", { key: ri, className: "cpb-row", style: { gap: gap + "px" } }, row.items.map(function (it) {
+          return h("div", { key: ri, className: "cpb-row", style: { gap: gap + "px" } }, row.map(function (it) {
+            var span = Math.min(it.span, cols);
             return h("button", {
-              key: it.id, type: "button", className: "cr-card cr-solid cpb-card", style: { width: Math.round(it.ratio * row.h) + "px" },
+              key: it.id, type: "button", className: cx("cr-card cr-solid cpb-card", span > 1 && "is-wide"),
+              style: { width: (unit * span + gap * (span - 1)) + "px", height: unit + "px" },
               "aria-label": it.title + ", " + it.kindLabel + ". Open",
               onClick: function (ev) { opener.current = ev.currentTarget; setOpen(it.id); }
             },
-              h("span", { className: "cpb-frame", style: { height: row.h + "px" } }, media(it, false)),
-              h("span", { className: "cpb-cap" }, h("b", null, it.title), h("span", null, it.kindLabel)));
+              media(it, false),
+              h("span", { className: "cr-chip cr-glass-light cpb-cap", "aria-hidden": "true" }, it.title));
           }));
         })),
       cur ? h("div", { className: "cpb-scrim", onClick: closeSheet, "aria-hidden": "true" }) : null,
