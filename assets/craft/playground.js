@@ -1033,6 +1033,12 @@
         } else i++;
       }
       if (!row.length) row.push(left.shift());
+      /* Home leaves one slot empty in the middle column. A short row does the same: the gap goes in the centre. */
+      if (cols === 5 && used < cols) {
+        var at = 0, c = 0, mid = Math.floor(cols / 2);
+        while (at < row.length && c + Math.min(row[at].span, cols) <= mid) { c += Math.min(row[at].span, cols); at++; }
+        for (var k = used; k < cols; k++) row.splice(at, 0, { gap: true, span: 1, id: "gap-" + rows.length + "-" + k });
+      }
       rows.push(row);
     }
     return rows;
@@ -1122,7 +1128,7 @@
     var unit = W ? (W - gap * (cols - 1)) / cols : 0;
     var rows = W ? packRows(items, cols) : [];
     /* Prev / next follow the grid as you read it, row by row */
-    var order = rows.length ? rows.reduce(function (acc, r) { return acc.concat(r); }, []) : items;
+    var order = rows.length ? rows.reduce(function (acc, r) { return acc.concat(r.filter(function (x) { return !x.gap; })); }, []) : items;
     var idx = order.findIndex(function (x) { return x.id === open; });
     var cur = idx >= 0 ? order[idx] : null;
     function step(d) { if (!cur) return; setOpen(order[(idx + d + order.length) % order.length].id); }
@@ -1184,8 +1190,9 @@
         rows.map(function (row, ri) {
           return h("div", { key: ri, className: "cpb-row", style: { gap: gap + "px" } }, row.map(function (it) {
             var span = Math.min(it.span, cols);
+            if (it.gap) return h("span", { key: it.id, className: "cpb-gap", "aria-hidden": "true", style: { width: unit + "px", height: unit + "px" } });
             return h("button", {
-              key: it.id, type: "button", className: cx("cr-card cr-solid cpb-card", span > 1 && "is-wide"),
+              key: it.id, type: "button", className: cx("cr-card cr-glass cpb-card", span > 1 && "is-wide"),
               style: { width: (unit * span + gap * (span - 1)) + "px", height: unit + "px" },
               "aria-label": it.title + ", " + it.kindLabel + ". Open",
               onClick: function (ev) { opener.current = ev.currentTarget; setOpen(it.id); }
@@ -1195,8 +1202,8 @@
           }));
         })),
       /* Its own control, lower middle: a liquid glass pill back to Home */
-      h("button", { type: "button", className: "cr-chip cr-glass-light cpb-back", onClick: close, "aria-label": "Back to Home", inert: cur ? "" : undefined },
-        h(Icon, { name: "back", size: 18, stroke: 2 }), h("span", null, "Back")),
+      h("button", { type: "button", className: "cr-iconbtn cr-iconbtn--glass cr-glass-light cpb-back", onClick: close, "aria-label": "Back to Home", title: "Back to Home", inert: cur ? "" : undefined },
+        h(Icon, { name: "back", size: 20, stroke: 1.7 })),
       cur ? h("div", { className: "cpb-scrim", onClick: closeSheet, "aria-hidden": "true" }) : null,
       sheet);
   }
