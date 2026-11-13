@@ -1256,10 +1256,7 @@
           h("p", { className: "cr-t-body cr-profile-bio" }, props.bio),
           props.ai ? h("section", { className: "cr-profile-ai", "aria-labelledby": "cr-profile-ai-t" },
             h("h3", { id: "cr-profile-ai-t", className: "cr-profile-ai-title" }, props.ai.title),
-            h("dl", { className: "cr-profile-ai-list" }, props.ai.rows.map(function (r) {
-              return h("div", { key: r.k, className: "cr-profile-ai-row" }, h("dt", null, r.k), h("dd", null, r.v));
-            })),
-            props.ai.link ? h("a", { className: "cr-profile-ai-link", href: props.ai.link.href }, props.ai.link.label, h(Icon, { name: "arrow", stroke: 1.8 })) : null) : null,
+            h("p", { className: "cr-t-body cr-profile-bio" }, props.ai.text)) : null,
           props.links ? h("div", { className: "cr-profile-links" }, props.links.map(function (l) {
             return l.onClick
               ? h("button", { key: l.label, type: "button", className: "cr-chip", onClick: l.onClick }, l.label)
@@ -2294,13 +2291,7 @@
         bio: "I design products that make complex things feel simple. AI search, deal workflows and fintech setup flows, end to end.",
         ai: {
           title: "How I use AI",
-          rows: [
-            { k: "Explore", v: "Google Stitch for quick first screens, so I can compare directions early." },
-            { k: "Refine", v: "Figma for the real design: hierarchy, states and edge cases." },
-            { k: "Build", v: "Claude and Cursor to turn it into a prototype people can click." },
-            { k: "Mine", v: "Research, trade-offs and the final call stay with me." }
-          ],
-          link: { label: "See Splitly, built this way", href: "./craft-splitly.html" }
+          text: "AI helps me move faster, not decide for me. I get first screens from Google Stitch, shape them in Figma, then build prototypes people can click with Claude and Cursor. Research and the final call stay mine."
         },
         facts: [{ value: "5+", label: "years designing" }, { value: "+25%", label: "engagement, Contextual Chat" }, { value: "+32%", label: "adoption, Deal Room" }, { value: "4", label: "industries: fintech, AI, food, health" }]
       }
