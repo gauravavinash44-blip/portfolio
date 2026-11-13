@@ -92,7 +92,7 @@
   /* ───────── Styles ───────── */
   function loadCss() {
     if (document.getElementById("gal-css") || document.querySelector("style[data-gal]")) return;
-    var l = document.createElement("link"); l.id = "gal-css"; l.rel = "stylesheet"; l.href = ROOT + "assets/craft/access.css?v=5";
+    var l = document.createElement("link"); l.id = "gal-css"; l.rel = "stylesheet"; l.href = ROOT + "assets/craft/access.css?v=6";
     document.head.appendChild(l);
   }
   var PILL_CSS = ".ga-greet{position:fixed;z-index:2147483000;left:50%;top:max(16px,env(safe-area-inset-top));transform:translateX(-50%);" +
@@ -135,6 +135,105 @@
     return "https://wa.me/" + CFG.whatsapp + "?text=" + encodeURIComponent(msg);
   }
 
+  /* Who usually opens a designer's portfolio: recruiters and HR screen first, design leaders and
+     hiring managers judge the work, and PMs, engineers and founders sit on the panel */
+  var ROLE_OTHER = "Other";
+  var ROLES = ["Recruiter / Talent acquisition", "HR / People team", "Hiring manager", "Design leader (Head, Director, Manager)",
+    "Designer", "Product manager", "Engineer", "Founder / CEO", ROLE_OTHER];
+  var CO_FREELANCE = "Freelance / Independent", CO_BROWSING = "Just looking around";
+  var NO_TEAM = [CO_FREELANCE, CO_BROWSING];
+  var ICON_CHEV = '<svg class="gal-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+  var ICON_BAG = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"/></svg>';
+  var ICON_EYE = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></svg>';
+  var ICON_SHIELD = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.3-7.5 9.5-4.3-1.2-7.5-4.9-7.5-9.5V6z"/><path d="M8.8 12.2l2.2 2.2 4.2-4.4"/></svg>';
+
+  /* Company search: Clearbit's free autocomplete (companies worldwide, with their website),
+     Wikidata as the backup. Whatever is typed can always be used as is, and Freelance or
+     Just looking around cover everyone without a company. */
+  function searchCompanies(q, signal) {
+    var cb = "https://autocomplete.clearbit.com/v1/companies/suggest?query=" + encodeURIComponent(q);
+    var wd = "https://www.wikidata.org/w/api.php?action=wbsearchentities&language=en&uselang=en&type=item&limit=7&format=json&origin=*&search=" + encodeURIComponent(q);
+    return fetch(cb, { signal: signal }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (list) { return (list || []).slice(0, 6).map(function (c) { return { name: c.name, note: c.domain, domain: c.domain }; }); })
+      .catch(function (err) {
+        if (err && err.name === "AbortError") throw err;
+        return fetch(wd, { signal: signal }).then(function (r) { return r.json(); }).then(function (j) {
+          return ((j && j.search) || []).filter(function (x) { return x.label; }).slice(0, 6)
+            .map(function (x) { return { name: x.label, note: x.description || "" }; });
+        });
+      });
+  }
+
+  function companyCombo(input, list, id) {
+    var items = [], active = -1, timer = 0, ctrl = null, seq = 0, wantFirst = false;
+    function render(results, q) {
+      items = [];
+      var low = q.toLowerCase();
+      (results || []).forEach(function (r) {
+        if (items.some(function (x) { return x.name.toLowerCase() === r.name.toLowerCase(); })) return;
+        items.push(r);
+      });
+      if (q && !items.some(function (x) { return x.name.toLowerCase() === low; }) && NO_TEAM.indexOf(q) < 0)
+        items.push({ name: cleanCompany(q), note: "Use what I typed", typed: true });
+      items.push({ name: CO_FREELANCE, note: "No company", fixed: true });
+      items.push({ name: CO_BROWSING, note: "Other", fixed: true });
+      list.innerHTML = items.map(function (x, i) {
+        var icon = x.domain
+          ? '<img src="https://www.google.com/s2/favicons?sz=64&domain=' + encodeURIComponent(x.domain) + '" alt="" width="20" height="20" loading="lazy" onerror="this.style.visibility=\'hidden\'">'
+          : '<span class="gal-opt-dot" aria-hidden="true">' + (x.fixed ? (x.name === CO_FREELANCE ? ICON_BAG : ICON_EYE) : esc(x.typed ? "+" : x.name.charAt(0).toUpperCase())) + "</span>";
+        return '<li role="option" id="' + id("co-" + i) + '" data-i="' + i + '" class="gal-opt' + (x.fixed && i === items.length - 2 ? " gal-opt--sep" : "") + '" aria-selected="false">' +
+          icon + '<span class="gal-opt-text"><span class="gal-opt-name">' + esc(x.name) + "</span>" +
+          (x.note ? '<span class="gal-opt-note">' + esc(x.note) + "</span>" : "") + "</span></li>";
+      }).join("");
+      setActive(wantFirst && items.length ? 0 : -1); wantFirst = false; open(true);
+    }
+    function open(on) {
+      list.classList.toggle("gal-hidden", !on);
+      input.setAttribute("aria-expanded", on ? "true" : "false");
+      if (!on) { active = -1; input.removeAttribute("aria-activedescendant"); }
+    }
+    function isOpen() { return !list.classList.contains("gal-hidden"); }
+    function setActive(i) {
+      active = i;
+      [].forEach.call(list.children, function (li, k) { li.setAttribute("aria-selected", k === i ? "true" : "false"); });
+      if (i >= 0 && list.children[i]) { input.setAttribute("aria-activedescendant", list.children[i].id); list.children[i].scrollIntoView({ block: "nearest" }); }
+      else input.removeAttribute("aria-activedescendant");
+    }
+    function pick(i) {
+      var x = items[i]; if (!x) return;
+      input.value = x.name; open(false);
+      var next = input.form && input.form.contact; if (next) next.focus();
+    }
+    function search() {
+      var q = input.value.trim(), my = ++seq;
+      if (ctrl) ctrl.abort();
+      if (q.length < 2) { render([], q); return; }
+      list.setAttribute("aria-busy", "true");
+      ctrl = window.AbortController ? new AbortController() : null;
+      searchCompanies(q, ctrl && ctrl.signal).then(function (res) {
+        if (my === seq) { list.removeAttribute("aria-busy"); render(res, q); }
+      }, function () { if (my === seq) { list.removeAttribute("aria-busy"); render([], q); } });
+    }
+    input.addEventListener("input", function () { clearTimeout(timer); timer = setTimeout(search, 200); });
+    input.addEventListener("focus", function () { if (!isOpen()) search(); });
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        e.preventDefault();
+        if (!isOpen()) { wantFirst = true; search(); return; }
+        var n = items.length; if (!n) return;
+        setActive(e.key === "ArrowDown" ? (active + 1) % n : (active <= 0 ? n - 1 : active - 1));
+      } else if (e.key === "Enter" && isOpen()) { e.preventDefault(); if (active >= 0) pick(active); else open(false); }
+      else if (e.key === "Escape" && isOpen()) { e.preventDefault(); e.stopPropagation(); open(false); }
+      else if (e.key === "Tab") open(false);
+    });
+    /* mousedown so the input keeps focus and the pick lands before blur closes the list */
+    list.addEventListener("mousedown", function (e) {
+      var li = e.target.closest && e.target.closest("[data-i]");
+      e.preventDefault(); if (li) pick(+li.getAttribute("data-i"));
+    });
+    input.addEventListener("blur", function () { setTimeout(function () { open(false); }, 120); });
+  }
+
   /* opts: { title, tryKey(key) -> Promise<boolean>, onBack() } : back closes the popup, or leaves the lock page */
   function buildCard(opts) {
     var n = ++uid, id = function (s) { return "gal" + n + "-" + s; };
@@ -163,12 +262,25 @@
         "</div>" +
       "</div>" +
       '<form class="gal-view gal-form gal-hidden" data-view="request" novalidate>' +
-        field("name", "Name", "name", "") + field("role", "Role", "organization-title", "Design manager, recruiter…") +
-        field("company", "Company", "organization", "") + field("contact", "Email or LinkedIn", "email", "") +
+        field("name", "Name", "name", "") + roleField() + companyField() + field("contact", "Email or LinkedIn", "email", "") +
         '<div class="gal-hp" aria-hidden="true"><label for="' + id("website") + '">Website</label><input id="' + id("website") + '" name="website" tabindex="-1" autocomplete="off"></div>' +
         '<p class="gal-msg" data-req-msg role="alert"></p>' +
+        '<p class="gal-safe">' + ICON_SHIELD + "<span>Only I see these details. I won't share them or add you to any mailing list.</span></p>" +
         '<button type="submit" class="gal-btn gal-btn--main">Send and open</button>' +
       "</form>";
+    function roleField() {
+      return '<div class="gal-field"><label for="' + id("role") + '">Role</label>' +
+        '<div class="gal-select"><select id="' + id("role") + '" name="role">' +
+          '<option value="" disabled selected>Pick your role</option>' +
+          ROLES.map(function (r) { return '<option value="' + esc(r) + '">' + esc(r) + "</option>"; }).join("") +
+        "</select>" + ICON_CHEV + "</div>" +
+        '<input class="gal-hidden" id="' + id("role-other") + '" name="roleOther" autocomplete="organization-title" placeholder="Type your role" aria-label="Your role"></div>';
+    }
+    function companyField() {
+      return '<div class="gal-field gal-combo"><label for="' + id("company") + '">Company</label>' +
+        '<input id="' + id("company") + '" name="company" autocomplete="off" placeholder="Search your company" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="' + id("co-list") + '">' +
+        '<ul class="gal-list gal-hidden" id="' + id("co-list") + '" role="listbox" aria-label="Companies"></ul></div>';
+    }
     function field(name, label, ac, ph) {
       return '<div class="gal-field"><label for="' + id(name) + '">' + label + '</label><input id="' + id(name) + '" name="' + name + '" autocomplete="' + ac + '"' + (ph ? ' placeholder="' + ph + '"' : "") + "></div>";
     }
@@ -176,6 +288,17 @@
     var main = $('[data-view="main"]'), req = $('[data-view="request"]'), back = $("[data-back]"), view = "main";
     var pass = $("[data-pass]"), pw = pass.querySelector("input"), go = pass.querySelector(".gal-go"), passMsg = $("[data-pass-msg]");
     if (company()) req.company.value = company();
+    var roleOther = req.roleOther;
+    req.role.addEventListener("change", function () {
+      var other = req.role.value === ROLE_OTHER;
+      roleOther.classList.toggle("gal-hidden", !other);
+      req.role.classList.add("is-set");
+      if (other) roleOther.focus();
+    });
+    companyCombo(req.company, $("#" + id("co-list")), id);
+    /* The "fill in all four" note goes away as soon as they start fixing it */
+    req.addEventListener("input", function () { var m = $("[data-req-msg]"); if (m.textContent && !m.querySelector("a")) m.textContent = ""; });
+    req.addEventListener("change", function () { var m = $("[data-req-msg]"); if (m.textContent && !m.querySelector("a")) m.textContent = ""; });
     /* Full hint where it fits, short one on phones */
     if (window.matchMedia && window.matchMedia("(min-width: 560px)").matches) pw.placeholder = "Have a password? Type it here";
 
@@ -219,12 +342,15 @@
       e.preventDefault();
       var msg = $("[data-req-msg]"), btn = req.querySelector('button[type="submit"]');
       var data = {
-        name: req.name.value.trim(), role: req.role.value.trim(), company: req.company.value.trim(),
+        name: req.name.value.trim(), role: req.role.value === ROLE_OTHER ? roleOther.value.trim() : req.role.value, company: req.company.value.trim(),
         contact: req.contact.value.trim(), website: req.website.value,
         caseStudy: opts.title, page: location.pathname
       };
       var missing = ["name", "role", "company", "contact"].filter(function (k) { return !data[k]; })[0];
-      if (missing) { msg.textContent = "Fill in all four, please."; req[missing].focus(); return; }
+      if (missing) {
+        msg.textContent = "Fill in all four, please.";
+        (missing === "role" && req.role.value === ROLE_OTHER ? roleOther : req[missing]).focus(); return;
+      }
       msg.textContent = ""; btn.disabled = true; btn.textContent = "Sending…";
       /* No Content-Type header on purpose: the browser sends text/plain and skips the CORS preflight */
       fetch(CFG.endpoint, { method: "POST", body: JSON.stringify(data) })
@@ -232,7 +358,8 @@
         .then(function (out) {
           if (!out || !out.ok || !out.key) throw new Error("No key");
           var comp = cleanCompany(out.company || data.company);
-          set(K_COMPANY, comp); del(K_DISMISSED);
+          /* "Hi Freelance team" would read oddly, so only real company names get the greeting */
+          if (NO_TEAM.indexOf(comp) < 0) { set(K_COMPANY, comp); del(K_DISMISSED); }
           track("access_request_submitted", { company: comp, case_study: opts.title });
           saveKey(out.key);
           return opts.tryKey(out.key).then(function (ok) {
@@ -332,9 +459,13 @@
     overlay.addEventListener("pointerdown", function (e) { downOutside = !card.contains(e.target); });
     overlay.addEventListener("click", function (e) { if (downOutside && !card.contains(e.target)) close(); });
     function trap(e) {
-      if (e.key === "Escape") { e.preventDefault(); card.goBack(); return; }
+      if (e.key === "Escape") {
+        var ae = document.activeElement;
+        if (ae && ae.getAttribute("aria-expanded") === "true") return; /* the company list closes first */
+        e.preventDefault(); card.goBack(); return;
+      }
       if (e.key !== "Tab") return;
-      var f = Array.prototype.filter.call(card.querySelectorAll("a[href],button:not([disabled]),input:not([tabindex='-1'])"),
+      var f = Array.prototype.filter.call(card.querySelectorAll("a[href],button:not([disabled]),input:not([tabindex='-1']),select"),
         function (el) { return el.offsetWidth || el.offsetHeight; });
       if (!f.length) return;
       var first = f[0], last = f[f.length - 1];
