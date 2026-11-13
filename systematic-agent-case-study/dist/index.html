@@ -33,13 +33,17 @@
   border: 1px solid rgba(255, 255, 255, 0.26); box-shadow: 0 30px 90px rgba(10, 5, 20, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.3); -webkit-font-smoothing: antialiased; }
 .gal-card *, .gal-card *::before, .gal-card *::after { box-sizing: border-box; }
 .gal-hidden { display: none !important; }
-.gal-icon { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; margin-bottom: 18px;
+.gal-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.gal-icon { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center;
   background: rgba(255, 255, 255, 0.16); border: 1px solid rgba(255, 255, 255, 0.28); }
+/* Back: the Design Playground's glass circle with the chevron */
+.gal-back { width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; display: grid; place-items: center; cursor: pointer; color: #fff;
+  background: rgba(150, 136, 148, 0.34); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22); transition: transform 360ms cubic-bezier(0.16, 1, 0.3, 1), background 200ms ease; }
+.gal-back:hover { background: rgba(150, 136, 148, 0.5); transform: translateX(-2px); }
 .gal-eyebrow { margin: 0 0 4px; font-size: 13px; color: rgba(255, 255, 255, 0.7); }
 .gal-title { margin: 0; font-size: 26px; line-height: 1.15; font-weight: 500; letter-spacing: -0.015em; color: #fff; }
 .gal-line { margin: 8px 0 22px; color: rgba(255, 255, 255, 0.8); }
-.gal-close { position: absolute; top: 18px; right: 18px; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 50%; display: grid; place-items: center;
-  background: rgba(255, 255, 255, 0.92); color: #16121c; cursor: pointer; }
 
 /* Password: one pill field with the arrow inside */
 .gal-pass { position: relative; margin: 0; }
@@ -56,7 +60,10 @@
 .gal-or { display: flex; align-items: center; gap: 12px; margin: 16px 0; font-size: 12px; color: rgba(255, 255, 255, 0.55); }
 .gal-or::before, .gal-or::after { content: ""; flex: 1; height: 1px; background: rgba(255, 255, 255, 0.18); }
 
-.gal-stack { display: grid; gap: 10px; }
+/* Request access and WhatsApp: equal weight, side by side */
+.gal-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+   .gal-pair .gal-btn { padding: 0 12px; font-size: 14px; }
+@media (max-width: 359px) { .gal-pair { grid-template-columns: 1fr; } }
 .gal-btn { appearance: none; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 48px; padding: 0 20px; margin: 0;
   border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.12); color: #fff;
   font-family: inherit; font-size: 15px; font-weight: 500; line-height: 1; text-decoration: none; cursor: pointer; transition: background 160ms ease; }
@@ -75,9 +82,6 @@
 .gal-msg { margin: 8px 4px 0; font-size: 13px; color: #ffd6cd; }
 .gal-msg:empty { display: none; }
 .gal-msg a { color: #fff; }
-.gal-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; }
-.gal-link { appearance: none; padding: 6px 2px; border: 0; background: none; color: rgba(255, 255, 255, 0.78); font: inherit; font-size: 14px; cursor: pointer; text-decoration: none; border-radius: 6px; }
-.gal-link:hover { color: #fff; text-decoration: underline; }
 .gal-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .gal-card :focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 .gal-pass input:focus-visible, .gal-field input:focus-visible { outline: none; }
@@ -113,7 +117,7 @@
   /* access.js strips #k from the address bar, so note it first */
   window.GA_LINK_KEY = /(^|[#&])k=/.test(location.hash);
 </script>
-<script src="../../assets/craft/access.js?v=3"></script>
+<script src="../../assets/craft/access.js?v=4"></script>
 <script>
   /* StatiCrypt: filled in at encryption time */
   const staticryptInitiator = ((function(){
@@ -712,7 +716,7 @@ exports.init = init;
 
   return exports;
 })());
-  const staticryptConfig = {"staticryptEncryptedMsgUniqueVariableName":"b3a764a20593c965f13c29855deaf064b03080322b24462d11dff8d47767312dc8199596b605efce584e14d09413fa0c6e13440dec1e2ea90ce9b405be5995fb1f565a57ec010b88cc5dcd80a3acdeb5866d00c02dff8aa2edd896d1ea88eb09b6fa1cb6cb977841d760746246de0f0c403646c182946378338af869f3d6f0efcfcd4a5deabba76d4f9239869fe76fcdad3db11f67745093c342c04f9ef4cffe8e5b4f34aea76c64da7ca106addeadec4255b6921d679ce106fa863d522880d10b98534fb90342946df27fbdb80e672319a32a5b6aa04e8b70945d2f8f42673c58a74debdf6a9e1cadc7cd79f2063488beee824fc1d22b17b81d01dee8a9378e703ebde08e845f217aeca4fd625708753fe398b0c5fbb53872b17d0119813ea47df6c1accf696dd6ae17305844400ff599e9b9e65fd1f8511335cec3e1094ad5f3f02b2e18623e3d71a83caf54f072c7bd851cc90aba475039a20d9ac31816045d53d8d7e8a6d358ce432c919011c50155e3fe57cea462f75405b1b99490e8904f1c153908c06e257f7013cbebd55abf83d27af05061bd86cac4e93ccc35cdc6ac097997e4dd8afcb876b7f33ead1d8f6506fe05a686aa5be5a63ebb5de13434665cad3b3773d2595df88f1c1544e6c26fa79f5277f85c64f8d4900b01d5040961321309bcf262fefe12fc3edbdb9c0d5fd63d9ea02c650cd63c74c6ce37ed7aea2b1afbddf3ddad6b30c2a42fb890da95f3ff0ae42faa3cae35d2b078d45a5f3fef4df3b988cad44830d2c39e40c18923828b7b7565c25ef4ba30a61426a015048c4f012d64c884de13619cf71e145312c332bcc1a9c907c629d3b051633e7bbdcc26747cf2ce77fa86abf28708909bb566ffd681d71299949c209ecec921e2731699534c28487ed22295563669f76d46878371012b1870d8ba926d32bbd701e26b464d9c13bf599f6010b5e4efd3d9873df28409c07fdc2dffa2f437d821fa148820a84f7d9071d1b6d4bb14aea315c09c52de067f005e1e87e37ec806cf553c672cfd6109c04572e8271053d5d09efa070ee8144f450646f2b1f8a9365e84f7a8c9a80b827bc5e1e7159a859f8d49d1b6073b1582c7c9ec2fa2c4ddb49270beb6ad720806a42f7f713d05cca2a2e2fbcecf54a41b4c4157d79fbe23986bb92f317e0dc95fd56618598793959c9a7b9ee61b39011697343ff4dea26fbfe227db96c8c61122472ff1432a10b34af790b81818b2d1f16a1fe4babded97ba4ddb","isRememberEnabled":true,"rememberDurationInDays":30,"staticryptSaltUniqueVariableName":"9f79cd7d513fbc1610f0277326822516"};
+  const staticryptConfig = {"staticryptEncryptedMsgUniqueVariableName":"c1dbc46a72af0828a4fbf06aa4347e0a25fa211d48f7cd4e62ddc706e1dfd62d0aef741320eeb691899bd649988cfa4ec4a595e54ea8039794351d454fdd946d5483540411980cb61e9b9009ecb2a1a622e8536de9950bcc5fb954ac7dd0cd73e930c2428a5977c601a57c9c677387a2a033a9562aa4edd7bf77a3e7c8d121e099001a77c05a1123d06308419818387a8a1b8893435f2c6d420d9ef21003db53f19f0148a40ee5ed428569a01d31a19044b182fd814d47247769dc9d753874fe29a3443836286d1520330d012f0a3509675ac58a7707726c2aac36b84d59c71203c4ec7184d68268006310ddd700bb75e267ba3306e24db0b152089a769c05b9f24f869add1e2bfabe7d9ee87bda3f52de3f15fd148616ef80923a3bfd63fc9f01440dcf2a8e4a01866b07bfc488b7ca6544ce84e11f17eaab9b6561595327c811933661412c4769bdabeb6a9868e12cf4a698570a91a0aad24d886b2b47d84751624404f27ede68ab7bcf6a0057a3b998971952cf0966bde493a8bde1d2d375a0622ad981738fc7dedbe9c4fa71f153e98c3cb76af7d66e38525aace70f95ad523b30afb9f727b9088fd5f605b4d70299e09030917803d0b33af7a34bb3cfa6faa0ae74f035a9d81e4a03523292fccbfb9e675ef0d31033fa4b86b49b06745fa9220a864b916dc4ad72e8796f92a77dd6608083ccf88f25d9875b6509bcf343f9341110bcaa64be215e47ca7b402fb784015b74e404747fb316238c16d352d398dd9c990dcb1a3a7f71233ab2a14e6e8f42415616d17780c09f951b11d485d217c68682e6114cba65609cead4e3f3143f8c4673579057988e6defeac329a9bf785feb83f35b7578c0ecd7d679a1c9f5720e72fe4d2a3a3b40bfdf4568ef2b549dfc003ecf3911ecb4181c1e016483a877c8d1b9af328f75f5a2116ec7ae286dabb37538ecffd8c9aa137d1a22f00c1b3c78efd17d1aaabfc23ee8207b43dc2be1d9802109ee113655688eefbc56cc277fb530ab7ac5d3ccac147881124955e6ade94702f1c7f51b823d768e2ae17fb8cd689f269c691370493b29fe22ae29e5f6d900c848b2b7420cd69d5d36391ec740b44770e8ef13eba2b05904d50e7c81f94e5eeaa1d7c7ee481b3d4b219e9336df53653932bb5d4b251c8dde4f5e0ad6d6ad53dad5cc168d36af13b702b714d716a105d6f0fffdf98b43e65978bf342dcb05b3146ca82f566e496d1d6166c57815fa77dd5c51db04d9d5336c120807dc","isRememberEnabled":true,"rememberDurationInDays":30,"staticryptSaltUniqueVariableName":"9f79cd7d513fbc1610f0277326822516"};
   const CASE_STUDY = "Contextual Chat Assistant";
 
   const staticrypt = staticryptInitiator.init(staticryptConfig, {

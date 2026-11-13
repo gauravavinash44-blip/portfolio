@@ -17,6 +17,7 @@
 
   function go(u, from) {
     if (going) return;
+    if (window.GAAccess && window.GAAccess.intercept(u.href, from)) return;
     going = true;
     if (reduce.matches) { location.href = u.href; return; }
     cover = document.createElement("div");

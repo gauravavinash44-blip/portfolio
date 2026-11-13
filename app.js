@@ -1246,7 +1246,7 @@
       cases: () => e(C.FolderListCard, Object.assign({}, data.folders, {
         draggable: true,
         /* A row goes to its case page (the arrow link does the same) */
-        onOpen: (row, ev) => { if (row.href) window.location.href = row.href; else openProjects(ev); },
+        onOpen: (row, ev) => { if (row.href) { if (!(window.GAAccess && window.GAAccess.intercept(row.href, ev && ev.currentTarget))) window.location.href = row.href; } else openProjects(ev); },
         openLabel: (row) => row.title + ", " + row.sub + ". Open case study",
         onAll: (ev) => openProjects(ev),
         allLabel: "View all projects, " + data.caseStudies.length + " case studies",

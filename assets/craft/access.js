@@ -89,7 +89,7 @@
   /* ───────── Styles ───────── */
   function loadCss() {
     if (document.getElementById("gal-css") || document.querySelector("style[data-gal]")) return;
-    var l = document.createElement("link"); l.id = "gal-css"; l.rel = "stylesheet"; l.href = ROOT + "assets/craft/access.css?v=2";
+    var l = document.createElement("link"); l.id = "gal-css"; l.rel = "stylesheet"; l.href = ROOT + "assets/craft/access.css?v=3";
     document.head.appendChild(l);
   }
   var PILL_CSS = ".ga-greet{position:fixed;z-index:2147483000;left:50%;top:max(16px,env(safe-area-inset-top));transform:translateX(-50%);" +
@@ -123,7 +123,8 @@
   /* ───────── The lock card ───────── */
   var ICON_LOCK = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
   var ICON_ARROW = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
-  var ICON_CLOSE = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  /* Same chevron as the Design Playground back button */
+  var ICON_BACK = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 6l-6 6 6 6"/></svg>';
   var uid = 0;
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function waLink(name, comp) {
@@ -131,14 +132,16 @@
     return "https://wa.me/" + CFG.whatsapp + "?text=" + encodeURIComponent(msg);
   }
 
-  /* opts: { title, tryKey(key) -> Promise<boolean>, onClose?, backHref? } */
+  /* opts: { title, tryKey(key) -> Promise<boolean>, onBack() } : back closes the popup, or leaves the lock page */
   function buildCard(opts) {
     var n = ++uid, id = function (s) { return "gal" + n + "-" + s; };
     var card = document.createElement("section");
     card.className = "gal-card"; card.setAttribute("aria-labelledby", id("title"));
     card.innerHTML =
-      (opts.onClose ? '<button type="button" class="gal-close" data-close aria-label="Close">' + ICON_CLOSE + "</button>" : "") +
-      '<div class="gal-icon">' + ICON_LOCK + "</div>" +
+      '<div class="gal-top">' +
+        '<button type="button" class="gal-back" data-back aria-label="' + esc(opts.backLabel || "Back") + '">' + ICON_BACK + "</button>" +
+        '<div class="gal-icon">' + ICON_LOCK + "</div>" +
+      "</div>" +
       '<p class="gal-eyebrow">Case study</p>' +
       '<h2 class="gal-title" id="' + id("title") + '">' + esc(opts.title) + "</h2>" +
       '<p class="gal-line">This one\'s under NDA. Pick a way in.</p>' +
@@ -150,9 +153,9 @@
         "</form>" +
         '<p class="gal-msg" data-pass-msg role="alert"></p>' +
         '<div class="gal-or">or</div>' +
-        '<div class="gal-stack">' +
-          '<button type="button" class="gal-btn gal-btn--main" data-go-request>Request access</button>' +
-          '<a class="gal-btn" data-wa href="#" target="_blank" rel="noopener">Ask me on WhatsApp</a>' +
+        '<div class="gal-pair">' +
+          '<button type="button" class="gal-btn" data-go-request>Request access</button>' +
+          '<a class="gal-btn" data-wa href="#" target="_blank" rel="noopener">Ask on WhatsApp</a>' +
         "</div>" +
       "</div>" +
       '<form class="gal-view gal-form gal-hidden" data-view="request" novalidate>' +
@@ -161,35 +164,28 @@
         '<div class="gal-hp" aria-hidden="true"><label for="' + id("website") + '">Website</label><input id="' + id("website") + '" name="website" tabindex="-1" autocomplete="off"></div>' +
         '<p class="gal-msg" data-req-msg role="alert"></p>' +
         '<button type="submit" class="gal-btn gal-btn--main">Send and open</button>' +
-      "</form>" +
-      '<div class="gal-row">' +
-        '<button type="button" class="gal-link gal-hidden" data-back>Back</button>' +
-        (opts.backHref ? '<a class="gal-link" href="' + esc(opts.backHref) + '">Back to portfolio</a>' : "<span></span>") +
-      "</div>";
+      "</form>";
     function field(name, label, ac, ph) {
       return '<div class="gal-field"><label for="' + id(name) + '">' + label + '</label><input id="' + id(name) + '" name="' + name + '" autocomplete="' + ac + '"' + (ph ? ' placeholder="' + ph + '"' : "") + "></div>";
     }
     var $ = function (s) { return card.querySelector(s); };
-    var main = $('[data-view="main"]'), req = $('[data-view="request"]'), back = $("[data-back]");
+    var main = $('[data-view="main"]'), req = $('[data-view="request"]'), back = $("[data-back]"), view = "main";
     var pass = $("[data-pass]"), pw = pass.querySelector("input"), go = pass.querySelector(".gal-go"), passMsg = $("[data-pass-msg]");
     if (company()) req.company.value = company();
     /* Full hint where it fits, short one on phones */
     if (window.matchMedia && window.matchMedia("(min-width: 560px)").matches) pw.placeholder = "Have a password? Type it here";
 
-    function show(view) {
-      main.classList.toggle("gal-hidden", view !== "main");
-      req.classList.toggle("gal-hidden", view !== "request");
-      back.classList.toggle("gal-hidden", view === "main");
-      (view === "main" ? pw : req.name).focus();
+    function show(v) {
+      view = v;
+      main.classList.toggle("gal-hidden", v !== "main");
+      req.classList.toggle("gal-hidden", v !== "request");
+      (v === "main" ? pw : req.name).focus();
     }
+    /* One back button: from the form it returns to the card, from the card it leaves */
+    function goBack() { if (view === "request") show("main"); else opts.onBack(); }
+    card.goBack = goBack;
     $("[data-go-request]").addEventListener("click", function () { show("request"); });
-    back.addEventListener("click", function () { show("main"); });
-    if (opts.onClose) $("[data-close]").addEventListener("click", opts.onClose);
-    card.addEventListener("keydown", function (e) {
-      if (e.key !== "Escape") return;
-      if (!req.classList.contains("gal-hidden")) { e.stopPropagation(); show("main"); }
-      else if (opts.onClose) { e.stopPropagation(); opts.onClose(); }
-    });
+    back.addEventListener("click", goBack);
 
     function wireWa(a) {
       var fill = function () { a.href = waLink(req.name.value.trim(), req.company.value.trim() || company()); };
@@ -293,14 +289,17 @@
       } else gone();
     }
     var card = buildCard({
-      title: title, onClose: close,
+      title: title, onBack: close, backLabel: "Close",
       tryKey: function (k) { return checkKey(k).then(function (ok) { if (ok) location.href = href; return ok; }); }
     });
     overlay.setAttribute("aria-labelledby", card.getAttribute("aria-labelledby"));
     overlay.appendChild(card);
-    overlay.addEventListener("mousedown", function (e) { if (e.target === overlay) close(); });
+    /* A tap or click anywhere outside the card closes it */
+    var downOutside = false;
+    overlay.addEventListener("pointerdown", function (e) { downOutside = !card.contains(e.target); });
+    overlay.addEventListener("click", function (e) { if (downOutside && !card.contains(e.target)) close(); });
     function trap(e) {
-      if (e.key === "Escape") { e.preventDefault(); close(); return; }
+      if (e.key === "Escape") { e.preventDefault(); card.goBack(); return; }
       if (e.key !== "Tab") return;
       var f = Array.prototype.filter.call(card.querySelectorAll("a[href],button:not([disabled]),input:not([tabindex='-1'])"),
         function (el) { return el.offsetWidth || el.offsetHeight; });
@@ -322,6 +321,16 @@
     if (url.origin !== root.origin || url.pathname.indexOf(root.pathname) !== 0) return null;
     return LOCKED[url.pathname.slice(root.pathname.length)] || null;
   }
+  /* For code that navigates without a link (dashboard rows, search, playground cards):
+     returns true when it opened the popup instead */
+  function intercept(href, opener) {
+    if (window.GA_LOCK_PAGE || !href || unlocked()) return false;
+    var a = document.createElement("a"); a.setAttribute("href", href);
+    var title = lockedTitle(a);
+    if (!title) return false;
+    openPopup(title, new URL(href, location.href).href, opener || document.activeElement);
+    return true;
+  }
   /* Capture phase, so it runs before the app's own handlers */
   document.addEventListener("click", function (e) {
     if (window.GA_LOCK_PAGE || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
@@ -336,13 +345,15 @@
   /* ───────── On the encrypted page itself ───────── */
   function mountLock(host, opts) {
     loadCss();
-    var card = buildCard({ title: opts.title, tryKey: opts.tryKey, backHref: opts.backHref });
+    var card = buildCard({ title: opts.title, tryKey: opts.tryKey, backLabel: "Back to portfolio",
+      onBack: function () { if (history.length > 1 && document.referrer.indexOf(location.origin) === 0) history.back(); else location.href = opts.backHref; } });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && card.isConnected) card.goBack(); });
     host.appendChild(card);
     setTimeout(function () { card.focusFirst(); }, 60);
     return card;
   }
 
-  window.GAAccess = { unlocked: unlocked, company: company, track: track, key: savedKey, saveKey: saveKey, open: openPopup, mountLock: mountLock };
+  window.GAAccess = { unlocked: unlocked, company: company, track: track, key: savedKey, saveKey: saveKey, open: openPopup, intercept: intercept, mountLock: mountLock };
 
   function ready() {
     showGreeting();

@@ -585,7 +585,7 @@
       if (opt.kind === "ask") { remember(trimmed); handOver(trimmed); return; }
       var it = opt.item;
       remember(trimmed);
-      if (it.group === "case" || it.group === "section") { window.location.href = it.href; return; }
+      if (it.group === "case" || it.group === "section") { if (window.GAAccess && window.GAAccess.intercept(it.href)) { close(function () {}); return; } window.location.href = it.href; return; }
       if (it.group === "playground") { close(function () { if (props.onPlayground) props.onPlayground(it.pgId); }); return; }
       runAction(it.action);
     }

@@ -883,7 +883,7 @@
               "aria-label": caseCard
                 ? it.title + ", " + it.label + ". " + (it.metric ? it.metric.value + " " + it.metric.label + ". " : "") + "Open case study"
                 : it.title + ", " + it.label + (it.video ? ", video" : "") + ". Open",
-              onClick: function () { if (caseCard && it.href) window.location.href = it.href; else openStory(i); }
+              onClick: function (ev) { if (caseCard && it.href) { if (!(window.GAAccess && window.GAAccess.intercept(it.href, ev.currentTarget))) window.location.href = it.href; } else openStory(i); }
             }, caseCard
               ? h("span", { className: "cpg-cs" }, h(CaseFace, { item: it, go: true }))
               : h(CardFace, { item: it, wallpaper: props.wallpaper, videoRef: it.video ? function (n) { gridVideos.current[it.id] = n; } : undefined })));
