@@ -22,8 +22,24 @@
   .lk-host { position: relative; z-index: 1; width: 100%; display: grid; place-items: center; }
   .lk-loading { position: relative; z-index: 1; width: 36px; height: 36px; border-radius: 50%; border: 3px solid rgba(255,255,255,.25); border-top-color: #fff; }
   .lk-loading.hidden { display: none; }
+  /* A key is already saved or was just entered: nothing to show while the page opens, so stay as quiet as the case page itself */
+  html.lk-quiet body { background: #fbf9fa; }
+  html.lk-quiet .lk-bg, html.lk-quiet .lk-loading { display: none; }
   @media (prefers-reduced-motion: no-preference) { .lk-loading { animation: lkSpin 900ms linear infinite; } @keyframes lkSpin { to { transform: rotate(360deg); } } }
 </style>
+<script>
+  /* Decide before first paint whether this visit will open straight away */
+  (function () {
+    try {
+      var ok = /(^|[#&])k=/.test(location.hash);
+      var raw = localStorage.getItem("ga-access");
+      if (raw) { var o = JSON.parse(raw); if (o && o.k && o.exp > Date.now()) ok = true; }
+      var h = localStorage.getItem("ga-access-hash"), e = localStorage.getItem("ga-access-hash-exp");
+      if (h && (!e || +e > Date.now())) ok = true;
+      if (ok) document.documentElement.classList.add("lk-quiet");
+    } catch (x) {}
+  })();
+</script>
 <style data-gal>
 {{ACCESS_CSS}}
 </style>
@@ -70,6 +86,7 @@
       try { localStorage.removeItem("ga-access"); } catch (e) {}
     }
     /* 3. Show the card */
+    document.documentElement.classList.remove("lk-quiet");
     document.getElementById("staticrypt_loading").classList.add("hidden");
     A.mountLock(document.getElementById("lk-host"), { title: CASE_STUDY, tryKey: openWith, backHref: "{{PREFIX}}index.html" });
   };
