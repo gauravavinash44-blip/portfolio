@@ -10,7 +10,7 @@
   "topics": {
     "about_gaurav": {
       "aliases": ["tell me about gaurav", "about gaurav", "who is gaurav", "introduce gaurav", "gaurav"],
-      "response": "Gaurav Avinash is a Senior Product Designer with 5+ years of experience in Enterprise SaaS, AI products, and Fintech.\n\nHe currently works as Product Designer II at Systematic (remote, New York team), where he designs AI-first B2B SaaS workflows - turning high-friction flows into clear, measurable product decisions.\n\nHis work spans deal execution platforms, contextual AI search, AI-assisted profile creation, and mobile product redesigns across fintech and food-tech.",
+      "response": "Gaurav Avinash is a Product Designer with 5+ years of experience in Enterprise SaaS, AI products, and Fintech.\n\nHe currently works as Product Designer II at Systematic (remote, New York team), where he designs AI-first B2B SaaS workflows - turning high-friction flows into clear, measurable product decisions.\n\nHis work spans deal execution platforms, contextual AI search, AI-assisted profile creation, and mobile product redesigns across fintech and food-tech.",
       "suggestions": [
         { "label": "Experience", "topicId": "experience" },
         { "label": "Skills", "topicId": "skills" },
@@ -37,7 +37,7 @@
     },
     "experience": {
       "aliases": ["experience", "work experience", "background", "roles"],
-      "response": "Gaurav has 4.5+ years in product design across AI B2B SaaS, fintech, and consumer mobile.\n\n**Current:** Product Designer II at Systematic - AI search, profile creation, deal workflows.\n\n**Previous:** Easy Eat (multi-country food-tech launches), LA FUORI (B2B web and campaigns).\n\nHe works best embedded with product managers and engineers in one decision loop - especially when shipping 0→1 AI features under business pressure.",
+      "response": "Gaurav has 5+ years in product design across AI B2B SaaS, fintech, and consumer mobile.\n\n**Current:** Product Designer II at Systematic - AI search, profile creation, deal workflows.\n\n**Previous:** Easy Eat (multi-country food-tech launches), LA FUORI (B2B web and campaigns).\n\nHe works best embedded with product managers and engineers in one decision loop - especially when shipping 0→1 AI features under business pressure.",
       "suggestions": [
         { "label": "Current Role", "topicId": "current_role" },
         { "label": "Previous Experience", "topicId": "previous_experience" },

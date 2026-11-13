@@ -839,7 +839,7 @@
       ? Object.assign({}, f, { href: hrefs[f.title] })
       : Object.assign({}, f, { onClick: () => onExit("more-work") })));
     S.folders.rows = S.folders.rows.map((r) => Object.assign({}, r, { href: hrefs[r.title] }));
-    S.folders.count = "All 4";
+    S.folders.count = "View all";
     /* Projects (Craft playground component): case studies and AI works. Facts from FEATURED and the
        case pages (meta description, first three fact lines). S.cases (all of them) feeds search. */
     const caseStudies = [
@@ -862,16 +862,16 @@
         sub: "Easy Eat", domain: "FoodTech", year: "2021-22", summary: "Every dish option on one screen that counts for you.",
         metric: { value: "+8.3%", label: "QR adoption in 3 weeks" },
         description: "Order customization: every variant and add-on on one screen that counts for you. QR adoption went up 8.3% in three weeks.",
-        facts: [["Role", "UI/UX Designer"], ["Team", "PM, researcher, developers"], ["At Easy Eat", "Dec 2021 to Aug 2022"]] },
+        facts: [["Role", "UI/UX Designer"], ["Team", "PM, researcher, developers"], ["Timeline", "Dec 2021 to Aug 2022"]] },
     ];
     /* AI works tab: one entry per project. live: "resonance" opens the Resonance popup from CraftHero;
        prototype: "https://..." opens a link instead. */
     const aiWorks = [
-      { id: "resonance", title: "Spotify Resonance", href: hrefs["Resonance"], image: ASSETS.resonance, icon: "wave", tone: "blue",
-        sub: "For Spotify", domain: "AI, Music", summary: "Playback that starts songs closer to the part you want to hear.",
+      { id: "resonance", title: "Resonance for Spotify", href: hrefs["Resonance"], image: ASSETS.resonance, icon: "wave", tone: "blue",
+        sub: "Personal project", domain: "AI, Music", summary: "Playback that starts songs closer to the part you want to hear.",
         metric: { value: "Concept", label: "speculative, personal project", word: true },
         description: "A speculative, personal playback idea for Spotify that starts songs closer to the moment you actually want to hear. Not affiliated with Spotify.",
-        facts: [["Context", "For Spotify, personal"], ["Type", "Speculative product"], ["Prototype", "Live in the browser"]],
+        facts: [["Context", "Personal project, for Spotify"], ["Type", "Speculative product"], ["Prototype", "Live in the browser"]],
         live: "resonance" },
       { id: "splitly", title: "Splitly", href: hrefs["Splitly"], image: "./assets/craft/case/sp-cover-sm.jpg", icon: "receipt", tone: "orange",
         sub: "Personal project", domain: "Fintech, AI-built", summary: "Split a bill and see who pays whom. Built with AI.",
@@ -1000,7 +1000,7 @@
         // Portrait: a 4 x 4 board; landscape keeps the 5 x 3 board. Scroll instead of shrinking past 0.68.
         const portrait = w < 1100 && h > w;
         const bw = portrait ? BOARD.tw : BOARD.w, bh = portrait ? BOARD.th : BOARD.h;
-        const top = w < 1100 ? 168 : 104, bottom = 112;
+        const top = 104, bottom = 112; /* the design-notes row no longer shows below 1100px */
         let scale = Math.min(1.12, (w - 64) / bw, (h - top - bottom) / bh);
         scale = Math.max(Math.min(0.68, (w - 64) / bw), scale);
         const boardH = bh * scale;
@@ -1102,6 +1102,14 @@
     useEffect(() => {
       const mq = window.matchMedia("(max-width: 700px)");
       const on = () => setPhone(mq.matches);
+      mq.addEventListener("change", on);
+      return () => mq.removeEventListener("change", on);
+    }, []);
+    /* Design-notes pill is for the desktop dashboard only (1100px and up) */
+    const [narrow, setNarrow] = useState(() => window.matchMedia("(max-width: 1099px)").matches);
+    useEffect(() => {
+      const mq = window.matchMedia("(max-width: 1099px)");
+      const on = () => setNarrow(mq.matches);
       mq.addEventListener("change", on);
       return () => mq.removeEventListener("change", on);
     }, []);
@@ -1216,7 +1224,7 @@
       searchLabel: CS ? "Search the portfolio" : "Ask the portfolio assistant",
       /* Pill only on bare Home: any sheet (search, profile, open Resonance), Projects,
          or phone width hides it. A parked Resonance popup is not a sheet, so the pill comes back. */
-      noticeHidden: phone || !!sheet || playground,
+      noticeHidden: narrow || !!sheet || playground,
     });
     const dock = {
       actions: [
@@ -1256,10 +1264,10 @@
       })),
       pg: () => e(C.TeamCard, {
         title: "Design Playground",
-        subtitle: "Interface and motion studies",
+        subtitle: "Personal interface and motion studies",
         thumbs: [ASSETS.moov, ASSETS.spaceBetweenPoster, ASSETS.swaply],
         count: 7,
-        label: "Open Design Playground, 7 interface and motion studies",
+        label: "Open Design Playground, 7 personal interface and motion studies",
         attrs: { "data-pg-card": "" },
         onOpen: () => openPgBoard(),
         onDrop: () => openProjects(pgCard()),
@@ -1280,7 +1288,7 @@
       onClick: onStageClick,
     },
       hint ? e("p", { className: "cr-wp-hint", role: "status" }, "Tap the wallpaper to change it") : null,
-      e("h1", { className: "cr-visually-hidden" }, "Gaurav Avinash, Senior Product Designer"),
+      e("h1", { className: "cr-visually-hidden" }, "Gaurav Avinash, Product Designer"),
       e(C.TopBar, topbar),
       e("div", { className: "cr-board" + (pgBoard ? " is-pgb" : "") },
         e("div", { className: "cr-grid" + (sheet && !sheet.closing ? " cr-dimmed" : "") + (pgBoard && !pgBoardOut ? " cr-pg-out" : ""), inert: pgBoard ? "" : undefined },
@@ -1662,7 +1670,7 @@
 
       e("footer", { className: "ga-footer" },
         e("div", { className: "ga-footer-inner" },
-          "Gaurav Avinash · Product Designer · UX/AI Design · 4+ years · AI B2B SaaS · Human–AI interaction · © " + new Date().getFullYear()
+          "Gaurav Avinash · Product Designer · UX/AI Design · 5+ years · AI B2B SaaS · Human–AI interaction · © " + new Date().getFullYear()
         )
       )
     );

@@ -193,3 +193,9 @@ body:has(.cb-root) .cr-dimmed .cr-dim { filter: none; }
   .cb-card, .cb-go, .cb-type, .cb-day, .cb-slot, .cb-switch-knob, .cb-switch-track { transition: none; }
   .cb-card:hover, .cb-card:active { translate: none; scale: none; }
 }
+
+/* Readability: a darker tint behind the date card so its white text reaches 4.5:1 on any wallpaper */
+.cr-board .cb-card.cr-glass { background: rgba(30, 24, 34, 0.55); }
+.cb-meta { color: #fff; }
+.cb-k { color: rgba(255, 255, 255, 0.94); }
+.cb-sub { color: rgba(255, 255, 255, 0.9); }

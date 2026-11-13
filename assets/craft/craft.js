@@ -427,7 +427,7 @@
     function onActive(title, why) { if (why === "hover") setHov(title); else setFoc(title); }
     return h("section", { className: cx("cr-card cr-solid cr-list", props.className), "data-cr-enter": "", "aria-label": props.title },
       h("header", { className: "cr-list-head" },
-        h("h3", { className: "cr-t-title" }, props.title),
+        h("h2", { className: "cr-t-title" }, props.title),
         props.onAll
           ? h("button", { type: "button", className: "cr-chip cr-chip--outline cr-chip--btn", "aria-label": props.allLabel || ("View " + props.count), "aria-haspopup": "dialog", onClick: props.onAll }, props.count)
           : h(Chip, { variant: "outline" }, props.count)),
@@ -616,7 +616,7 @@
     var acc = 0;
     return h("section", { className: cx("cr-card cr-solid cr-stat", props.className), "data-cr-enter": "", "aria-label": props.title },
       h("header", { className: "cr-stat-head" },
-        h("h3", { className: "cr-t-title" }, props.title),
+        h("h2", { className: "cr-t-title" }, props.title),
         props.link ? h("a", { className: "cr-stat-link", href: props.href || "#", "aria-haspopup": props.onLink ? "dialog" : undefined, "aria-label": props.linkLabel, onClick: props.onLink ? function (ev) { ev.preventDefault(); props.onLink(ev); } : undefined }, props.link, h(Icon, { name: "chevron", stroke: 2 })) : null),
       h("p", { className: "cr-stat-value cr-t-xl" }, val, h("span", null, props.unit || "")),
       h("div", { className: "cr-stat-legs" },
@@ -652,7 +652,7 @@
     } : { "aria-label": props.title };
     return h("section", Object.assign({ className: cx("cr-card cr-solid cr-mstat", props.onCard && "is-clickable", props.className), "data-cr-enter": "" }, cardProps),
       h("header", { className: "cr-mstat-head" },
-        h("h3", null, props.title),
+        h("h2", null, props.title),
         props.link ? h("a", { className: "cr-mstat-link", href: props.href || "#", "aria-haspopup": props.onLink ? "dialog" : undefined, "aria-label": props.linkLabel,
           onClick: props.onLink ? function (ev) { ev.preventDefault(); props.onLink(ev); } : undefined }, props.link, h(Icon, { name: "chevron", stroke: 2 })) : null),
       h("p", { className: "cr-mstat-value" }, val, props.unit || ""),
@@ -2237,11 +2237,11 @@
     var rows = [
       { title: "Contextual Chat", sub: "AI search · +25%", thumb: img.chat, icon: "chatSpark", tone: "blue" },
       { title: "Deal Room", sub: "B2B SaaS · +32% adoption", thumb: img.dealRoom, icon: "dealDoc", tone: "orange" },
-      { title: "White Label", sub: "Fintech · 3 steps to live", thumb: img.whiteLabel, icon: "swatch", tone: "pink" }
+      { title: "White Label Setup", sub: "Fintech · 3 steps to live", thumb: img.whiteLabel, icon: "swatch", tone: "pink" }
     ];
     return {
       topbar: {
-        avatar: face, title: "Gaurav Avinash", subtitle: "Senior Product Designer", status: "Open to work",
+        avatar: face, title: "Gaurav Avinash", subtitle: "Product Designer", status: "Open to work",
         notice: { avatar: img.chat, title: "Latest case study", subtitle: "Contextual Chat", meta: "Open", seconds: 14 },
         tabs: ["Home", "Projects"]
       },
@@ -2257,8 +2257,8 @@
           { image: img.whiteLabel, label: "Next" }
         ],
         cursors: [
-          { name: "Gaurav", color: "#ec6533", avatar: face, x: 175, y: 2 },
-          { name: "You", color: "#e42a9e", x: 69, y: 92 }
+          { name: "Gaurav", color: "#c94a1c", avatar: face, x: 175, y: 2 },
+          { name: "You", color: "#c81f8a", x: 69, y: 92 }
         ],
         avatar: face, title: "Contextual Chat", subtitle: "AI search", count: null, countIcon: "arrow"
       },
@@ -2276,7 +2276,7 @@
       files: [
         { title: "Contextual Chat", sub: "AI search", image: img.chat },
         { title: "Deal Room", sub: "B2B SaaS", image: img.dealRoom },
-        { title: "White Label", sub: "Fintech", image: img.whiteLabel },
+        { title: "White Label Setup", sub: "Fintech", image: img.whiteLabel },
         { title: "EasyEat", sub: "FoodTech", image: img.easyeat },
         { title: "Resonance", sub: "AI · Music", image: img.resonance },
         { title: "Nomad", sub: "Playground", image: img.nomad },
@@ -2284,8 +2284,8 @@
         { title: "Swaply", sub: "Playground", image: img.swaply }
       ],
       profileSheet: {
-        image: img.profile, name: "Gaurav Avinash", role: "Product Designer · Delhi, India", status: "Open to work",
-        bio: "I design products that make complex things feel simple. AI search, deal workflows and fintech setup flows, end to end.",
+        image: img.profile, name: "Gaurav Avinash", role: "Product Designer · Delhi and Bengaluru, India", status: "Open to work",
+        bio: "I design products that make complex things feel simple. AI search, deal workflows and fintech setup flows, end to end. AI is part of how I work: I sketch screens in Google Stitch, refine them in Figma, then build working prototypes with Claude and Cursor so ideas get tested early.",
         facts: [{ value: "5+", label: "years designing" }, { value: "+25%", label: "engagement, Contextual Chat" }, { value: "+32%", label: "adoption, Deal Room" }, { value: "4", label: "industries: fintech, AI, food, health" }]
       }
     };

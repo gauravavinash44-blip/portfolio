@@ -1619,7 +1619,7 @@ body:has(.cr-np-modal:not(.is-parked)) .cr-dimmed .cr-dim:has(> .cr-rp) { opacit
 .cr-board .cr-list { display: block; padding: 0 8px; }
 .cr-board .cr-list-head { height: 79px; margin: 0; padding: 21px 13px 0 20px; align-items: flex-start; }
 .cr-board .cr-list-head .cr-t-title { margin-top: 9px; font-size: 17px; line-height: 1; letter-spacing: -0.02em; }
-.cr-board .cr-list-head .cr-chip--outline { height: 42px; min-width: 67px; justify-content: center; padding: 0 15px; font-size: 12px; font-weight: 400; }
+.cr-board .cr-list-head .cr-chip--outline { height: 44px; min-width: 67px; justify-content: center; padding: 0 15px; font-size: 12px; font-weight: 400; }
 .cr-board .cr-list .cr-row { height: 86px; padding: 0 12px 0 13px; grid-template-columns: 57px minmax(0, 1fr) auto; gap: 15px; border-radius: 24px; }
 .cr-board .cr-list .cr-row + .cr-row::before { left: 13px; right: 6px; }
 .cr-board .cr-row-av, .cr-board .cr-row-av .cr-pwell, .cr-board .cr-row-thumb { width: 57px; height: 57px; }
@@ -1634,7 +1634,7 @@ body:has(.cr-np-modal:not(.is-parked)) .cr-dimmed .cr-dim:has(> .cr-rp) { opacit
 /* ── Experience ("Data") ── */
 .cr-mstat { position: relative; display: block; }
 .cr-mstat-head { position: absolute; left: 17px; right: 15px; top: 17px; height: 18px; display: flex; justify-content: space-between; align-items: center; }
-.cr-mstat-head h3 { margin: 0; font-size: 13.5px; font-weight: 400; letter-spacing: -0.015em; white-space: nowrap; }
+.cr-mstat-head :is(h2, h3) { margin: 0; font-size: 13.5px; font-weight: 400; letter-spacing: -0.015em; white-space: nowrap; }
 .cr-mstat-link { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: var(--ink-link); white-space: nowrap; }
 .cr-mstat-link svg { width: 8px; height: 8px; color: var(--ink); }
 .cr-mstat-link:hover { color: var(--ink); }
@@ -2291,3 +2291,28 @@ html:not(:has(.craft-switch)) .cr-hero[data-cr-fit="flow"] .cr-topbar { right: 2
   .cr-hero .cr-clock { display: none; }
   .cr-hero .cr-topbar-id { display: flex; margin-left: 16px; }
 }
+
+/* ── Audit fixes: notice only on desktop, 44px tap targets, readable glass ── */
+/* Design-notes pill: desktop dashboard only. Tablets and phones never show it. */
+@media (max-width: 1099px) {
+  .cr-hero .cr-topbar > .cr-topbar-notice { display: none; }
+}
+/* Close keeps its 36px look with a 44px hit area */
+.cr-notice-close::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; }
+/* Experience "View all": same look, 44px tall hit area */
+.cr-mstat-link { position: relative; }
+.cr-mstat-link::after { content: ""; position: absolute; inset: -15px -10px; }
+/* Contact card dots: wider and taller hit areas around the same small dots */
+.cr-hello-dot { position: relative; width: 26px; }
+.cr-hello-dot::after { content: ""; position: absolute; inset: -15px 0 -9px; }
+/* Home/Projects: darker glass so the inactive tab reads at 4.5:1 */
+.cr-glass-light.cr-seg { background: rgba(40, 32, 42, 0.46); }
+.cr-seg button:not([aria-selected="true"]) { color: rgba(255, 255, 255, 0.92); }
+/* Top-bar name on light wallpapers: a soft light halo keeps dark text readable over busy sky */
+.craft-wp--fuji .cr-topbar-id, .craft-wp--kirkjufell .cr-topbar-id { text-shadow: 0 0 10px rgba(255, 255, 255, 0.75), 0 0 2px rgba(255, 255, 255, 0.6); }
+.craft-wp--fuji .cr-topbar-id span:last-child, .craft-wp--kirkjufell .cr-topbar-id span:last-child { opacity: 0.88; }
+/* Home/Projects buttons fill the 50px control (3px inset each side): 44px tall */
+.cr-seg button { height: 44px; }
+/* Case-study rows: a few pixels of extra hit area above and below each row */
+.cr-row-text { position: relative; }
+.cr-row-text::after { content: ""; position: absolute; inset: -3px 0; }

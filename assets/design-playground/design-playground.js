@@ -48,7 +48,8 @@
     }
 
     if (item.media && item.media.type === 'video') {
-      return `<video muted loop playsinline autoplay disablepictureinpicture poster="${escapeHtml(item.media.poster || preview.src)}" aria-hidden="true"><source src="${escapeHtml(item.media.src)}" type="video/mp4"></video>`;
+      /* Grid previews sit in a hidden host: no autoplay, no download until a player opens */
+      return `<video muted loop playsinline preload="none" disablepictureinpicture poster="${escapeHtml(item.media.poster || preview.src)}" aria-hidden="true"><source src="${escapeHtml(item.media.src)}" type="video/mp4"></video>`;
     }
 
     if (item.media && item.media.type === 'gif') {
