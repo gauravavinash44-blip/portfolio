@@ -749,7 +749,9 @@
     { id: "dike", label: "Dike road" },
     { id: "barley", label: "Barley field" },
     { id: "kirkjufell", label: "Kirkjufell" },
-    { id: "rows", label: "Seedling rows" },
+    { id: "meadow", label: "Pastel meadow" },
+    { id: "streak", label: "Blue streak" },
+    { id: "film", label: "Film blur" },
   ];
   const CRAFT_WP_KEY = "ga-craft-wallpaper";
   const CRAFT_WP_HINT_KEY = "ga-craft-wp-hint";

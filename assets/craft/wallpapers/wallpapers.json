@@ -237,63 +237,19 @@
       }
     },
     {
-      "id": "rows",
-      "label": "Seedling rows",
-      "thumb": "rows-blur.jpg",
-      "dominant": [
-        [
-          "#747039",
-          0.272
-        ],
-        [
-          "#484f48",
-          0.227
-        ],
-        [
-          "#918f2d",
-          0.215
-        ],
-        [
-          "#aaa925",
-          0.17
-        ],
-        [
-          "#c2c421",
-          0.117
-        ]
-      ],
-      "vars": {
-        "--wp-glass": "rgba(84, 153, 119, 0.42)",
-        "--wp-glass-light": "rgba(76, 138, 107, 0.26)",
-        "--wp-glass-strong": "rgba(61, 110, 85, 0.62)",
-        "--wp-topbar-ink": "#fff",
-        "--wp-pos": "50% 25%",
-        "--wp-accent": "#b8bd0f"
-      },
-      "contrast": {
-        "saliency_centroid": [
-          0.53,
-          0.81
-        ],
-        "grid_avg": "#8a8738",
-        "grid_bright_p90": "#b3b321",
-        "white_on_glass_avg": 3.64,
-        "white_on_glass_bright": 2.68,
-        "white_on_strong_avg": 4.99,
-        "white_on_strong_bright": 4.01,
-        "topbar_white_avg": 9.87,
-        "topbar_white_worst": 8.76,
-        "topbar_dark_avg": 2.01,
-        "topbar_dark_worst": 1.78,
-        "topbar_ink_on_glass_light": 7.76
-      },
-      "files": {
-        "rows-2560.jpg": 437350,
-        "rows-2560.webp": 371654,
-        "rows-1440.jpg": 341714,
-        "rows-1440.webp": 293430,
-        "rows-blur.jpg": 611
-      }
+      "id": "meadow",
+      "label": "Pastel meadow",
+      "thumb": "meadow-1440.jpg"
+    },
+    {
+      "id": "streak",
+      "label": "Blue streak",
+      "thumb": "streak-1440.jpg"
+    },
+    {
+      "id": "film",
+      "label": "Film blur",
+      "thumb": "film-1440.jpg"
     }
   ]
 }

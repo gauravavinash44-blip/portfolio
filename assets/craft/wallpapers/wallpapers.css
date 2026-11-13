@@ -66,18 +66,56 @@
 .craft-wp--kirkjufell .cr-wp-blur { background-image: url("./kirkjufell-blur.jpg"); }
 .cr-wp-thumb.craft-wp--kirkjufell { background-image: url("./kirkjufell-blur.jpg"); }
 
-/* Seedling rows */
-.craft-wp--rows {
-  --wp-glass: rgba(84, 153, 119, 0.42);
-  --wp-glass-light: rgba(76, 138, 107, 0.26);
-  --wp-glass-strong: rgba(61, 110, 85, 0.62);
-  --wp-topbar-ink: #fff;
-  --wp-pos: 50% 25%;
-  --wp-accent: #b8bd0f;
+/* Pastel meadow */
+.craft-wp--meadow {
+  --wp-glass: rgba(92, 112, 86, 0.42);
+  --wp-glass-light: rgba(160, 176, 150, 0.28);
+  --wp-glass-strong: rgba(66, 84, 62, 0.62);
+  --wp-topbar-ink: #0a0a0a;
+  --wp-pos: 50% 70%;
+  --wp-accent: #c2507a;
 }
-.craft-wp--rows .cr-wp-photo { background-image: url("./rows-1440.jpg"); background-image: image-set(url("./rows-1440.webp") type("image/webp"), url("./rows-1440.jpg") type("image/jpeg")); }
+.craft-wp--meadow .cr-wp-photo { background-image: url("./meadow-1440.jpg"); background-image: image-set(url("./meadow-1440.webp") type("image/webp"), url("./meadow-1440.jpg") type("image/jpeg")); }
 @media (min-width: 1600px), (min-resolution: 1.5dppx) {
-  .craft-wp--rows .cr-wp-photo { background-image: url("./rows-2560.jpg"); background-image: image-set(url("./rows-2560.webp") type("image/webp"), url("./rows-2560.jpg") type("image/jpeg")); }
+  .craft-wp--meadow .cr-wp-photo { background-image: url("./meadow-2560.jpg"); background-image: image-set(url("./meadow-2560.webp") type("image/webp"), url("./meadow-2560.jpg") type("image/jpeg")); }
 }
-.craft-wp--rows .cr-wp-blur { background-image: url("./rows-blur.jpg"); }
-.cr-wp-thumb.craft-wp--rows { background-image: url("./rows-blur.jpg"); }
+.craft-wp--meadow .cr-wp-blur { background-image: url("./meadow-blur.jpg"); }
+.cr-wp-thumb.craft-wp--meadow { background-image: url("./meadow-blur.jpg"); }
+
+/* Blue streak */
+.craft-wp--streak {
+  --wp-glass: rgba(30, 98, 146, 0.42);
+  --wp-glass-light: rgba(120, 180, 220, 0.28);
+  --wp-glass-strong: rgba(20, 72, 112, 0.62);
+  --wp-topbar-ink: #0a0a0a;
+  --wp-pos: 50% 50%;
+  --wp-accent: #0a7cc2;
+}
+.craft-wp--streak .cr-wp-photo { background-image: url("./streak-1440.jpg"); background-image: image-set(url("./streak-1440.webp") type("image/webp"), url("./streak-1440.jpg") type("image/jpeg")); }
+@media (min-width: 1600px), (min-resolution: 1.5dppx) {
+  .craft-wp--streak .cr-wp-photo { background-image: url("./streak-2560.jpg"); background-image: image-set(url("./streak-2560.webp") type("image/webp"), url("./streak-2560.jpg") type("image/jpeg")); }
+}
+.craft-wp--streak .cr-wp-blur { background-image: url("./streak-blur.jpg"); }
+.cr-wp-thumb.craft-wp--streak { background-image: url("./streak-blur.jpg"); }
+
+/* Film blur */
+.craft-wp--film {
+  --wp-glass: rgba(96, 108, 128, 0.42);
+  --wp-glass-light: rgba(170, 182, 200, 0.28);
+  --wp-glass-strong: rgba(70, 80, 98, 0.62);
+  --wp-topbar-ink: #0a0a0a;
+  --wp-pos: 50% 45%;
+  --wp-accent: #5f8f1f;
+}
+.craft-wp--film .cr-wp-photo { background-image: url("./film-1440.jpg"); background-image: image-set(url("./film-1440.webp") type("image/webp"), url("./film-1440.jpg") type("image/jpeg")); }
+@media (min-width: 1600px), (min-resolution: 1.5dppx) {
+  .craft-wp--film .cr-wp-photo { background-image: url("./film-2560.jpg"); background-image: image-set(url("./film-2560.webp") type("image/webp"), url("./film-2560.jpg") type("image/jpeg")); }
+}
+.craft-wp--film .cr-wp-blur { background-image: url("./film-blur.jpg"); }
+.cr-wp-thumb.craft-wp--film { background-image: url("./film-blur.jpg"); }
+
+/* Bright wallpapers: a deeper tint on the glass contact card so its white text stays readable */
+.craft-wp--meadow { --g-date: var(--g-sheen), linear-gradient(rgba(44, 54, 38, 0.64), rgba(44, 54, 38, 0.7)); }
+.craft-wp--streak { --g-date: var(--g-sheen), linear-gradient(rgba(12, 56, 94, 0.64), rgba(12, 56, 94, 0.7)); }
+.craft-wp--film { --g-date: var(--g-sheen), linear-gradient(rgba(44, 50, 68, 0.64), rgba(44, 50, 68, 0.7)); }
+.craft-wp--meadow .cr-board .cb-card.cr-glass, .craft-wp--streak .cr-board .cb-card.cr-glass, .craft-wp--film .cr-board .cb-card.cr-glass { background: rgba(30, 24, 34, 0.64); }

@@ -37,10 +37,6 @@
       veg: { amp: 0.0028, sheen: 0.05, scale: 3.2, speed: 0.09, dir: [1, 0.05] },
       water: { amp: 0.0012, glint: 0.3, scale: 1.0, speed: 2.0 },
       shadow: 0.05
-    },
-    rows: {
-      veg: { amp: 0, sheen: 0.035, scale: 1.4, speed: 0.05, dir: [1, 0.1] }, /* fine rows alias if displaced: light only */
-      shadow: 0.14
     }
   };
 
