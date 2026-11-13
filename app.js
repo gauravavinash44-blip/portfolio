@@ -712,7 +712,8 @@
 
   function readCraftPref() {
     /* Craft is the default. Only someone who switched it off gets the classic site. */
-    try { return window.localStorage.getItem(CRAFT_KEY) !== "off"; } catch (err) { return true; }
+    /* The classic site is retired: Craft is the only portfolio. Old "off" prefs are ignored. */
+    return true;
   }
 
   function writeCraftPref(on) {
@@ -1076,6 +1077,7 @@
   function CraftHero({ onExit }) {
     const C = window.Craft;
     const stageRef = useRef(null);
+    const setPgQueueRef = useRef(null);
     const [sheet, setSheet] = useState(null);
     /* The Resonance popup stays mounted (hidden) after it closes while its prototype has a song,
        so the song keeps playing and the board card works as the mini player */
@@ -1092,7 +1094,8 @@
     const openPgBoard = (startId) => { setPicker(false); setSheet(null); setPgBoardOut(false); setPgBoard({ startId: startId || null }); };
     const [pgStart, setPgStart] = useState(null); /* { tab, startId, from } for the next open */
     const [pgClosing, setPgClosing] = useState(false); /* Home is rising back: the top bar tab returns to Home */
-    const data = React.useMemo(() => craftData(onExit), [onExit]);
+    const openAllWork = React.useCallback(() => setPgQueueRef.current && setPgQueueRef.current({ tab: "cases" }), []);
+    const data = React.useMemo(() => craftData(openAllWork), [openAllWork]);
     const CP = window.CraftPlayground;
     const pgJson = usePlaygroundJson(CP);
     const pgWork = React.useMemo(() => playgroundWork(CP, pgJson), [pgJson]); /* playground items for search */
@@ -1206,7 +1209,8 @@
     }, []);
     /* Search + assistant popup (assets/craft/search.js). mode: "search" or "ask" */
     const CS = window.CraftSearch;
-    const [pgQueue, setPgQueue] = useState(undefined); /* Projects pick from search: open once the old view is gone */
+    const [pgQueue, setPgQueue] = useState(undefined);
+    setPgQueueRef.current = setPgQueue; /* Projects pick from search: open once the old view is gone */
     const openSearch = (opener, mode) => {
       if (!CS) { openAssistant(); return; }
       setPicker(false);
@@ -1353,7 +1357,6 @@
           if (playground) { setPlayground(false); setPgStart(null); }
           openPgBoard(id);
         },
-        onClassic: () => onExit(),
         onClosing: () => setSheet((s) => (s ? Object.assign({}, s, { closing: true }) : s)),
         onClose: (then) => { setSheet(null); if (typeof then === "function") requestAnimationFrame(then); },
       }) : null
@@ -1407,7 +1410,6 @@
     if (craft) {
       return e("div", { className: "ga-root ga-root--craft" },
         e(Splash, { onDone: onSplashDone }),
-        e(CraftSwitch, { on: true, onToggle: toggleCraft }),
         e(BrandMark),
         e(CraftHero, { onExit: exitCraft })
       );
