@@ -963,7 +963,11 @@
     /* The three Systematic case studies carry their own icon in a frosted disc at the centre of the orb */
     if (core) return h("span", { className: cx("cr-pwell cr-pwell--orb has-core", props.className), ref: ref, "aria-hidden": "true",
       style: { backgroundImage: O.fallback(key) } },
-      h("span", { className: "cr-orb-core" }, h("img", { src: core, alt: "", width: 48, height: 48, decoding: "async" })));
+      h("span", { className: "cr-orb-core" }, h("img", { src: core, alt: "", width: 48, height: 48, decoding: "async" })),
+      /* Locked case study (assets/craft/access.js): small lock until this visitor has a way in */
+      window.GAAccess && !window.GAAccess.unlocked() ? h("span", { className: "cr-orb-lock", title: "Under NDA, ask for access" },
+        h("svg", { viewBox: "0 0 24 24", width: 12, height: 12, fill: "none", stroke: "currentColor", strokeWidth: 2.2, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true" },
+          h("rect", { x: 5, y: 11, width: 14, height: 9, rx: 2.5 }), h("path", { d: "M8 11V8a4 4 0 0 1 8 0v3" }))) : null);
     if (isOrb) return h("span", { className: cx("cr-pwell cr-pwell--orb", glyph && "has-badge", props.className), ref: ref, "aria-hidden": "true",
       style: { backgroundImage: O.fallback(key) } },
       glyph ? h("span", { className: "cr-orb-badge" },

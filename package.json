@@ -1,0 +1,11 @@
+{
+  "name": "portfolio",
+  "private": true,
+  "scripts": {
+    "lock": "node scripts/lock.mjs",
+    "link": "node scripts/link.mjs"
+  },
+  "devDependencies": {
+    "staticrypt": "3.5.4"
+  }
+}
