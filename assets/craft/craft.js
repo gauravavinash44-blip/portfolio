@@ -949,6 +949,7 @@
   /* Round well for a project. Projects get their orb (assets/craft/orb.js: a grainy
      iridescent sphere, one colour trio per project, keyed by the project icon); anything
      else (contact slides) keeps the 1.5px line icon on a faint tint. Pass orb: false to force the icon. */
+  var ORB_CORE = { chatSpark: "./assets/craft/icons/chat-spark.png", dealDoc: "./assets/craft/icons/deal-room.png", swatch: "./assets/craft/icons/white-label.png" };
   function ProjectWell(props) {
     var O = window.CraftOrb;
     var key = props.orb === false ? null : (typeof props.orb === "string" ? props.orb : props.icon);
@@ -957,7 +958,12 @@
     useEffect(function () { return isOrb ? O.mount(ref.current, key) : undefined; }, [isOrb, key]);
     /* Black badge on the orb's bottom edge with a white glyph saying what the project is
        (glyph data in orb.js). Pass badge: false to leave it off. */
-    var glyph = isOrb && props.badge !== false && O.glyph ? O.glyph(key) : null;
+    var core = isOrb ? ORB_CORE[key] : null;
+    var glyph = isOrb && !core && props.badge !== false && O.glyph ? O.glyph(key) : null;
+    /* The three Systematic case studies carry their own icon in a frosted disc at the centre of the orb */
+    if (core) return h("span", { className: cx("cr-pwell cr-pwell--orb has-core", props.className), ref: ref, "aria-hidden": "true",
+      style: { backgroundImage: O.fallback(key) } },
+      h("span", { className: "cr-orb-core" }, h("img", { src: core, alt: "", width: 48, height: 48, decoding: "async" })));
     if (isOrb) return h("span", { className: cx("cr-pwell cr-pwell--orb", glyph && "has-badge", props.className), ref: ref, "aria-hidden": "true",
       style: { backgroundImage: O.fallback(key) } },
       glyph ? h("span", { className: "cr-orb-badge" },
