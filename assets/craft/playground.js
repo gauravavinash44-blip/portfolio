@@ -155,7 +155,8 @@
     down: "M12 5v14M6 13l6 6 6-6",
     share: "M14 5l6 6-6 6M20 11H10a6 6 0 0 0-6 6v1",
     home: "M4 11l8-6.5 8 6.5M6.5 9.5V19h11V9.5",
-    arrow: "M5 12h14M13 6l6 6-6 6"
+    arrow: "M5 12h14M13 6l6 6-6 6",
+    expand: "M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"
   };
   function Icon(props) {
     return h("svg", { viewBox: "0 0 24 24", width: props.size || 20, height: props.size || 20, fill: props.fill ? "currentColor" : "none", stroke: props.fill ? "none" : "currentColor", strokeWidth: props.stroke || 1.7, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true", focusable: "false" },
@@ -1068,6 +1069,7 @@
     var _i = useState(function () { return buildItems(null).map(boardItem); }), items = _i[0], setItems = _i[1];
     var _w = useState(null), dims = _w[0], setDims = _w[1], W = dims ? dims.w : 0;
     var _o = useState(null), open = _o[0], setOpen = _o[1];
+    var _z = useState(false), zoom = _z[0], setZoom = _z[1]; /* the open project's picture or video, full size */
     var rootRef = useRef(null), gridRef = useRef(null), sheetRef = useRef(null), leaving = useRef(false), opener = useRef(null);
     var still = reduced();
 
@@ -1134,6 +1136,7 @@
     function step(d) { if (!cur) return; setOpen(order[(idx + d + order.length) % order.length].id); }
 
 
+    useEffect(function () { setZoom(false); }, [open]);
     function closeSheet() {
       var sh = sheetRef.current;
       var done = function () { setOpen(null); var o = opener.current; if (o && o.isConnected) o.focus({ preventScroll: true }); };
@@ -1142,7 +1145,8 @@
     }
     useEffect(function () {
       var fn = function (ev) {
-        if (ev.key === "Escape") { ev.preventDefault(); if (cur) closeSheet(); else close(); }
+        if (ev.key === "Escape") { ev.preventDefault(); if (zoom) setZoom(false); else if (cur) closeSheet(); else close(); }
+        else if (zoom) return;
         else if (cur && ev.key === "ArrowRight") step(1);
         else if (cur && ev.key === "ArrowLeft") step(-1);
       };
@@ -1170,7 +1174,10 @@
     if (cur) {
       var desc = cur.description || (cur.kind === "motion" ? "A short motion study, no write-up yet." : "");
       sheet = h("section", { className: "cr-sheet cpb-sheet", ref: sheetRef, role: "dialog", "aria-modal": "true", "aria-label": cur.title, key: "sheet" },
-        h("div", { className: "cpb-sheet-media", style: { "--r": cur.ratio } }, media(cur, true)),
+        h("div", { className: "cpb-sheet-media", style: { "--r": cur.ratio } },
+          h("button", { type: "button", className: "cpb-zoomable", "aria-label": "View " + cur.title + " full size", onClick: function () { setZoom(true); } },
+            media(cur, true),
+            h("span", { className: "cpb-zoom-hint", "aria-hidden": "true" }, h(Icon, { name: "expand", size: 16 })))),
         h("div", { className: "cpb-sheet-body" },
           h("div", { className: "cpb-sheet-top" },
             h("span", { className: "cr-chip" }, cur.kindLabel + " · " + (idx + 1) + " of " + order.length),
@@ -1185,11 +1192,20 @@
               h("button", { type: "button", className: "cr-iconbtn cr-iconbtn--solid cpb-next", "aria-label": "Next project", onClick: function () { step(1); } }, h(Icon, { name: "back", size: 18 }))))));
     }
 
-    return h("div", { className: cx("cpb", cur && "has-sheet"), ref: rootRef, role: "region", "aria-label": "Design Playground" },
+    /* Full-size view of the open project's visual. Lives on <body> so nothing on the board clips it. */
+    var zoomEl = cur && zoom ? h("div", { className: "cpb-zoom", role: "dialog", "aria-modal": "true", "aria-label": cur.title + ", full size", onClick: function () { setZoom(false); } },
+      h("div", { className: "cpb-zoom-frame", style: { "--r": cur.ratio } }, media(cur, true)),
+      h("button", { type: "button", className: "cr-iconbtn cr-iconbtn--solid cpb-zoom-close", "aria-label": "Close full size view", autoFocus: true, onClick: function (ev) { ev.stopPropagation(); setZoom(false); } }, h(Icon, { name: "close", size: 18 }))) : null;
+
+    return h("div", { className: cx("cpb", cur && "has-sheet"), ref: rootRef, role: "region", "aria-label": "Playground" },
       h("div", { className: "cpb-grid", ref: gridRef, inert: cur ? "" : undefined, style: { gap: gap + "px" } },
-        /* Its own control, top middle, just above the cards: glass round back to Home */
-        h("button", { type: "button", className: "cr-iconbtn cr-iconbtn--glass cr-glass-light cpb-back", onClick: close, "aria-label": "Back to Home", title: "Back to Home" },
-          h(Icon, { name: "back", size: 20, stroke: 1.7 })),
+        /* Header, left aligned with the cards: glass round back to Home, then what this is */
+        h("div", { className: "cpb-head" },
+          h("button", { type: "button", className: "cr-iconbtn cr-iconbtn--glass cr-glass-light cpb-back", onClick: close, "aria-label": "Back to Home", title: "Back to Home" },
+            h(Icon, { name: "back", size: 20, stroke: 1.7 })),
+          h("div", { className: "cpb-head-text" },
+            h("h2", { className: "cpb-head-title" }, "Playground"),
+            h("p", { className: "cpb-head-sub" }, "Personal interface and motion studies, made outside client work"))),
         rows.map(function (row, ri) {
           return h("div", { key: ri, className: "cpb-row", style: { gap: gap + "px" } }, row.map(function (it) {
             var span = Math.min(it.span, cols);
@@ -1201,11 +1217,14 @@
               onClick: function (ev) { opener.current = ev.currentTarget; setOpen(it.id); }
             },
               media(it, false),
-              h("span", { className: "cr-chip cr-glass-light cpb-cap", "aria-hidden": "true" }, it.title));
+              h("span", { className: "cpb-cap", "aria-hidden": "true" },
+                h("span", { className: "cpb-cap-title" }, it.title),
+                h("span", { className: "cpb-cap-kind" }, it.kindLabel)));
           }));
         })),
       cur ? h("div", { className: "cpb-scrim", onClick: closeSheet, "aria-hidden": "true" }) : null,
-      sheet);
+      sheet,
+      zoomEl && window.ReactDOM && ReactDOM.createPortal ? ReactDOM.createPortal(zoomEl, document.body) : zoomEl);
   }
 
   window.CraftPlayground = { PlaygroundBoard: PlaygroundBoard, PlaygroundCard: PlaygroundCard, PlaygroundView: PlaygroundView, preload: preload, items: function () { return buildItems(null); } };
