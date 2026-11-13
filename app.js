@@ -1219,7 +1219,8 @@
     }, [pgQueue, playground]);
     if (CS) CS.useShortcut((btn) => openSearch(btn, "search"), !(sheet && sheet.kind !== "search"));
     const topbar = Object.assign({}, data.topbar, {
-      resume: ASSETS.resume,
+      resume: null,
+      notice: null,
       tab: playground && !pgClosing && !(pgStart && pgStart.mode === "playground") ? 1 : 0,
       onTab: (i, label, ev) => { if (pgBoard) { setPgBoard(null); setPgBoardOut(false); } return i === 1 ? openProjects(ev) : setSheet(null); },
       onSearch: CS ? (ev) => openSearch(fromEvent(ev), "search") : openAssistant,
