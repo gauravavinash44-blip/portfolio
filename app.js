@@ -809,7 +809,7 @@
       profile: ASSETS.profile, logo: ASSETS.logo, chat: ASSETS.chat, dealRoom: ASSETS.dealRoom,
       easyeat: ASSETS.easyeat, whiteLabel: ASSETS.whiteLabel, resonance: ASSETS.resonance,
       nomad: ASSETS.nomad, health: ASSETS.health, swaply: ASSETS.swaply, splitly: ASSETS.splitly,
-      avatar: "./assets/craft/avatar/gaurav-3d-shirt-face-96.webp",
+      avatar: "./assets/craft/avatar/gaurav-bitmoji-face-96.webp",
     });
     /* Board-only avatar (white shirt, glasses). The profile sheet keeps ASSETS.profile. */
     S.profile = Object.assign({}, S.profile, {
@@ -904,7 +904,7 @@
       slides: null,
       clip: { poster: "./assets/craft/case/chat-panel-poster.jpg", video: "./assets/craft/case/chat-panel.mp4" },
       cursors: S.preview.cursors.map((c) => Object.assign({}, c, c.name === "You" ? { x: 58, y: 104 }
-        : { x: 186, y: 184, avatarSet: "./assets/craft/avatar/gaurav-3d-shirt-face-96.webp 1x, ./assets/craft/avatar/gaurav-3d-shirt-face-192.webp 2x" })),
+        : { x: 186, y: 184, avatarSet: "./assets/craft/avatar/gaurav-bitmoji-face-96.webp 1x, ./assets/craft/avatar/gaurav-bitmoji-face-192.webp 2x" })),
     });
     /* Top bar pill: rotating design notes (rendered by Craft.PhilosophyPill). Interleaved Norman, Rams, Gaurav.
        Norman and Rams lines are short paraphrases of their principles, not verbatim quotes.
@@ -936,6 +936,7 @@
       ],
     };
     S.stat.linkLabel = "View all work";
+    S.stat.linkIconOnly = true;
     /* Experience keys: the two named segments, short enough for the small card (full label in the tooltip) */
     S.stat.segments = S.stat.segments.map((s) => Object.assign({}, s, { short: s.label === "Fintech AI" ? "Fintech" : s.label }));
     S.hello = [
@@ -945,7 +946,9 @@
       { id: "linkedin", name: "LinkedIn", icon: "linkedin", tone: "blue", go: "arrow", title: "LinkedIn",
         sub: "in/gauravavinash", href: "https://www.linkedin.com/in/gauravavinash", external: true, action: "Open Gaurav's LinkedIn (new tab)" },
       { id: "resume", name: "Resume", icon: "doc", tone: "plain", go: "download", title: "Resume",
-        sub: "One page, PDF", href: ASSETS.resume, external: true, action: "Open Gaurav's resume, PDF (new tab)" },
+        sub: "One page, PDF", href: ASSETS.resume, external: true, download: "Gaurav-Avinash-Resume.pdf",
+        action: "Download Gaurav's resume, PDF",
+        view: { href: ASSETS.resume, label: "View Gaurav's resume, PDF (new tab)" } },
     ];
     S.stack.onClick = () => onExit("more-work");
     /* Availability + booking on the date card (assets/craft/booking.js, Cal.com).

@@ -2160,7 +2160,6 @@ html:not(:has(.craft-switch)) .cr-hero[data-cr-fit="flow"] .cr-topbar { right: 2
 @media (max-width: 700px) { html:not(:has(.craft-switch)) .cr-hero .cr-topbar-right { margin-right: 0; } }
 /* Experience card opens the profile at the Experience timeline */
 .cr-mstat.is-clickable { cursor: pointer; transition: transform 380ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 380ms cubic-bezier(0.16, 1, 0.3, 1); }
-.cr-mstat.is-clickable:hover { transform: translateY(-2px); box-shadow: 0 18px 40px rgba(20, 16, 24, 0.16); }
 .cr-mstat.is-clickable:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 .cr-pt { scroll-margin-top: 28px; }
 @media (prefers-reduced-motion: reduce) { .cr-mstat.is-clickable { transition: none; } .cr-mstat.is-clickable:hover { transform: none; } }
@@ -2388,3 +2387,31 @@ html:not(:has(.craft-switch)) .cr-hero[data-cr-fit="flow"] .cr-topbar { right: 2
   .cr-orb-groove .cr-orb-head, .cr-orb-groove .cr-orb-closed { animation: none; }
   .cr-orb-groove .cr-orb-closed { opacity: 0; }
 }
+
+/* Experience: "View all" is just the arrow, with a round target around it */
+.cr-mstat-link--icon { width: 24px; height: 24px; justify-content: center; border-radius: 50%; gap: 0; transition: background-color 200ms ease; }
+.cr-mstat-link--icon svg { width: 10px; height: 10px; }
+.cr-mstat-link--icon:hover { background: rgba(20, 16, 24, 0.06); }
+
+/* Same lift as the Resonance card for Experience, Design Playground and Book a call */
+.cr-mstat, .cr-team, .cr-agenda {
+  translate: 0 0; scale: 1;
+  transition:
+    translate 380ms cubic-bezier(0.16, 1, 0.3, 1),
+    scale 380ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 380ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cr-mstat:hover, .cr-team:hover, .cr-agenda:hover {
+  translate: 0 -4px; scale: 1.025;
+  box-shadow: 0 22px 44px rgba(20, 16, 24, 0.2);
+}
+.cr-mstat:active, .cr-team:active, .cr-agenda:active { translate: 0 -1px; scale: 0.975; transition-duration: 160ms; }
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .cr-mstat:hover, .cr-team:hover, .cr-agenda:hover, .cr-mstat:active, .cr-team:active, .cr-agenda:active { translate: none; scale: none; }
+}
+
+/* Resume slide: the document icon opens the PDF, the button on the right downloads it */
+.cr-hello-view { display: contents; cursor: pointer; }
+.cr-hello-view .cr-hello-icon { transition: scale 240ms cubic-bezier(0.16, 1, 0.3, 1); }
+.cr-hello-view:hover .cr-hello-icon { scale: 1.06; }
+.cr-hello-view:focus-visible .cr-hello-icon { outline: 2px solid #fff; outline-offset: 3px; }
