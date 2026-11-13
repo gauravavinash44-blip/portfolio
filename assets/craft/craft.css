@@ -2308,16 +2308,8 @@ html:not(:has(.craft-switch)) .cr-hero[data-cr-fit="flow"] .cr-topbar { right: 2
 /* Home/Projects: darker glass so the inactive tab reads at 4.5:1 */
 .cr-glass-light.cr-seg { background: rgba(40, 32, 42, 0.56); }
 .cr-seg button:not([aria-selected="true"]) { color: rgba(255, 255, 255, 0.92); }
-/* Top-bar name on light wallpapers: a soft light halo keeps dark text readable over busy sky */
-.craft-wp--fuji .cr-topbar-id, .craft-wp--kirkjufell .cr-topbar-id, .craft-wp--meadow .cr-topbar-id, .craft-wp--streak .cr-topbar-id, .craft-wp--film .cr-topbar-id { text-shadow: 0 0 10px rgba(255, 255, 255, 0.75), 0 0 2px rgba(255, 255, 255, 0.6); }
-.craft-wp--fuji .cr-topbar-id span:last-child, .craft-wp--kirkjufell .cr-topbar-id span:last-child, .craft-wp--meadow .cr-topbar-id span:last-child, .craft-wp--streak .cr-topbar-id span:last-child, .craft-wp--film .cr-topbar-id span:last-child { opacity: 0.88; }
 /* Home/Projects buttons fill the 50px control (3px inset each side): 44px tall */
 .cr-seg button { height: 44px; }
 /* Case-study rows: a few pixels of extra hit area above and below each row */
 .cr-row-text { position: relative; }
 .cr-row-text::after { content: ""; position: absolute; inset: -3px 0; }
-/* Pale wallpapers (meadow, streak, film): a firmer light halo behind the dark top-bar name */
-.craft-wp--meadow .cr-topbar-id, .craft-wp--streak .cr-topbar-id, .craft-wp--film .cr-topbar-id { text-shadow: 0 0 14px rgba(255, 255, 255, 0.95), 0 0 4px rgba(255, 255, 255, 0.9); }
-/* Darker wallpapers with white top-bar text (dike, barley): a firmer shadow behind name and role */
-.craft-wp--dike .cr-topbar-id, .craft-wp--barley .cr-topbar-id { text-shadow: 0 0 12px rgba(0, 0, 0, 0.55), 0 1px 3px rgba(0, 0, 0, 0.5); }
-.craft-wp--dike .cr-topbar-id span:last-child, .craft-wp--barley .cr-topbar-id span:last-child { opacity: 0.92; }
