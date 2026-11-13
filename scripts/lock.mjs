@@ -46,6 +46,12 @@ const template = readFileSync(join(ROOT, "scripts/lock-template.html"), "utf8");
 const bin = join(ROOT, "node_modules/.bin/staticrypt");
 if (!existsSync(bin)) { console.error("StatiCrypt isn't installed. Run: npm install"); process.exit(1); }
 
+// Public settings go into access.js (the popup and the lock card read them from there)
+const accessJs = join(ROOT, "assets/craft/access.js");
+const cfg = JSON.stringify({ endpoint: ENDPOINT, whatsapp: WHATSAPP });
+writeFileSync(accessJs, readFileSync(accessJs, "utf8").replace(/\/\*cfg\*\/.*?\/\*cfg\*\//, "/*cfg*/" + cfg + "/*cfg*/"));
+const accessCss = readFileSync(join(ROOT, "assets/craft/access.css"), "utf8");
+
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const tmp = mkdtempSync(join(tmpdir(), "lock-"));
 let done = 0;
@@ -67,7 +73,7 @@ for (const [caseId, rel] of PAGES) {
   // The decrypted page gets the shared helper (greeting pill, GA events)
   let src = readFileSync(priv, "utf8");
   if (!src.includes("assets/craft/access.js")) {
-    const tag = `<script src="${prefix}assets/craft/access.js?v=1" defer></script>\n`;
+    const tag = `<script src="${prefix}assets/craft/access.js?v=2" defer></script>\n`;
     const i = src.toLowerCase().lastIndexOf("</body>");
     src = i >= 0 ? src.slice(0, i) + tag + src.slice(i) : src + tag;
   }
@@ -81,21 +87,34 @@ for (const [caseId, rel] of PAGES) {
     .split("{{CASE_TITLE_JSON}}").join(JSON.stringify(c.title))
     .split("{{PREFIX}}").join(prefix)
     .split("{{COVER}}").join(prefix + c.cover)
-    .split("{{ENDPOINT_JSON}}").join(JSON.stringify(ENDPOINT))
-    .split("{{WHATSAPP_JSON}}").join(JSON.stringify(WHATSAPP));
+    .split("{{ACCESS_CSS}}").join(accessCss);
   const tplPath = join(work, "template.html");
   writeFileSync(tplPath, tpl);
 
+  encrypt(work, basename(rel), pub);
+  done++;
+  console.log("locked", rel);
+}
+
+// The tiny page the popup uses to test a password before leaving the current page
+{
+  const work = join(tmp, "check");
+  mkdirSync(work, { recursive: true });
+  writeFileSync(join(work, "access-check.html"), "<!doctype html><title>ok</title><p>ok</p>");
+  writeFileSync(join(work, "template.html"), readFileSync(join(ROOT, "scripts/check-template.html"), "utf8"));
+  encrypt(work, "access-check.html", join(ROOT, "access-check.html"));
+  console.log("built access-check.html");
+}
+rmSync(tmp, { recursive: true, force: true });
+console.log(`\n${done} pages locked.`);
+
+function encrypt(work, file, dest) {
   // StatiCrypt wants paths relative to where it runs. One salt for every page (kept in .staticrypt.json),
   // so a key remembered on one case study opens the others too.
   const cfg = join(ROOT, ".staticrypt.json");
   if (existsSync(cfg)) copyFileSync(cfg, join(work, ".staticrypt.json"));
-  execFileSync(bin, [basename(rel), "-d", "out", "-t", "template.html", "--short", "--remember", "30", "-c", ".staticrypt.json"],
+  execFileSync(bin, [file, "-d", "out", "-t", "template.html", "--short", "--remember", "30", "-c", ".staticrypt.json"],
     { cwd: work, env: { ...process.env, STATICRYPT_PASSWORD: KEY }, stdio: ["ignore", "ignore", "inherit"] });
   if (!existsSync(cfg)) copyFileSync(join(work, ".staticrypt.json"), cfg);
-  copyFileSync(join(work, "out", basename(rel)), pub);
-  done++;
-  console.log("locked", rel);
+  copyFileSync(join(work, "out", file), dest);
 }
-rmSync(tmp, { recursive: true, force: true });
-console.log(`\n${done} pages locked.`);
