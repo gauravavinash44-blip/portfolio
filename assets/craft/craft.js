@@ -568,6 +568,22 @@
           : h("svg", { viewBox: "0 0 24 24", width: 12, height: 12, "aria-hidden": "true" }, h("rect", { x: 6, y: 5, width: 4, height: 14, rx: 1, fill: "currentColor" }), h("rect", { x: 14, y: 5, width: 4, height: 14, rx: 1, fill: "currentColor" }))));
   }
 
+  /* Bitmoji faces that take turns: one fades out as the next fades in, slowly. Stops on reduced
+     motion and while the tab is hidden. */
+  function FaceCycle(props) {
+    var faces = props.faces, _s = useState(0), i = _s[0], set = _s[1];
+    useEffect(function () {
+      faces.forEach(function (f) { var im = new Image(); im.src = f.src; });
+      if (reduced() || faces.length < 2) return undefined;
+      var t = setInterval(function () { if (!document.hidden) set(function (n) { return (n + 1) % faces.length; }); }, props.every || 3400);
+      return function () { clearInterval(t); };
+    }, [faces]);
+    return h("span", { className: "cr-orb-faces", "aria-hidden": "true" },
+      faces.map(function (f, n) {
+        return h("img", { key: f.src, className: n === i ? "is-on" : "", src: f.src, srcSet: f.srcSet, sizes: "200px", alt: "", decoding: "async" });
+      }));
+  }
+
   function ProfileOrb(props) {
     if (props.head) return h(HeadOrb, props);
     var ref = useRef(null), liveRef = useRef(null), apiRef = useRef(null);
@@ -596,6 +612,8 @@
         onClick: onClick, "aria-label": "Open profile of " + (props.name || "") },
         live
           ? h("span", { className: "cr-orb-figure", "data-figure": "live" }, h("span", { className: "cr-avl", ref: liveRef, "aria-hidden": "true" }))
+          : props.faces
+          ? h(FaceCycle, { faces: props.faces, every: props.faceEvery })
           : props.cutout
           ? h("span", { className: "cr-orb-figure", "data-figure": props.figure }, h("img", { className: "cr-orb-avatar", src: props.image, srcSet: props.imageSet, sizes: props.imageSet ? props.imageSizes : undefined, alt: "", decoding: "async" }))
           : h("img", { className: "cr-orb-photo", src: props.image, alt: "" }),
