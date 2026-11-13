@@ -2307,7 +2307,7 @@
         bio: "I design products that make complex things feel simple. AI search, deal workflows and fintech setup flows, end to end.",
         ai: {
           title: "How I use AI",
-          text: "AI gives me speed. Taste and the final call stay with me. I use Claude to explore wide early: ten flows, twenty lines of copy, the edge cases nobody asked about. Then I build the best one in code and use it like a real user would. Most of what AI makes never ships. Choosing what does is my work. You're looking at the proof. I designed this site in Figma and built it with Claude."
+          text: "AI gives me speed. Taste and the final call stay with me. I use Claude to explore wide: ten flows, twenty lines of copy, the edge cases. Most of it never ships. Choosing what does is my work. I designed this site in Figma and built it with Claude."
         },
         facts: [{ value: "5+", label: "years designing" }, { value: "+25%", label: "engagement, Contextual Chat" }, { value: "+32%", label: "adoption, Deal Room" }, { value: "4", label: "industries: fintech, AI, food, health" }]
       }
