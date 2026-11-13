@@ -73,7 +73,7 @@ for (const [caseId, rel] of PAGES) {
   // The decrypted page gets the shared helper (greeting pill, GA events)
   let src = readFileSync(priv, "utf8");
   if (!src.includes("assets/craft/access.js")) {
-    const tag = `<script src="${prefix}assets/craft/access.js?v=2" defer></script>\n`;
+    const tag = `<script src="${prefix}assets/craft/access.js?v=3" defer></script>\n`;
     const i = src.toLowerCase().lastIndexOf("</body>");
     src = i >= 0 ? src.slice(0, i) + tag + src.slice(i) : src + tag;
   }

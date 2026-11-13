@@ -173,6 +173,8 @@
     var main = $('[data-view="main"]'), req = $('[data-view="request"]'), back = $("[data-back]");
     var pass = $("[data-pass]"), pw = pass.querySelector("input"), go = pass.querySelector(".gal-go"), passMsg = $("[data-pass-msg]");
     if (company()) req.company.value = company();
+    /* Full hint where it fits, short one on phones */
+    if (window.matchMedia && window.matchMedia("(min-width: 560px)").matches) pw.placeholder = "Have a password? Type it here";
 
     function show(view) {
       main.classList.toggle("gal-hidden", view !== "main");
