@@ -11,7 +11,7 @@
 (function () {
   "use strict";
   /* Filled in by npm run lock from .env. Public values only, never the key. */
-  var CFG = /*cfg*/{"endpoint":"PASTE_APPS_SCRIPT_URL","whatsapp":"918527386404"}/*cfg*/;
+  var CFG = /*cfg*/{"endpoint":"https://script.google.com/macros/s/AKfycby2UgrESXZAECX0h-yKuji0iRF4xIcCsctdtHLPYm5FuokEhV5xXExMzTMJVhB6-ZjO8A/exec","whatsapp":"918527386404"}/*cfg*/;
 
   /* Every page of the three locked case studies (keep in step with PAGES in scripts/lock.mjs) */
   var CC = "Contextual Chat Assistant", DR = "Deal Room", WL = "White Label Setup";
