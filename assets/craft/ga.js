@@ -2,7 +2,7 @@
    Until a real ID is set, nothing loads and no data leaves the page.
    Only page views plus the events in access.js are sent, and those carry the company name only. */
 (function () {
-  var ID = /*ga*/"G-PASTE_ID"/*ga*/;
+  var ID = /*ga*/"G-LV4HW80NXK"/*ga*/;
   if (!/^G-[A-Z0-9]+$/.test(ID) || window.gtag) return;
   window.dataLayer = window.dataLayer || [];
   window.gtag = function () { window.dataLayer.push(arguments); };
