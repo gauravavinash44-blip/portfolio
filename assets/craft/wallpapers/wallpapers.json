@@ -178,65 +178,6 @@
       }
     },
     {
-      "id": "kirkjufell",
-      "label": "Kirkjufell falls",
-      "thumb": "kirkjufell-blur.jpg",
-      "dominant": [
-        [
-          "#162519",
-          0.267
-        ],
-        [
-          "#6d7141",
-          0.233
-        ],
-        [
-          "#dfdee2",
-          0.197
-        ],
-        [
-          "#cbcfd5",
-          0.157
-        ],
-        [
-          "#e4e4e5",
-          0.146
-        ]
-      ],
-      "vars": {
-        "--wp-glass": "rgba(65, 75, 83, 0.48)",
-        "--wp-glass-light": "rgba(205, 213, 219, 0.30)",
-        "--wp-glass-strong": "rgba(65, 75, 83, 0.66)",
-        "--wp-topbar-ink": "#0a0a0a",
-        "--wp-pos": "42% 60%",
-        "--wp-accent": "#2a5b6a"
-      },
-      "contrast": {
-        "saliency_centroid": [
-          0.42,
-          0.63
-        ],
-        "grid_avg": "#96977f",
-        "grid_bright_p90": "#e3e4e4",
-        "white_on_glass_avg": 4.86,
-        "white_on_glass_bright": 2.81,
-        "white_on_strong_avg": 5.95,
-        "white_on_strong_bright": 4.04,
-        "topbar_white_avg": 1.37,
-        "topbar_white_worst": 1.32,
-        "topbar_dark_avg": 14.42,
-        "topbar_dark_worst": 13.97,
-        "topbar_ink_on_glass_light": 14.1
-      },
-      "files": {
-        "kirkjufell-2560.jpg": 441240,
-        "kirkjufell-2560.webp": 306330,
-        "kirkjufell-1440.jpg": 175071,
-        "kirkjufell-1440.webp": 121612,
-        "kirkjufell-blur.jpg": 609
-      }
-    },
-    {
       "id": "meadow",
       "label": "Pastel meadow",
       "thumb": "meadow-1440.jpg"

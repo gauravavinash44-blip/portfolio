@@ -21,12 +21,6 @@
       water: { amp: 0.0022, glint: 0.6, scale: 1.0, speed: 3.0 },
       shadow: 0
     },
-    kirkjufell: {
-      flow: { len: 0.03, cycle: 0.8, flicker: 0.08 },
-      water: { amp: 0.0024, glint: 0.4, scale: 1.4, speed: 3.5 },
-      veg: { amp: 0.0035, sheen: 0.05, scale: 2.6, speed: 0.1, dir: [1, 0.08] },
-      shadow: 0
-    },
     barley: {
       sky: { drift: 0.032, period: 64, morph: 0.006, dir: [-1, 0] },
       veg: { amp: 0.0065, sheen: 0.12, scale: 1.8, speed: 0.12, dir: [1, 0.18] },

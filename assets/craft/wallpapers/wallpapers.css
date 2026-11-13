@@ -50,22 +50,6 @@
 .craft-wp--barley .cr-wp-blur { background-image: url("./barley-blur.jpg"); }
 .cr-wp-thumb.craft-wp--barley { background-image: url("./barley-blur.jpg"); }
 
-/* Kirkjufell falls */
-.craft-wp--kirkjufell {
-  --wp-glass: rgba(65, 75, 83, 0.48);
-  --wp-glass-light: rgba(205, 213, 219, 0.30);
-  --wp-glass-strong: rgba(65, 75, 83, 0.66);
-  --wp-topbar-ink: #0a0a0a;
-  --wp-pos: 42% 60%;
-  --wp-accent: #2a5b6a;
-}
-.craft-wp--kirkjufell .cr-wp-photo { background-image: url("./kirkjufell-1440.jpg"); background-image: image-set(url("./kirkjufell-1440.webp") type("image/webp"), url("./kirkjufell-1440.jpg") type("image/jpeg")); }
-@media (min-width: 1600px), (min-resolution: 1.5dppx) {
-  .craft-wp--kirkjufell .cr-wp-photo { background-image: url("./kirkjufell-2560.jpg"); background-image: image-set(url("./kirkjufell-2560.webp") type("image/webp"), url("./kirkjufell-2560.jpg") type("image/jpeg")); }
-}
-.craft-wp--kirkjufell .cr-wp-blur { background-image: url("./kirkjufell-blur.jpg"); }
-.cr-wp-thumb.craft-wp--kirkjufell { background-image: url("./kirkjufell-blur.jpg"); }
-
 /* Pastel meadow */
 .craft-wp--meadow {
   --wp-glass: rgba(92, 112, 86, 0.42);

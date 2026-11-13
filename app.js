@@ -748,7 +748,6 @@
     { id: "fuji", label: "Fuji dawn" },
     { id: "dike", label: "Dike road" },
     { id: "barley", label: "Barley field" },
-    { id: "kirkjufell", label: "Kirkjufell" },
     { id: "meadow", label: "Pastel meadow" },
     { id: "streak", label: "Blue streak" },
     { id: "film", label: "Film blur" },
