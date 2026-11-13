@@ -22,3 +22,4 @@ _private/
 # The encrypted Systematic Agent page is committed (its readable build lives in _private/)
 !systematic-agent-case-study/dist/
 !systematic-agent-case-study/dist/index.html
+_preview/

@@ -40,15 +40,25 @@ export const PAGES = [
   ["wl", "white-label-short.html"],
 ];
 
+const NDA_BUTTON = '<button type="button" class="lk-nda" id="lk-nda" aria-haspopup="dialog">' +
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+  '<rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Unlock the full case study</button>';
 const MARK = "Lock screen for an encrypted case study";
 const PRIVATE = join(ROOT, "_private");
 const template = readFileSync(join(ROOT, "scripts/lock-template.html"), "utf8");
 const bin = join(ROOT, "node_modules/.bin/staticrypt");
 if (!existsSync(bin)) { console.error("StatiCrypt isn't installed. Run: npm install"); process.exit(1); }
 
-// Public settings go into access.js (the popup and the lock card read them from there)
+// Public settings go into access.js (the popup and the lock card read them from there).
+// "o" is the key, reversed and base64'd, so visitors who don't come from Wall of Portfolios open the
+// cases without typing it. It's a soft gate: anyone who reads access.js can recover it.
 const accessJs = join(ROOT, "assets/craft/access.js");
-const cfg = JSON.stringify({ endpoint: ENDPOINT, whatsapp: WHATSAPP });
+// Wall of Portfolios mode (WALL_MODE=1 in .env): open by default, lock only for Wall visitors. Off for now,
+// so everyone without the password sees the teaser and the unlock button.
+const WALL_MODE = env.WALL_MODE === "1";
+const cfg = JSON.stringify(WALL_MODE
+  ? { endpoint: ENDPOINT, whatsapp: WHATSAPP, wall: 1, o: Buffer.from(KEY.split("").reverse().join("")).toString("base64") }
+  : { endpoint: ENDPOINT, whatsapp: WHATSAPP });
 writeFileSync(accessJs, readFileSync(accessJs, "utf8").replace(/\/\*cfg\*\/.*?\/\*cfg\*\//, "/*cfg*/" + cfg + "/*cfg*/"));
 // GA4 Measurement ID (public, not a secret) goes into ga.js
 const GA_ID = /^G-[A-Z0-9]+$/.test(env.GA_ID || "") ? env.GA_ID : "G-PASTE_ID";
@@ -77,7 +87,7 @@ for (const [caseId, rel] of PAGES) {
   // The decrypted page gets the shared helper (greeting pill, GA events)
   let src = readFileSync(priv, "utf8");
   if (!src.includes("assets/craft/access.js")) {
-    const tag = `<script src="${prefix}assets/craft/ga.js?v=1"></script>\n<script src="${prefix}assets/craft/access.js?v=5" defer></script>\n`;
+    const tag = `<script src="${prefix}assets/craft/ga.js?v=1"></script>\n<script src="${prefix}assets/craft/access.js?v=10" defer></script>\n`;
     const i = src.toLowerCase().lastIndexOf("</body>");
     src = i >= 0 ? src.slice(0, i) + tag + src.slice(i) : src + tag;
   }
@@ -86,7 +96,15 @@ for (const [caseId, rel] of PAGES) {
   const input = join(work, basename(rel));
   writeFileSync(input, src);
 
+  // Only the Craft case pages share the layout the preview is cut from
+  const pv = /^craft-/.test(rel) ? preview(readFileSync(priv, "utf8"), prefix) : null;
   const tpl = template
+    .split("{{PREVIEW_HEAD}}").join(pv ? pv.head : "")
+    .split("{{PREVIEW_BODY_ATTRS}}").join(pv ? pv.attrs : "")
+    .split("{{PREVIEW}}").join(pv ? pv.body : "")
+    .split("{{NDA_BUTTON}}").join(NDA_BUTTON)
+    .split("{{HAS_PREVIEW}}").join(pv ? "true" : "false")
+    .split("{{WALL_MODE}}").join(WALL_MODE ? "true" : "false")
     .split("{{CASE_TITLE_HTML}}").join(esc(c.title))
     .split("{{CASE_TITLE_JSON}}").join(JSON.stringify(c.title))
     .split("{{PREFIX}}").join(prefix)
@@ -111,6 +129,36 @@ for (const [caseId, rel] of PAGES) {
 }
 rmSync(tmp, { recursive: true, force: true });
 console.log(`\n${done} pages locked.`);
+
+// The public top of a case study: header, hero (stats, facts, "In short") and the start of the next
+// section, which fades out under the "Under NDA" button. Everything after that stays encrypted.
+// Returns null for pages without that layout; those keep the plain lock card.
+function preview(src, prefix) {
+  const body = src.match(/<body([^>]*)>([\s\S]*)<\/body>/i);
+  if (!body) return null;
+  const inner = body[2];
+  const mainAt = inner.search(/<main\b/i);
+  if (mainAt < 0) return null;
+  const starts = [...inner.matchAll(/<section\b/gi)].map((m) => m.index).filter((i) => i > mainAt);
+  if (starts.length < 2) return null;
+  const cut = starts.length > 2 ? starts[2] : inner.search(/<\/main>/i);
+  // The section that fades sits in a gate with the Under NDA button: the button only shows up once
+  // the fade scrolls into view, then sticks 20% up from the bottom of the screen.
+  let html = inner.slice(0, starts[1]) + '<div class="lk-gate">' + inner.slice(starts[1], cut) +
+    '<div class="lk-nda-row">{{NDA_BUTTON}}</div></div></main>';
+  html = html
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
+    .replace(/<nav class="cm-pill cm-toc"[\s\S]*?<\/nav>/i, "")
+    .replace(/<div class="cm-progress"[^>]*><\/div>/i, "")
+    .replace(/<a class="cm-skip"[^>]*>[\s\S]*?<\/a>/i, "")
+    .replace(/<source\b[^>]*>/gi, "")                 // keep the video's poster, skip the video file
+    .replace(/<button class="cm-play"[\s\S]*?<\/button>/gi, "")
+    .replace(/\s(id)="([^"]+)"/g, ' data-pv-$1="$2"')   // no duplicate ids once the real page loads
+    .replace(/(src|href|poster|srcset)="\.\//g, `$1="${prefix}`);
+  const head = [...src.matchAll(/<link\b[^>]*rel="stylesheet"[^>]*>/gi)].map((m) => m[0].replace(/href="\.\//, `href="${prefix}`)).join("\n");
+  const attrs = body[1].replace(/class="/, 'class="lk-pv ');
+  return { head, attrs: /class=/.test(attrs) ? attrs : attrs + ' class="lk-pv"', body: html };
+}
 
 function encrypt(work, file, dest) {
   // StatiCrypt wants paths relative to where it runs. One salt for every page (kept in .staticrypt.json),

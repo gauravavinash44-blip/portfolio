@@ -26,6 +26,22 @@
     "craft-white-label.html": WL, "white-label-short.html": WL
   };
 
+  /* What a locked card shows before anyone gets in: one line each, over the blurred cover */
+  var ART = "assets/craft/case/art/";
+  var TEASERS = {};
+  TEASERS[CC] = { cover: ART + "cc-cover-1440.webp", meta: "Systematic · Product Designer II",
+    problem: "Investors had the data but needed the exact filters to find anything. One search took 30 to 40 minutes.",
+    did: "I designed a chat assistant that answers in plain language and links every claim to its source.",
+    result: "Answers in under 30 seconds. 70% of users preferred it to search." };
+  TEASERS[DR] = { cover: ART + "dr-cover-1440.webp", meta: "Systematic · Product Designer II",
+    problem: "Deals stalled between tools. The NDA, the documents and the status lived in email, Drive and WhatsApp.",
+    did: "I moved deal creation onto the company profile and put the NDA inside the product.",
+    result: "32% more deals created after launch." };
+  TEASERS[WL] = { cover: ART + "wl-cover-1440.webp", meta: "Systematic · Product Designer II",
+    problem: "The setup page looked live before a firm had set anything up, so guests could see a fake firm.",
+    did: "I rebuilt it to start empty and only look live once the URL, logo and sender are done.",
+    result: "Shipped in one month. Three honest steps to live." };
+
   var DAY = 864e5, KEEP_DAYS = 30;
   var K_ACCESS = "ga-access", K_HASH = "ga-access-hash", K_HASH_EXP = "ga-access-hash-exp";
   var K_COMPANY = "ga-company", K_DISMISSED = "ga-greet-dismissed", K_QUEUE = "ga-event-queue";
@@ -89,10 +105,31 @@
     try { window.history.replaceState(null, "", window.location.pathname + window.location.search + (keep.length ? "#" + keep.join("&") : "")); } catch (e) { /* old browser */ }
   })();
 
+  /* Wall of Portfolios: anyone arriving from there sees the lock. Everyone else (my direct link,
+     a job application, LinkedIn) gets straight in. Signs of a Wall visit: the site is shown inside
+     another site's frame, the visit came from wallofportfolios.in, or the link carries ?src=wop.
+     It sticks for the rest of that tab, so clicking around the site keeps the lock.
+     This is a soft gate for casual browsers, not encryption: the open key ships in this file. */
+  var WALL_HOST = /(^|\.)wallofportfolios\.in$/i, K_WALL = "ga-wall";
+  function fromWall() {
+    var w = false;
+    try { if (window.top !== window.self) w = true; } catch (e) { w = true; }
+    try { if (document.referrer && WALL_HOST.test(new URL(document.referrer).hostname)) w = true; } catch (e) { /* bad referrer */ }
+    try { if (/^(wop|wall)/i.test(new URLSearchParams(window.location.search).get("src") || "")) w = true; } catch (e) { /* old browser */ }
+    try { if (window.sessionStorage.getItem(K_WALL) === "1") w = true; else if (w) window.sessionStorage.setItem(K_WALL, "1"); } catch (e) { /* storage blocked */ }
+    return w;
+  }
+  /* Only when the build turns Wall of Portfolios mode on (WALL_MODE=1); otherwise everyone gets the teaser */
+  var WALL = LOCK_ON && !!CFG.wall && fromWall();
+  (function autoOpen() {
+    if (!LOCK_ON || !CFG.wall || WALL || !CFG.o || savedKey()) return;
+    try { saveKey(window.atob(CFG.o).split("").reverse().join("")); } catch (e) { /* stays locked */ }
+  })();
+
   /* ───────── Styles ───────── */
   function loadCss() {
     if (document.getElementById("gal-css") || document.querySelector("style[data-gal]")) return;
-    var l = document.createElement("link"); l.id = "gal-css"; l.rel = "stylesheet"; l.href = ROOT + "assets/craft/access.css?v=6";
+    var l = document.createElement("link"); l.id = "gal-css"; l.rel = "stylesheet"; l.href = ROOT + "assets/craft/access.css?v=8";
     document.head.appendChild(l);
   }
   var PILL_CSS = ".ga-greet{position:fixed;z-index:2147483000;left:50%;top:max(16px,env(safe-area-inset-top));transform:translateX(-50%);" +
@@ -237,6 +274,7 @@
   /* opts: { title, tryKey(key) -> Promise<boolean>, onBack() } : back closes the popup, or leaves the lock page */
   function buildCard(opts) {
     var n = ++uid, id = function (s) { return "gal" + n + "-" + s; };
+    var tz = opts.teaser === false ? null : (TEASERS[opts.title] || null);
     var card = document.createElement("section");
     card.className = "gal-card"; card.setAttribute("aria-labelledby", id("title"));
     card.innerHTML =
@@ -245,9 +283,17 @@
         '<span class="gal-chip">' + ICON_LOCK + "Under NDA</span>" +
       "</div>" +
       '<header class="gal-head" data-gal-chrome>' +
+        (tz ? '<p class="gal-meta">' + esc(tz.meta) + "</p>" : "") +
         '<h2 class="gal-title" id="' + id("title") + '">' + esc(opts.title) + "</h2>" +
-        '<p class="gal-line">This case study is private. Pick a way in.</p>' +
       "</header>" +
+      (tz ? '<div class="gal-teaser" data-teaser data-gal-chrome>' +
+        '<div class="gal-shot" aria-hidden="true"><img src="' + esc(ROOT + tz.cover) + '" alt="" loading="eager" decoding="async"></div>' +
+        '<dl class="gal-facts">' +
+          "<div><dt>Problem</dt><dd>" + esc(tz.problem) + "</dd></div>" +
+          "<div><dt>What I did</dt><dd>" + esc(tz.did) + "</dd></div>" +
+          "<div><dt>Result</dt><dd>" + esc(tz.result) + "</dd></div>" +
+        "</dl></div>" : "") +
+      '<p class="gal-line" data-gal-chrome>' + (tz ? "The full case study is under NDA. Pick a way in." : "This case study is private. Pick a way in.") + "</p>" +
       '<div class="gal-view" data-view="main" data-gal-chrome>' +
         '<form class="gal-pass" data-pass novalidate>' +
           '<label class="gal-sr" for="' + id("pw") + '">Password</label>' +
@@ -306,6 +352,8 @@
       view = v;
       main.classList.toggle("gal-hidden", v !== "main");
       req.classList.toggle("gal-hidden", v !== "request");
+      /* The form has enough to read already, so the teaser steps aside */
+      [].forEach.call(card.querySelectorAll("[data-teaser], .gal-line"), function (el) { el.classList.toggle("gal-hidden", v !== "main"); });
       (v === "main" ? pw : req.name).focus();
     }
     /* One back button: from the form it returns to the card, from the card it leaves */
@@ -414,7 +462,8 @@
     return src;
   }
 
-  function openPopup(title, href, opener) {
+  function openPopup(title, href, opener, extra) {
+    extra = extra || {};
     if (openPop) return;
     loadCss();
     var root = document.documentElement;
@@ -447,8 +496,9 @@
       anim.finished.then(gone, gone);
     }
     var card = buildCard({
-      title: title, onBack: close, backLabel: "Close",
-      tryKey: function (k) { return checkKey(k).then(function (ok) { if (ok) location.href = href; return ok; }); }
+      title: title, onBack: close, backLabel: "Close", teaser: extra.teaser,
+      /* On a lock page the key opens the page in place; elsewhere it's checked, then we go there */
+      tryKey: extra.tryKey || function (k) { return checkKey(k).then(function (ok) { if (ok) location.href = href; return ok; }); }
     });
     card.classList.add("gal-card--sheet");
     card.setAttribute("role", "dialog"); card.setAttribute("aria-modal", "true");
@@ -506,8 +556,11 @@
   }
   /* For code that navigates without a link (dashboard rows, search, playground cards):
      returns true when it opened the popup instead */
+  /* Locked cases now open their own preview page (real top of the case + Under NDA button),
+     so links go straight there instead of opening the card over Home */
+  var POPUP_ON_SITE = false;
   function intercept(href, opener) {
-    if (window.GA_LOCK_PAGE || !href || unlocked()) return false;
+    if (!POPUP_ON_SITE || window.GA_LOCK_PAGE || !href || unlocked()) return false;
     var a = document.createElement("a"); a.setAttribute("href", href);
     var title = lockedTitle(a);
     if (!title) return false;
@@ -516,7 +569,7 @@
   }
   /* Capture phase, so it runs before the app's own handlers */
   document.addEventListener("click", function (e) {
-    if (window.GA_LOCK_PAGE || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (!POPUP_ON_SITE || window.GA_LOCK_PAGE || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     var a = e.target && e.target.closest && e.target.closest("a[href]");
     if (!a) return;
     var title = lockedTitle(a);
@@ -536,7 +589,7 @@
     return card;
   }
 
-  window.GAAccess = { lockOn: LOCK_ON, unlocked: unlocked, company: company, track: track, key: savedKey, saveKey: saveKey, open: openPopup, intercept: intercept, mountLock: mountLock };
+  window.GAAccess = { lockOn: LOCK_ON, wall: WALL, unlocked: unlocked, company: company, track: track, key: savedKey, saveKey: saveKey, open: openPopup, intercept: intercept, mountLock: mountLock };
 
   function ready() {
     showGreeting();
