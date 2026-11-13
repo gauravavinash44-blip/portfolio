@@ -1322,7 +1322,7 @@
       height: "100vh",
       onClick: onStageClick,
     },
-      hint ? e("p", { className: "cr-wp-hint", role: "status" }, "Tap the wallpaper to change it") : null,
+      null,
       e("h1", { className: "cr-visually-hidden" }, "Gaurav Avinash, Product Designer"),
       e(C.TopBar, topbar),
       e("div", { className: "cr-board" + (pgBoard ? " is-pgb" : "") },
