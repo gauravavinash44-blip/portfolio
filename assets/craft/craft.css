@@ -2328,19 +2328,16 @@ html:not(:has(.craft-switch)) .cr-hero[data-cr-fit="flow"] .cr-topbar { right: 2
 
 .cr-profile-ai .cr-profile-bio { font-size: 13px; line-height: 1.35; color: rgba(255, 255, 255, 0.78); }
 
-/* Case study icon: a frosted disc in the middle of the orb, icon in white (Contextual Chat, Deal Room, White Label Setup) */
+/* Case study icon: the white icon alone, centred on the orb (Contextual Chat, Deal Room, White Label Setup) */
 .cr-pwell--orb.has-core { container-type: inline-size; }
 .cr-orb-core {
-  --d: 26px; --d: calc(16px + 22cqw);
+  --d: 22px; --d: calc(12px + 20cqw);
   position: absolute; z-index: 1; left: 50%; top: 50%; width: var(--d); height: var(--d);
-  transform: translate(-50%, -50%); border-radius: 50%;
+  transform: translate(-50%, -50%);
   display: grid; place-items: center;
-  background: rgba(255, 255, 255, 0.26);
-  -webkit-backdrop-filter: blur(8px) saturate(1.3); backdrop-filter: blur(8px) saturate(1.3);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.28), 0 1px 6px rgba(40, 20, 50, 0.12);
   pointer-events: none;
   transition: transform 320ms cubic-bezier(0.16, 1, 0.3, 1);
 }
-.cr-orb-core img { width: 60%; height: 60%; display: block; object-fit: contain; }
+.cr-orb-core img { width: 100%; height: 100%; display: block; object-fit: contain; filter: drop-shadow(0 1px 4px rgba(40, 20, 50, 0.22)); }
 :is(.cr-row, .cr-aw-card, .cs-row, .cs-related, .cr-preview):is(:hover, :focus-within, .is-active) .cr-orb-core { transform: translate(-50%, -50%) scale(1.06); }
 @media (prefers-reduced-motion: reduce) { .cr-orb-core { transition: none; } }
