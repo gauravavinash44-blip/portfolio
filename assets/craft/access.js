@@ -15,7 +15,10 @@
 
   /* Every page of the three locked case studies (keep in step with PAGES in scripts/lock.mjs) */
   var CC = "Contextual Chat Assistant", DR = "Deal Room", WL = "White Label Setup";
-  var LOCKED = {
+  /* NDA lock switched off for v1: case studies open directly. Set to true (and run npm run lock)
+     to bring the password back. */
+  var LOCK_ON = false;
+  var LOCKED = !LOCK_ON ? {} : {
     "craft-contextual-chat-detailed.html": CC, "craft-contextual-chat.html": CC, "craft-contextual-chat-minimal.html": CC,
     "contextual-chat-short.html": CC, "contextual-chat.html": CC, "case-study-systematic-agent.html": CC,
     "prototype-v6/contextual-chat.html": CC, "systematic-agent-case-study/dist/index.html": CC, "systematic-agent.html": CC,
