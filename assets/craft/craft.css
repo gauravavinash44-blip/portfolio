@@ -2331,7 +2331,7 @@ html:not(:has(.craft-switch)) .cr-hero[data-cr-fit="flow"] .cr-topbar { right: 2
 /* Case study icon: the white icon alone, centred on the orb (Contextual Chat, Deal Room, White Label Setup) */
 .cr-pwell--orb.has-core { container-type: inline-size; }
 .cr-orb-core {
-  --d: 22px; --d: calc(12px + 20cqw);
+  --d: 16px; --d: calc(8px + 14cqw);
   position: absolute; z-index: 1; left: 50%; top: 50%; width: var(--d); height: var(--d);
   transform: translate(-50%, -50%);
   display: grid; place-items: center;
