@@ -813,12 +813,11 @@
     });
     /* Board-only avatar (white shirt, glasses). The profile sheet keeps ASSETS.profile. */
     S.profile = Object.assign({}, S.profile, {
-      /* His own Snapchat Bitmoji, taking turns through his expressions */
-      faces: [0, 1, 3, 7, 6, 2, 9, 4, 8, 11, 5, 10].map(function (n) {
-        var b = "./assets/craft/avatar/bitmoji/face-" + (n < 10 ? "0" : "") + n;
-        return { src: b + ".webp", srcSet: b + "-280.webp 280w, " + b + ".webp 560w" };
-      }),
-      faceEvery: 3400, cutout: false, head: null,
+      /* His own Snapchat Bitmoji, cut out from the shoulders up */
+      image: "./assets/craft/avatar/gaurav-bitmoji-520.webp",
+      imageSet: "./assets/craft/avatar/gaurav-bitmoji-520.webp 520w, ./assets/craft/avatar/gaurav-bitmoji-1040.webp 1040w",
+      imageSizes: "(max-width: 700px) 186px, 200px",
+      cutout: true, head: null, figure: "bust",
     });
     S.profileSheet = Object.assign({}, S.profileSheet, profileHistory(), {
       image: ASSETS.profileDoor,
