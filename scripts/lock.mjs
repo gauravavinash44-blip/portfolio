@@ -50,6 +50,10 @@ if (!existsSync(bin)) { console.error("StatiCrypt isn't installed. Run: npm inst
 const accessJs = join(ROOT, "assets/craft/access.js");
 const cfg = JSON.stringify({ endpoint: ENDPOINT, whatsapp: WHATSAPP });
 writeFileSync(accessJs, readFileSync(accessJs, "utf8").replace(/\/\*cfg\*\/.*?\/\*cfg\*\//, "/*cfg*/" + cfg + "/*cfg*/"));
+// GA4 Measurement ID (public, not a secret) goes into ga.js
+const GA_ID = /^G-[A-Z0-9]+$/.test(env.GA_ID || "") ? env.GA_ID : "G-PASTE_ID";
+const gaJs = join(ROOT, "assets/craft/ga.js");
+writeFileSync(gaJs, readFileSync(gaJs, "utf8").replace(/\/\*ga\*\/.*?\/\*ga\*\//, "/*ga*/" + JSON.stringify(GA_ID) + "/*ga*/"));
 const accessCss = readFileSync(join(ROOT, "assets/craft/access.css"), "utf8");
 
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -73,7 +77,7 @@ for (const [caseId, rel] of PAGES) {
   // The decrypted page gets the shared helper (greeting pill, GA events)
   let src = readFileSync(priv, "utf8");
   if (!src.includes("assets/craft/access.js")) {
-    const tag = `<script src="${prefix}assets/craft/access.js?v=5" defer></script>\n`;
+    const tag = `<script src="${prefix}assets/craft/ga.js?v=1"></script>\n<script src="${prefix}assets/craft/access.js?v=5" defer></script>\n`;
     const i = src.toLowerCase().lastIndexOf("</body>");
     src = i >= 0 ? src.slice(0, i) + tag + src.slice(i) : src + tag;
   }
