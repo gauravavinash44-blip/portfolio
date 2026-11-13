@@ -89,7 +89,7 @@
   /* ───────── Styles ───────── */
   function loadCss() {
     if (document.getElementById("gal-css") || document.querySelector("style[data-gal]")) return;
-    var l = document.createElement("link"); l.id = "gal-css"; l.rel = "stylesheet"; l.href = ROOT + "assets/craft/access.css?v=3";
+    var l = document.createElement("link"); l.id = "gal-css"; l.rel = "stylesheet"; l.href = ROOT + "assets/craft/access.css?v=5";
     document.head.appendChild(l);
   }
   var PILL_CSS = ".ga-greet{position:fixed;z-index:2147483000;left:50%;top:max(16px,env(safe-area-inset-top));transform:translateX(-50%);" +
@@ -121,7 +121,7 @@
   }
 
   /* ───────── The lock card ───────── */
-  var ICON_LOCK = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+  var ICON_LOCK = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
   var ICON_ARROW = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
   /* Same chevron as the Design Playground back button */
   var ICON_BACK = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 6l-6 6 6 6"/></svg>';
@@ -138,14 +138,15 @@
     var card = document.createElement("section");
     card.className = "gal-card"; card.setAttribute("aria-labelledby", id("title"));
     card.innerHTML =
-      '<div class="gal-top">' +
+      '<div class="gal-top" data-gal-chrome>' +
         '<button type="button" class="gal-back" data-back aria-label="' + esc(opts.backLabel || "Back") + '">' + ICON_BACK + "</button>" +
-        '<div class="gal-icon">' + ICON_LOCK + "</div>" +
+        '<span class="gal-chip">' + ICON_LOCK + "Under NDA</span>" +
       "</div>" +
-      '<p class="gal-eyebrow">Case study</p>' +
-      '<h2 class="gal-title" id="' + id("title") + '">' + esc(opts.title) + "</h2>" +
-      '<p class="gal-line">This one\'s under NDA. Pick a way in.</p>' +
-      '<div class="gal-view" data-view="main">' +
+      '<header class="gal-head" data-gal-chrome>' +
+        '<h2 class="gal-title" id="' + id("title") + '">' + esc(opts.title) + "</h2>" +
+        '<p class="gal-line">This case study is private. Pick a way in.</p>' +
+      "</header>" +
+      '<div class="gal-view" data-view="main" data-gal-chrome>' +
         '<form class="gal-pass" data-pass novalidate>' +
           '<label class="gal-sr" for="' + id("pw") + '">Password</label>' +
           '<input id="' + id("pw") + '" type="password" autocomplete="current-password" placeholder="Have a password?" enterkeyhint="go">' +
@@ -271,28 +272,57 @@
   }
 
   var openPop = null;
+  var OPEN_MS = 520, CLOSE_MS = 440;
+  var EASE_ARRIVE = "cubic-bezier(0.16, 1, 0.3, 1)", EASE_FOLD = "cubic-bezier(0.32, 0.72, 0, 1)";
+  function still() { return !(window.matchMedia && window.matchMedia("(prefers-reduced-motion: no-preference)").matches); }
+  /* Same source rect the booking sheet grows from: the card around the opener */
+  function sourceFor(opener) {
+    var M = window.Craft && window.Craft.motion;
+    if (!M || !M.sourceOf || !opener || !opener.isConnected) return null;
+    var src = M.sourceOf(opener);
+    if (src && (src.rect.bottom < 0 || src.rect.top > window.innerHeight)) src = null;
+    return src;
+  }
+
   function openPopup(title, href, opener) {
     if (openPop) return;
     loadCss();
+    var root = document.documentElement;
     var overlay = document.createElement("div");
     overlay.className = "gal-overlay";
-    overlay.setAttribute("role", "dialog"); overlay.setAttribute("aria-modal", "true");
-    var htmlOverflow = document.documentElement.style.overflow;
+    var scrim = document.createElement("div");
+    scrim.className = "gal-scrim"; scrim.setAttribute("aria-hidden", "true");
+    var closing = false;
     function close() {
-      if (!openPop) return;
-      openPop = null;
+      if (!openPop || closing) return;
+      closing = true;
       document.removeEventListener("keydown", trap, true);
-      document.documentElement.style.overflow = htmlOverflow;
-      var gone = function () { overlay.remove(); if (opener && opener.focus) opener.focus(); };
-      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: no-preference)").matches) {
-        overlay.classList.add("is-leaving"); setTimeout(gone, 200);
-      } else gone();
+      root.classList.remove("ga-bk-open", "gal-open");
+      var done = false;
+      var gone = function () { if (done) return; done = true; openPop = null; overlay.remove(); if (opener && opener.isConnected && opener.focus) opener.focus({ preventScroll: true }); };
+      if (still()) { gone(); return; }
+      setTimeout(gone, CLOSE_MS + 300);
+      scrim.animate([{ opacity: 1 }, { opacity: 0 }], { duration: CLOSE_MS, easing: "cubic-bezier(0.33, 0, 0.67, 1)", fill: "forwards" });
+      Array.prototype.forEach.call(card.querySelectorAll("[data-gal-chrome]"), function (n) {
+        n.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, easing: "ease-out", fill: "forwards" });
+      });
+      var src = sourceFor(opener), anim;
+      if (src) {
+        var fr = window.Craft.motion.growFrames(card, src).reverse();
+        fr[0].opacity = 1; fr[1].opacity = 0;
+        anim = card.animate(fr, { duration: CLOSE_MS, easing: EASE_FOLD, fill: "forwards" });
+      } else {
+        anim = card.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(16px) scale(0.98)" }], { duration: 300, easing: EASE_FOLD, fill: "forwards" });
+      }
+      anim.finished.then(gone, gone);
     }
     var card = buildCard({
       title: title, onBack: close, backLabel: "Close",
       tryKey: function (k) { return checkKey(k).then(function (ok) { if (ok) location.href = href; return ok; }); }
     });
-    overlay.setAttribute("aria-labelledby", card.getAttribute("aria-labelledby"));
+    card.classList.add("gal-card--sheet");
+    card.setAttribute("role", "dialog"); card.setAttribute("aria-modal", "true");
+    overlay.appendChild(scrim);
     overlay.appendChild(card);
     /* A tap or click anywhere outside the card closes it */
     var downOutside = false;
@@ -309,9 +339,28 @@
       else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     }
     document.addEventListener("keydown", trap, true);
-    document.documentElement.style.overflow = "hidden";
+    root.classList.add("ga-bk-open", "gal-open");
     document.body.appendChild(overlay);
     openPop = overlay;
+
+    /* Open: scrim fades, the card grows out of the case card, contents rise. Same as Book a call. */
+    if (still()) {
+      card.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160, fill: "backwards" });
+    } else {
+      scrim.animate([{ opacity: 0 }, { opacity: 1 }], { duration: OPEN_MS, easing: "cubic-bezier(0.33, 1, 0.68, 1)", fill: "backwards" });
+      var src = sourceFor(opener);
+      if (src) {
+        var fr = window.Craft.motion.growFrames(card, src);
+        fr[0].opacity = 0.55; fr[1].opacity = 1;
+        card.style.willChange = "clip-path, transform";
+        card.animate(fr, { duration: OPEN_MS, easing: EASE_ARRIVE, fill: "backwards" }).finished.then(function () { card.style.willChange = ""; }, function () {});
+      } else {
+        card.animate([{ opacity: 0, transform: "translateY(24px) scale(0.98)" }, { opacity: 1, transform: "none" }], { duration: 420, easing: EASE_ARRIVE, fill: "backwards" });
+      }
+      Array.prototype.forEach.call(card.querySelectorAll("[data-gal-chrome]"), function (n, i) {
+        n.animate([{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "none" }], { duration: 480, delay: OPEN_MS * 0.32 + i * 50, easing: EASE_ARRIVE, fill: "backwards" });
+      });
+    }
     setTimeout(function () { card.focusFirst(); }, 60);
   }
 

@@ -27,29 +27,32 @@
 <style data-gal>
 /* Case study lock card. Used by the popup on the site (access.js) and by the lock page of each
    encrypted case study (scripts/lock-template.html inlines this file). Craft liquid glass. */
-.gal-card { position: relative; width: 100%; max-width: 420px; padding: 28px 24px 22px; border-radius: 32px; box-sizing: border-box;
+/* Same glass as the Book a call sheet (booking.css .cb-panel) */
+.gal-card { position: relative; width: 100%; max-width: 500px; padding: 24px 28px 26px; border-radius: 40px; box-sizing: border-box; overflow: hidden;
   font-family: Inter, "Neue Montreal", "Helvetica Now Text", system-ui, -apple-system, sans-serif; font-size: 15px; line-height: 1.45; color: #fff; text-align: left;
-  background: rgba(46, 36, 64, 0.42); -webkit-backdrop-filter: blur(34px) saturate(1.6); backdrop-filter: blur(34px) saturate(1.6);
-  border: 1px solid rgba(255, 255, 255, 0.26); box-shadow: 0 30px 90px rgba(10, 5, 20, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.3); -webkit-font-smoothing: antialiased; }
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.06) 42%, rgba(255, 255, 255, 0.02) 100%), linear-gradient(rgba(44, 34, 44, 0.48), rgba(44, 34, 44, 0.58));
+  -webkit-backdrop-filter: blur(34px) saturate(1.5); backdrop-filter: blur(34px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, 0.28); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 24px 60px rgba(20, 10, 30, 0.24); -webkit-font-smoothing: antialiased; }
 .gal-card *, .gal-card *::before, .gal-card *::after { box-sizing: border-box; }
 .gal-hidden { display: none !important; }
 .gal-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
-.gal-icon { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center;
-  background: rgba(255, 255, 255, 0.16); border: 1px solid rgba(255, 255, 255, 0.28); }
+/* White chip, like the live status chip on Book a call */
+.gal-chip { display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 12px 0 10px; border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94); color: #000; font-size: 12px; font-weight: 500; line-height: 1; white-space: nowrap; box-shadow: 0 4px 14px rgba(30, 20, 30, 0.10); }
+.gal-chip svg { width: 14px; height: 14px; }
 /* Back: the Design Playground's glass circle with the chevron */
 .gal-back { width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; display: grid; place-items: center; cursor: pointer; color: #fff;
   background: rgba(150, 136, 148, 0.34); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22); transition: transform 360ms cubic-bezier(0.16, 1, 0.3, 1), background 200ms ease; }
 .gal-back:hover { background: rgba(150, 136, 148, 0.5); transform: translateX(-2px); }
-.gal-eyebrow { margin: 0 0 4px; font-size: 13px; color: rgba(255, 255, 255, 0.7); }
-.gal-title { margin: 0; font-size: 26px; line-height: 1.15; font-weight: 500; letter-spacing: -0.015em; color: #fff; }
-.gal-line { margin: 8px 0 22px; color: rgba(255, 255, 255, 0.8); }
+.gal-title { margin: 0; font-size: 30px; line-height: 1.06; font-weight: 400; letter-spacing: -0.035em; color: #fff; }
+.gal-line { margin: 8px 0 22px; font-size: 15px; line-height: 1.35; color: rgba(255, 255, 255, 0.74); }
 
 /* Password: one pill field with the arrow inside */
 .gal-pass { position: relative; margin: 0; }
-.gal-pass input { width: 100%; height: 52px; padding: 0 60px 0 20px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.12); color: #fff; font: inherit; font-size: 16px; outline: none; transition: border-color 160ms ease, background 160ms ease; }
-.gal-pass input::placeholder { color: rgba(255, 255, 255, 0.55); }
+.gal-pass input { width: 100%; height: 52px; padding: 0 60px 0 20px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.26);
+  background: rgba(255, 255, 255, 0.14); color: #fff; font: inherit; font-size: 16px; outline: none; transition: border-color 160ms ease, background 160ms ease; }
+.gal-pass input::placeholder { color: rgba(255, 255, 255, 0.6); }
 .gal-pass input:focus { border-color: rgba(255, 255, 255, 0.7); background: rgba(255, 255, 255, 0.16); }
 .gal-go { position: absolute; top: 6px; right: 6px; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%; display: grid; place-items: center;
   background: #fff; color: #16121c; cursor: pointer; transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), opacity 160ms ease; }
@@ -62,21 +65,21 @@
 
 /* Request access and WhatsApp: equal weight, side by side */
 .gal-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-   .gal-pair .gal-btn { padding: 0 12px; font-size: 14px; }
+.gal-pair .gal-btn { padding: 0 12px; }
 @media (max-width: 359px) { .gal-pair { grid-template-columns: 1fr; } }
-.gal-btn { appearance: none; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 48px; padding: 0 20px; margin: 0;
-  border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.12); color: #fff;
-  font-family: inherit; font-size: 15px; font-weight: 500; line-height: 1; text-decoration: none; cursor: pointer; transition: background 160ms ease; }
+.gal-btn { appearance: none; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 46px; padding: 0 18px; margin: 0;
+  border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.26); background: rgba(255, 255, 255, 0.14); color: #fff;
+  font-family: inherit; font-size: 14px; font-weight: 400; line-height: 1; text-decoration: none; cursor: pointer; transition: background 160ms ease; }
 .gal-btn:hover { background: rgba(255, 255, 255, 0.22); }
-.gal-btn--main { background: #fff; color: #16121c; border-color: #fff; }
-.gal-btn--main:hover { background: rgba(255, 255, 255, 0.88); }
+.gal-btn--main { background: #fff; color: #000; border-color: #fff; }
+.gal-btn--main:hover { background: #f1f1f1; }
 .gal-btn[disabled] { opacity: 0.6; cursor: progress; }
 
 .gal-form { display: grid; gap: 10px; margin: 0; }
 .gal-field { display: grid; gap: 6px; }
 .gal-field label { font-size: 13px; color: rgba(255, 255, 255, 0.76); }
-.gal-field input { width: 100%; height: 46px; padding: 0 16px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.12); color: #fff; font: inherit; font-size: 16px; outline: none; }
+.gal-field input { width: 100%; height: 46px; padding: 0 16px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.26);
+  background: rgba(255, 255, 255, 0.14); color: #fff; font: inherit; font-size: 16px; outline: none; }
 .gal-field input:focus { border-color: rgba(255, 255, 255, 0.7); }
 .gal-hp { position: absolute !important; left: -9999px !important; width: 1px; height: 1px; overflow: hidden; }
 .gal-msg { margin: 8px 4px 0; font-size: 13px; color: #ffd6cd; }
@@ -86,20 +89,26 @@
 .gal-card :focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 .gal-pass input:focus-visible, .gal-field input:focus-visible { outline: none; }
 
-/* Popup over the page: the page stays visible behind a blur */
-.gal-overlay { position: fixed; inset: 0; z-index: 2147483100; display: grid; place-items: center; overflow-y: auto;
-  padding: max(20px, env(safe-area-inset-top)) 16px max(20px, env(safe-area-inset-bottom));
-  background: rgba(18, 12, 26, 0.38); -webkit-backdrop-filter: blur(16px) saturate(1.1); backdrop-filter: blur(16px) saturate(1.1); }
+/* Popup over the page: Book a call's light scrim, so the dashboard stays readable behind it */
+.gal-overlay { position: fixed; inset: 0; z-index: 2147483100; display: grid; place-items: center; overflow-y: auto; color: #fff;
+  padding: 24px; }
+.gal-scrim { position: fixed; inset: 0; background: rgba(24, 16, 28, 0.26);
+  -webkit-backdrop-filter: blur(6px) saturate(1.05); backdrop-filter: blur(6px) saturate(1.05); }
+/* Dashboard cards step back, as they do behind Book a call */
+html.gal-open .cr-dim { opacity: .25; transform: scale(.96); }
+.gal-card--sheet { max-height: calc(100dvh - 48px); overflow-y: auto; overscroll-behavior: contain; }
 
-@media (min-width: 560px) { .gal-card { padding: 32px 32px 26px; } .gal-title { font-size: 30px; } }
+@media (min-width: 560px) { .gal-card { padding: 28px 32px 30px; } .gal-title { font-size: 34px; } }
+/* Phones: full screen like the Book a call sheet */
+@media (max-width: 700px) {
+  .gal-overlay { padding: 0; place-items: stretch; }
+  .gal-card--sheet { max-width: none; max-height: none; height: 100%; border-radius: 0; border: 0;
+    padding: calc(14px + env(safe-area-inset-top, 0px)) 20px calc(16px + env(safe-area-inset-bottom, 0px)); }
+}
 @media (prefers-reduced-motion: no-preference) {
-  .gal-overlay { animation: galFade 280ms ease both; }
-  .gal-overlay.is-leaving { animation: galFadeOut 200ms ease both; }
-  .gal-card { animation: galPop 460ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .gal-card:not(.gal-card--sheet) { animation: galPop 460ms cubic-bezier(0.16, 1, 0.3, 1) both; }
   .gal-view { animation: galView 300ms cubic-bezier(0.16, 1, 0.3, 1) both; }
   .gal-pass.is-wrong { animation: galShake 360ms cubic-bezier(0.36, 0.07, 0.19, 0.97) both; }
-  @keyframes galFade { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes galFadeOut { to { opacity: 0; } }
   @keyframes galPop { from { opacity: 0; transform: translateY(16px) scale(0.96); } to { opacity: 1; transform: none; } }
   @keyframes galView { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
   @keyframes galShake { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
@@ -117,7 +126,7 @@
   /* access.js strips #k from the address bar, so note it first */
   window.GA_LINK_KEY = /(^|[#&])k=/.test(location.hash);
 </script>
-<script src="../../assets/craft/access.js?v=4"></script>
+<script src="../../assets/craft/access.js?v=5"></script>
 <script>
   /* StatiCrypt: filled in at encryption time */
   const staticryptInitiator = ((function(){
@@ -716,7 +725,7 @@ exports.init = init;
 
   return exports;
 })());
-  const staticryptConfig = {"staticryptEncryptedMsgUniqueVariableName":"c1dbc46a72af0828a4fbf06aa4347e0a25fa211d48f7cd4e62ddc706e1dfd62d0aef741320eeb691899bd649988cfa4ec4a595e54ea8039794351d454fdd946d5483540411980cb61e9b9009ecb2a1a622e8536de9950bcc5fb954ac7dd0cd73e930c2428a5977c601a57c9c677387a2a033a9562aa4edd7bf77a3e7c8d121e099001a77c05a1123d06308419818387a8a1b8893435f2c6d420d9ef21003db53f19f0148a40ee5ed428569a01d31a19044b182fd814d47247769dc9d753874fe29a3443836286d1520330d012f0a3509675ac58a7707726c2aac36b84d59c71203c4ec7184d68268006310ddd700bb75e267ba3306e24db0b152089a769c05b9f24f869add1e2bfabe7d9ee87bda3f52de3f15fd148616ef80923a3bfd63fc9f01440dcf2a8e4a01866b07bfc488b7ca6544ce84e11f17eaab9b6561595327c811933661412c4769bdabeb6a9868e12cf4a698570a91a0aad24d886b2b47d84751624404f27ede68ab7bcf6a0057a3b998971952cf0966bde493a8bde1d2d375a0622ad981738fc7dedbe9c4fa71f153e98c3cb76af7d66e38525aace70f95ad523b30afb9f727b9088fd5f605b4d70299e09030917803d0b33af7a34bb3cfa6faa0ae74f035a9d81e4a03523292fccbfb9e675ef0d31033fa4b86b49b06745fa9220a864b916dc4ad72e8796f92a77dd6608083ccf88f25d9875b6509bcf343f9341110bcaa64be215e47ca7b402fb784015b74e404747fb316238c16d352d398dd9c990dcb1a3a7f71233ab2a14e6e8f42415616d17780c09f951b11d485d217c68682e6114cba65609cead4e3f3143f8c4673579057988e6defeac329a9bf785feb83f35b7578c0ecd7d679a1c9f5720e72fe4d2a3a3b40bfdf4568ef2b549dfc003ecf3911ecb4181c1e016483a877c8d1b9af328f75f5a2116ec7ae286dabb37538ecffd8c9aa137d1a22f00c1b3c78efd17d1aaabfc23ee8207b43dc2be1d9802109ee113655688eefbc56cc277fb530ab7ac5d3ccac147881124955e6ade94702f1c7f51b823d768e2ae17fb8cd689f269c691370493b29fe22ae29e5f6d900c848b2b7420cd69d5d36391ec740b44770e8ef13eba2b05904d50e7c81f94e5eeaa1d7c7ee481b3d4b219e9336df53653932bb5d4b251c8dde4f5e0ad6d6ad53dad5cc168d36af13b702b714d716a105d6f0fffdf98b43e65978bf342dcb05b3146ca82f566e496d1d6166c57815fa77dd5c51db04d9d5336c120807dc","isRememberEnabled":true,"rememberDurationInDays":30,"staticryptSaltUniqueVariableName":"9f79cd7d513fbc1610f0277326822516"};
+  const staticryptConfig = {"staticryptEncryptedMsgUniqueVariableName":"5c60c85f486ee6f8bad400f31de26716b16b9479f2b9444321e2aaf1c2f94c1e39f6b8cd5b2b60e9a5f2f15e4b61ecadccb1ce07ce337362a3b20eebce05475e0d16749b41b127e446a5fd96b18305e028d455e96c2b0d10cbedd0710e2921662dbd498b3b7be8935b3729118eb2fb0ca491d915f9e8ab8c62fe261438124c386568e22dbfa1a788b45afd87c4e2cd62736398aa934136ad616bfb2357a22efa57868ae66b7a5ab76e9ad0733871549c0b553b37a72b22ceb527216f026059acbf64449b4c25b00d004b35229c5e9267b873b8888d5bab504210551954f6f068eef30ddb2a54966103c57981674401c2fbbd7c9243d307ef79330356b0bd003ffb9fe8e84ecbae46e5e33f3180aef3977db8492d1e3ea354d046508def7c0381ab6efe106685b225e1c0a50e438385a340c74965ed9646d9b0cc0e30600e34e4a4396242a3e93ec63b78179d082309bbaf1ae21fe9a31cea38d68f272f9fd3f11583b289e55bb56215f190c290bff66b05871d2fc9b078e499e9fce2ee6b54fe17dd115d729f8ac9e438eb396f10a917c4e5e7f7ad77a5760f52106643ea8be4a57dd331fc083945d13343ba835e83d0e548aea4a842fb04286f460f16860bab1a474251b299e5d265d55ac529657a1f259d365e709d0c46278da7c642e2766bf7ef0296211795c82bb6fce3df4f94e0ac17c25ac451564972249935f88c8ea7622c681bcece3154b71874a0f8b8e7e06702aa5790052af2e6ed40085d113d7a0b3aa1ba28ae4b5e81be6286ddd0cddbbac4820f77986ee68df036bf98dac2abbb08f96d451c723f2261e8de7ecf12a833ebbfaceff628e793286ec0095d681be20f169d774ba34254822d0eec5f4760b57744a55e77d090bdb1751eb1406d35df64010fded9954de4934d1d7050c2ab36c6a0e6fdf2998eb5785b34e05a9cb66fc479386e24d4777201934b32b5bd47110d8cb449fced887faa28fcd6f3770c85b2b1c587ebb540415dafc562464df694c2440f2c9b4e4155abd661a6f83912dfb4cbaac679df34398611fee931b757030f094150b4a09ce1fbd17b6fcb8aac575a7bac8e48a1f1b743d9a26307be6f61fc5eb16ad6dc7966960a017ad18dea5b3e805bb5c5ee9de8bab9a82af8bdd175e2862d9565a35b6951d6d63452ea67b981b8b6642ea70d4b0f1650309db2fc884277439bcc384dd80e7e43cc832a950afa9f7debf1ab7acd8dee48f8ab85e680223a897fb2c63bd7adde151dd45aa6","isRememberEnabled":true,"rememberDurationInDays":30,"staticryptSaltUniqueVariableName":"9f79cd7d513fbc1610f0277326822516"};
   const CASE_STUDY = "Contextual Chat Assistant";
 
   const staticrypt = staticryptInitiator.init(staticryptConfig, {
