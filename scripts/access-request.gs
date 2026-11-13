@@ -29,7 +29,32 @@ function doPost(e) {
 
   var key = PropertiesService.getScriptProperties().getProperty("ACCESS_KEY");
   if (!key) return reply({ ok: false, error: "not configured" });
+
+  // Email me about every request. A mail failure never blocks the visitor.
+  try { notify(row); } catch (err) {}
+
   return reply({ ok: true, key: key, company: row.company });
+}
+
+function notify(row) {
+  var to = Session.getEffectiveUser().getEmail();
+  var sheetUrl = SpreadsheetApp.getActive().getUrl();
+  var subject = "Portfolio: " + row.name + " (" + row.company + ") opened " + (row.caseStudy || "a case study");
+  var body =
+    "Someone just requested access and got the password.\n\n" +
+    "Name: " + row.name + "\n" +
+    "Role: " + row.role + "\n" +
+    "Company: " + row.company + "\n" +
+    "Email or LinkedIn: " + row.contact + "\n" +
+    "Case study: " + row.caseStudy + "\n" +
+    "Page: " + row.page + "\n\n" +
+    "All requests: " + sheetUrl;
+  MailApp.sendEmail(to, subject, body);
+}
+
+// Run this once from the editor (select "testNotify", press Run) to approve email access and get a test mail.
+function testNotify() {
+  notify({ name: "Test", role: "Test", company: "Test", contact: "-", caseStudy: "Test", page: "/" });
 }
 
 function reply(obj) {
