@@ -357,8 +357,22 @@
           "aria-hidden": props.noticeHidden ? "true" : undefined, inert: props.noticeHidden ? "" : undefined },
         props.notice ? h(props.notice.items ? PhilosophyPill : NotificationPill, Object.assign({}, props.notice, { hidden: !!props.noticeHidden })) : null),
       h("div", { className: "cr-topbar-right", "data-cr-enter": "" },
+        props.resume ? h(ResumeLink, { href: props.resume, className: "cr-resume--bar" }) : null,
         h(SegmentedControl, { items: props.tabs || ["Home", "Projects"], value: props.tab || 0, onChange: props.onTab, label: props.tabsLabel || "Home or projects" }),
-        h(IconButton, { variant: "glass", icon: "search", label: props.searchLabel || "Search", onClick: props.onSearch })));
+        h(IconButton, { variant: "glass", icon: "search", label: props.searchLabel || "Search", onClick: props.onSearch })),
+      /* Phone only (CSS): name, role, status and Resume on their own row, since the bar above hides them */
+      h("div", { className: "cr-topbar-intro", "data-cr-enter": "" },
+        h("div", { className: "cr-intro-id" },
+          h("b", null, props.title), h("span", null, props.subtitle),
+          h(LiveStatus, { label: props.status || "Open to work" })),
+        props.resume ? h(ResumeLink, { href: props.resume, className: "cr-resume--intro" }) : null));
+  }
+
+  /* Resume: a plain labelled link, one tap from the board at every width */
+  function ResumeLink(props) {
+    return h("a", { className: cx("cr-resume", props.className), href: props.href, target: "_blank", rel: "noopener",
+        "aria-label": "Resume, PDF, opens in a new tab" },
+      h(Icon, { name: "download", stroke: 1.8 }), h("span", null, "Resume"));
   }
 
   /* ───────── LiveStatus: an "active" availability chip, green dot with a soft pulsing halo ─────────
@@ -2227,7 +2241,7 @@
     ];
     return {
       topbar: {
-        avatar: face, title: "Gaurav Avinash", subtitle: "Product Designer",
+        avatar: face, title: "Gaurav Avinash", subtitle: "Senior Product Designer", status: "Open to work",
         notice: { avatar: img.chat, title: "Latest case study", subtitle: "Contextual Chat", meta: "Open", seconds: 14 },
         tabs: ["Home", "Projects"]
       },

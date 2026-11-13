@@ -194,15 +194,24 @@
     }, e("span", { className: "ga-pupil", "data-pupil": "true" }));
   }
 
+  const SPLASH_KEY = "ga-splash-seen";
+  function splashSeen() {
+    try { return window.localStorage.getItem(SPLASH_KEY) === "1"; } catch (err) { return false; }
+  }
+
   function Splash({ onDone }) {
-    const [phase, setPhase] = useState("boot");
+    /* Plays once, short, on the very first visit. Every visit after that goes straight to the content. */
+    const [skip] = useState(splashSeen);
+    const [phase, setPhase] = useState(skip ? "done" : "boot");
     const reduced = useRef(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
     useEffect(() => {
+      if (skip) { onDone(); return undefined; }
+      try { window.localStorage.setItem(SPLASH_KEY, "1"); } catch (err) { /* private mode */ }
       document.body.classList.add("is-splash-active");
       const t = reduced.current
         ? [0, 40, 80, 120, 160]
-        : [200, 1700, 1920, 2770, 4050];
+        : [40, 560, 900, 920, 1380];
       const ids = [
         setTimeout(() => setPhase("ring"), t[0]),
         setTimeout(() => setPhase("cover"), t[1]),
@@ -217,8 +226,10 @@
       return () => ids.forEach(clearTimeout);
     }, [onDone]);
 
+    if (skip) return null;
+
     const cls = [
-      "splash",
+      "splash", "splash--quick",
       ["ring", "cover", "ready", "reveal"].includes(phase) ? "is-ringing" : "",
       phase === "cover" || phase === "ready" ? "is-covering" : "",
       phase === "reveal" ? "is-revealing" : "",
@@ -700,7 +711,8 @@
   const CRAFT_KEY = "ga-craft-mode";
 
   function readCraftPref() {
-    try { return window.localStorage.getItem(CRAFT_KEY) === "on"; } catch (err) { return false; }
+    /* Craft is the default. Only someone who switched it off gets the classic site. */
+    try { return window.localStorage.getItem(CRAFT_KEY) !== "off"; } catch (err) { return true; }
   }
 
   function writeCraftPref(on) {
@@ -1197,6 +1209,7 @@
     }, [pgQueue, playground]);
     if (CS) CS.useShortcut((btn) => openSearch(btn, "search"), !(sheet && sheet.kind !== "search"));
     const topbar = Object.assign({}, data.topbar, {
+      resume: ASSETS.resume,
       tab: playground && !pgClosing && !(pgStart && pgStart.mode === "playground") ? 1 : 0,
       onTab: (i, label, ev) => { if (pgBoard) { setPgBoard(null); setPgBoardOut(false); } return i === 1 ? openProjects(ev) : setSheet(null); },
       onSearch: CS ? (ev) => openSearch(fromEvent(ev), "search") : openAssistant,
@@ -1267,7 +1280,7 @@
       onClick: onStageClick,
     },
       hint ? e("p", { className: "cr-wp-hint", role: "status" }, "Tap the wallpaper to change it") : null,
-      e("h1", { className: "cr-visually-hidden" }, "Gaurav Avinash, Product Designer"),
+      e("h1", { className: "cr-visually-hidden" }, "Gaurav Avinash, Senior Product Designer"),
       e(C.TopBar, topbar),
       e("div", { className: "cr-board" + (pgBoard ? " is-pgb" : "") },
         e("div", { className: "cr-grid" + (sheet && !sheet.closing ? " cr-dimmed" : "") + (pgBoard && !pgBoardOut ? " cr-pg-out" : ""), inert: pgBoard ? "" : undefined },

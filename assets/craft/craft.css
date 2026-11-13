@@ -2231,3 +2231,63 @@ html:not(:has(.craft-switch)) .cr-hero[data-cr-fit="flow"] .cr-topbar { right: 2
 @keyframes crSheen { 0% { background-position: -60% 0; } 60%, 100% { background-position: 160% 0; } }
 @supports not (background: color-mix(in oklab, red, white)) { .cr-mstat-bars i.cr-flow { background: var(--c); } }
 @media (prefers-reduced-motion: reduce) { .cr-mstat-bars i.cr-flow, .cr-mstat-bars i.cr-flow::after { animation: none; } }
+
+/* ── Resume link: one tap from the board at every width ── */
+.cr-resume {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 50px; padding: 0 20px 0 16px;
+  border-radius: var(--radius-pill);
+  background: rgba(255,255,255,.92); color: #16181d;
+  font-size: 15px; font-weight: 500; text-decoration: none; white-space: nowrap;
+  box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.10);
+  transition: transform var(--dur-snap) var(--ease-snap), background .2s ease;
+}
+.cr-resume svg { width: 20px; height: 20px; flex: none; }
+.cr-resume:hover { background: #fff; }
+.cr-resume:active { transform: scale(.97); }
+.cr-resume:focus-visible { outline: 2px solid #1f6bff; outline-offset: 3px; }
+.cr-topbar-right { gap: 10px; }
+
+/* Phone intro row: hidden above phone width, where the bar shows name, role and Resume */
+.cr-topbar-intro { display: none; }
+
+.cr-resume--bar { height: 50px; padding: 0 16px 0 14px; gap: 6px; font-size: 14px; }
+.cr-resume--bar svg { width: 18px; height: 18px; }
+
+/* Desktop canvas: Resume sits just left of Home/Projects (191 = control width + 10 gap).
+   The quote pill moves left to end 12px before Resume (311 = 191 + Resume 108 + 12).
+   Below 1340px there is no room for both, so the quote pill steps out. */
+.cr-hero:not([data-cr-fit]) .cr-topbar-right .cr-resume--bar {
+  position: absolute; top: 0; right: calc(50% - 466px * var(--cr-scale, 1) + 191px);
+}
+.cr-hero:not([data-cr-fit]) .cr-topbar > :nth-child(2) { left: auto; right: calc(50% - 466px * var(--cr-scale, 1) + 311px); }
+@media (max-width: 1339px) {
+  .cr-hero:not([data-cr-fit]) .cr-topbar > :nth-child(2) { display: none; }
+}
+
+/* Wider tablets: name and role fit between the clock and the tabs */
+@media (min-width: 861px) and (max-width: 1099px) {
+  .cr-hero .cr-topbar-id { display: flex; margin-left: 16px; }
+}
+
+@media (max-width: 700px) {
+  .cr-hero .cr-resume--bar { display: none; }
+  .cr-hero .cr-topbar-intro {
+    flex: 0 0 100%; order: 2;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    margin-top: 14px; padding: 12px 12px 12px 18px;
+    border-radius: 24px;
+    background: rgba(255,255,255,.92); color: #16181d;
+    box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.10);
+  }
+  .cr-intro-id { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .cr-intro-id b { font-size: 16px; font-weight: 600; }
+  .cr-intro-id > span { font-size: 14px; color: #474b55; }
+  .cr-intro-id .cr-live-status { margin-top: 6px; align-self: flex-start; }
+  .cr-hero .cr-resume--intro { height: 48px; flex: none; background: #16181d; color: #fff; box-shadow: none; }
+}
+/* Narrow tablets: the clock steps out so name and role always show */
+@media (min-width: 701px) and (max-width: 860px) {
+  .cr-hero .cr-clock { display: none; }
+  .cr-hero .cr-topbar-id { display: flex; margin-left: 16px; }
+}

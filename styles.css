@@ -121,6 +121,11 @@ button { font: inherit; cursor: pointer; border: none; background: none; }
   transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .splash.is-ringing .splash-ring-progress { stroke-dashoffset: 0; }
+/* First visit only: the same ring, wipe and reveal at about a third of the length */
+.splash--quick .splash-ring-progress { transition-duration: 0.5s; }
+.splash--quick .splash-wipe { transition-duration: 0.34s; }
+.splash--quick.is-revealing .splash-wipe { transition-duration: 0.46s; }
+.splash--quick.splash { transition-duration: 0.3s; }
 .splash-logo-mark {
   position: relative;
   z-index: 1;
