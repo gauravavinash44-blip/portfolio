@@ -2313,3 +2313,21 @@ html:not(:has(.craft-switch)) .cr-hero[data-cr-fit="flow"] .cr-topbar { right: 2
 /* Case-study rows: a few pixels of extra hit area above and below each row */
 .cr-row-text { position: relative; }
 .cr-row-text::after { content: ""; position: absolute; inset: -3px 0; }
+
+/* ── Profile: "How I use AI" ── a short block under the bio, scannable in one glance */
+.cr-profile-ai {
+  max-width: 440px; padding: 16px 18px 14px; border-radius: 18px;
+  background: rgba(255, 255, 255, 0.1); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+}
+.cr-profile-ai-title { margin: 0 0 10px; font-size: 15px; font-weight: 500; letter-spacing: -0.01em; color: #fff; }
+.cr-profile-ai-list { margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.cr-profile-ai-row { display: grid; grid-template-columns: 64px minmax(0, 1fr); column-gap: 12px; font-size: 13.5px; line-height: 1.4; }
+.cr-profile-ai-row dt { color: rgba(255, 255, 255, 0.72); }
+.cr-profile-ai-row dd { margin: 0; color: rgba(255, 255, 255, 0.94); }
+.cr-profile-ai-link {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; min-height: 32px;
+  font-size: 13px; font-weight: 500; color: #fff; text-decoration: none;
+}
+.cr-profile-ai-link svg { width: 14px; height: 14px; transition: transform 200ms var(--ease-arrive, ease); }
+.cr-profile-ai-link:hover svg { transform: translate(2px, -2px); }
+.cr-profile-ai-link:focus-visible { outline: 2px solid #fff; outline-offset: 3px; border-radius: 6px; }

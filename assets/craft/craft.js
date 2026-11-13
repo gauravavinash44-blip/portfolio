@@ -1254,6 +1254,12 @@
           h("p", { className: "cr-sheet-title" }, props.name),
           h("p", { className: "cr-sheet-sub" }, props.role),
           h("p", { className: "cr-t-body cr-profile-bio" }, props.bio),
+          props.ai ? h("section", { className: "cr-profile-ai", "aria-labelledby": "cr-profile-ai-t" },
+            h("h3", { id: "cr-profile-ai-t", className: "cr-profile-ai-title" }, props.ai.title),
+            h("dl", { className: "cr-profile-ai-list" }, props.ai.rows.map(function (r) {
+              return h("div", { key: r.k, className: "cr-profile-ai-row" }, h("dt", null, r.k), h("dd", null, r.v));
+            })),
+            props.ai.link ? h("a", { className: "cr-profile-ai-link", href: props.ai.link.href }, props.ai.link.label, h(Icon, { name: "arrow", stroke: 1.8 })) : null) : null,
           props.links ? h("div", { className: "cr-profile-links" }, props.links.map(function (l) {
             return l.onClick
               ? h("button", { key: l.label, type: "button", className: "cr-chip", onClick: l.onClick }, l.label)
@@ -2285,7 +2291,17 @@
       ],
       profileSheet: {
         image: img.profile, name: "Gaurav Avinash", role: "Product Designer · Delhi and Bengaluru, India", status: "Open to work",
-        bio: "I design products that make complex things feel simple. AI search, deal workflows and fintech setup flows, end to end. AI is part of how I work: I sketch screens in Google Stitch, refine them in Figma, then build working prototypes with Claude and Cursor so ideas get tested early.",
+        bio: "I design products that make complex things feel simple. AI search, deal workflows and fintech setup flows, end to end.",
+        ai: {
+          title: "How I use AI",
+          rows: [
+            { k: "Explore", v: "Google Stitch for quick first screens, so I can compare directions early." },
+            { k: "Refine", v: "Figma for the real design: hierarchy, states and edge cases." },
+            { k: "Build", v: "Claude and Cursor to turn it into a prototype people can click." },
+            { k: "Mine", v: "Research, trade-offs and the final call stay with me." }
+          ],
+          link: { label: "See Splitly, built this way", href: "./craft-splitly.html" }
+        },
         facts: [{ value: "5+", label: "years designing" }, { value: "+25%", label: "engagement, Contextual Chat" }, { value: "+32%", label: "adoption, Deal Room" }, { value: "4", label: "industries: fintech, AI, food, health" }]
       }
     };
