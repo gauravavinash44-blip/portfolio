@@ -2353,3 +2353,35 @@ html:not(:has(.craft-switch)) .cr-hero[data-cr-fit="flow"] .cr-topbar { right: 2
 .cr-orb-core img { width: 100%; height: 100%; display: block; object-fit: contain; filter: drop-shadow(0 1px 4px rgba(40, 20, 50, 0.22)); }
 :is(.cr-row, .cr-aw-card, .cs-row, .cs-related, .cr-preview):is(:hover, :focus-within, .is-active) .cr-orb-core { transform: translate(-50%, -50%) scale(1.06); }
 @media (prefers-reduced-motion: reduce) { .cr-orb-core { transition: none; } }
+
+/* Bitmoji listening to music: the head nods on the beat (about 100 bpm), now and then a slow sway;
+   two layers of the same cut-out so the body stays put. Notes drift up off the headphones. */
+.cr-orb-groove { position: absolute; }
+.cr-orb-groove .cr-orb-head { position: absolute; left: 0; top: 0; width: 100%; height: auto;
+  transform-origin: 50% 64%; animation: crNod 4.8s ease-in-out infinite; will-change: transform; }
+@keyframes crNod {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  12.5% { transform: rotate(-1.6deg) translateY(1.2%); }
+  25% { transform: rotate(0deg) translateY(0); }
+  37.5% { transform: rotate(1.6deg) translateY(1.2%); }
+  50% { transform: rotate(0deg) translateY(0); }
+  62.5% { transform: rotate(-3deg) translateY(.6%); }
+  75% { transform: rotate(-3deg) translateY(1.4%); }
+  87.5% { transform: rotate(2deg) translateY(.4%); }
+}
+.cr-orb-notes { position: absolute; inset: 0; pointer-events: none; }
+.cr-orb-notes i { position: absolute; top: 30%; font-style: normal; font-size: 22px; line-height: 1; color: #fff;
+  text-shadow: 0 2px 8px rgba(30,14,30,.25); opacity: 0; animation: crNote 4.8s ease-out infinite; }
+.cr-orb-notes i:nth-child(1) { left: 12%; }
+.cr-orb-notes i:nth-child(2) { right: 12%; animation-delay: 1.6s; font-size: 18px; }
+.cr-orb-notes i:nth-child(3) { left: 18%; animation-delay: 3.2s; font-size: 16px; }
+@keyframes crNote {
+  0% { opacity: 0; transform: translate(0, 10px) rotate(-8deg); }
+  15% { opacity: .95; }
+  70% { opacity: .6; }
+  100% { opacity: 0; transform: translate(6px, -46px) rotate(10deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cr-orb-groove .cr-orb-head, .cr-orb-notes i { animation: none; }
+  .cr-orb-notes { display: none; }
+}

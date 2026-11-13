@@ -614,6 +614,12 @@
           ? h("span", { className: "cr-orb-figure", "data-figure": "live" }, h("span", { className: "cr-avl", ref: liveRef, "aria-hidden": "true" }))
           : props.faces
           ? h(FaceCycle, { faces: props.faces, every: props.faceEvery })
+          : props.cutout && props.layers
+          /* Listening to music: the head nods to a beat on top of a still body, notes drift off the headphones */
+          ? h("span", { className: "cr-orb-figure cr-orb-groove", "data-figure": props.figure },
+              h("img", { className: "cr-orb-avatar cr-orb-body", src: props.layers.body, srcSet: props.layers.bodySet, sizes: props.imageSizes, alt: "", decoding: "async" }),
+              h("img", { className: "cr-orb-avatar cr-orb-head", src: props.layers.head, srcSet: props.layers.headSet, sizes: props.imageSizes, alt: "", decoding: "async" }),
+              h("span", { className: "cr-orb-notes", "aria-hidden": "true" }, h("i", null, "\u266A"), h("i", null, "\u266B"), h("i", null, "\u266A")))
           : props.cutout
           ? h("span", { className: "cr-orb-figure", "data-figure": props.figure }, h("img", { className: "cr-orb-avatar", src: props.image, srcSet: props.imageSet, sizes: props.imageSet ? props.imageSizes : undefined, alt: "", decoding: "async" }))
           : h("img", { className: "cr-orb-photo", src: props.image, alt: "" }),

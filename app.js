@@ -817,6 +817,12 @@
       image: "./assets/craft/avatar/gaurav-bitmoji-520.webp",
       imageSet: "./assets/craft/avatar/gaurav-bitmoji-520.webp 520w, ./assets/craft/avatar/gaurav-bitmoji-1040.webp 1040w",
       imageSizes: "(max-width: 700px) 186px, 200px",
+      layers: {
+        head: "./assets/craft/avatar/gaurav-bitmoji-head-520.webp",
+        headSet: "./assets/craft/avatar/gaurav-bitmoji-head-520.webp 520w, ./assets/craft/avatar/gaurav-bitmoji-head-1040.webp 1040w",
+        body: "./assets/craft/avatar/gaurav-bitmoji-body-520.webp",
+        bodySet: "./assets/craft/avatar/gaurav-bitmoji-body-520.webp 520w, ./assets/craft/avatar/gaurav-bitmoji-body-1040.webp 1040w",
+      },
       cutout: true, head: null, figure: "bust",
     });
     S.profileSheet = Object.assign({}, S.profileSheet, profileHistory(), {
