@@ -127,12 +127,23 @@
 
   /* Case study / AI work card size: four across on wide screens, two on tablets, one on phones.
      Height keeps the story slide's proportion (456 x 710) so the grow has no stretch. */
-  function caseGrid(W, n) {
+  function caseGrid(W, n, H) {
     var cols = W >= 1240 ? 4 : W > 700 ? 2 : 1;
     var w = cols === 4 ? Math.min(268, Math.floor((W - 280 - 60) / 4))
       : cols === 2 ? Math.min(330, Math.floor((W - 192 - 20) / 2))
       : W - 32;
-    return { cols: Math.max(1, Math.min(cols, n || 1)), w: w, h: Math.round(w * 710 / 456) };
+    var h = Math.round(w * 710 / 456), used = Math.max(1, Math.min(cols, n || 1));
+    /* Fewer projects than a full row (two AI works on a wide screen): stretch the cards across the
+       row so it doesn't sit in a narrow strip. Height follows the width, up to what fits above the
+       Home bar; text scales with the height; the picture takes the rest. A full row is the normal grid. */
+    if (cols === 4 && used < cols) {
+      var wide = Math.min(560, Math.floor((W - 220 - 20 * (used - 1)) / used));
+      if (wide > w) {
+        var tall = Math.max(h * 0.9, Math.min(Math.round(wide * 0.8), (H || 900) - 306));
+        return { cols: used, w: wide, h: Math.round(tall), f: Math.round(tall * 456 / 710), wide: true };
+      }
+    }
+    return { cols: used, w: w, h: h, f: w, wide: false };
   }
   var CS_FONT = 16 / 268; /* the card face is drawn in em: 16px at a 268px card */
 
@@ -413,7 +424,7 @@
     var isCase = tab !== "playground";
     var cur = list[index] || list[0];
     var L = storyLayout(vp.W, vp.H);
-    var CG = caseGrid(vp.W, list.length);
+    var CG = caseGrid(vp.W, list.length, vp.H);
 
     useEffect(function () { preload().then(function (j) { if (j) setItems(buildItems(j)); }); }, []);
     useEffect(function () {
@@ -870,8 +881,8 @@
       role: up ? undefined : "tabpanel", id: "cpg-tabpanel", "aria-labelledby": up ? undefined : "cpg-tab-" + tab
     },
       h("ul", {
-        className: cx("cpg-grid", isCase && "cpg-grid--cs"), "aria-label": tabInfo.label,
-        style: isCase ? { gridTemplateColumns: "repeat(" + CG.cols + ", " + CG.w + "px)", "--csw": CG.w + "px", "--csh": CG.h + "px" } : null
+        className: cx("cpg-grid", isCase && "cpg-grid--cs", isCase && CG.wide && "is-wide"), "aria-label": tabInfo.label,
+        style: isCase ? { gridTemplateColumns: "repeat(" + CG.cols + ", " + CG.w + "px)", "--csw": CG.w + "px", "--csh": CG.h + "px", "--csf": CG.f + "px" } : null
       },
         list.map(function (it, i) {
           var caseCard = it.look === "case";
