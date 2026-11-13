@@ -17,7 +17,7 @@
   var CC = "Contextual Chat Assistant", DR = "Deal Room", WL = "White Label Setup";
   /* NDA lock switched off for v1: case studies open directly. Set to true (and run npm run lock)
      to bring the password back. */
-  var LOCK_ON = false;
+  var LOCK_ON = true;
   var LOCKED = !LOCK_ON ? {} : {
     "craft-contextual-chat-detailed.html": CC, "craft-contextual-chat.html": CC, "craft-contextual-chat-minimal.html": CC,
     "contextual-chat-short.html": CC, "contextual-chat.html": CC, "case-study-systematic-agent.html": CC,
