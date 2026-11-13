@@ -1143,6 +1143,7 @@
     }, []);
 
     const changeWallpaper = (id) => {
+      preloadWallpaper(id);
       setWallpaper(id);
       setShuffleTick((t) => t + 1);
       if (hint) setHint(false);

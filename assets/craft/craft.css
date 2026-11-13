@@ -458,12 +458,20 @@ html.ga-craft .ga-brand { box-shadow: 0 8px 24px rgba(30, 20, 30, 0.16); }
 }
 .cr-wp-blur { filter: blur(24px); transform: scale(1.06); }
 /* Photo urls live in wallpapers/wallpapers.css so they resolve relative to that file. */
-/* Wallpaper change: a slow dissolve with a gentle settle, like macOS */
-.cr-wp.is-entering { animation: crWpIn 1800ms cubic-bezier(0.4, 0, 0.2, 1) both; }
+/* Wallpaper change: a slow, even dissolve. The old photo stays fully opaque underneath while the new one fades in. */
+.cr-wp.is-entering { animation: crWpIn 2200ms cubic-bezier(0.45, 0, 0.25, 1) both; will-change: opacity; }
 @keyframes crWpIn {
-  from { opacity: 0; transform: scale(1.035); filter: blur(10px) saturate(1.1); }
-  60% { filter: blur(0) saturate(1); }
-  to { opacity: 1; transform: none; filter: none; }
+  from { opacity: 0; transform: scale(1.02); }
+  to { opacity: 1; transform: none; }
+}
+/* Card tints and the top bar text colour follow the wallpaper over the same time, instead of snapping */
+@property --wp-glass { syntax: "<color>"; inherits: true; initial-value: rgba(96, 80, 92, 0.42); }
+@property --wp-glass-light { syntax: "<color>"; inherits: true; initial-value: rgba(150, 136, 148, 0.34); }
+@property --wp-glass-strong { syntax: "<color>"; inherits: true; initial-value: rgba(70, 56, 68, 0.58); }
+@property --wp-topbar-ink { syntax: "<color>"; inherits: true; initial-value: #ffffff; }
+@property --wp-accent { syntax: "<color>"; inherits: true; initial-value: #3b8fca; }
+@media (prefers-reduced-motion: no-preference) {
+  .cr-hero { transition: --wp-glass 2200ms cubic-bezier(0.45, 0, 0.25, 1), --wp-glass-light 2200ms cubic-bezier(0.45, 0, 0.25, 1), --wp-glass-strong 2200ms cubic-bezier(0.45, 0, 0.25, 1), --wp-topbar-ink 2200ms cubic-bezier(0.45, 0, 0.25, 1), --wp-accent 2200ms cubic-bezier(0.45, 0, 0.25, 1); }
 }
 @media (prefers-reduced-motion: reduce) {
   .cr-wp.is-entering { animation: crWpFade 400ms ease both; }

@@ -66,11 +66,21 @@
   /* ───────── Backdrop: painted dusk landscape ───────── */
   function WallpaperLayers(props) {
     var _s = useState([props.wallpaper]), layers = _s[0], setLayers = _s[1];
+    /* Start the dissolve only once the new photo is loaded and decoded, so it never pops in half way through */
     useEffect(function () {
-      setLayers(function (prev) {
-        if (prev[prev.length - 1] === props.wallpaper) return prev;
-        return prev.slice(-1).concat([props.wallpaper]);
-      });
+      var id = props.wallpaper, done = false, timer = 0;
+      var go = function () {
+        if (done) return; done = true; clearTimeout(timer);
+        setLayers(function (prev) {
+          if (prev[prev.length - 1] === id) return prev;
+          return prev.slice(-1).concat([id]);
+        });
+      };
+      var img = new Image();
+      img.src = "./assets/craft/wallpapers/" + id + (window.innerWidth >= 1600 || window.devicePixelRatio >= 1.5 ? "-2560" : "-1440") + ".webp";
+      timer = setTimeout(go, 1500);
+      if (img.decode) img.decode().then(go, go); else img.onload = img.onerror = go;
+      return function () { done = true; clearTimeout(timer); };
     }, [props.wallpaper]);
     /* live motion (assets/craft/live-wallpaper.js) follows the settled layer */
     var liveRef = useRef(null);
