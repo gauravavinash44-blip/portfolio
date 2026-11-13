@@ -2316,4 +2316,6 @@ html:not(:has(.craft-switch)) .cr-hero[data-cr-fit="flow"] .cr-topbar { right: 2
 
 /* ── Profile: "How I use AI" ── a small heading and a short paragraph under the bio */
 .cr-profile-ai { margin-top: 4px; }
-.cr-profile-ai-title { margin: 0 0 6px; font-size: 15px; font-weight: 500; letter-spacing: -0.01em; color: #fff; }
+.cr-profile-ai-title { margin: 0 0 4px; font-size: 13px; font-weight: 500; letter-spacing: -0.01em; color: #fff; }
+
+.cr-profile-ai .cr-profile-bio { font-size: 13px; line-height: 1.35; color: rgba(255, 255, 255, 0.78); }
