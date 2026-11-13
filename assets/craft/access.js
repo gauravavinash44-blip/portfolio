@@ -405,7 +405,7 @@
     return card;
   }
 
-  window.GAAccess = { unlocked: unlocked, company: company, track: track, key: savedKey, saveKey: saveKey, open: openPopup, intercept: intercept, mountLock: mountLock };
+  window.GAAccess = { lockOn: LOCK_ON, unlocked: unlocked, company: company, track: track, key: savedKey, saveKey: saveKey, open: openPopup, intercept: intercept, mountLock: mountLock };
 
   function ready() {
     showGreeting();

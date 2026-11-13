@@ -523,7 +523,7 @@
           : h("img", { src: props.image, alt: props.alt || "" }),
         (props.cursors || []).map(function (c, i) { return h(CursorChip, Object.assign({ key: c.name, wander: (i % 2) + 1 }, c)); })),
       h("div", { className: "cr-preview-foot" + (props.avatar || props.icon ? "" : " cr-preview-foot--noavatar") },
-        props.icon ? h(ProjectWell, { icon: props.icon, tone: props.tone, badge: false })
+        props.icon ? h(ProjectWell, { icon: props.icon, tone: props.tone, badge: !!props.badge })
           : props.avatar ? h(Avatar, { src: props.avatar, size: 50 }) : null,
         h("span", { className: "cr-row-text" }, h("b", null, props.title), h("span", null, props.subtitle)),
         props.arrowHref ? h("a", { className: "cr-chip cr-chip--count cr-preview-go", href: props.arrowHref, "aria-label": "Open " + props.title + " case study", title: "Open case study" }, h(Icon, { name: "arrow" }))

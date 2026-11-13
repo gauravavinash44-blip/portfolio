@@ -906,6 +906,14 @@
       cursors: S.preview.cursors.map((c) => Object.assign({}, c, c.name === "You" ? { x: 58, y: 104 }
         : { x: 186, y: 184, avatarSet: "./assets/craft/avatar/gaurav-bitmoji-face-96.webp 1x, ./assets/craft/avatar/gaurav-bitmoji-face-192.webp 2x" })),
     });
+    /* Until a visitor has opened the NDA cases, the featured card shows EasyEat, the one case anyone can
+       read. Once they unlock (password, request, company link), it goes back to Contextual Chat. */
+    S.previewOpen = Object.assign({}, S.preview, {
+      title: "EasyEat", subtitle: "Order customization", icon: "bowl", tone: "orange",
+      href: hrefs["EasyEat"], arrowHref: hrefs["EasyEat"], clip: null, slides: null,
+      image: "./assets/craft/case/ee-preview.jpg", alt: "EasyEat order customization screen", badge: true,
+      cursors: S.preview.cursors.map((c) => Object.assign({}, c, c.name === "You" ? { x: 40, y: 150 } : { x: 196, y: 96 })),
+    });
     /* Top bar pill: rotating design notes (rendered by Craft.PhilosophyPill). Interleaved Norman, Rams, Gaurav.
        Norman and Rams lines are short paraphrases of their principles, not verbatim quotes.
        DRAFT (needs Gaurav's OK): the four Gaurav lines marked "draft" below are new, written in his voice.
@@ -1222,6 +1230,14 @@
     /* Search + assistant popup (assets/craft/search.js). mode: "search" or "ask" */
     const CS = window.CraftSearch;
     const [pgQueue, setPgQueue] = useState(undefined);
+    /* NDA cases unlocked in this browser? Re-checked when the page is shown again (back button) or storage changes. */
+    const casesUnlocked = () => !(window.GAAccess && window.GAAccess.lockOn && !window.GAAccess.unlocked());
+    const [casesOpen, setCasesOpen] = useState(casesUnlocked);
+    useEffect(() => {
+      const check = () => setCasesOpen(casesUnlocked());
+      window.addEventListener("pageshow", check); window.addEventListener("storage", check); window.addEventListener("focus", check);
+      return () => { window.removeEventListener("pageshow", check); window.removeEventListener("storage", check); window.removeEventListener("focus", check); };
+    }, []);
     setPgQueueRef.current = setPgQueue; /* Projects pick from search: open once the old view is gone */
     const openSearch = (opener, mode) => {
       if (!CS) { openAssistant(); return; }
@@ -1292,7 +1308,7 @@
         onDrop: () => openProjects(pgCard()),
         dropHint: "Drop to see all projects",
       }),
-      chat: () => e(C.PreviewCard, data.preview),
+      chat: () => e(C.PreviewCard, casesOpen ? data.preview : data.previewOpen),
       /* Resonance player ("Create a room" slot). The assistant lives in search (Ask tab) and the dock. */
       np: () => e(C.ResonanceCard, { onOpen: openResonance }),
       hello: () => e(C.ContactCard, { label: "Say hello", slides: data.hello }),
