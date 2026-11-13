@@ -822,6 +822,8 @@
         headSet: "./assets/craft/avatar/gaurav-bitmoji-head-520.webp 520w, ./assets/craft/avatar/gaurav-bitmoji-head-1040.webp 1040w",
         body: "./assets/craft/avatar/gaurav-bitmoji-body-520.webp",
         bodySet: "./assets/craft/avatar/gaurav-bitmoji-body-520.webp 520w, ./assets/craft/avatar/gaurav-bitmoji-body-1040.webp 1040w",
+        closed: "./assets/craft/avatar/gaurav-bitmoji-head-closed-520.webp",
+        closedSet: "./assets/craft/avatar/gaurav-bitmoji-head-closed-520.webp 520w, ./assets/craft/avatar/gaurav-bitmoji-head-closed-1040.webp 1040w",
       },
       cutout: true, head: null, figure: "bust",
     });
