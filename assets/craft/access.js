@@ -122,8 +122,9 @@
   /* Only when the build turns Wall of Portfolios mode on (WALL_MODE=1); otherwise everyone gets the teaser */
   var WALL = LOCK_ON && !!CFG.wall && fromWall();
   (function autoOpen() {
-    if (!LOCK_ON || !CFG.wall || WALL || !CFG.o || savedKey()) return;
-    try { saveKey(window.atob(CFG.o).split("").reverse().join("")); } catch (e) { /* stays locked */ }
+    if (!LOCK_ON || !CFG.wall || WALL || !CFG.o) return;
+    /* Also replaces an old saved key (old password, old company link) so those visitors get straight in */
+    try { var a = window.atob(CFG.o).split("").reverse().join(""); if (savedKey() !== a) saveKey(a); } catch (e) { /* stays locked */ }
   })();
 
   /* ───────── Styles ───────── */

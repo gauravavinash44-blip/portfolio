@@ -1,0 +1,157 @@
+/* ═════════════ Liquid Glass ═════════════
+   An add-on layer. liquid-glass.js tags a few chrome pieces with these classes:
+     .lg        a glass surface (nav pills, search). Rim light, depth shadow, cursor glare.
+     .lg--light the white glass used on case pages (dark text on light glass).
+     .lg-lens   Chromium only: the backdrop bends at the edges through an SVG lens map.
+     .lg-mag    a control that leans toward the cursor and presses in.
+   Nothing here changes layout. Content cards stay as they are. */
+
+:where(.lg) { position: relative; }
+.lg {
+  isolation: isolate;
+  --lg-x: 50%; --lg-y: -40%; --lg-on: 0;
+  --lg-rim: rgba(255, 255, 255, 0.42);
+  --lg-glare: rgba(255, 255, 255, 0.30);
+}
+
+/* Depth: a lit top edge, a faint lower edge, a hairline rim, and a soft lift off the page */
+.lg.lg {
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.34),
+    inset 0 -1px 0 0 rgba(255, 255, 255, 0.07),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.16),
+    0 1px 1px rgba(10, 5, 20, 0.05),
+    0 12px 32px -10px rgba(20, 10, 30, 0.28);
+}
+
+/* Rim light: a 1px lens edge, brightest at the top left and where the cursor is */
+.lg::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  border-radius: inherit; padding: 1px;
+  background:
+    radial-gradient(90px circle at var(--lg-x) var(--lg-y), rgba(255, 255, 255, calc(0.75 * var(--lg-on))), transparent 70%),
+    linear-gradient(140deg, var(--lg-rim), transparent 34%, transparent 66%, rgba(255, 255, 255, 0.16));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+
+/* Glare: light sliding across the surface under the cursor. Sits under the text. */
+.lg::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  border-radius: inherit;
+  background:
+    radial-gradient(64px circle at var(--lg-x) var(--lg-y), var(--lg-glare), rgba(255, 255, 255, 0.06) 55%, transparent 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.10), transparent 46%);
+  opacity: calc(0.35 + 0.65 * var(--lg-on));
+  transition: opacity 0.45s ease;
+}
+
+/* ── Light glass (case pages): dark text on near-white glass over light pages ── */
+.lg--light {
+  --lg-rim: rgba(255, 255, 255, 0.95);
+  --lg-glare: rgba(255, 255, 255, 0.95);
+}
+.lg--light.lg--light {
+  background: rgba(255, 255, 255, 0.66);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.9),
+    inset 0 0 0 0.5px rgba(10, 10, 20, 0.07),
+    0 1px 2px rgba(20, 15, 40, 0.05),
+    0 10px 28px -8px rgba(30, 20, 60, 0.16);
+}
+a.lg--light.lg--light:hover { background: rgba(255, 255, 255, 0.82); }
+.lg--light::after { background: radial-gradient(72px circle at var(--lg-x) var(--lg-y), var(--lg-glare), transparent 100%); }
+
+/* Over a dark part of the page the light glass dims, so it never glows */
+.lg-dark .lg--light.lg--light { background: rgba(28, 26, 34, 0.5); color: #fff; }
+.lg-dark .lg--light { --lg-rim: rgba(255, 255, 255, 0.4); --lg-glare: rgba(255, 255, 255, 0.18); }
+.lg-dark .cm-toc a { color: rgba(255, 255, 255, 0.72); }
+.lg-dark .cm-toc a:hover, .lg-dark .cm-toc a[aria-current="true"] { color: #fff; }
+.lg-dark .lg-ind { background: rgba(255, 255, 255, 0.18); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22); }
+
+/* ── Dark glass (Projects view): smoky glass over the dark gallery, so cards show through as they scroll under ── */
+.lg.lg--dark.lg--dark {
+  background: rgba(34, 35, 41, 0.68);
+  -webkit-backdrop-filter: blur(18px) saturate(1.6); backdrop-filter: blur(18px) saturate(1.6);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.16),
+    inset 0 -1px 0 0 rgba(255, 255, 255, 0.04),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.10),
+    0 1px 1px rgba(0, 0, 0, 0.2),
+    0 14px 34px -12px rgba(0, 0, 0, 0.6);
+}
+.lg--dark { --lg-rim: rgba(255, 255, 255, 0.26); --lg-glare: rgba(255, 255, 255, 0.16); }
+button.lg.lg--dark.lg--dark:hover { background: rgba(58, 59, 67, 0.74); }
+.lg-lens.lg--dark.lg--dark { -webkit-backdrop-filter: var(--lg-lens) blur(14px) saturate(1.6); backdrop-filter: var(--lg-lens) blur(14px) saturate(1.6); }
+
+/* ── Lens (Chromium): less blur, so the bent edges of the photo behind read as glass ── */
+.lg-lens.lg-lens { -webkit-backdrop-filter: var(--lg-lens) blur(10px) saturate(1.8) brightness(1.03); backdrop-filter: var(--lg-lens) blur(10px) saturate(1.8) brightness(1.03); }
+.lg--light.lg-lens.lg-lens { -webkit-backdrop-filter: var(--lg-lens) blur(18px) saturate(1.5); backdrop-filter: var(--lg-lens) blur(18px) saturate(1.5); }
+
+/* ── Scroll: the case bar settles into a denser glass once the page moves under it ── */
+.cm-bar .lg { transition: background-color 0.4s ease, box-shadow 0.4s ease, color 0.3s ease; }
+.cm-bar.lg-scrolled .lg--light.lg--light {
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.95),
+    inset 0 0 0 0.5px rgba(10, 10, 20, 0.08),
+    0 1px 2px rgba(20, 15, 40, 0.06),
+    0 14px 34px -10px rgba(30, 20, 60, 0.22);
+}
+.cm-bar.lg-dark.lg-scrolled .lg--light.lg--light { background: rgba(28, 26, 34, 0.58); }
+
+/* ── Section nav: one glass indicator slides to the section being read ── */
+.cm-toc.lg-has-ind a[aria-current="true"] { background: transparent; box-shadow: none; }
+.cm-toc a { position: relative; z-index: 1; }
+.lg-ind {
+  position: absolute; z-index: 0; top: 4px; bottom: 4px; left: 0; width: 0; pointer-events: none;
+  border-radius: 999px; background: #fff;
+  box-shadow: 0 1px 2px rgba(20, 15, 40, 0.08), 0 4px 12px -4px rgba(20, 15, 40, 0.14), inset 0 0 0 0.5px rgba(10, 10, 20, 0.05);
+  opacity: 0; transform: translateX(var(--ind-x, 0)); width: var(--ind-w, 0);
+}
+.lg-ind.is-on { opacity: 1; }
+.lg-ind.is-ready {
+  transition: transform 0.5s cubic-bezier(0.3, 1.25, 0.4, 1), width 0.5s cubic-bezier(0.3, 1.25, 0.4, 1), opacity 0.25s ease, background-color 0.3s ease;
+}
+
+/* ── Magnetic controls ──
+   liquid-glass.js springs the `translate` and `scale` properties directly, so each control
+   keeps its own transitions and transforms (hover morphs, active states) untouched. */
+.lg-mag { will-change: translate; }
+
+/* ── Entrance: the floating chrome arrives once, softly ── */
+@media (prefers-reduced-motion: no-preference) {
+  .cm-bar > .lg { animation: lgArrive 0.8s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .cm-bar > .lg:nth-child(2) { animation-delay: 0.08s; }
+}
+@keyframes lgArrive {
+  from { opacity: 0; transform: translateY(-10px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ── Accessibility and fallbacks ── */
+.lg-mag:focus-visible { outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  .lg-mag { translate: none !important; scale: none !important; }
+  .lg-ind.is-ready { transition: opacity 0.2s ease; }
+}
+/* No backdrop blur in this browser: make the glass solid enough to read */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .lg--light.lg--light { background: rgba(255, 255, 255, 0.95); }
+  .lg-dark .lg--light.lg--light { background: rgba(28, 26, 34, 0.9); }
+  .lg.lg--dark.lg--dark { background: #26272c; }
+}
+/* Users who ask for less transparency get a solid surface and no lens */
+@media (prefers-reduced-transparency: reduce) {
+  .lg--light.lg--light { background: rgba(255, 255, 255, 0.96); }
+  .lg.lg--dark.lg--dark { background: #26272c; }
+  .lg-lens.lg-lens { -webkit-backdrop-filter: blur(28px); backdrop-filter: blur(28px); }
+  .lg::after { display: none; }
+}
+/* Touch screens: no cursor, so the glass rests in its static look */
+@media (hover: none), (pointer: coarse) {
+  .lg::after { opacity: 0.35; }
+  .lg-mag { translate: none !important; will-change: auto; }
+}
+@media (forced-colors: active) { .lg::before, .lg::after, .lg-ind { display: none; } }
