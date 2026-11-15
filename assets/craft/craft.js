@@ -1740,6 +1740,16 @@
      line bottom-left, a big round play button bottom-right, progress along the bottom edge.
      The body opens the Resonance popup, which grows out of this card; the play button only plays. */
   var RP_TINT = "#467ca2";
+  /* Any CSS colour (the sampled tints are hsl) as #rrggbb, for the card's orb palette */
+  var rpHexCtx = null;
+  function rpHex(css) {
+    try {
+      rpHexCtx = rpHexCtx || document.createElement("canvas").getContext("2d");
+      rpHexCtx.fillStyle = RP_TINT; rpHexCtx.fillStyle = css;
+      var v = rpHexCtx.fillStyle;
+      return /^#[0-9a-f]{6}$/i.test(v) ? v : RP_TINT;
+    } catch (e) { return RP_TINT; }
+  }
   var RP_WAVE_BARS = 14;
   var rpTintCache = {};
   function rpSampleTint(src, done, cors, fallback) {
@@ -1806,6 +1816,17 @@
     var _af = useState(""), artFailed = _af[0], setArtFailed = _af[1];
     var art = proto ? (t.coverFailed || artFailed === t.cover ? t.placeholder : t.cover) : (props.art || NP_ART);
     var _t = useState(rpTintCache[art] || RP_TINT), tint = _t[0], setTint = _t[1];
+    /* The card surface is the same grainy swirl as the project orbs, flat and in the cover's tint */
+    var orbRef = useRef(null);
+    useEffect(function () {
+      var O = window.CraftOrb;
+      if (!O || !O.fromTint || !orbRef.current) return undefined;
+      return O.mount(orbRef.current, "rpCard", { flat: true, seed: 5, colors: O.fromTint(rpHex(tint)) });
+    }, []);
+    useEffect(function () {
+      var O = window.CraftOrb;
+      if (O && O.recolor) O.recolor(orbRef.current, O.fromTint(rpHex(tint)));
+    }, [tint]);
     useEffect(function () {
       var alive = true;
       if (proto && art === t.placeholder) {
@@ -1843,6 +1864,7 @@
         style: { "--rp-tint": tint },
         onClick: open, onPointerEnter: rpWarm, onFocus: rpWarm,
         "data-cr-enter": "", "data-np-card": "", "data-drop": NP_DROP, "data-track": proto ? t.id : undefined },
+      h("span", { className: "cr-rp-orb", ref: orbRef, "aria-hidden": "true" }),
       h("button", { type: "button", className: "cr-rp-open", ref: openRef, "aria-haspopup": "dialog",
         "aria-label": proto ? (t.title + " by " + t.artist + (playing ? ", playing" : ", paused") + " in the Resonance prototype. Open it")
           : props.label || (title + ", personal project. Open the live prototype") }),

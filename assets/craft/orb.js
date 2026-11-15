@@ -9,8 +9,8 @@
   /* a = deep base, b = body, c = light highlight, d = rim tint. Keyed by project icon name. */
   var PALETTES = {
     chatSpark: ["#8a8af3", "#f79ae4", "#b3d5fb", "#9fb9fa"], /* Contextual Chat: indigo-lilac, pink, ice blue */
-    dealDoc: ["#c03f18", "#ef6f2e", "#f8c27c", "#f6b06a"],   /* Deal Room: burnt orange, amber */
-    swatch: ["#3d2a28", "#a8665c", "#e49a88", "#b4aef4"],    /* White Label: brown, rose, lilac rim */
+    dealDoc: ["#2440b8", "#5b86f5", "#cfe0ff", "#a8c2ff"],   /* Deal Room: cobalt, cornflower, ice (matches its blue banner) */
+    swatch: ["#13664a", "#45b585", "#d4f5e2", "#a6e3c4"],    /* White Label: pine, jade, mint (matches its green banner) */
     bowl: ["#cf3a2c", "#f5845e", "#ffd3bb", "#ffb59a"],      /* EasyEat: warm red, peach */
     wave: ["#0f7062", "#3cc3a0", "#c9f1dc", "#9fe6d0"],      /* Resonance: green, teal, mint */
     plane: ["#2b64cc", "#71b2f3", "#f5dfc0", "#bfe0ff"],     /* Nomad: sky blue, sand */
@@ -24,7 +24,7 @@
   };
 
   var SEEDS = { chatSpark: 4.6, dealDoc: 2, swatch: 3, bowl: 4, wave: 5, plane: 6, gauge: 7, swap: 8, receipt: 9, card: 10, orbits: 11, loader: 12, layers: 13 };
-  var HOSTS = ".cr-row, .cr-aw-card, .cs-row, .cs-related, .cr-preview";
+  var HOSTS = ".cr-row, .cr-aw-card, .cs-row, .cs-related, .cr-preview, .cr-rp";
 
   function reduced() { return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches); }
   function rgb(hex) { var n = parseInt(hex.slice(1), 16); return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255]; }
@@ -45,7 +45,7 @@
     "#else",
     "precision mediump float;",
     "#endif",
-    "uniform vec2 uRes;uniform vec2 uOff;uniform float uT;uniform float uWake;uniform float uGrain;",
+    "uniform vec2 uRes;uniform vec2 uOff;uniform float uT;uniform float uWake;uniform float uGrain;uniform float uFlat;",
     "uniform vec3 uA;uniform vec3 uB;uniform vec3 uC;uniform vec3 uD;",
     "float h21(vec2 p){p=fract(p*vec2(123.34,456.21));p+=dot(p,p+45.32);return fract(p.x*p.y);}",
     "float vn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);",
@@ -55,9 +55,9 @@
     " vec2 uv=((gl_FragCoord.xy-uOff)/uRes)*2.-1.;",
     " float r=length(uv);",
     " float px=2./uRes.x;",
-    " float a=1.-smoothstep(1.-px*1.6,1.,r);",
+    " float a=uFlat>.5?1.:1.-smoothstep(1.-px*1.6,1.,r);",
     " if(a<=0.){gl_FragColor=vec4(0.);return;}",
-    " float z=sqrt(max(0.,1.-r*r));",
+    " float z=uFlat>.5?1.:sqrt(max(0.,1.-r*r));",
     /* bulge the plane onto the sphere so the swirls wrap round the limb */
     " vec2 q=uv/(.5+.5*z);",
     " float t=uT*(.1+uWake*.05);",
@@ -105,7 +105,7 @@
       var loc = gl.getAttribLocation(prog, "p");
       gl.enableVertexAttribArray(loc);
       gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-      ["uRes", "uOff", "uT", "uWake", "uGrain", "uA", "uB", "uC", "uD"].forEach(function (k) { U[k] = gl.getUniformLocation(prog, k); });
+      ["uRes", "uOff", "uT", "uWake", "uGrain", "uFlat", "uA", "uB", "uC", "uD"].forEach(function (k) { U[k] = gl.getUniformLocation(prog, k); });
       gl.clearColor(0, 0, 0, 0);
       glCanvas.addEventListener("webglcontextlost", function (ev) { ev.preventDefault(); gl = null; glFailed = true; });
       return true;
@@ -156,6 +156,7 @@
       gl.uniform2f(U.uOff, px, py);
       gl.uniform1f(U.uT, o.phase + o.seed * 37.0);
       gl.uniform1f(U.uWake, o.wake);
+      gl.uniform1f(U.uFlat, o.flat ? 1 : 0);
       gl.uniform3fv(U.uA, o.c[0]); gl.uniform3fv(U.uB, o.c[1]); gl.uniform3fv(U.uC, o.c[2]); gl.uniform3fv(U.uD, o.c[3]);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     });
@@ -204,14 +205,24 @@
   }
   document.addEventListener("visibilitychange", kick);
 
-  /* Mount: el is the well span, key the palette key. Returns an unmount function. */
-  function mount(el, key) {
-    var pal = PALETTES[key];
+  /* A palette from one colour: deep base, the colour itself, a light highlight, a soft rim */
+  function mixHex(hex, to, k) {
+    var a = rgb(hex), b = to ? [1, 1, 1] : [0, 0, 0];
+    return "#" + a.map(function (v, i) { var c = Math.round((v + (b[i] - v) * k) * 255); return (c < 16 ? "0" : "") + c.toString(16); }).join("");
+  }
+  function fromTint(hex) { return [mixHex(hex, false, 0.34), hex, mixHex(hex, true, 0.36), mixHex(hex, true, 0.22)]; }
+
+  /* Mount: el is the well span, key the palette key. Returns an unmount function.
+     opts.flat paints a flat surface (no sphere, no round edge) to fill a card; opts.colors
+     passes four hex colours instead of a named palette. */
+  function mount(el, key, opts) {
+    opts = opts || {};
+    var pal = opts.colors || PALETTES[key];
     if (!el || !pal) return function () {};
     if (!initGL()) return function () {};
     var cv = el.querySelector("canvas");
     if (!cv) { cv = document.createElement("canvas"); cv.setAttribute("aria-hidden", "true"); el.appendChild(cv); }
-    var o = { el: el, cv: cv, ctx: cv.getContext("2d"), c: pal.map(rgb), seed: SEEDS[key] || 0, phase: 0, wake: 0, sc: 1, seen: !io, drawn: false, host: null };
+    var o = { el: el, cv: cv, ctx: cv.getContext("2d"), c: pal.map(rgb), flat: !!opts.flat, seed: SEEDS[key] || opts.seed || 0, phase: 0, wake: 0, sc: 1, seen: !io, drawn: false, host: null };
     el.__orb = o;
     orbs.push(o);
     size(o);
@@ -269,6 +280,13 @@
       { d: "M3 12l9 4.8 9-4.8M3 16.4l9 4.8 9-4.8", s: 2 }]
   };
 
-  window.CraftOrb = { mount: mount, has: function (key) { return !!PALETTES[key]; }, fallback: fallback, palettes: PALETTES,
+  /* Recolour a mounted orb in place (the Resonance card follows each cover's tint) */
+  function recolor(el, colors) {
+    var o = el && el.__orb; if (!o || !colors) return;
+    o.c = colors.map(rgb);
+    if (!raf) paint(o);
+  }
+
+  window.CraftOrb = { mount: mount, recolor: recolor, fromTint: fromTint, has: function (key) { return !!PALETTES[key]; }, fallback: fallback, palettes: PALETTES,
     glyph: function (key) { return GLYPHS[key] || null; } };
 })();
