@@ -178,9 +178,10 @@
     var items = [];
     (opts.cases || []).forEach(function (c) {
       items.push({
-        id: "case-" + c.id, group: "case", caseId: c.id, title: c.title, href: c.href, icon: c.icon, tone: c.tone,
-        sub: ["Case study", c.domain, c.metric && !c.metric.word ? c.metric.value + " " + c.metric.label : null].filter(Boolean).join(" · "),
-        keys: [c.domain, c.year, CASE_WORDS[c.id]].join(" "), body: c.summary || ""
+        id: "case-" + c.id, group: "case", caseId: c.id, title: c.listTitle || c.title, note: c.titleNote, href: c.href, icon: c.icon, tone: c.tone,
+        /* side projects (AI works) say what they are; only real case studies say "Case study" */
+        sub: c.listSub || ["Case study", c.domain, c.metric && !c.metric.word ? c.metric.value + " " + c.metric.label : null].filter(Boolean).join(" · "),
+        keys: [c.title, c.titleNote, c.domain, c.year, CASE_WORDS[c.id]].join(" "), body: c.summary || ""
       });
     });
     (opts.playground || []).forEach(function (p) {
@@ -722,7 +723,9 @@
       return optionRow(opt, [
         h(Well, { key: "w", icon: it.group === "section" ? "hash" : it.icon, tone: it.tone, orb: it.group === "case" || it.group === "playground" }),
         h("span", { key: "t", className: "cs-row-text" },
-          h("b", null, marks(it.title, trimmed)),
+          it.note
+            ? h("b", { className: "has-note" }, h("span", { className: "cs-tmain" }, marks(it.title, trimmed)), h("span", { className: "cs-tnote" }, "\u2013 ", marks(it.note, trimmed)))
+            : h("b", null, marks(it.title, trimmed)),
           h("span", null, marks(it.sub, trimmed))),
         h("span", { key: "g", className: "cs-go", "aria-hidden": "true" }, h(Icon, { name: go, stroke: 1.8 }))
       ], "cs-row--" + it.group);

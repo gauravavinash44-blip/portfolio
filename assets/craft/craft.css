@@ -793,6 +793,8 @@ html.ga-craft:has(.cr-hero[data-cr-fit="flow"]) body { overflow: visible; }
 .cr-topbar-id { font-size: 13px; line-height: 1.3; gap: 1px; padding-left: 16px; border-left: 1px solid; }
 .cr-hero .cr-topbar-id { border-left-color: color-mix(in srgb, currentColor 55%, transparent); }
 .cr-hero .cr-topbar-id span:last-child { opacity: 0.65; }
+/* the name reads a step above the role (2px larger) */
+.cr-topbar-id span:first-child { font-size: 15px; }
 
 .cr-notice { position: relative; height: 50px; gap: 0; padding: 0 7px 0 10px; box-shadow: 0 6px 18px rgba(60, 40, 60, 0.07); }
 .cr-notice::before { /* the second, stacked notification peeking out underneath */

@@ -140,6 +140,11 @@ html.ga-cs-open .craft-switch, html.ga-cs-open .ga-brand { opacity: 0; visibilit
 .cs-row-text b { font-size: 17px; line-height: 1.22; letter-spacing: -0.015em; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cs-row-text span { font-size: 13px; line-height: 1.3; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cs-row--section .cs-row-text b { font-weight: 400; }
+/* a title with a secondary part ("Resonance – Personal project for Spotify"): the second half reads quieter */
+.cs-row-text b.has-note { display: flex; align-items: baseline; gap: 0.3em; min-width: 0; }
+.cs-row-text b.has-note > span { font-size: inherit; line-height: inherit; color: inherit; overflow: visible; }
+.cs-row-text b.has-note > .cs-tmain { flex: none; }
+.cs-row-text b.has-note > .cs-tnote { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; font-weight: 400; color: var(--ink-2); }
 .cs-row mark { background: none; color: inherit; font-weight: 600; box-shadow: inset 0 -0.42em 0 rgba(43, 85, 246, 0.16); border-radius: 2px; }
 .cs-row-text span mark { color: var(--ink); font-weight: 500; }
 .cs-row q { quotes: "\201C" "\201D"; }

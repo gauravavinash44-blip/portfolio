@@ -879,12 +879,14 @@
        prototype: "https://..." opens a link instead. */
     const aiWorks = [
       { id: "resonance", title: "Resonance for Spotify", href: hrefs["Resonance"], image: ASSETS.resonance, icon: "wave", tone: "blue",
+        listTitle: "Resonance", titleNote: "Personal project for Spotify", listSub: "Live prototype · Music, AI",
         sub: "Personal project", domain: "AI, Music", summary: "Playback that starts songs closer to the part you want to hear.",
         metric: { value: "Concept", label: "speculative, personal project", word: true },
         description: "A speculative, personal playback idea for Spotify that starts songs closer to the moment you actually want to hear. Not affiliated with Spotify.",
         facts: [["Context", "Personal project, for Spotify"], ["Type", "Speculative product"], ["Prototype", "Live in the browser"]],
         live: "resonance" },
       { id: "splitly", title: "Splitly", href: hrefs["Splitly"], image: "./assets/craft/case/sp-cover-sm.jpg", icon: "receipt", tone: "orange",
+        listSub: "Side project · Fintech, built with AI",
         sub: "Personal project", domain: "Fintech, AI-built", summary: "Split a bill and see who pays whom. Built with AI.",
         metric: { value: "Live", label: "AI-built prototype", word: true },
         description: "A split-the-bill app for friends in India. One of my first AI-driven design problems: designed in Figma, built with Claude, Cursor and AI agents.",
