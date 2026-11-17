@@ -305,3 +305,57 @@ body.el .cm-end { max-width: none; padding-left: clamp(0px, 1.5vw, 16px); paddin
   .el-hero > .el-grid { animation-delay: 260ms; }
   .el-hero > .el-stats { animation-delay: 340ms; }
 }
+
+/* ── Persona: one composite user, built from the interviews ── */
+.el-persona { margin-top: clamp(48px, 6vw, 80px); background: var(--surface); border-radius: 20px; padding: clamp(24px, 4vw, 48px); display: grid; gap: clamp(24px, 3vw, 36px); }
+.el-persona-id { display: flex; align-items: center; gap: 18px; }
+.el-persona-av { flex: none; width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; font-size: 26px; color: #fff; background: radial-gradient(120% 120% at 30% 20%, #b59cf5 0%, #6b55d9 55%, #3c2f8f 100%); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35); }
+.el-persona-id .el-k { margin: 0 0 4px; font-size: 13px; color: var(--mute); }
+.el-persona-n { font-size: clamp(22px, 2.2vw, 28px); font-weight: 400; letter-spacing: -0.015em; line-height: 1.2; }
+.el-persona-id p:last-child { margin-top: 4px; color: var(--ink-2); font-size: 15px; }
+.el-persona-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px clamp(20px, 3vw, 40px); margin: 0; }
+.el-persona-grid > div { border-top: 1px solid var(--hairline); padding-top: 14px; }
+.el-persona-grid dt { font-size: 13px; color: var(--mute); }
+.el-persona-grid dd { margin: 6px 0 0; font-size: 15px; line-height: 1.55; color: var(--ink); }
+.el-persona-q { margin: 0; padding-left: 18px; border-left: 2px solid var(--acc, #6b55d9); }
+.el-persona-q p { font-size: clamp(18px, 1.8vw, 22px); line-height: 1.4; letter-spacing: -0.01em; }
+.el-persona-q cite { display: block; margin-top: 8px; font-style: normal; font-size: 13px; color: var(--ink-2); }
+.el-persona .el-note { margin-top: 0; }
+@media (max-width: 1023px) { .el-persona-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 599px) { .el-persona-grid { grid-template-columns: 1fr; } .el-persona-av { width: 52px; height: 52px; font-size: 22px; } }
+
+.el-card-m video[controls] { width: 100%; height: auto; border-radius: 10px; background: #0d0d10; }
+
+/* Flow diagram */
+.el-fl { position: relative; margin-top: clamp(32px, 4vw, 48px); }
+.el-fl-scroll { padding: 8px 0; }
+.el-fl-svg { display: block; width: 100%; height: auto; color: var(--ink-2); font-family: inherit; overflow: visible; }
+.el-fl-svg text { font-size: 15px; fill: var(--ink); }
+.el-fl-svg .fl-n text, .el-fl-svg .fl-d text { text-anchor: middle; }
+.fl-e { fill: none; stroke: currentColor; stroke-width: 1.5; opacity: .55; }
+.fl-e--dash { stroke-dasharray: 4 5; }
+.el-fl-svg .fl-l { font-size: 13px; fill: var(--mute); }
+.fl-n rect { fill: #fff; stroke: rgba(0,0,0,.1); transition: stroke .2s, fill .2s; }
+.fl-n[tabindex] { cursor: pointer; outline: none; }
+.fl-n[tabindex]:hover rect, .fl-n[tabindex]:focus-visible rect, .fl-n.is-on rect { stroke: var(--acc); stroke-width: 1.5; }
+.fl-acc rect { fill: var(--acc); stroke: var(--acc); }
+.el-fl-svg .fl-acc text { fill: #fff; }
+.fl-acc[tabindex]:hover rect, .fl-acc.is-on rect { filter: brightness(.88); }
+.fl-ghost rect { fill: transparent; stroke: rgba(0,0,0,.22); stroke-dasharray: 4 4; }
+.el-fl-svg .fl-ghost text { fill: var(--ink-2); font-size: 14px; }
+.fl-d path { fill: var(--surface); stroke: rgba(0,0,0,.12); }
+.el-fl-svg .fl-d text { font-size: 13px; fill: var(--ink-2); }
+.el-fl-tip { position: absolute; z-index: 5; width: 280px; padding: 8px; border-radius: 14px; background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.06), 0 18px 40px -16px rgba(20,20,60,.35); pointer-events: none; opacity: 0; transform: translateY(6px); transition: opacity .18s, transform .18s; }
+.el-fl-tip.is-on { opacity: 1; transform: none; }
+.el-fl-tip img { display: block; width: 100%; height: auto; border-radius: 8px; }
+.el-fl-tip.no-img img { display: none; }
+.el-fl-tip p { margin: 8px 4px 2px; font-size: 13px; line-height: 1.45; color: var(--ink-2); }
+.el-fl-tip.no-img p { margin: 2px 4px; }
+.el-fl-hint { margin-top: 12px; font-size: 13px; color: var(--mute); }
+.fl-chip rect { fill: #fff; stroke: color-mix(in srgb, var(--acc) 35%, transparent); }
+.el-fl-svg .fl-chip text { font-size: 14px; fill: var(--acc); }
+.fl-grp { fill: color-mix(in srgb, var(--acc) 5%, transparent); stroke: color-mix(in srgb, var(--acc) 28%, transparent); stroke-dasharray: 4 4; }
+.el-fl-svg--v { display: none; max-width: 460px; margin: 0 auto; }
+@media (max-width: 899px) { .el-fl-svg--h { display: none; } .el-fl-svg--v { display: block; } }
+.el-persona + .el-persona { margin-top: 20px; }
+.el-fl-svg .fl-lane { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; fill: var(--mute); }
