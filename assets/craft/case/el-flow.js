@@ -1,3 +1,15 @@
+/* Persona avatars: mount the project orb behind the person icon */
+(function () {
+  function go() {
+    var O = window.CraftOrb;
+    document.querySelectorAll(".el-persona-av[data-orb]").forEach(function (el) {
+      var key = el.getAttribute("data-orb");
+      if (O && O.fallback) el.style.backgroundImage = O.fallback(key);
+      if (O) O.mount(el, key);
+    });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go); else go();
+})();
 (function () {
   var wrap = document.querySelector(".el-fl");
   if (!wrap) return;

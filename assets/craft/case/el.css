@@ -359,3 +359,8 @@ body.el .cm-end { max-width: none; padding-left: clamp(0px, 1.5vw, 16px); paddin
 @media (max-width: 899px) { .el-fl-svg--h { display: none; } .el-fl-svg--v { display: block; } }
 .el-persona + .el-persona { margin-top: 20px; }
 .el-fl-svg .fl-lane { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; fill: var(--mute); }
+/* Persona avatar: the project's live orb behind a person icon */
+.el-persona-av[data-orb] { position: relative; overflow: hidden; background-size: 100% 100%; box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 6px 16px -8px rgba(20,20,60,.35); }
+.el-persona-av[data-orb] canvas { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 50%; }
+.el-persona-av[data-orb].is-lit { background: none; }
+.el-persona-av svg { position: relative; z-index: 1; width: 58%; height: 58%; display: block; filter: drop-shadow(0 1px 2px rgba(0,0,0,.18)); }
