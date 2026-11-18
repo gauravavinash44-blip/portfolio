@@ -41,3 +41,39 @@
 .el-hero-cover { background: #eef1fb; }
 .el-hero-cover picture { display: block; width: 100%; }
 .el-hero-cover img { display: block; width: 100%; height: auto; }
+/* Setup journey: ElevenLabs "two platforms" pattern, three screens.
+   Screens overlap in one tray. The active one sits on top and fully shown; the others
+   are clipped where the active one sits, drop 12px, and slide back on hover. */
+.dr-journey { margin-top: clamp(40px, 5vw, 64px); display: grid; gap: clamp(48px, 6vw, 72px); }
+.dr-stack > .el-k { margin: 0 0 16px; padding-bottom: 12px; border-bottom: 1px solid var(--hairline); }
+.dr-stack-ls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px clamp(16px, 2.4vw, 32px); }
+.dr-stack-l { all: unset; box-sizing: border-box; cursor: pointer; display: block; color: #8f8b86; transition: color .3s; }
+.dr-stack-l:focus-visible { outline: 2px solid var(--ink); outline-offset: 6px; border-radius: 4px; }
+.dr-stack-n { display: block; font-size: 13px; margin-bottom: 4px; }
+.dr-stack-t { display: inline-flex; align-items: center; gap: 4px; font-size: 16px; line-height: 1.35; }
+.dr-stack-t i { font-style: normal; font-size: 12px; opacity: 0; transform: translate(-3px, 3px); transition: opacity .3s, transform .3s; }
+.dr-stack-d { display: block; margin-top: 4px; font-size: 14px; line-height: 1.5; }
+.dr-stack-x { display: none; }
+.dr-stack-l.is-on { color: var(--ink); }
+.dr-stack-l.is-on .dr-stack-d { color: var(--ink-2); }
+.dr-stack-l.is-on .dr-stack-t i { opacity: 1; transform: none; }
+.dr-stack-tray { position: relative; margin-top: 20px; background: var(--surface); border-radius: 16px; overflow: hidden; aspect-ratio: 2.7 / 1; }
+@property --fl { syntax: "<percentage>"; inherits: false; initial-value: -12%; }
+@property --fr { syntax: "<percentage>"; inherits: false; initial-value: -12%; }
+.dr-stack-s { --w: calc(64% - 36px); --fl: -12%; --fr: -12%; position: absolute; margin: 0; top: 18px; left: calc(var(--p) * 18%); width: var(--w); margin-left: 18px;
+  border-radius: 8px 8px 0 0; overflow: hidden; background: #fff; cursor: pointer;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.075);
+  -webkit-mask-image: linear-gradient(to right, transparent var(--fl), #000 calc(var(--fl) + 12%), #000 calc(100% - var(--fr) - 12%), transparent calc(100% - var(--fr)));
+          mask-image: linear-gradient(to right, transparent var(--fl), #000 calc(var(--fl) + 12%), #000 calc(100% - var(--fr) - 12%), transparent calc(100% - var(--fr)));
+  transform: translateY(14px); z-index: var(--z, 0);
+  transition: --fl .5s cubic-bezier(.4,0,.2,1), --fr .5s cubic-bezier(.4,0,.2,1), transform .5s cubic-bezier(.4,0,.2,1); }
+.dr-stack-s img { display: block; width: 100%; height: auto; }
+.dr-stack-s.is-on { transform: none; box-shadow: 0 0 0 1px rgba(0,0,0,.08), 0 12px 32px -14px rgba(0,0,0,.22); }
+@media (prefers-reduced-motion: reduce) { .dr-stack-s, .dr-stack-l, .dr-stack-t i { transition: none; } }
+@media (max-width: 699px) {
+  .dr-stack-ls { grid-template-columns: 1fr; gap: 10px; }
+  .dr-stack-d { display: none; }
+  .dr-stack-l.is-on .dr-stack-d { display: block; }
+  .dr-stack-tray { aspect-ratio: 1.9 / 1; }
+  .dr-stack-s { --w: calc(86% - 24px); left: calc(var(--p) * 7%); margin-left: 12px; top: 12px; }
+}
