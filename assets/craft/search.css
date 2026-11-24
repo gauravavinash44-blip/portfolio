@@ -1,294 +1,255 @@
-/* Craft search + assistant popup (assets/craft/search.js). Same liquid glass as the All work sheet. */
+/* Craft search + assistant (assets/craft/search.js).
+   Behaves like macOS Spotlight: a small liquid-glass pill with two round actions beside it
+   (Ask assistant, Projects). Typing folds the actions into the pill, which widens and grows
+   its results downward. Nothing behind it dims; a click anywhere outside closes it. */
 
 .cs-host { position: relative; z-index: 1000; }
 .cs-root { position: fixed; inset: 0; z-index: 1000; color: #fff; }
-.cs-scrim { position: absolute; inset: 0; background: rgba(28, 18, 30, 0.2); }
-/* over the Design Playground there is no dimmed board behind, so the scrim does the work */
-html.ga-pg-open .cs-scrim { background: rgba(22, 14, 24, 0.34); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
-
-/* board chrome dims like it does for All work; the grid already dims through .cr-dimmed */
-html.ga-cs-dim .cr-hero .cr-topbar, html.ga-cs-dim .cr-hero .cr-corner { opacity: 0.25; filter: blur(4px); }
+.cs-scrim { position: absolute; inset: 0; background: transparent; }
 html.ga-cs-open, html.ga-cs-open body { overflow: hidden !important; }
-html.ga-cs-open .craft-switch, html.ga-cs-open .ga-brand { opacity: 0; visibility: hidden; pointer-events: none; }
 
-.cs-panel {
-  position: absolute; left: 0; right: 0; margin: 0 auto;
-  top: clamp(24px, 9vh, 96px);
-  width: min(720px, calc(100vw - 48px));
-  height: min(660px, calc(100vh - clamp(24px, 9vh, 96px) - 32px));
-  display: flex; flex-direction: column;
-  border-radius: 40px; overflow: hidden;
-  color: #fff;
-  background: var(--g-sheen), linear-gradient(rgba(44, 34, 44, 0.48), rgba(44, 34, 44, 0.58));
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 24px 60px rgba(20, 10, 30, 0.24);
-  -webkit-backdrop-filter: blur(34px) saturate(1.5); backdrop-filter: blur(34px) saturate(1.5);
+/* ── Layout: pill + actions on one line ── */
+.cs-bar {
+  --cs-h: 54px;
+  --cs-top: clamp(20px, 11vh, 110px);
+  --cs-room: min(520px, calc(100vh - var(--cs-top) - var(--cs-h) - 48px));
+  --cs-ease: var(--ease-arrive, cubic-bezier(0.16, 1, 0.3, 1));
+  position: absolute; left: 0; right: 0; top: var(--cs-top); margin: 0 auto;
+  width: min(720px, calc(100vw - 40px));
+  display: flex; align-items: flex-start;
 }
+
+/* ── Liquid glass, shared by the pill and the round actions ── */
+.cs-panel, .cs-act {
+  color: #fff;
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.04) 42%, rgba(255, 255, 255, 0.07) 100%),
+    rgba(34, 28, 40, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.36),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 0 20px rgba(255, 255, 255, 0.05),
+    0 18px 44px rgba(16, 8, 22, 0.26),
+    0 2px 8px rgba(16, 8, 22, 0.12);
+  -webkit-backdrop-filter: blur(26px) saturate(1.8) brightness(0.94);
+  backdrop-filter: blur(26px) saturate(1.8) brightness(0.94);
+}
+/* bright rim where the glass bends light, strongest at the top left */
+.cs-panel::before, .cs-act::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0) 32%, rgba(255, 255, 255, 0) 68%, rgba(255, 255, 255, 0.28));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude;
+}
+
+.cs-panel { position: relative; flex: 1 1 auto; min-width: 0; border-radius: calc(var(--cs-h) / 2); overflow: hidden; }
 .cs-panel:focus { outline: none; }
 
-/* ── Header: mode switch + round buttons ── */
-.cs-top { display: flex; align-items: center; gap: 12px; padding: 20px 20px 0 20px; }
-.cs-tabs {
-  position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
-  height: 50px; padding: 3px; border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.24);
+/* ── Round actions beside the pill ── */
+.cs-acts {
+  display: flex; gap: 8px; margin-left: 10px; max-width: 260px; flex: none;
+  transition: max-width 460ms var(--cs-ease), margin-left 460ms var(--cs-ease);
 }
-.cs-tabs button {
-  position: relative; z-index: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  padding: 0 20px; border-radius: var(--radius-pill);
-  font-size: 13px; letter-spacing: -0.01em; white-space: nowrap; color: rgba(255, 255, 255, 0.8);
-  transition: color 300ms ease;
+.cs-act {
+  position: relative; flex: none; display: grid; place-items: center;
+  width: var(--cs-h); height: var(--cs-h); border-radius: 50%; padding: 0; cursor: pointer;
+  transition: transform 420ms var(--cs-ease), opacity 220ms ease;
 }
-.cs-tabs button svg { width: 16px; height: 16px; }
-.cs-tabs button[aria-selected="true"] { color: #000; }
-.cs-tabs button:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
-.cs-tabpill {
-  position: absolute; left: 3px; top: 3px; bottom: 3px; width: calc((100% - 6px) / 2);
-  border-radius: var(--radius-pill); background: #fff; box-shadow: 0 2px 6px rgba(40, 20, 40, 0.14);
-  transition: transform 460ms var(--ease-arrive);
+.cs-act svg { width: 21px; height: 21px; }
+.cs-act:hover { transform: scale(1.06); }
+.cs-act:active { transform: scale(0.95); }
+.cs-act:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.cs-act-tip {
+  position: absolute; top: calc(100% + 8px); left: 50%; transform: translate(-50%, -4px);
+  padding: 5px 10px; border-radius: 9px; white-space: nowrap;
+  font-size: 12px; letter-spacing: -0.005em; color: #fff; background: rgba(28, 22, 32, 0.86);
+  opacity: 0; pointer-events: none; transition: opacity 140ms ease, transform 140ms ease;
 }
-.cs-top-actions { margin-left: auto; display: flex; gap: 8px; }
-.cs-close { width: 50px; height: 50px; }
-.cs-close:focus-visible, .cs-roundbtn:focus-visible { outline-color: #fff; }
-.cs-roundbtn {
-  width: 50px; height: 50px; color: #fff;
-  background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.24);
-}
-.cs-roundbtn:hover { background: rgba(255, 255, 255, 0.2); }
-.cs-roundbtn.is-on { background: #fff; color: var(--ink); border-color: #fff; }
+.cs-act:hover .cs-act-tip, .cs-act:focus-visible .cs-act-tip { opacity: 1; transform: translate(-50%, 0); }
 
-.cs-pane { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
-.cs-pane[hidden] { display: none; }
+/* typing or asking: the actions slide into the pill and it takes the full width */
+.cs-root.is-expanded .cs-acts { max-width: 0; margin-left: 0; pointer-events: none; }
+.cs-root.is-expanded .cs-act { opacity: 0; transform: translateX(-40px) scale(0.5); }
+.cs-root.is-expanded .cs-act:nth-child(2) { transform: translateX(-100px) scale(0.5); }
 
-/* ── Search field ── */
-.cs-field {
-  position: relative; display: flex; align-items: center; gap: 4px;
-  margin: 16px 20px 0; height: 68px; padding: 0 10px 0 12px;
-  border-radius: var(--radius-pill); background: var(--surface); color: var(--ink);
-  box-shadow: 0 1px 2px rgba(40, 20, 40, 0.04), 0 14px 34px rgba(30, 10, 30, 0.14);
-}
-.cs-field-icon { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: var(--well); color: var(--ink); flex-shrink: 0; }
+/* ── The field ── */
+.cs-field { display: flex; align-items: center; gap: 6px; height: var(--cs-h); padding: 0 8px 0 18px; }
+.cs-field-icon { display: grid; place-items: center; width: 22px; height: 22px; flex: none; color: rgba(255, 255, 255, 0.7); }
 .cs-field-icon svg { width: 20px; height: 20px; }
 .cs-input {
-  flex: 1 1 auto; min-width: 0; height: 100%; padding: 0 10px;
+  flex: 1 1 auto; min-width: 0; height: 100%; padding: 0 6px;
   border: 0; outline: 0; background: transparent;
-  font: 400 24px/1.2 var(--font-ui); letter-spacing: -0.02em; color: var(--ink);
+  font: 400 20px/1.2 var(--font-ui); letter-spacing: -0.015em; color: #fff; caret-color: #fff;
 }
-.cr .cs-input:focus-visible, .cr .cs-ask-input:focus-visible { outline: none; }
-.cs-input::placeholder { color: var(--ink-fade); }
+.cr .cs-input:focus-visible { outline: none; }
+.cs-input::placeholder { color: rgba(255, 255, 255, 0.5); }
 .cs-input::-webkit-search-cancel-button { display: none; }
-.cs-field:focus-within { box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5), 0 14px 34px rgba(30, 10, 30, 0.14); }
-.cs-clear { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--well); color: var(--ink-2); flex-shrink: 0; transition: background var(--dur-snap) ease; }
-.cs-clear:hover { background: #ececec; color: var(--ink); }
-.cs-clear svg { width: 14px; height: 14px; }
-
-.cs-body { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
-.cs-scroll {
-  flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
-  padding: 6px 20px 20px;
-  scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
-  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 14px, #000 calc(100% - 18px), transparent 100%);
-  mask-image: linear-gradient(180deg, transparent 0, #000 14px, #000 calc(100% - 18px), transparent 100%);
-}
-
-/* ── Group labels + chips (on glass) ── */
-.cs-label {
-  display: flex; align-items: center; gap: 8px; min-height: 30px;
-  margin: 14px 4px 8px 12px; font-size: 13px; font-weight: 500; letter-spacing: -0.005em;
-  color: rgba(255, 255, 255, 0.9); text-shadow: 0 1px 3px rgba(20, 10, 20, 0.22);
-}
-.cs-count {
-  display: inline-flex; align-items: center; height: 24px; padding: 0 9px; border-radius: var(--radius-pill);
-  font-size: 12px; font-weight: 400; font-variant-numeric: tabular-nums;
-  background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.24); text-shadow: none;
-}
-.cs-label-btn { margin-left: auto; height: 30px; padding: 0 12px; border-radius: var(--radius-pill); font-size: 12px; color: rgba(255, 255, 255, 0.82); }
-.cs-label-btn:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
-.cs-label-btn:focus-visible { outline-color: #fff; }
-.cs-chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 2px; }
-.cs-chip {
-  display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border-radius: var(--radius-pill);
-  font-size: 13px; letter-spacing: -0.005em; color: #fff; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis;
-  background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.26);
-  transition: background var(--dur-snap) ease, color var(--dur-snap) ease, border-color var(--dur-snap) ease;
-}
-.cs-chip svg { width: 14px; height: 14px; flex-shrink: 0; opacity: 0.8; }
-.cs-chip:hover:not(:disabled) { background: #fff; color: var(--ink); border-color: #fff; }
-.cs-chip:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
-.cs-chip:disabled { opacity: 0.5; cursor: default; }
-
-/* ── Result rows: white cards, rows like the Case studies list ── */
-.cs-group { margin-top: 4px; }
-.cs-group + .cs-group { margin-top: 2px; }
-.cs-card {
-  padding: 6px; border-radius: 30px; background: var(--surface); color: var(--ink);
-  box-shadow: 0 1px 2px rgba(40, 20, 40, 0.04), 0 14px 34px rgba(30, 10, 30, 0.12);
-}
-.cs-card--soft { margin-top: 14px; background: rgba(255, 255, 255, 0.9); }
-.cs-row {
-  position: relative; display: grid; grid-template-columns: 50px minmax(0, 1fr) 40px; align-items: center; gap: 14px;
-  min-height: 66px; padding: 8px 10px 8px 8px; border-radius: 24px; cursor: pointer;
+/* "Assistant" token, like a Spotlight filter */
+.cs-token {
+  display: inline-flex; align-items: center; gap: 6px; flex: none; height: 30px; padding: 0 9px 0 12px;
+  border-radius: var(--radius-pill, 999px); font-size: 14px; letter-spacing: -0.01em; color: #fff;
+  background: rgba(255, 255, 255, 0.16); border: 1px solid rgba(255, 255, 255, 0.24);
   transition: background 160ms ease;
 }
-.cs-row + .cs-row::before {
-  content: ""; position: absolute; left: 72px; right: 18px; top: 0; height: 1px; background: var(--hairline-row);
-  transition: opacity 160ms ease;
+.cs-token svg { width: 11px; height: 11px; opacity: 0.75; }
+.cs-token:hover { background: rgba(255, 255, 255, 0.26); }
+.cs-token:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
+.cs-fbtn {
+  display: grid; place-items: center; flex: none; width: 38px; height: 38px; border-radius: 50%;
+  color: rgba(255, 255, 255, 0.8); transition: background 160ms ease, color 160ms ease;
 }
-.cs-row.is-active { background: var(--well); }
-.cs-row.is-active::before, .cs-row.is-active + .cs-row::before { opacity: 0; }
-.cs-row-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.cs-row-text b { font-size: 17px; line-height: 1.22; letter-spacing: -0.015em; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.cs-row-text span { font-size: 13px; line-height: 1.3; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cs-fbtn svg { width: 15px; height: 15px; }
+.cs-fbtn:hover:not(:disabled) { background: rgba(255, 255, 255, 0.14); color: #fff; }
+.cs-fbtn:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
+.cs-fbtn.is-on { background: #fff; color: var(--ink); }
+.cs-fsend { background: #fff; color: var(--ink); }
+.cs-fsend svg { width: 17px; height: 17px; }
+.cs-fsend:hover:not(:disabled) { background: #fff; color: var(--ink); transform: scale(1.05); }
+.cs-fsend:disabled { background: rgba(255, 255, 255, 0.12); color: rgba(255, 255, 255, 0.45); cursor: default; }
+
+/* ── Results grow out of the pill ── */
+.cs-drop { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 460ms var(--cs-ease); }
+.cs-root.is-expanded .cs-drop { grid-template-rows: 1fr; }
+.cs-drop-in { min-height: 0; overflow: hidden; display: flex; flex-direction: column; }
+.cs-drop-in::before { content: ""; flex: none; height: 1px; margin: 0 16px; background: rgba(255, 255, 255, 0.14); }
+.cs-drop-in:empty::before { display: none; }
+
+.cs-scroll {
+  max-height: var(--cs-room); overflow-y: auto; overscroll-behavior: contain;
+  padding: 4px 8px 8px;
+  scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.cs-group + .cs-group { margin-top: 2px; }
+.cs-chips-block { padding: 0 4px 2px; }
+.cs-chips-block .cs-chips { padding: 0 8px; }
+.cs-label-btn { margin-left: auto; height: 26px; padding: 0 10px; border-radius: var(--radius-pill, 999px); font-size: 12px; color: rgba(255, 255, 255, 0.75); }
+.cs-label-btn:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
+.cs-label-btn:focus-visible { outline: 2px solid #fff; }
+.cs-group--ask { margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+.cs-label {
+  display: flex; align-items: center; gap: 8px; padding: 12px 12px 6px;
+  font-size: 12px; font-weight: 500; letter-spacing: -0.005em; color: rgba(255, 255, 255, 0.55);
+}
+.cs-count { font-size: 11px; font-weight: 400; font-variant-numeric: tabular-nums; color: rgba(255, 255, 255, 0.4); }
+
+.cs-row {
+  position: relative; display: grid; grid-template-columns: 40px minmax(0, 1fr) 28px; align-items: center; gap: 12px;
+  min-height: 52px; padding: 6px 10px 6px 6px; border-radius: 14px; cursor: pointer; color: #fff;
+  transition: background 120ms ease;
+}
+.cs-row.is-active { background: rgba(255, 255, 255, 0.16); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1); }
+.cs-row-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.cs-row-text b { font-size: 15px; line-height: 1.25; letter-spacing: -0.01em; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cs-row-text span { font-size: 12.5px; line-height: 1.3; color: rgba(255, 255, 255, 0.58); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cs-row--section .cs-row-text b { font-weight: 400; }
-/* a title with a secondary part ("Resonance – Personal project for Spotify"): the second half reads quieter */
 .cs-row-text b.has-note { display: flex; align-items: baseline; gap: 0.3em; min-width: 0; }
 .cs-row-text b.has-note > span { font-size: inherit; line-height: inherit; color: inherit; overflow: visible; }
 .cs-row-text b.has-note > .cs-tmain { flex: none; }
-.cs-row-text b.has-note > .cs-tnote { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; font-weight: 400; color: var(--ink-2); }
-.cs-row mark { background: none; color: inherit; font-weight: 600; box-shadow: inset 0 -0.42em 0 rgba(43, 85, 246, 0.16); border-radius: 2px; }
-.cs-row-text span mark { color: var(--ink); font-weight: 500; }
+.cs-row-text b.has-note > .cs-tnote { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; font-weight: 400; color: rgba(255, 255, 255, 0.6); }
+.cs-row mark { background: none; color: #fff; font-weight: 650; }
+.cs-row-text span mark { color: rgba(255, 255, 255, 0.92); font-weight: 500; }
 .cs-row q { quotes: "\201C" "\201D"; }
 .cs-go {
-  display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%;
-  background: var(--well); color: var(--ink);
-  transition: background var(--dur-snap) ease, color var(--dur-snap) ease, transform 300ms var(--ease-arrive);
+  display: grid; place-items: center; width: 28px; height: 28px; border-radius: 9px;
+  color: #fff; background: rgba(255, 255, 255, 0.14); opacity: 0; transition: opacity 120ms ease;
 }
-.cs-go svg { width: 15px; height: 15px; }
-.cs-row.is-active .cs-go { background: var(--blue); color: #fff; }
-.cs-well { width: 50px; height: 50px; }
-.cs-well--ask { background: #eef1fe; color: var(--blue); }
-.cs-row--more { grid-template-columns: minmax(0, 1fr); min-height: 48px; }
-.cs-more { padding-left: 72px; font-size: 14px; color: var(--blue-text); }
+.cs-go svg { width: 14px; height: 14px; }
+.cs-row.is-active .cs-go { opacity: 1; }
+.cs-well { width: 40px; height: 40px; }
+.cs-well--ask { background: rgba(255, 255, 255, 0.16); color: #fff; }
+/* plain icon wells (sections, quick actions) sit on the glass; project orbs keep their colour */
+.cs-root .cr-pwell.cs-well:not(.cr-pwell--orb) { background: rgba(255, 255, 255, 0.14); color: #fff; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18); border: 0; }
+.cs-root .cr-pwell.cs-well:not(.cr-pwell--orb) svg { width: 18px; height: 18px; }
+.cs-well--ask svg { width: 19px; height: 19px; }
+.cs-row--more { grid-template-columns: minmax(0, 1fr); min-height: 40px; }
+.cs-more { padding-left: 52px; font-size: 13px; color: rgba(255, 255, 255, 0.75); }
 
-/* ── Empty / no results ── */
-.cs-empty { padding: 26px 12px 4px; }
-.cs-empty-title { font-size: 30px; line-height: 1.1; letter-spacing: -0.03em; font-weight: 400; overflow-wrap: anywhere; }
-.cs-empty-sub { margin-top: 10px; font-size: 15px; line-height: 1.35; color: rgba(255, 255, 255, 0.82); }
+.cs-empty { padding: 16px 12px 6px; }
+.cs-empty-title { font-size: 17px; line-height: 1.3; letter-spacing: -0.015em; overflow-wrap: anywhere; }
+.cs-empty-sub { margin-top: 4px; font-size: 13px; line-height: 1.4; color: rgba(255, 255, 255, 0.6); }
 .cs-empty i { font-style: normal; color: #fff; }
-
-.cs-foot {
-  display: flex; gap: 18px; justify-content: center; padding: 10px 20px 16px;
-  font-size: 12px; color: rgba(255, 255, 255, 0.7);
-}
-.cs-foot kbd {
-  display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; margin-right: 3px;
-  border-radius: 7px; font: 500 11px/1 var(--font-ui); color: #fff;
-  background: rgba(255, 255, 255, 0.14); border: 1px solid rgba(255, 255, 255, 0.22);
-}
 
 .cs-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
+/* ── Chips (assistant replies) ── */
+.cs-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.cs-chip {
+  display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 13px; border-radius: var(--radius-pill, 999px);
+  font-size: 13px; letter-spacing: -0.005em; color: #fff; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis;
+  background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.24);
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+.cs-chip svg { width: 13px; height: 13px; flex-shrink: 0; opacity: 0.8; }
+.cs-chip:hover:not(:disabled) { background: #fff; color: var(--ink); border-color: #fff; }
+.cs-chip:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.cs-chip:disabled { opacity: 0.5; cursor: default; }
+.cs-chips--reply { padding-top: 2px; }
+.cs-chip--search { border-style: dashed; }
+
 /* ── Assistant ── */
+.cs-askwrap { height: var(--cs-room); display: flex; flex-direction: column; }
 .cs-log {
   flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
-  display: flex; flex-direction: column; gap: 14px;
-  padding: 22px 20px 16px;
-  scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
-  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 18px, #000 100%);
-  mask-image: linear-gradient(180deg, transparent 0, #000 18px, #000 100%);
+  display: flex; flex-direction: column; gap: 12px; padding: 16px 16px 8px;
+  scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 14px, #000 100%);
+  mask-image: linear-gradient(180deg, transparent 0, #000 14px, #000 100%);
 }
 .cs-msg { display: flex; gap: 10px; align-items: flex-start; }
 .cs-msg--user { justify-content: flex-end; }
 .cs-msg-col { display: flex; flex-direction: column; gap: 8px; min-width: 0; max-width: min(540px, 86%); }
 .cs-avatar {
-  display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.16); border: 1px solid rgba(255, 255, 255, 0.28); color: #fff;
+  display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.14); border: 1px solid rgba(255, 255, 255, 0.24); color: #fff;
 }
-.cs-avatar svg { width: 18px; height: 18px; }
+.cs-avatar svg { width: 16px; height: 16px; }
 .cs-bubble {
-  margin: 0; padding: 13px 17px; border-radius: 24px;
-  font-size: 15px; line-height: 1.45; letter-spacing: -0.005em; white-space: pre-line; overflow-wrap: anywhere;
+  margin: 0; padding: 11px 15px; border-radius: 20px;
+  font-size: 14.5px; line-height: 1.45; letter-spacing: -0.005em; white-space: pre-line; overflow-wrap: anywhere;
 }
-.cs-bubble--bot { background: var(--surface); color: var(--ink); border-top-left-radius: 8px; box-shadow: 0 10px 28px rgba(30, 10, 30, 0.12); }
+.cs-bubble--bot { background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.14); color: #fff; border-top-left-radius: 7px; }
 .cs-bubble--bot strong { font-weight: 600; }
-.cs-bubble--bot a { color: var(--blue-text); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
-.cs-bubble--bot a:hover { color: var(--blue); }
-.cs-bubble--user { max-width: min(460px, 80%); background: var(--blue); color: #fff; border-top-right-radius: 8px; box-shadow: 0 10px 28px rgba(20, 30, 90, 0.18); }
+.cs-bubble--bot a { color: #cdd8ff; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+.cs-bubble--bot a:hover { color: #fff; }
+.cs-bubble--user { max-width: min(460px, 80%); background: #fff; color: var(--ink); border-top-right-radius: 7px; }
 .cs-bubble.is-typing { cursor: default; }
-.cs-caret { display: inline-block; width: 2px; height: 1.05em; margin-left: 2px; vertical-align: -0.15em; background: var(--blue); animation: csBlink 900ms steps(1) infinite; }
+.cs-caret { display: inline-block; width: 2px; height: 1.05em; margin-left: 2px; vertical-align: -0.15em; background: #fff; animation: csBlink 900ms steps(1) infinite; }
 .cs-dots { display: inline-flex; gap: 5px; padding: 6px 2px; }
-.cs-dots i { width: 7px; height: 7px; border-radius: 50%; background: #b9b9b9; animation: csDot 1100ms var(--ease-arrive) infinite; }
+.cs-dots i { width: 7px; height: 7px; border-radius: 50%; background: rgba(255, 255, 255, 0.7); animation: csDot 1100ms var(--cs-ease) infinite; }
 .cs-dots i:nth-child(2) { animation-delay: 140ms; }
 .cs-dots i:nth-child(3) { animation-delay: 280ms; }
 @keyframes csDot { 0%, 60%, 100% { transform: none; opacity: 0.5; } 30% { transform: translateY(-4px); opacity: 1; } }
 @keyframes csBlink { 50% { opacity: 0; } }
-
 .cs-related {
-  display: grid; grid-template-columns: 50px minmax(0, 1fr) 40px; align-items: center; gap: 12px;
-  padding: 6px 8px 6px 6px; border-radius: 28px; background: var(--surface); color: var(--ink);
-  box-shadow: 0 10px 28px rgba(30, 10, 30, 0.12);
+  display: grid; grid-template-columns: 40px minmax(0, 1fr) 28px; align-items: center; gap: 12px;
+  padding: 6px 8px 6px 6px; border-radius: 16px; color: #fff;
+  background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.14);
 }
-.cs-related:hover .cs-go, .cs-related:focus-visible .cs-go { background: var(--blue); color: #fff; }
+.cs-related .cs-go { opacity: 1; }
+.cs-related:hover { background: rgba(255, 255, 255, 0.18); }
 .cs-related:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
-.cs-chips--reply { padding: 2px 0 0; }
-.cs-chip--search { border-style: dashed; }
+.cs-note { flex: none; padding: 6px 16px 12px; text-align: center; font-size: 11.5px; color: rgba(255, 255, 255, 0.5); }
 
-.cs-compose {
-  display: flex; align-items: center; gap: 6px;
-  margin: 0 20px; height: 60px; padding: 0 6px 0 22px;
-  border-radius: var(--radius-pill); background: var(--surface); color: var(--ink);
-  box-shadow: 0 1px 2px rgba(40, 20, 40, 0.04), 0 14px 34px rgba(30, 10, 30, 0.14);
-}
-.cs-compose:focus-within { box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5), 0 14px 34px rgba(30, 10, 30, 0.14); }
-.cs-ask-input { flex: 1 1 auto; min-width: 0; height: 100%; border: 0; outline: 0; background: transparent; font: 400 17px/1.2 var(--font-ui); letter-spacing: -0.01em; color: var(--ink); }
-.cs-ask-input::placeholder { color: var(--ink-fade); }
-.cs-send {
-  display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0;
-  background: var(--blue); color: #fff;
-  transition: background var(--dur-snap) ease, transform var(--dur-snap) var(--ease-snap);
-}
-.cs-send svg { width: 18px; height: 18px; }
-.cs-send:hover:not(:disabled) { background: var(--blue-strong); }
-.cs-send:active:not(:disabled) { transform: scale(0.94); }
-.cs-send:disabled { background: var(--well); color: var(--ink-fade); cursor: default; }
-.cs-note { padding: 10px 24px 16px; text-align: center; font-size: 12px; color: rgba(255, 255, 255, 0.7); }
-
-/* ── Tablet ── */
-@media (max-width: 1099px) {
-  .cs-panel { width: min(680px, calc(100vw - 48px)); }
-}
-/* Short screens: use the height */
-@media (max-height: 640px) and (min-width: 701px) {
-  .cs-panel { top: 16px; height: calc(100vh - 32px); }
-  .cs-foot { display: none; }
-}
-/* ── Phones: full-screen sheet that stays above the keyboard ── */
+/* ── Phones: pill at the top, only the assistant button beside it ── */
 @media (max-width: 700px) {
-  .cs-panel {
-    top: var(--cs-vtop, 0px); width: 100%; height: 100vh; height: 100dvh; height: var(--cs-vh, 100dvh);
-    border-radius: 0; border: 0;
+  .cs-bar {
+    --cs-h: 50px;
+    --cs-top: calc(10px + env(safe-area-inset-top, 0px) + var(--cs-vtop, 0px));
+    --cs-room: calc(var(--cs-vh, 100dvh) - var(--cs-h) - 34px - env(safe-area-inset-top, 0px));
+    width: calc(100vw - 20px);
   }
-  .cs-top { padding: calc(14px + env(safe-area-inset-top, 0px)) 14px 0 14px; gap: 8px; }
-  .cs-tabs { flex: 1 1 auto; height: 46px; }
-  .cs-tabs button { padding: 0 10px; }
-  .cs-close, .cs-roundbtn { width: 46px; height: 46px; }
-  .cs-field { margin: 12px 14px 0; height: 58px; padding: 0 8px 0 8px; }
-  .cs-field-icon { width: 42px; height: 42px; }
-  .cs-input { font-size: 20px; }
-  .cs-scroll { padding: 4px 14px calc(16px + env(safe-area-inset-bottom, 0px)); }
-  .cs-foot { display: none; }
-  .cs-row { grid-template-columns: 44px minmax(0, 1fr) 36px; gap: 12px; min-height: 60px; }
-  .cs-row + .cs-row::before { left: 64px; }
-  .cs-well { width: 44px; height: 44px; }
-  .cs-go { width: 36px; height: 36px; }
-  .cs-row-text b { font-size: 16px; }
-  .cs-more { padding-left: 64px; }
-  .cs-row--more { grid-template-columns: minmax(0, 1fr); }
-  .cs-card { border-radius: 26px; }
-  .cs-empty-title { font-size: 26px; }
-  .cs-log { padding: 18px 14px 12px; }
-  .cs-msg-col { max-width: calc(100% - 46px); }
-  .cs-avatar { width: 32px; height: 32px; }
-  .cs-compose { margin: 0 14px; height: 56px; padding-left: 18px; }
-  .cs-ask-input { font-size: 16px; }
-  .cs-send { width: 44px; height: 44px; }
-  .cs-note { padding: 8px 16px calc(10px + env(safe-area-inset-bottom, 0px)); }
-}
-@media (max-width: 360px) {
-  .cs-tabs button svg { display: none; }
+  /* small screens put the pill over busy content, so tint the page a little, like iOS search */
+  .cs-scrim { background: rgba(20, 14, 24, 0.26); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+  .cs-panel, .cs-act { background-color: rgba(34, 28, 40, 0.5); }
+  .cs-act-tip { display: none; }
+  .cs-field { padding-left: 16px; }
+  .cs-input { font-size: 17px; }
+  .cs-msg-col { max-width: calc(100% - 42px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cs-tabpill, .cs-row, .cs-go, .cs-chip { transition: none; }
+  .cs-acts, .cs-act, .cs-drop, .cs-row, .cs-go, .cs-chip { transition: none; }
   .cs-dots i, .cs-caret { animation: none; }
 }

@@ -1328,7 +1328,7 @@
       e("h1", { className: "cr-visually-hidden" }, "Gaurav Avinash, Product Designer"),
       e(C.TopBar, topbar),
       e("div", { className: "cr-board" + (pgBoard ? " is-pgb" : "") },
-        e("div", { className: "cr-grid" + (sheet && !sheet.closing ? " cr-dimmed" : "") + (pgBoard && !pgBoardOut ? " cr-pg-out" : ""), inert: pgBoard ? "" : undefined },
+        e("div", { className: "cr-grid" + (sheet && !sheet.closing && sheet.kind !== "search" ? " cr-dimmed" : "") + (pgBoard && !pgBoardOut ? " cr-pg-out" : ""), inert: pgBoard ? "" : undefined },
           BOARD_ORDER[layout].map((slot) => e("div", { key: slot, className: "cr-dim cr-slot cr-slot--" + slot, "data-cr-drop": slot === "pg" ? "" : undefined }, boardCards[slot]()))
         ),
         pgBoard && CP && CP.PlaygroundBoard ? e(CP.PlaygroundBoard, {

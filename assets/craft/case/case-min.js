@@ -105,8 +105,17 @@
     var key = el.getAttribute("data-orb");
     if (!O || !O.has(key)) return;
     el.style.backgroundImage = O.fallback(key);
-    var glyph = O.glyph && O.glyph(key);
-    if (glyph) {
+    /* Same as the home dashboard (ProjectWell): the project icon centred on the orb */
+    var CORE = { chatSpark: "chat-spark", dealDoc: "deal-room", swatch: "white-label", bowl: "easyeat", wave: "resonance", receipt: "splitly", plane: "nomad", gauge: "health-karma", swap: "swaply", card: "moov", orbits: "space-between", loader: "loading-range", layers: "craft-mode" };
+    var glyph = !CORE[key] && O.glyph && O.glyph(key);
+    if (CORE[key]) {
+      var core = document.createElement("span");
+      core.className = "cr-orb-core";
+      var im = document.createElement("img");
+      im.src = "./assets/craft/icons/" + CORE[key] + ".png"; im.alt = ""; im.width = 48; im.height = 48; im.decoding = "async";
+      core.appendChild(im);
+      el.appendChild(core);
+    } else if (glyph) {
       var badge = document.createElement("span");
       badge.className = "cr-orb-badge";
       var svg = document.createElementNS(NS, "svg");

@@ -982,7 +982,11 @@
      iridescent sphere, one colour trio per project, keyed by the project icon); anything
      else (contact slides) keeps the 1.5px line icon on a faint tint. Pass orb: false to force the icon. */
   var ORB_CORE = { chatSpark: "./assets/craft/icons/chat-spark.png", dealDoc: "./assets/craft/icons/deal-room.png", swatch: "./assets/craft/icons/white-label.png", bowl: "./assets/craft/icons/easyeat.png",
-    wave: "./assets/craft/icons/resonance.png", receipt: "./assets/craft/icons/splitly.png" };
+    wave: "./assets/craft/icons/resonance.png", receipt: "./assets/craft/icons/splitly.png",
+    /* Design Playground */
+    plane: "./assets/craft/icons/nomad.png", gauge: "./assets/craft/icons/health-karma.png", swap: "./assets/craft/icons/swaply.png",
+    card: "./assets/craft/icons/moov.png", orbits: "./assets/craft/icons/space-between.png", loader: "./assets/craft/icons/loading-range.png",
+    layers: "./assets/craft/icons/craft-mode.png" };
   function ProjectWell(props) {
     var O = window.CraftOrb;
     var key = props.orb === false ? null : (typeof props.orb === "string" ? props.orb : props.icon);

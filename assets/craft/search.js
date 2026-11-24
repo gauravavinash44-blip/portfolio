@@ -17,7 +17,6 @@
   var EMAIL = "gauravavinash3@gmail.com";
   var LINKEDIN = "https://www.linkedin.com/in/gauravavinash";
   var EASE_ARRIVE = "cubic-bezier(0.16, 1, 0.3, 1)";
-  var EASE_BACK = "cubic-bezier(0.5, 0, 0.75, 0)";
   var TYPE_MS = 14, TYPE_CHUNK = 3;
   var GROUP_LIMIT = { section: 5 };
   var SUGGESTED = ["AI search", "Deal Room", "Motion", "Fintech", "Resume", "Contact"];
@@ -208,6 +207,12 @@
   /* Sections: headings of each case study page, fetched once, linked with #anchors */
   var SKIP_HEAD = /^(next projects|let.s build smarter products together\.?|credits)$/i;
   var sectionPromise = null;
+  /* headings split over lines with <span>/<br> ("Commitment got stuck<span>between tools</span>"): keep a space at each break */
+  function spaced(el) {
+    var c = el.cloneNode(true);
+    Array.prototype.forEach.call(c.querySelectorAll("span, br, div, p"), function (n) { n.before(" "); n.after(" "); });
+    return c.textContent.replace(/\s+/g, " ").replace(/\s+([.,:;!?])/g, "$1").trim();
+  }
   function loadSections(cases) {
     if (sectionPromise) return sectionPromise;
     sectionPromise = Promise.all((cases || []).map(function (c) {
@@ -218,7 +223,7 @@
         var out = [], seen = {};
         Array.prototype.forEach.call(doc.querySelectorAll("main h2, main h3, article h2, article h3, section h2, section h3"), function (hd) {
           if (hd.closest(".mc-next, .mc-cta, footer, nav, [aria-hidden='true']")) return;
-          var text = hd.textContent.replace(/\s+/g, " ").trim();
+          var text = spaced(hd);
           if (!text || SKIP_HEAD.test(text) || hd.id === "h-next") return;
           var sec = hd.closest("section") || hd.parentElement;
           var anchorEl = hd.id ? hd : hd.closest("[id]:not(main):not(body):not(html)");
@@ -230,11 +235,11 @@
           var kicker = "";
           if (hd.tagName === "H3") {
             var parentHead = sec && sec.querySelector("h2");
-            if (parentHead) kicker = parentHead.textContent.replace(/\s+/g, " ").trim();
+            if (parentHead) kicker = spaced(parentHead);
           }
           if (!kicker && sec) {
             var eb = sec.querySelector(".mc-eyebrow-bar, [class*='eyebrow'], .cc-meta > span:first-child");
-            kicker = eb ? eb.textContent.replace(/^\s*\d+\s*[·.\-]\s*/, "").trim() : (sec.id || "").replace(/[-_]+/g, " ");
+            kicker = eb ? spaced(eb).replace(/^\s*\d+\s*[·.\-]\s*/, "").trim() : (sec.id || "").replace(/[-_]+/g, " ");
             if (kicker && kicker === kicker.toUpperCase()) kicker = kicker.toLowerCase();
             kicker = kicker ? kicker.charAt(0).toUpperCase() + kicker.slice(1) : "";
           }
@@ -330,26 +335,6 @@
   }
   function writeRecent(list) { try { window.localStorage.setItem(RECENT_KEY, JSON.stringify(list)); } catch (err) { /* private mode */ } }
 
-  /* ───────── Motion: grow out of the button that opened it ───────── */
-  function sourceOf(el) {
-    if (!el || !el.isConnected || !el.getBoundingClientRect) return null;
-    var r = el.getBoundingClientRect();
-    if (!r.width || !r.height) return null;
-    var rad = parseFloat(getComputedStyle(el).borderTopLeftRadius) || 24;
-    return { rect: r, radius: Math.min(rad, r.height / 2) };
-  }
-  function growFrames(panel, src) {
-    var r = panel.getBoundingClientRect(), s = src.rect;
-    var w = Math.min(s.width, r.width), hh = Math.min(s.height, r.height);
-    var cl = Math.max(0, Math.min(s.left - r.left, r.width - w));
-    var ct = Math.max(0, Math.min(s.top - r.top, r.height - hh));
-    var tx = s.left - (r.left + cl), ty = s.top - (r.top + ct);
-    var R = getComputedStyle(panel).borderTopLeftRadius || "0px";
-    return [
-      { clipPath: "inset(" + ct + "px " + (r.width - cl - w) + "px " + (r.height - ct - hh) + "px " + cl + "px round " + src.radius + "px)", transform: "translate(" + tx + "px," + ty + "px)" },
-      { clipPath: "inset(0px 0px 0px 0px round " + R + ")", transform: "translate(0px,0px)" }
-    ];
-  }
   function focusables(root) {
     return Array.prototype.slice.call(root.querySelectorAll("a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex='-1'])"))
       .filter(function (n) { return n.offsetWidth || n.offsetHeight || n.getClientRects().length; });
@@ -392,8 +377,8 @@
       document.body.appendChild(d);
       return d;
     }), host = _host[0];
-    var rootRef = useRef(null), panelRef = useRef(null), scrimRef = useRef(null), inputRef = useRef(null), askRef = useRef(null);
-    var listRef = useRef(null), logRef = useRef(null), tabRefs = useRef([]);
+    var rootRef = useRef(null), barRef = useRef(null), panelRef = useRef(null), scrimRef = useRef(null), inputRef = useRef(null);
+    var listRef = useRef(null), logRef = useRef(null);
     var closing = useRef(false), kbFailed = useRef(false);
 
     var _m = useState(props.mode === "ask" ? "ask" : "search"), mode = _m[0], setMode = _m[1];
@@ -475,12 +460,12 @@
       if (el && el.scrollIntoView) el.scrollIntoView({ block: "nearest" });
     }, [active, keyNav]);
 
-    /* ── Open: scrim fades, panel grows out of the opener, contents rise ── */
+    /* ── Open: the pill drops in where Spotlight sits ── */
     useLayoutEffect(function () {
       var root = document.documentElement;
-      root.classList.add("ga-cs-open", "ga-cs-dim");
+      root.classList.add("ga-cs-open");
       var prev = props.opener || document.activeElement;
-      var panel = panelRef.current, still = reduced(), src = sourceOf(props.opener);
+      var panel = panelRef.current, still = reduced();
       /* keep the panel above an on-screen keyboard on phones */
       var vv = window.visualViewport;
       function fit() {
@@ -495,15 +480,12 @@
       }
       fit();
       if (vv) { vv.addEventListener("resize", fit); vv.addEventListener("scroll", fit); }
-      if (scrimRef.current) scrimRef.current.animate([{ opacity: 0 }, { opacity: 1 }], { duration: still ? 160 : 420, easing: "ease", fill: "backwards" });
-      if (still || !src || window.innerWidth <= 700) {
-        panel.animate(still ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: "translateY(24px) scale(0.98)" }, { opacity: 1, transform: "none" }],
-          { duration: still ? 160 : 420, easing: EASE_ARRIVE, fill: "backwards" });
-      } else {
-        panel.animate(growFrames(panel, src), { duration: 480, easing: EASE_ARRIVE, fill: "backwards" });
-      }
-      if (!still) Array.prototype.slice.call(panel.querySelectorAll("[data-cs-chrome]")).forEach(function (n, i) {
-        n.animate([{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "none" }], { duration: 480, delay: 120 + i * 50, easing: EASE_ARRIVE, fill: "backwards" });
+      if (scrimRef.current) scrimRef.current.animate([{ opacity: 0 }, { opacity: 1 }], { duration: still ? 140 : 380, easing: "ease", fill: "backwards" });
+      /* Spotlight: the pill drops in, then the round actions pop in beside it */
+      panel.animate(still ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: "translateY(-10px) scale(0.96)" }, { opacity: 1, transform: "none" }],
+        { duration: still ? 140 : 360, easing: EASE_ARRIVE, fill: "backwards" });
+      if (!still && barRef.current) Array.prototype.slice.call(barRef.current.querySelectorAll(".cs-act")).forEach(function (n, i) {
+        n.animate([{ opacity: 0, transform: "translateX(-18px) scale(0.7)" }, { opacity: 1, transform: "none" }], { duration: 420, delay: 60 + i * 40, easing: EASE_ARRIVE, fill: "backwards" });
       });
       /* keys typed inside the popup stay inside it (the playground listens on document) */
       var stop = function (ev) { ev.stopPropagation(); };
@@ -513,7 +495,7 @@
         clearTimeout(t);
         host.removeEventListener("keydown", stop);
         if (vv) { vv.removeEventListener("resize", fit); vv.removeEventListener("scroll", fit); }
-        root.classList.remove("ga-cs-open", "ga-cs-dim");
+        root.classList.remove("ga-cs-open");
         stopSpeech();
         if (host.parentNode) host.parentNode.removeChild(host);
         if (prev && prev.isConnected && prev.focus) prev.focus({ preventScroll: true });
@@ -521,23 +503,23 @@
     }, []);
 
     function focusMain() {
-      var el = mode === "ask" ? askRef.current : inputRef.current;
+      var el = inputRef.current;
       if (el && !el.disabled) el.focus({ preventScroll: true });
     }
     useEffect(function () { if (!closing.current) focusMain(); }, [mode]);
     useEffect(function () { if (!typing) focusMainSoft(); }, [typing]);
     function focusMainSoft() {
       /* after an answer, put the caret back unless the user moved focus elsewhere in the popup */
-      if (mode !== "ask" || !askRef.current) return;
+      if (mode !== "ask" || !inputRef.current) return;
       var a = document.activeElement;
-      if (!a || a === document.body || a === askRef.current || (rootRef.current && !rootRef.current.contains(a)) || a.disabled) askRef.current.focus({ preventScroll: true });
+      if (!a || a === document.body || a === inputRef.current || (rootRef.current && !rootRef.current.contains(a)) || a.disabled) inputRef.current.focus({ preventScroll: true });
     }
 
     /* Tab can't leave, even if focus was on the page when a key arrived */
     useEffect(function () {
       function onKey(ev) {
-        if (ev.key !== "Tab" || !panelRef.current) return;
-        if (panelRef.current.contains(document.activeElement)) return;
+        if (ev.key !== "Tab" || !barRef.current) return;
+        if (barRef.current.contains(document.activeElement)) return;
         ev.preventDefault();
         focusMain();
       }
@@ -549,26 +531,18 @@
       if (closing.current) return;
       closing.current = true;
       stopSpeech();
-      var panel = panelRef.current, called = false;
+      var called = false;
       var done = function () { if (called) return; called = true; props.onClose(then); };
-      if (!panel) { done(); return; }
-      setTimeout(done, 700);
-      document.documentElement.classList.remove("ga-cs-dim");
+      if (!panelRef.current) { done(); return; }
+      setTimeout(done, 500);
       if (props.onClosing) props.onClosing();
-      var still = reduced(), src = then ? null : sourceOf(props.opener);
-      if (scrimRef.current) scrimRef.current.animate([{ opacity: 1 }, { opacity: 0 }], { duration: still ? 140 : 360, easing: "ease", fill: "forwards" });
-      Array.prototype.slice.call(panel.querySelectorAll("[data-cs-chrome]")).forEach(function (n) {
-        n.animate([{ opacity: 1 }, { opacity: 0 }], { duration: still ? 120 : 180, easing: "ease", fill: "forwards" });
+      var still = reduced();
+      if (scrimRef.current) scrimRef.current.animate([{ opacity: 1 }, { opacity: 0 }], { duration: still ? 120 : 260, easing: "ease", fill: "forwards" });
+      var els = [panelRef.current].concat(barRef.current ? Array.prototype.slice.call(barRef.current.querySelectorAll(".cs-act")) : []);
+      var anims = els.map(function (el) {
+        return el.animate([{ opacity: 1 }, { opacity: 0, transform: still ? "none" : "translateY(-6px) scale(0.97)" }], { duration: still ? 120 : 180, easing: "ease", fill: "forwards" });
       });
-      var anim;
-      if (still || !src || window.innerWidth <= 700) {
-        anim = panel.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: still ? "none" : "translateY(16px) scale(0.98)" }], { duration: still ? 140 : 300, easing: EASE_BACK, fill: "forwards" });
-      } else {
-        var fr = growFrames(panel, src).reverse();
-        fr[1].opacity = 0.6;
-        anim = panel.animate(fr, { duration: 420, easing: EASE_BACK, fill: "forwards" });
-      }
-      anim.finished.then(done, done);
+      anims[0].finished.then(done, done);
     }
 
     /* ── Picking a result ── */
@@ -665,14 +639,20 @@
 
     /* ── Keyboard ── */
     function onPanelKey(ev) {
-      if (ev.key === "Escape") { ev.preventDefault(); close(); return; }
+      if (ev.key === "Escape") {
+        ev.preventDefault();
+        /* like Spotlight: first clear what's typed, then step out of the assistant, then close */
+        if (mode === "ask" ? draft : query) { if (mode === "ask") setDraft(""); else setQuery(""); return; }
+        if (mode === "ask" && !props.askOnly) { setMode("search"); return; }
+        close(); return;
+      }
       if ((ev.metaKey || ev.ctrlKey) && (ev.key === "k" || ev.key === "K")) {
         ev.preventDefault();
         if (mode !== "search") setMode("search"); else if (inputRef.current) { inputRef.current.focus(); inputRef.current.select(); }
         return;
       }
       if (ev.key !== "Tab") return;
-      var f = focusables(panelRef.current);
+      var f = focusables(barRef.current);
       if (!f.length) return;
       var a = f[0], z = f[f.length - 1];
       if (ev.shiftKey && document.activeElement === a) { ev.preventDefault(); z.focus(); }
@@ -691,20 +671,17 @@
         pick(view.flat[Math.min(active, n - 1)]);
       }
     }
-    function onTabKey(ev, i) {
-      var j = null;
-      if (ev.key === "ArrowRight" || ev.key === "ArrowLeft") j = 1 - i;
-      else if (ev.key === "Home") j = 0; else if (ev.key === "End") j = 1;
-      if (j == null) return;
-      ev.preventDefault();
-      setMode(j === 0 ? "search" : "ask");
-      if (tabRefs.current[j]) tabRefs.current[j].focus();
-    }
 
-    /* ── Render ── */
-    var MODES = [{ id: "search", label: "Search" }, { id: "ask", label: "Ask assistant" }];
-    var mi = mode === "ask" ? 1 : 0;
+    /* ── Render ──
+       Spotlight shape: one glass pill with round actions beside it. Typing (or the assistant)
+       folds the actions into the pill, which widens and grows its results downward. */
+    var isAsk = mode === "ask";
+    var expanded = isAsk || !!trimmed;
     var activeId = view.flat.length ? "cs-opt-" + Math.min(active, view.flat.length - 1) : undefined;
+    var ACTS = [
+      { id: "assistant", icon: "sparkle", label: "Ask assistant" },
+      { id: "allwork", icon: "grid", label: "Projects" }
+    ];
 
     function optionRow(opt, content, extraClass) {
       var on = opt.index === active;
@@ -724,7 +701,7 @@
         h(Well, { key: "w", icon: it.group === "section" ? "hash" : it.icon, tone: it.tone, orb: it.group === "case" || it.group === "playground" }),
         h("span", { key: "t", className: "cs-row-text" },
           it.note
-            ? h("b", { className: "has-note" }, h("span", { className: "cs-tmain" }, marks(it.title, trimmed)), h("span", { className: "cs-tnote" }, "\u2013 ", marks(it.note, trimmed)))
+            ? h("b", { className: "has-note" }, h("span", { className: "cs-tmain" }, marks(it.title, trimmed)), h("span", { className: "cs-tnote" }, "– ", marks(it.note, trimmed)))
             : h("b", null, marks(it.title, trimmed)),
           h("span", null, marks(it.sub, trimmed))),
         h("span", { key: "g", className: "cs-go", "aria-hidden": "true" }, h(Icon, { name: go, stroke: 1.8 }))
@@ -743,75 +720,43 @@
       return optionRow(opt, h("span", { className: "cs-more" }, "Show " + opt.more + " more"), "cs-row--more");
     }
     function renderOpt(opt) { return opt.kind === "ask" ? askRow(opt) : opt.kind === "more" ? moreRow(opt) : itemRow(opt); }
-
     function chipButton(label, onClick, key, extra) {
       return h("button", Object.assign({ key: key || label, type: "button", className: "cs-chip", onClick: onClick }, extra || {}), label);
     }
 
-    var searchBody;
-    if (!trimmed) {
-      searchBody = h("div", { className: "cs-scroll", ref: listRef },
-        recent.length ? h("div", { className: "cs-chips-block" },
-          h("div", { className: "cs-label" }, h("span", null, "Recent"),
-            h("button", { type: "button", className: "cs-label-btn", onClick: clearRecent }, "Clear")),
-          h("div", { className: "cs-chips", role: "group", "aria-label": "Recent searches" },
-            recent.map(function (r) { return chipButton([h(Icon, { key: "i", name: "clock" }), r], function () { setQuery(r); if (inputRef.current) inputRef.current.focus(); }, "r-" + r, { "aria-label": "Search again for " + r }); }))) : null,
-        h("div", { className: "cs-chips-block" },
-          h("div", { className: "cs-label" }, h("span", null, "Try")),
-          h("div", { className: "cs-chips", role: "group", "aria-label": "Suggested searches" },
-            SUGGESTED.map(function (s) { return chipButton(s, function () { setQuery(s); if (inputRef.current) inputRef.current.focus(); }); }))),
-        h("div", { id: "cs-listbox", role: "listbox", "aria-label": "Suggestions" },
-          view.groups.map(function (g) {
-            return h("div", { key: g.id, role: "group", "aria-labelledby": "cs-g-" + g.id, className: "cs-group" },
-              h("div", { className: "cs-label", id: "cs-g-" + g.id }, h("span", null, g.label), h("span", { className: "cs-count" }, g.count)),
-              h("div", { className: "cs-card" }, g.opts.map(renderOpt)));
-          })));
-    } else {
+    /* Search results (only once something is typed) */
+    var searchBody = null;
+    function groupsOf(v) {
+      return v.groups.map(function (g) {
+        return h("div", { key: g.id, role: "group", "aria-labelledby": "cs-g-" + g.id, className: "cs-group" },
+          h("div", { className: "cs-label", id: "cs-g-" + g.id }, h("span", null, g.label), h("span", { className: "cs-count" }, g.count)),
+          g.opts.map(renderOpt));
+      });
+    }
+    function setFrom(v) { setQuery(v); if (inputRef.current) inputRef.current.focus(); }
+    if (!isAsk && trimmed) {
       var noHits = !view.total;
       searchBody = h("div", { className: "cs-scroll", ref: listRef },
         noHits && !(view.ask && view.ask.first) ? h("div", { className: "cs-empty" },
-          h("p", { className: "cs-empty-title" }, "Nothing here for ", h("q", null, trimmed)),
-          h("p", { className: "cs-empty-sub" }, "Try a project name, a topic like ", h("i", null, "fintech"), " or ", h("i", null, "motion"), ", or ask the assistant.")) : null,
+          h("p", { className: "cs-empty-title" }, "No results for ", h("q", null, trimmed)),
+          h("p", { className: "cs-empty-sub" }, "Try a project name or a topic like ", h("i", null, "fintech"), " or ", h("i", null, "motion"), ".")) : null,
         h("div", { id: "cs-listbox", role: "listbox", "aria-label": "Results" },
-          view.ask && view.ask.first ? h("div", { className: "cs-group", role: "group", "aria-label": "Assistant" }, h("div", { className: "cs-card" }, askRow(view.ask))) : null,
+          view.ask && view.ask.first ? h("div", { className: "cs-group", role: "group", "aria-label": "Assistant" }, askRow(view.ask)) : null,
           view.groups.map(function (g) {
             return h("div", { key: g.id, role: "group", "aria-labelledby": "cs-g-" + g.id, className: "cs-group" },
               h("div", { className: "cs-label", id: "cs-g-" + g.id }, h("span", null, g.label), h("span", { className: "cs-count" }, g.count)),
-              h("div", { className: "cs-card" }, g.opts.map(renderOpt)));
+              g.opts.map(renderOpt));
           }),
-          view.ask && !view.ask.first ? h("div", { className: "cs-group", role: "group", "aria-label": "Assistant" }, h("div", { className: "cs-card cs-card--soft" }, askRow(view.ask))) : null),
-        noHits ? h("div", { className: "cs-chips-block" },
-          h("div", { className: "cs-label" }, h("span", null, "Try")),
-          h("div", { className: "cs-chips", role: "group", "aria-label": "Suggested searches" },
-            SUGGESTED.map(function (s) { return chipButton(s, function () { setQuery(s); if (inputRef.current) inputRef.current.focus(); }); }))) : null);
+          view.ask && !view.ask.first ? h("div", { className: "cs-group cs-group--ask", role: "group", "aria-label": "Assistant" }, askRow(view.ask)) : null));
     }
 
-    var status = !trimmed ? "" : view.total ? view.total + (view.total === 1 ? " result" : " results") : "No results";
-
-    var searchPanel = h("div", { className: "cs-pane", role: "tabpanel", id: "cs-pane-search", "aria-labelledby": "cs-tab-search", hidden: mode !== "search" },
-      h("div", { className: "cs-field", "data-cs-chrome": "" },
-        h("span", { className: "cs-field-icon", "aria-hidden": "true" }, h(Icon, { name: "search", stroke: 1.6 })),
-        h("input", {
-          ref: inputRef, className: "cs-input", type: "text", value: query, placeholder: "Search projects, sections, playground",
-          role: "combobox", "aria-expanded": "true", "aria-controls": "cs-listbox", "aria-autocomplete": "list",
-          "aria-activedescendant": activeId, "aria-label": "Search the portfolio", autoComplete: "off", autoCorrect: "off", autoCapitalize: "off", spellCheck: false, enterKeyHint: "go",
-          onChange: function (ev) { setQuery(ev.target.value); setKeyNav(false); }, onKeyDown: onInputKey
-        }),
-        query ? h("button", { type: "button", className: "cs-clear", "aria-label": "Clear search", onClick: function () { setQuery(""); if (inputRef.current) inputRef.current.focus(); } }, h(Icon, { name: "close", stroke: 1.8 })) : null),
-      h("p", { className: "cs-sr", role: "status", "aria-live": "polite" }, status),
-      h("div", { className: "cs-body", "data-cs-chrome": "" }, searchBody),
-      h("div", { className: "cs-foot", "aria-hidden": "true", "data-cs-chrome": "" },
-        h("span", null, h("kbd", null, "↑"), h("kbd", null, "↓"), " to move"),
-        h("span", null, h("kbd", null, "Enter"), " to open"),
-        h("span", null, h("kbd", null, "Esc"), " to close")));
-
+    /* Assistant conversation */
     var caseById = {};
     (props.cases || []).forEach(function (c) { caseById[c.id] = c; });
     var lastBotId = (messages.filter(function (m) { return m.role === "bot"; }).pop() || {}).id;
     var waiting = typing && typing.id === -1;
-
-    var askPanel = h("div", { className: "cs-pane cs-pane--ask", role: "tabpanel", id: "cs-pane-ask", "aria-labelledby": "cs-tab-ask", hidden: mode !== "ask" },
-      h("div", { className: "cs-log", ref: logRef, role: "log", "aria-live": "polite", "aria-label": "Conversation with the portfolio assistant", "data-cs-chrome": "" },
+    var askBody = !isAsk ? null : h("div", { className: "cs-askwrap" },
+      h("div", { className: "cs-log", ref: logRef, role: "log", "aria-live": "polite", "aria-label": "Conversation with the portfolio assistant" },
         messages.map(function (m) {
           if (m.role === "user") return h("div", { key: m.id, className: "cs-msg cs-msg--user" }, h("p", { className: "cs-bubble cs-bubble--user" }, m.text));
           var isTyping = typing && typing.id === m.id;
@@ -837,34 +782,54 @@
         waiting ? h("div", { className: "cs-msg cs-msg--bot", "aria-hidden": "true" },
           h("span", { className: "cs-avatar" }, h(Icon, { name: "sparkle" })),
           h("div", { className: "cs-msg-col" }, h("div", { className: "cs-bubble cs-bubble--bot is-typing" }, h("span", { className: "cs-dots" }, h("i"), h("i"), h("i"))))) : null),
-      h("form", { className: "cs-compose", "data-cs-chrome": "", onSubmit: function (ev) { ev.preventDefault(); if (busy) return; var v = draft; setDraft(""); send(v); } },
-        h("input", { ref: askRef, className: "cs-ask-input", type: "text", value: draft, placeholder: busy ? "Answering…" : "Ask about projects, process, skills",
-          "aria-label": "Ask the portfolio assistant", autoComplete: "off", enterKeyHint: "send",
-          onChange: function (ev) { setDraft(ev.target.value); } }),
-        h("button", { type: "submit", className: "cs-send", "aria-label": "Send question", disabled: busy || !draft.trim() }, h(Icon, { name: "send", stroke: 1.8 }))),
-      h("p", { className: "cs-note", "data-cs-chrome": "" }, "Answers come from a fixed set of notes about Gaurav's work. No live AI."));
+      h("p", { className: "cs-note" }, "Answers come from a fixed set of notes about Gaurav's work. No live AI."));
 
-    var content = h("div", { className: "cr cs-root" + (mode === "ask" ? " is-ask" : ""), ref: rootRef },
+    function submitAsk() { if (busy || !draft.trim()) return; var v = draft; setDraft(""); send(v); }
+    function onAskKey(ev) {
+      if (ev.key === "Enter") { ev.preventDefault(); submitAsk(); return; }
+      /* Backspace on an empty field removes the Assistant token, like a Spotlight filter */
+      if (ev.key === "Backspace" && !draft) { ev.preventDefault(); setMode("search"); }
+    }
+
+    var inputProps = isAsk ? {
+      ref: inputRef, className: "cs-input", type: "text", value: draft, placeholder: busy ? "Answering…" : "Ask about projects, process, skills",
+      "aria-label": "Ask the portfolio assistant", autoComplete: "off", autoCorrect: "off", autoCapitalize: "off", spellCheck: false, enterKeyHint: "send",
+      onChange: function (ev) { setDraft(ev.target.value); }, onKeyDown: onAskKey
+    } : {
+      ref: inputRef, className: "cs-input", type: "text", value: query, placeholder: "Search projects, sections, playground",
+      role: "combobox", "aria-expanded": expanded ? "true" : "false", "aria-controls": "cs-listbox", "aria-autocomplete": "list",
+      "aria-activedescendant": trimmed ? activeId : undefined, "aria-label": "Search the portfolio", autoComplete: "off", autoCorrect: "off", autoCapitalize: "off", spellCheck: false, enterKeyHint: "go",
+      onChange: function (ev) { setQuery(ev.target.value); setKeyNav(false); }, onKeyDown: onInputKey
+    };
+
+    var field = h("div", { className: "cs-field" },
+      h("span", { className: "cs-field-icon", "aria-hidden": "true" }, h(Icon, { name: isAsk ? "sparkle" : "search", stroke: 1.6 })),
+      isAsk ? h("button", { type: "button", className: "cs-token", "aria-label": "Close the assistant and go back to search", onClick: function () { setMode("search"); } },
+        h("span", null, "Assistant"), h(Icon, { name: "close", stroke: 1.8 })) : null,
+      h("input", inputProps),
+      !isAsk && query ? h("button", { type: "button", className: "cs-fbtn", "aria-label": "Clear search", onClick: function () { setQuery(""); if (inputRef.current) inputRef.current.focus(); } }, h(Icon, { name: "close", stroke: 1.8 })) : null,
+      isAsk && window.speechSynthesis ? h("button", { type: "button", className: "cs-fbtn" + (voiceOn ? " is-on" : ""), "aria-pressed": voiceOn ? "true" : "false",
+        "aria-label": voiceOn ? "Voice on. Mute narration" : "Read answers aloud", title: voiceOn ? "Voice on" : "Read answers aloud", onClick: toggleVoice },
+        h(Icon, { name: voiceOn ? "speakerOn" : "speakerOff" })) : null,
+      isAsk ? h("button", { type: "button", className: "cs-fbtn cs-fsend", "aria-label": "Send question", disabled: busy || !draft.trim(), onClick: submitAsk }, h(Icon, { name: "send", stroke: 1.8 })) : null);
+
+    var status = isAsk || !trimmed ? "" : view.total ? view.total + (view.total === 1 ? " result" : " results") : "No results";
+
+    var content = h("div", { className: cx("cr", "cs-root", isAsk && "is-ask", expanded && "is-expanded"), ref: rootRef },
+      /* nothing dims: clicking anywhere outside the glass closes it */
       h("div", { className: "cs-scrim", ref: scrimRef, "aria-hidden": "true", onClick: function () { close(); } }),
-      h("section", { className: "cs-panel", ref: panelRef, role: "dialog", "aria-modal": "true", "aria-label": mode === "ask" ? "Ask the portfolio assistant" : "Search the portfolio", onKeyDown: onPanelKey },
-        h("header", { className: "cs-top" },
-          h("div", { className: "cs-tabs", role: "tablist", "aria-label": "Search or ask", "data-cs-chrome": "" },
-            h("span", { className: "cs-tabpill", "aria-hidden": "true", style: { transform: "translateX(" + (mi * 100) + "%)" } }),
-            MODES.map(function (m, i) {
-              var on = i === mi;
-              return h("button", { key: m.id, type: "button", role: "tab", id: "cs-tab-" + m.id, "aria-selected": on ? "true" : "false", "aria-controls": "cs-pane-" + m.id,
-                tabIndex: on ? 0 : -1, ref: function (n) { tabRefs.current[i] = n; },
-                onClick: function () { setMode(m.id); }, onKeyDown: function (ev) { onTabKey(ev, i); } },
-                h(Icon, { name: m.id === "ask" ? "sparkle" : "search", stroke: 1.6 }), h("span", null, m.label));
-            })),
-          h("div", { className: "cs-top-actions", "data-cs-chrome": "" },
-            mode === "ask" && window.speechSynthesis ? h("button", { type: "button", className: "cr-iconbtn cs-roundbtn" + (voiceOn ? " is-on" : ""), "aria-pressed": voiceOn ? "true" : "false",
-              "aria-label": voiceOn ? "Voice on. Mute narration" : "Read answers aloud", title: voiceOn ? "Voice on" : "Read answers aloud", onClick: toggleVoice },
-              h(Icon, { name: voiceOn ? "speakerOn" : "speakerOff" })) : null,
-            h("button", { type: "button", className: "cr-iconbtn cr-iconbtn--solid cs-close", "aria-label": "Close search", title: "Close", onClick: function () { close(); } }, h(Icon, { name: "close" })))),
-        searchPanel,
-        askPanel));
-
+      h("div", { className: "cs-bar", ref: barRef, role: "dialog", "aria-modal": "true", "aria-label": isAsk ? "Ask the portfolio assistant" : "Search the portfolio", onKeyDown: onPanelKey },
+        h("section", { className: "cs-panel", ref: panelRef },
+          field,
+          h("p", { className: "cs-sr", role: "status", "aria-live": "polite" }, status),
+          h("div", { className: "cs-drop", "aria-hidden": expanded ? undefined : "true" },
+            h("div", { className: "cs-drop-in" }, isAsk ? askBody : searchBody))),
+        h("div", { className: "cs-acts", "aria-hidden": expanded ? "true" : undefined },
+          ACTS.map(function (a) {
+            return h("button", { key: a.id, type: "button", className: cx("cs-act", a.id === "assistant" && "cs-act--ask"), "aria-label": a.label, tabIndex: expanded ? -1 : 0,
+              onClick: function () { if (a.id === "assistant") setMode("ask"); else runAction(a.id); } },
+              h(Icon, { name: a.icon, stroke: 1.6 }), h("span", { className: "cs-act-tip", "aria-hidden": "true" }, a.label));
+          }))));
     return ReactDOM.createPortal(content, host);
   }
 
