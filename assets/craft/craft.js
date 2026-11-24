@@ -494,7 +494,7 @@
       return function () { if (io) io.disconnect(); document.removeEventListener("visibilitychange", sync); if (vid.current) vid.current.pause(); };
     }, [still]);
     useEffect(sync, [want]); /* the <video> just mounted: start it if the card is still in view */
-    return h("span", { className: cx("cr-pclip", live && "is-live"), ref: box, "aria-hidden": "true" },
+    return h("span", { className: cx("cr-pclip", live && "is-live", props.fit === "center" && "cr-pclip--center"), ref: box, "aria-hidden": "true" },
       h("img", { className: "cr-pclip-poster", src: props.poster, alt: "", decoding: "async", draggable: false }),
       want && !still ? h("video", { className: "cr-pclip-video", ref: vid, src: props.video, poster: props.poster,
         muted: true, playsInline: true, loop: true, preload: "auto", disablePictureInPicture: true, tabIndex: -1,
