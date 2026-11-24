@@ -1,17 +1,21 @@
 /* Craft search + assistant (assets/craft/search.js).
    Behaves like macOS Spotlight: a small liquid-glass pill with two round actions beside it
    (Ask assistant, Projects). Typing folds the actions into the pill, which widens and grows
-   its results downward. Nothing behind it dims; a click anywhere outside closes it. */
+   its results downward. The page behind softly blurs; a click anywhere on it closes the popup. */
 
 .cs-host { position: relative; z-index: 1000; }
 .cs-root { position: fixed; inset: 0; z-index: 1000; color: #fff; }
-.cs-scrim { position: absolute; inset: 0; background: transparent; }
+.cs-scrim {
+  position: absolute; inset: 0;
+  background: rgba(30, 20, 34, 0.12);
+  -webkit-backdrop-filter: blur(10px) saturate(1.2); backdrop-filter: blur(10px) saturate(1.2);
+}
 html.ga-cs-open, html.ga-cs-open body { overflow: hidden !important; }
 
 /* ── Layout: pill + actions on one line ── */
 .cs-bar {
   --cs-h: 54px;
-  --cs-top: clamp(20px, 11vh, 110px);
+  --cs-top: clamp(112px, 19vh, 190px); /* clear of the top bar, floating over the cards */
   --cs-room: min(520px, calc(100vh - var(--cs-top) - var(--cs-h) - 48px));
   --cs-ease: var(--ease-arrive, cubic-bezier(0.16, 1, 0.3, 1));
   position: absolute; left: 0; right: 0; top: var(--cs-top); margin: 0 auto;
@@ -240,8 +244,7 @@ html.ga-cs-open, html.ga-cs-open body { overflow: hidden !important; }
     --cs-room: calc(var(--cs-vh, 100dvh) - var(--cs-h) - 34px - env(safe-area-inset-top, 0px));
     width: calc(100vw - 20px);
   }
-  /* small screens put the pill over busy content, so tint the page a little, like iOS search */
-  .cs-scrim { background: rgba(20, 14, 24, 0.26); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+  .cs-scrim { background: rgba(20, 14, 24, 0.22); }
   .cs-panel, .cs-act { background-color: rgba(34, 28, 40, 0.5); }
   .cs-act-tip { display: none; }
   .cs-field { padding-left: 16px; }

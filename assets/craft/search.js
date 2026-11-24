@@ -816,7 +816,7 @@
     var status = isAsk || !trimmed ? "" : view.total ? view.total + (view.total === 1 ? " result" : " results") : "No results";
 
     var content = h("div", { className: cx("cr", "cs-root", isAsk && "is-ask", expanded && "is-expanded"), ref: rootRef },
-      /* nothing dims: clicking anywhere outside the glass closes it */
+      /* the page behind softly blurs; clicking anywhere on it closes the popup */
       h("div", { className: "cs-scrim", ref: scrimRef, "aria-hidden": "true", onClick: function () { close(); } }),
       h("div", { className: "cs-bar", ref: barRef, role: "dialog", "aria-modal": "true", "aria-label": isAsk ? "Ask the portfolio assistant" : "Search the portfolio", onKeyDown: onPanelKey },
         h("section", { className: "cs-panel", ref: panelRef },
