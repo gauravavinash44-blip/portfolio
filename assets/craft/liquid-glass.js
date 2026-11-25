@@ -22,6 +22,8 @@
   var GLASS = [
     { sel: ".cr-hero .cr-seg, .cr-seg.cr-glass-light", light: false },
     { sel: ".cr-iconbtn--glass", light: false },
+    /* Book a call and Say hello cards: the same glass as the Home/Projects switch and search */
+    { sel: ".cr-hero .cr-agenda.cr-glass, .cr-hero .cr-hello.cr-glass", light: false },
     { sel: ".cm-bar > .cm-pill", light: true },
     /* Projects view: the tabs, back button and story arrows float over the scrolling cards */
     { sel: ".cpg-tabs, .cpg .cpg-back, .cpg-nav .cpg-round:not(.cpg-round--blue):not(.cpg-round--white)", dark: true }
