@@ -899,15 +899,14 @@
     S.preview.href = hrefs["Contextual Chat"];
     /* Featured card on the board ("Growth Team" slot): one "Project" chip, icon well, arrow link.
        Cursor x/y are measured from the card's top-left (the preview area starts at the top). */
-    const baseCursors = S.preview.cursors;
     S.preview = Object.assign({}, S.preview, {
       label: "Project", timer: null, icon: "chatSpark", tone: "blue", arrowHref: hrefs["Contextual Chat"],
-      /* The assistant itself: the final prototype walkthrough, where the camera follows the cursor
-         (same video as the case study). Poster first; the muted loop starts only while the card is on
-         screen. No decorative cursors here: the video has its own. */
+      /* The assistant itself: the Systematic Agent chat panel (question + answer), cropped from the
+         interaction demo. Poster first; the muted loop starts only while the card is on screen. */
       slides: null,
-      clip: { poster: "./assets/craft/case/cc-prototype-poster.webp?v=4", video: "./assets/craft/case/cc-prototype.mp4?v=4", fit: "center" },
-      cursors: [],
+      clip: { poster: "./assets/craft/case/chat-panel-poster.jpg", video: "./assets/craft/case/chat-panel.mp4" },
+      cursors: S.preview.cursors.map((c) => Object.assign({}, c, c.name === "You" ? { x: 58, y: 104 }
+        : { x: 186, y: 184, avatarSet: "./assets/craft/avatar/gaurav-bitmoji-face-96.webp 1x, ./assets/craft/avatar/gaurav-bitmoji-face-192.webp 2x" })),
     });
     /* Until a visitor has opened the NDA cases, the featured card shows EasyEat, the one case anyone can
        read. Once they unlock (password, request, company link), it goes back to Contextual Chat. */
@@ -915,7 +914,7 @@
       title: "EasyEat", subtitle: "Order customization", icon: "bowl", tone: "orange",
       href: hrefs["EasyEat"], arrowHref: hrefs["EasyEat"], clip: null, slides: null,
       image: "./assets/craft/case/ee-preview.jpg", alt: "EasyEat order customization screen", badge: true,
-      cursors: baseCursors.map((c) => Object.assign({}, c, c.name === "You" ? { x: 40, y: 150 } : { x: 196, y: 96 })),
+      cursors: S.preview.cursors.map((c) => Object.assign({}, c, c.name === "You" ? { x: 40, y: 150 } : { x: 196, y: 96 })),
     });
     /* Top bar pill: rotating design notes (rendered by Craft.PhilosophyPill). Interleaved Norman, Rams, Gaurav.
        Norman and Rams lines are short paraphrases of their principles, not verbatim quotes.
