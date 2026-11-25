@@ -2510,3 +2510,56 @@ button.cr-skill--btn:focus-visible { outline: 2px solid #fff; outline-offset: 2p
 /* white pills and buttons inside keep crisp text */
 .cr-hero .cr-glass.cr-agenda .cr-live-status, .cr-hero .cr-glass.cr-agenda .cb-go,
 .cr-hero .cr-glass.cr-hello .cr-hello-go, .cr-hero .cr-glass.cr-hello .cr-hello-icon { text-shadow: none; }
+
+
+/* ═════════════ Say hello: the card opens every contact at once (ContactSheet) ═════════════
+   Shares the booking sheet's root, scrim and glass panel (booking.css). */
+.cr-hello-open { position: absolute; inset: 0; z-index: 0; padding: 0; border: 0; border-radius: inherit; background: none; cursor: pointer; }
+.cr-hello-open:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.cr-hello.is-openable .cr-hello-track { pointer-events: none; }
+.cr-hello.is-openable .cr-hello-track :is(a, button), .cr-hello.is-openable .cr-hello-dots { pointer-events: auto; position: relative; z-index: 1; }
+.cr-hello.is-openable .cr-hello-track .cr-hello-go, .cr-hello.is-openable .cr-hello-track .cr-hello-view { position: absolute; }
+.cr-hello.is-openable { cursor: pointer; }
+
+.cc-panel { width: min(520px, calc(100vw - 32px)); padding: 30px 28px 24px; }
+.cc-head { padding-right: 56px; }
+.cc-list { list-style: none; margin: 22px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.cc-row {
+  display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; align-items: center; gap: 14px;
+  padding: 12px 12px 12px 12px; border-radius: 26px;
+  background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.16);
+}
+.cc-row .cc-icon { width: 52px; height: 52px; background: rgba(255, 255, 255, 0.16); color: #fff; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14); }
+.cc-row .cc-icon svg { width: 22px; height: 22px; }
+.cc-text { display: flex; flex-direction: column; min-width: 0; }
+.cc-name { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 17px; line-height: 1.25; letter-spacing: -0.015em; }
+.cc-tag { display: inline-flex; align-items: center; height: 20px; padding: 0 8px; border-radius: 999px; background: rgba(255, 255, 255, 0.16); font-size: 11px; letter-spacing: 0; color: rgba(255, 255, 255, 0.88); }
+.cc-sub { margin-top: 2px; font-size: 13px; color: rgba(255, 255, 255, 0.72); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cc-acts { display: flex; gap: 6px; }
+.cc-act {
+  display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px; border-radius: 999px; border: 0; cursor: pointer;
+  background: rgba(255, 255, 255, 0.16); color: #fff; font: inherit; font-size: 13px; font-weight: 500; text-decoration: none; white-space: nowrap;
+  transition: background 200ms ease, transform 200ms cubic-bezier(0.2, 0.9, 0.25, 1.05);
+}
+.cc-act svg { width: 15px; height: 15px; }
+.cc-act:hover { background: rgba(255, 255, 255, 0.26); }
+.cc-act:active { transform: scale(0.96); }
+.cc-act--main { background: #fff; color: #141414; }
+.cc-act--main:hover { background: #f0f0f0; }
+.cr .cc-act:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+@media (max-width: 520px) {
+  .cc-panel { padding: 26px 18px 18px; }
+  .cc-row { grid-template-columns: 44px minmax(0, 1fr); row-gap: 10px; }
+  .cc-row .cc-icon { width: 44px; height: 44px; }
+  .cc-acts { grid-column: 1 / -1; }
+  .cc-act { flex: 1 1 0; justify-content: center; }
+}
+/* phones: a bottom sheet that fits its three rows, not a full screen */
+@media (max-width: 700px) {
+  .cb-root.cc-root { place-items: end stretch; }
+  .cc-root .cb-panel.cc-panel {
+    height: auto; max-height: calc(100dvh - 24px); border-radius: 32px 32px 0 0; border: 1px solid rgba(255, 255, 255, 0.28); border-bottom: 0;
+    padding: 24px 18px calc(18px + env(safe-area-inset-bottom, 0px));
+  }
+  .cc-root .cb-close { top: 16px; }
+}

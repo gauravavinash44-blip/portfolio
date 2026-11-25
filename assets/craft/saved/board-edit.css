@@ -1,0 +1,123 @@
+
+/* ═════════════ Board edit mode (board-edit.js) ═════════════
+   Hold a card: cards shake, drag to move, corner arc to resize, Done / Reset pill at the bottom.
+   The board packs cards itself (grid-area set inline), with as many rows as the layout needs. */
+.cr-board:has(.cr-grid.is-packed) { height: calc(var(--widget) * var(--cr-rows, 3) + var(--gutter) * (var(--cr-rows, 3) - 1)); }
+.cr-board .cr-grid.is-packed { grid-template-rows: repeat(var(--cr-rows, 3), var(--widget)); }
+.cr-grid.is-packed > .cr-slot { position: relative; -webkit-touch-callout: none; }
+.cr-grid.is-editing { -webkit-user-select: none; user-select: none; }
+.cr-grid.is-editing > .cr-slot { cursor: grab; touch-action: none; outline: none; }
+.cr-grid.is-editing > .cr-slot > :first-child { pointer-events: none; }
+.cr-grid.is-editing > .cr-slot:focus-visible > :first-child { box-shadow: 0 0 0 3px #fff, 0 0 0 6px rgba(20, 20, 28, 0.35); }
+/* the shake: rotate is its own property, so it stacks on the glide and drag transforms */
+@media (prefers-reduced-motion: no-preference) {
+  .cr-grid.is-editing > .cr-slot:not([data-dragging]) { animation: crJiggle 300ms ease-in-out infinite alternate; }
+  .cr-grid.is-editing > .cr-slot:nth-child(2n) { animation-delay: -150ms; animation-direction: alternate-reverse; }
+  .cr-grid.is-editing > .cr-slot:nth-child(3n) { animation-duration: 340ms; }
+  .cr-grid.is-editing > .cr-slot[data-size="l"] { --jig: 0.35deg; }
+}
+@keyframes crJiggle { from { rotate: calc(var(--jig, 0.8deg) * -1); } to { rotate: var(--jig, 0.8deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .cr-grid.is-editing > .cr-slot > :first-child { outline: 2px dashed rgba(255, 255, 255, 0.8); outline-offset: 4px; }
+}
+/* the card in hand: lifted, above the rest, no glide */
+.cr-grid > .cr-slot[data-dragging] { z-index: 5; cursor: grabbing; transition: none; }
+.cr-grid > .cr-slot[data-dragging] > :first-child { scale: 1.05; box-shadow: 0 28px 60px rgba(10, 10, 20, 0.35); transition: scale 200ms cubic-bezier(0.2, 0.9, 0.25, 1); }
+
+/* resize arc, bottom-right corner, sitting on the card's rounded edge */
+.cr-edit-handle {
+  position: absolute; right: -6px; bottom: -6px; z-index: 3;
+  width: 40px; height: 40px; color: #fff; cursor: nwse-resize; touch-action: none;
+  filter: drop-shadow(0 2px 4px rgba(10, 10, 20, 0.45));
+}
+.cr-edit-handle svg { display: block; width: 100%; height: 100%; rotate: 180deg; }
+.cr-edit-handle::before { content: ""; position: absolute; inset: -8px; } /* bigger hit area */
+.cr-edit-lock {
+  position: absolute; right: 8px; bottom: 8px; z-index: 3;
+  display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%;
+  background: rgba(20, 20, 28, 0.55); color: #fff; pointer-events: none;
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+}
+.cr-edit-lock svg { width: 14px; height: 14px; }
+
+/* Done / Reset: one glass pill at the bottom of the screen, only while editing */
+.cr-edit-bar {
+  position: fixed; left: 50%; bottom: calc(28px + env(safe-area-inset-bottom, 0px)); z-index: 30;
+  translate: -50% 0;
+  display: flex; align-items: center; gap: 6px; padding: 6px 6px 6px 18px; border-radius: 999px;
+  background: var(--g-search, rgba(255, 255, 255, 0.2));
+  -webkit-backdrop-filter: blur(16px) saturate(1.8); backdrop-filter: blur(16px) saturate(1.8);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 14px 34px rgba(10, 10, 20, 0.22);
+  color: #fff; font-size: 13px;
+  animation: crEditBarIn 360ms cubic-bezier(0.2, 0.9, 0.25, 1.05) both;
+}
+@keyframes crEditBarIn { from { opacity: 0; translate: -50% 16px; } to { opacity: 1; translate: -50% 0; } }
+.cr-edit-hint { margin-right: 8px; white-space: nowrap; text-shadow: 0 1px 2px rgba(20, 10, 24, 0.35); }
+.cr-edit-btn {
+  height: 36px; padding: 0 16px; border-radius: 999px; border: 0; cursor: pointer;
+  background: rgba(255, 255, 255, 0.18); color: #fff; font: inherit; font-weight: 500;
+}
+.cr-edit-btn:hover { background: rgba(255, 255, 255, 0.28); }
+.cr-edit-btn--done { background: #fff; color: #111; }
+.cr-edit-btn--done:hover { background: #f1f1f1; }
+.cr-edit-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* ── Card sizes on the edited board: s = 1x1 (160), w = 2x1 (343 x 160), l = 2x2 (343) ── */
+.cr-grid.is-packed > .cr-slot[data-size="l"] > .cr-card { border-radius: 37px; }
+.cr-grid.is-packed > .cr-slot:is([data-size="s"], [data-size="w"]) > .cr-card { border-radius: 32px; }
+
+/* Case studies, wide: header, then the three cases side by side (orb over name) */
+.cr-slot--cases[data-size="w"] .cr-list-head { height: 56px; padding-top: 12px; }
+.cr-slot--cases[data-size="w"] .cr-list-head .cr-chip--outline { height: 36px; }
+.cr-slot--cases[data-size="w"] .cr-list ul { display: flex; gap: 4px; padding: 0 8px; }
+.cr-slot--cases[data-size="w"] .cr-list .cr-row { flex: 1 1 0; min-width: 0; height: auto; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 4px 0; }
+.cr-slot--cases[data-size="w"] .cr-list .cr-row + .cr-row::before,
+.cr-slot--cases[data-size="w"] .cr-list .cr-row-go,
+.cr-slot--cases[data-size="w"] .cr-list .cr-row-text span { display: none; }
+.cr-slot--cases[data-size="w"] .cr-row-av, .cr-slot--cases[data-size="w"] .cr-row-av .cr-pwell { width: 50px; height: 50px; }
+.cr-slot--cases[data-size="w"] .cr-list .cr-row-text { width: 100%; text-align: center; }
+.cr-slot--cases[data-size="w"] .cr-list .cr-row-text b { display: block; font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Case studies, small: title, the three orbs overlapping, View all */
+.cr-slot--cases[data-size="s"] .cr-list { padding: 0; }
+.cr-slot--cases[data-size="s"] .cr-list-head { position: absolute; inset: 0; height: auto; padding: 18px 17px; display: block; }
+.cr-slot--cases[data-size="s"] .cr-list-head .cr-t-title { margin: 0; font-size: 15px; line-height: 1.15; }
+.cr-slot--cases[data-size="s"] .cr-list-head .cr-chip--outline { position: absolute; right: 14px; bottom: 14px; height: 34px; min-width: 0; padding: 0 12px; font-size: 11.5px; }
+.cr-slot--cases[data-size="s"] .cr-list ul { position: absolute; left: 17px; top: 56px; display: flex; padding: 0; }
+.cr-slot--cases[data-size="s"] .cr-list .cr-row { height: auto; padding: 0; display: block; }
+.cr-slot--cases[data-size="s"] .cr-list .cr-row + .cr-row { margin-left: -14px; }
+.cr-slot--cases[data-size="s"] .cr-list .cr-row + .cr-row::before,
+.cr-slot--cases[data-size="s"] .cr-list .cr-row-go,
+.cr-slot--cases[data-size="s"] .cr-list .cr-row-text { display: none; }
+.cr-slot--cases[data-size="s"] .cr-row-av, .cr-slot--cases[data-size="s"] .cr-row-av .cr-pwell { width: 44px; height: 44px; }
+.cr-slot--cases[data-size="s"] .cr-row-av .cr-pwell { box-shadow: 0 0 0 2px #fff; border-radius: 50%; }
+.cr-slot--cases[data-size="s"] .cr-orb-core img { width: 22px; height: 22px; }
+
+/* Featured project, wide: the clip on the left, name and arrow on the right */
+.cr-slot--chat[data-size="w"] .cr-preview-chips,
+.cr-slot--chat[data-size="w"] .cr-cursor,
+.cr-slot--chat[data-size="w"] .cr-preview-foot .cr-pwell { display: none; }
+.cr-slot--chat[data-size="w"] .cr-preview-shot { left: 0; right: auto; top: 0; width: 172px; height: 100%; overflow: hidden; border-radius: 32px 0 0 32px; }
+.cr-slot--chat[data-size="w"] .cr-preview-foot { left: 172px; top: 0; height: auto; display: block; padding: 0; background: #fff; }
+.cr-slot--chat[data-size="w"] .cr-preview-foot .cr-row-text { position: absolute; left: 18px; right: 14px; top: 22px; }
+.cr-slot--chat[data-size="w"] .cr-preview-foot .cr-chip--count { position: absolute; right: 14px; bottom: 14px; }
+/* Featured project, small: orb and arrow on top, name below */
+.cr-slot--chat[data-size="s"] .cr-preview-chips,
+.cr-slot--chat[data-size="s"] .cr-preview-shot { display: none; }
+.cr-slot--chat[data-size="s"] .cr-preview-foot { top: 0; height: auto; display: block; padding: 0; }
+.cr-slot--chat[data-size="s"] .cr-preview-foot .cr-pwell { position: absolute; left: 17px; top: 17px; }
+.cr-slot--chat[data-size="s"] .cr-preview-foot .cr-chip--count { position: absolute; right: 17px; top: 17px; }
+.cr-slot--chat[data-size="s"] .cr-preview-foot .cr-row-text { position: absolute; left: 18px; right: 12px; bottom: 20px; }
+.cr-slot--chat[data-size="s"] .cr-preview-foot .cr-row-text b { font-size: 16px; }
+
+/* Experience, Book a call, Playground, Say hello: wide versions just get more room */
+.cr-slot--exp[data-size="w"] .cr-mstat-value { font-size: 28px; line-height: 30px; top: 64px; }
+.cr-slot--date[data-size="w"] .cb-k, .cr-slot--date[data-size="w"] .cb-v { font-size: 24px; line-height: 27px; }
+.cr-slot--pg[data-size="w"] .cr-team-sub { font-size: 18px; line-height: 21px; }
+.cr-slot--pg[data-size="w"] .cr-team-faces img + img { margin-left: -10px; }
+.cr-slot--hello[data-size="w"] .cr-hello-title { font-size: 20px; }
+/* keep a taller (customised) board centred: same rule as above, with the real height */
+.cr-hero:not([data-cr-fit]) .cr-board:has(.cr-grid.is-packed) {
+  top: calc((100% - (var(--widget) * var(--cr-rows, 3) + var(--gutter) * (var(--cr-rows, 3) - 1)) * var(--cr-scale, 1)) * 0.5 + 2px * var(--cr-scale, 1));
+}
+.cr-slot--chat[data-size="w"] .cr-pclip { inset: 0; aspect-ratio: auto; border-radius: 0; box-shadow: none; transform: none; }

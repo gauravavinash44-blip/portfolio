@@ -1,0 +1,93 @@
+diff --git a/app.js b/app.js
+index a35143a..c129083 100644
+--- a/app.js
++++ b/app.js
+@@ -1020,7 +1020,7 @@
+   /* Board: the mindset "Dashboard" screen. 5 x 3 grid of 160px cells, 23px gutters
+      (892 x 526 at scale 1). The reference screenshot is this canvas at 1.258x (1610 x 1052). */
+   const BOARD = { w: 892, h: 526, tw: 709, th: 709 };
+-  function useBoardScale(stageRef) {
++  function useBoardScale(stageRef, rows) {
+     const [layout, setLayout] = useState(() => (window.innerWidth <= 700 ? "stack" : "grid"));
+     useEffect(() => {
+       const fit = () => {
+@@ -1042,7 +1042,8 @@
+           delete el.dataset.crCols;
+           el.style.removeProperty("--cr-stage-h");
+           el.style.removeProperty("--cr-board-top");
+-          const scale = Math.min(1.35, w / 1280, h / 836, (h - 200) / BOARD.h, (w - 120) / BOARD.w);
++          const bh = (rows || 3) * 160 + ((rows || 3) - 1) * 23; /* taller when a customised board needs more rows */
++          const scale = Math.min(1.35, w / 1280, h / 836, (h - 200) / bh, (w - 120) / BOARD.w);
+           el.style.setProperty("--cr-scale", Math.max(0.55, scale).toFixed(3));
+           setLayout("grid");
+           return;
+@@ -1066,7 +1067,7 @@
+       fit();
+       window.addEventListener("resize", fit);
+       return () => window.removeEventListener("resize", fit);
+-    }, [stageRef]);
++    }, [stageRef, rows]);
+     return layout;
+   }
+ 
+@@ -1149,7 +1150,12 @@
+     const pgJson = usePlaygroundJson(CP);
+     const pgWork = React.useMemo(() => playgroundWork(CP, pgJson), [pgJson]); /* playground items for search */
+ 
+-    const layout = useBoardScale(stageRef);
++    const [boardRows, setBoardRows] = useState(3);
++    const layout = useBoardScale(stageRef, boardRows);
++    /* Press and hold a card to rearrange and resize the board (assets/craft/board-edit.js) */
++    const CBE = window.CraftBoardEdit;
++    const edit = CBE ? CBE.useBoardEdit({ enabled: layout === "grid" && !sheet && !playground && !pgBoard, cols: 5 }) : null;
++    useEffect(() => { if (edit && edit.rows !== boardRows) setBoardRows(edit.rows); }, [edit && edit.rows]);
+     /* Phones never show the design-notes pill (it would push the board down) */
+     const [phone, setPhone] = useState(() => window.matchMedia("(max-width: 700px)").matches);
+     useEffect(() => {
+@@ -1174,14 +1180,14 @@
+ 
+     /* Auto shuffle: every 15s, paused while a sheet, the picker or the playground is open, the tab is hidden, or reduced motion is on */
+     useEffect(() => {
+-      if (sheet || picker || playground) return undefined;
++      if (sheet || picker || playground || (edit && edit.editing)) return undefined;
+       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;
+       const id = setInterval(() => {
+         if (document.hidden) return;
+         setWallpaper((w) => nextWallpaper(w));
+       }, CRAFT_WP_INTERVAL);
+       return () => clearInterval(id);
+-    }, [sheet, picker, playground, shuffleTick]);
++    }, [sheet, picker, playground, shuffleTick, edit && edit.editing]);
+ 
+     /* One-time hint that the wallpaper is tappable */
+     useEffect(() => {
+@@ -1203,6 +1209,7 @@
+ 
+     const onStageClick = (ev) => {
+       if (swallowTap.current) { swallowTap.current = false; return; }
++      if (edit && edit.editing) { if (!(ev.target.closest && ev.target.closest(".cr-edit-bar, .cr-slot"))) edit.exit(); return; } /* a tap on empty space ends editing */
+       if (sheet || picker || playground) return;
+       if (ev.target.closest && ev.target.closest(CRAFT_WP_IGNORE)) return;
+       changeWallpaper(nextWallpaper(wallpaper));
+@@ -1354,9 +1361,9 @@
+       null,
+       e("h1", { className: "cr-visually-hidden" }, "Gaurav Avinash, Product Designer"),
+       e(C.TopBar, topbar),
+-      e("div", { className: "cr-board" + (pgBoard ? " is-pgb" : "") },
+-        e("div", { className: "cr-grid" + (sheet && !sheet.closing && sheet.kind !== "search" ? " cr-dimmed" : "") + (pgBoard && !pgBoardOut ? " cr-pg-out" : ""), inert: pgBoard ? "" : undefined },
+-          BOARD_ORDER[layout].map((slot) => e("div", { key: slot, className: "cr-dim cr-slot cr-slot--" + slot, "data-cr-drop": slot === "pg" ? "" : undefined }, boardCards[slot]()))
++      e("div", { className: "cr-board" + (pgBoard ? " is-pgb" : ""), style: edit && edit.enabled ? { "--cr-rows": edit.rows } : undefined },
++        e("div", Object.assign({ className: "cr-grid" + (sheet && !sheet.closing && sheet.kind !== "search" ? " cr-dimmed" : "") + (pgBoard && !pgBoardOut ? " cr-pg-out" : "") + (edit ? edit.gridClass : ""), inert: pgBoard ? "" : undefined }, edit ? edit.gridProps : null),
++          ((edit && edit.order) || BOARD_ORDER[layout]).map((slot) => e("div", Object.assign({ key: slot, className: "cr-dim cr-slot cr-slot--" + slot, "data-cr-drop": slot === "pg" ? "" : undefined }, edit ? edit.slotProps(slot) : null), boardCards[slot](), edit ? edit.handle(slot) : null))
+         ),
+         pgBoard && CP && CP.PlaygroundBoard ? e(CP.PlaygroundBoard, {
+           startId: pgBoard.startId,
+@@ -1368,7 +1375,7 @@
+         }, data.profileSheet)) : null
+       ),
+       /* Bottom corners ("+", wallpaper, resume, chat) removed: those actions live in Projects, the profile, Say hello and search. */
+-      null,
++      edit ? edit.bar : null,
+       ((sheet && sheet.kind === "resonance") || rsLive) && C.ResonanceSheet ? e(C.ResonanceSheet, {
+         parked: !(sheet && sheet.kind === "resonance"),
+         opener: sheet && sheet.kind === "resonance" ? sheet.opener : null,

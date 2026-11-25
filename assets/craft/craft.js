@@ -48,7 +48,10 @@
     /* Contact card */
     linkedin: "M4.5 7a2.5 2.5 0 0 1 2.5-2.5h10A2.5 2.5 0 0 1 19.5 7v10a2.5 2.5 0 0 1-2.5 2.5H7A2.5 2.5 0 0 1 4.5 17zM8.5 11v4.5M8.5 8.4v.01M11.5 15.5V11M11.5 13c0-1.3.8-2 1.9-2s1.9.7 1.9 2v2.5",
     doc: "M14 3.5H7a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8.5zM14 3.5v5h5M9 13h6M9 16.5h4",
-    send: "M20 4L3.5 10.5l6.8 2.7L13 20zM20 4l-9.7 9.2"
+    send: "M20 4L3.5 10.5l6.8 2.7L13 20zM20 4l-9.7 9.2",
+    copy: "M9 9h10.5v10.5H9zM15 9V4.5H4.5V15H9",
+    eye: "M2.5 12s3.5-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.5 6.5-9.5 6.5S2.5 12 2.5 12zM12 9.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6z",
+    check: "M5 12.5l4.5 4.5L19 7.5"
   };
   function Icon(props) {
     if (props.name === "dropper") {
@@ -755,7 +758,7 @@
       else if (ev.key === "ArrowLeft") { ev.preventDefault(); go(idx - 1); }
     }
     return h("section", {
-      className: cx("cr-card cr-glass cr-hello", props.className), "data-cr-enter": "",
+      className: cx("cr-card cr-glass cr-hello", props.onOpen && "is-openable", props.className), "data-cr-enter": "",
       "aria-roledescription": "carousel", "aria-label": props.label || "Say hello",
       onKeyDown: onKey,
       onMouseEnter: function () { setHover(true); }, onMouseLeave: function () { setHover(false); },
@@ -771,6 +774,9 @@
       onPointerCancel: function () { drag.current = null; },
       onClickCapture: function (ev) { if (swiped.current) { swiped.current = false; ev.preventDefault(); ev.stopPropagation(); } }
     },
+      /* The card itself opens every contact at once (props.onOpen); the round buttons on it still act directly */
+      props.onOpen ? h("button", { type: "button", className: "cr-hello-open", "aria-label": "Open all contact options: email, LinkedIn and resume",
+        onClick: function (ev) { props.onOpen(ev.currentTarget); } }) : null,
       h("div", { className: "cr-hello-track", "aria-live": paused ? "polite" : "off", style: { transform: "translateX(" + (-idx * 100) + "%)" } },
         slides.map(function (s, i) {
           var on = i === idx;
@@ -779,7 +785,7 @@
             s.view
               ? h("a", { className: "cr-hello-view", href: s.view.href, target: "_blank", rel: "noopener", tabIndex: on ? undefined : -1,
                   "aria-label": s.view.label, title: s.view.label, draggable: false },
-                  h(ProjectWell, { icon: s.icon, tone: s.tone, className: "cr-hello-icon" }))
+                  h(ProjectWell, { icon: s.view.icon || s.icon, tone: s.tone, className: "cr-hello-icon" }))
               : h(ProjectWell, { icon: s.icon, tone: s.tone, className: "cr-hello-icon" }),
             h("a", { className: "cr-hello-go cr-hello-go--" + (s.tone || "plain"), href: s.href, tabIndex: on ? undefined : -1,
               download: s.download || undefined,
@@ -794,6 +800,94 @@
           return h("button", { key: s.id, type: "button", className: cx("cr-hello-dot", i === idx && "is-on"),
             "aria-label": "Show " + s.name, "aria-current": i === idx ? "true" : undefined, onClick: function () { go(i); } });
         })));
+  }
+
+  /* Contact sheet: every way to reach Gaurav at once (email, LinkedIn, resume), grown out of the
+     Say hello card like the booking sheet. Each row acts straight away; the round buttons are the
+     second actions (copy the address, download the resume). */
+  function ContactSheet(props) {
+    var items = props.items || [];
+    var host = useState(function () { var d = document.createElement("div"); d.className = "cb-host"; document.body.appendChild(d); return d; })[0];
+    var panelRef = useRef(null), scrimRef = useRef(null), closing = useRef(false);
+    var propsRef = useRef(props); propsRef.current = props;
+    var _c = useState(null), copied = _c[0], setCopied = _c[1];
+    useLayoutEffect(function () {
+      var root = document.documentElement; root.classList.add("ga-bk-open");
+      var prev = props.opener && props.opener.isConnected ? props.opener : document.activeElement;
+      var panel = panelRef.current, still = reduced(), src = sourceOf(props.opener);
+      if (src && (src.rect.bottom < 0 || src.rect.top > window.innerHeight)) src = null;
+      if (scrimRef.current) scrimRef.current.animate([{ opacity: 0 }, { opacity: 1 }], { duration: still ? 160 : 480, easing: "cubic-bezier(0.33, 1, 0.68, 1)", fill: "backwards" });
+      if (still || !src) panel.animate([{ opacity: 0, transform: still ? "none" : "translateY(20px) scale(0.98)" }, { opacity: 1, transform: "none" }], { duration: still ? 160 : 420, easing: EASE_ARRIVE, fill: "backwards" });
+      else { var fr = growFrames(panel, src); fr[0].opacity = 0.55; fr[1].opacity = 1; panel.animate(fr, { duration: 500, easing: EASE_ARRIVE, fill: "backwards" }); }
+      if (!still) Array.prototype.slice.call(panel.querySelectorAll("[data-cc-in]")).forEach(function (n, i) {
+        n.animate([{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "none" }], { duration: 460, delay: 150 + i * 55, easing: EASE_ARRIVE, fill: "backwards" });
+      });
+      var t = setTimeout(function () { var c = panel.querySelector(".cb-close"); if (c) c.focus({ preventScroll: true }); }, 60);
+      return function () {
+        clearTimeout(t); root.classList.remove("ga-bk-open");
+        if (host.parentNode) host.parentNode.removeChild(host);
+        if (prev && prev.isConnected && prev.focus) prev.focus({ preventScroll: true });
+      };
+    }, []);
+    function close() {
+      if (closing.current) return; closing.current = true;
+      var p = propsRef.current, panel = panelRef.current, done = false;
+      var finish = function () { if (done) return; done = true; p.onClose(); };
+      setTimeout(finish, 800);
+      document.documentElement.classList.remove("ga-bk-open");
+      if (p.onClosing) p.onClosing();
+      var still = reduced(), src = sourceOf(p.opener);
+      if (src && (src.rect.bottom < 0 || src.rect.top > window.innerHeight)) src = null;
+      if (scrimRef.current) scrimRef.current.animate([{ opacity: 1 }, { opacity: 0 }], { duration: still ? 140 : 400, fill: "forwards" });
+      var anim;
+      if (still || !src) anim = panel.animate([{ opacity: 1 }, { opacity: 0, transform: still ? "none" : "translateY(14px) scale(0.98)" }], { duration: still ? 140 : 280, easing: "cubic-bezier(0.32, 0.72, 0, 1)", fill: "forwards" });
+      else { var fr = growFrames(panel, src).reverse(); fr[0].opacity = 1; fr[1].opacity = 0; anim = panel.animate(fr, { duration: 420, easing: "cubic-bezier(0.32, 0.72, 0, 1)", fill: "forwards" }); }
+      anim.finished.then(finish, finish);
+    }
+    useEffect(function () {
+      function onKey(ev) {
+        if (!panelRef.current) return;
+        if (ev.key === "Escape") { ev.preventDefault(); ev.stopPropagation(); close(); return; }
+        if (ev.key !== "Tab") return;
+        var f = focusables(panelRef.current); if (!f.length) return;
+        var a = f[0], z = f[f.length - 1];
+        if (!panelRef.current.contains(document.activeElement)) { ev.preventDefault(); a.focus(); }
+        else if (ev.shiftKey && document.activeElement === a) { ev.preventDefault(); z.focus(); }
+        else if (!ev.shiftKey && document.activeElement === z) { ev.preventDefault(); a.focus(); }
+      }
+      window.addEventListener("keydown", onKey, true);
+      return function () { window.removeEventListener("keydown", onKey, true); };
+    }, []);
+    function copy(it) {
+      var done = function () { setCopied(it.id); setTimeout(function () { setCopied(function (c) { return c === it.id ? null : c; }); }, 1800); };
+      try { navigator.clipboard.writeText(it.copy).then(done, function () {}); } catch (e) { /* ignore */ }
+    }
+    function act(a, it) {
+      if (a.copy) return h("button", { key: a.label, type: "button", className: "cc-act", onClick: function () { copy(it); },
+        "aria-label": copied === it.id ? "Copied " + it.copy : a.aria || a.label },
+        h(Icon, { name: copied === it.id ? "check" : a.icon, stroke: 1.8 }), h("span", null, copied === it.id ? "Copied" : a.label));
+      return h("a", { key: a.label, className: "cc-act" + (a.primary ? " cc-act--main" : ""), href: a.href, download: a.download || undefined,
+        target: a.newTab ? "_blank" : undefined, rel: a.newTab ? "noopener" : undefined, "aria-label": a.aria || a.label },
+        h(Icon, { name: a.icon, stroke: 1.8 }), h("span", null, a.label));
+    }
+    var content = h("div", { className: "cr cb-root cc-root" },
+      h("div", { className: "cb-scrim", ref: scrimRef, onClick: close, "aria-hidden": "true" }),
+      h("section", { className: "cb-panel cc-panel", ref: panelRef, role: "dialog", "aria-modal": "true", "aria-labelledby": "cc-title" },
+        h(IconButton, { variant: "solid", icon: "close", label: "Close", className: "cb-close", onClick: close }),
+        h("header", { className: "cc-head", "data-cc-in": "" },
+          h("h2", { className: "cb-title", id: "cc-title" }, props.title || "Say hello"),
+          props.lede ? h("p", { className: "cb-lede" }, props.lede) : null),
+        h("ul", { className: "cc-list" },
+          items.map(function (it) {
+            return h("li", { key: it.id, className: "cc-row", "data-cc-in": "" },
+              h(ProjectWell, { icon: it.icon, tone: it.tone, className: "cc-icon" }),
+              h("div", { className: "cc-text" },
+                h("span", { className: "cc-name" }, it.name,
+                  (it.tags || []).map(function (t) { return h("span", { key: t, className: "cc-tag" }, t); })),
+                h("span", { className: "cc-sub" }, it.sub)),
+              h("div", { className: "cc-acts" }, (it.actions || []).map(function (a) { return act(a, it); })));
+          }))));
+    return ReactDOM.createPortal(content, host);
   }
 
   function AvatarStack(props) {
@@ -981,7 +1075,7 @@
   /* Round well for a project. Projects get their orb (assets/craft/orb.js: a grainy
      iridescent sphere, one colour trio per project, keyed by the project icon); anything
      else (contact slides) keeps the 1.5px line icon on a faint tint. Pass orb: false to force the icon. */
-  var ORB_CORE = { chatSpark: "./assets/craft/icons/chat-spark.png", dealDoc: "./assets/craft/icons/deal-room.png", swatch: "./assets/craft/icons/white-label.png", bowl: "./assets/craft/icons/easyeat.png",
+  var ORB_CORE = { chatSpark: "./assets/craft/icons/contextual-chat.png", dealDoc: "./assets/craft/icons/deal-room.png", swatch: "./assets/craft/icons/white-label.png", bowl: "./assets/craft/icons/easyeat.png",
     wave: "./assets/craft/icons/resonance.png", receipt: "./assets/craft/icons/splitly.png",
     /* Design Playground */
     plane: "./assets/craft/icons/nomad.png", gauge: "./assets/craft/icons/health-karma.png", swap: "./assets/craft/icons/swaply.png",
@@ -2394,7 +2488,7 @@
     TopBar: TopBar, NotificationPill: NotificationPill, PhilosophyPill: PhilosophyPill, LiveStatus: LiveStatus, SegmentedControl: SegmentedControl,
     IconButton: IconButton, Chip: Chip, Toggle: Toggle,
     AgendaCard: AgendaCard, FolderListCard: FolderListCard, DropZoneCard: DropZoneCard,
-    PreviewCard: PreviewCard, CursorChip: CursorChip, ProfileOrb: ProfileOrb, HeadOrb: HeadOrb, StatCard: StatCard,
+    PreviewCard: PreviewCard, CursorChip: CursorChip, ContactSheet: ContactSheet, ProfileOrb: ProfileOrb, HeadOrb: HeadOrb, StatCard: StatCard,
     MiniStatCard: MiniStatCard, TeamCard: TeamCard, ActionCard: ActionCard, ContactCard: ContactCard,
     AvatarStack: AvatarStack, Dock: Dock, MetaStrip: MetaStrip,
     HeroBoard: HeroBoard, FolderOpen: FolderOpen, ProfileOpen: ProfileOpen,

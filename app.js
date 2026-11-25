@@ -960,6 +960,23 @@
         action: "Download Gaurav's resume, PDF",
         view: { href: ASSETS.resume, label: "View Gaurav's resume, PDF (new tab)" } },
     ];
+    /* The Say hello pop-up: every contact at once, each acting straight away */
+    S.contacts = [
+      { id: "email", name: "Email", icon: "mail", tone: "orange", tags: ["Direct"], sub: "gauravavinash3@gmail.com", copy: "gauravavinash3@gmail.com",
+        actions: [
+          { label: "Copy", icon: "copy", copy: true, aria: "Copy Gaurav's email address" },
+          { label: "Send", icon: "send", primary: true, href: "mailto:gauravavinash3@gmail.com", aria: "Email Gaurav at gauravavinash3@gmail.com" },
+        ] },
+      { id: "linkedin", name: "LinkedIn", icon: "linkedin", tone: "blue", tags: ["Profile"], sub: "in/gauravavinash",
+        actions: [
+          { label: "Open", icon: "arrow", primary: true, href: "https://www.linkedin.com/in/gauravavinash", newTab: true, aria: "Open Gaurav's LinkedIn (new tab)" },
+        ] },
+      { id: "resume", name: "Resume", icon: "doc", tone: "plain", tags: ["PDF", "1 page"], sub: "Product Designer, 5+ years",
+        actions: [
+          { label: "View", icon: "eye", href: ASSETS.resume, newTab: true, aria: "View Gaurav's resume, PDF (new tab)" },
+          { label: "Download", icon: "download", primary: true, href: ASSETS.resume, download: "Gaurav-Avinash-Resume.pdf", aria: "Download Gaurav's resume, PDF" },
+        ] },
+    ];
     S.stack.onClick = () => onExit("more-work");
     /* Availability + booking on the date card (assets/craft/booking.js, Cal.com).
        status: "open" | "booked" | "not-looking". until: "YYYY-MM-DD" shown as "Booked until 12 Jan".
@@ -1220,7 +1237,7 @@
       if (t) t.setAttribute("aria-expanded", picker ? "true" : "false");
     }, [picker]);
     useEffect(() => {
-      if (!sheet || sheet.kind === "resonance" || sheet.kind === "search" || sheet.kind === "booking") return undefined; /* these sheets animate their own close */
+      if (!sheet || sheet.kind === "resonance" || sheet.kind === "search" || sheet.kind === "booking" || sheet.kind === "contact") return undefined; /* these sheets animate their own close */
       const onKey = (ev) => { if (ev.key === "Escape") setSheet(null); };
       window.addEventListener("keydown", onKey);
       return () => window.removeEventListener("keydown", onKey);
@@ -1301,6 +1318,7 @@
     const CB = window.CraftBooking;
     const openBooking = (el) => { setPicker(false); setSheet({ kind: "booking", opener: el }); };
     const openResonance = (el) => { setPicker(false); setSheet({ kind: "resonance", opener: el }); };
+    const openContact = (el) => { setPicker(false); setSheet({ kind: "contact", opener: el }); };
     /* Board cards by slot (placement and order live in craft.css / BOARD_ORDER) */
     const pgCard = () => stageRef.current && stageRef.current.querySelector("[data-pg-card]");
     const boardCards = {
@@ -1340,7 +1358,7 @@
       chat: () => e(C.PreviewCard, casesOpen ? data.preview : data.previewOpen),
       /* Resonance player ("Create a room" slot). The assistant lives in search (Ask tab) and the dock. */
       np: () => e(C.ResonanceCard, { onOpen: openResonance }),
-      hello: () => e(C.ContactCard, { label: "Say hello", slides: data.hello }),
+      hello: () => e(C.ContactCard, { label: "Say hello", slides: data.hello, onOpen: C.ContactSheet ? openContact : undefined }),
     };
 
     const stage = e(C.Stage, {
@@ -1393,6 +1411,14 @@
         cases: data.caseStudies,
         aiWorks: data.aiWorks,
         onLive: (key) => key === "resonance" && !!C.ResonanceSheet,
+      }) : null,
+      sheet && sheet.kind === "contact" && C.ContactSheet ? e(C.ContactSheet, {
+        title: "Say hello",
+        lede: "Email, LinkedIn or my resume, whichever is easiest.",
+        items: data.contacts,
+        opener: sheet.opener,
+        onClosing: () => setSheet((s) => (s ? Object.assign({}, s, { closing: true }) : s)),
+        onClose: () => setSheet(null),
       }) : null,
       sheet && sheet.kind === "booking" && CB ? e(CB.BookingSheet, {
         config: data.availability,
