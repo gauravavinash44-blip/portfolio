@@ -1259,8 +1259,106 @@
         h("button", { type: "button", className: "cr-pp-btn cr-pp-btn--next cr-glass-light", "aria-label": "Next photo", onClick: function () { go(1); } }, h(Icon, { name: "chevron", stroke: 2 }))) : null);
   }
 
+  /* ── Profile: daily tool stack + skills. Two rows show; "+N more" opens the full list in a small
+     panel over the sheet. Tools: { name, logo?, icon?, tile } (logo = svg path, icon = Craft icon). ── */
+  function ToolTile(props) {
+    var t = props.tool;
+    return h("li", { className: "cr-tool" },
+      h("span", { className: "cr-tool-tile", style: { background: t.tile || "#1f1f22" }, "aria-hidden": "true" },
+        t.logo ? h("img", { src: t.logo, alt: "", width: 18, height: 18, decoding: "async" }) : h(Icon, { name: t.icon || "grid", stroke: 1.7 })),
+      h("span", { className: "cr-tool-name" }, t.name));
+  }
+  function ProfileMore(props) {
+    var ref = useRef(null);
+    useEffect(function () {
+      var el = ref.current; if (!el) return undefined;
+      var b = el.querySelector("button"); if (b) b.focus({ preventScroll: true });
+      function key(e) { if (e.key === "Escape") { e.stopPropagation(); props.onClose(); } }
+      function down(e) { if (!el.contains(e.target) && !(e.target.closest && e.target.closest(".cr-pmore-open"))) props.onClose(); }
+      el.addEventListener("keydown", key);
+      document.addEventListener("pointerdown", down, true);
+      if (!reduced()) el.animate([{ opacity: 0, transform: "translateY(10px) scale(0.98)" }, { opacity: 1, transform: "none" }], { duration: 320, easing: EASE_ARRIVE });
+      return function () { el.removeEventListener("keydown", key); document.removeEventListener("pointerdown", down, true); };
+    }, []);
+    return h("div", { className: "cr-pmore", ref: ref, role: "dialog", "aria-label": props.title },
+      h("div", { className: "cr-pmore-head" },
+        h("p", { className: "cr-pmore-title" }, props.title),
+        h(IconButton, { variant: "solid", icon: "close", label: "Close " + props.title, onClick: props.onClose })),
+      h("div", { className: "cr-pmore-body" }, props.children));
+  }
+  function ProfileTools(props) {
+    /* two rows: 3 across in the sheet's text column on desktop, 4 across (logo above name) on phones */
+    var _p = useState(function () { return window.matchMedia && window.matchMedia("(max-width: 700px)").matches; }), phone = _p[0], setPhone = _p[1];
+    useEffect(function () {
+      if (!window.matchMedia) return undefined;
+      var mq = window.matchMedia("(max-width: 700px)"), on = function () { setPhone(mq.matches); };
+      if (mq.addEventListener) mq.addEventListener("change", on); else mq.addListener(on);
+      return function () { if (mq.removeEventListener) mq.removeEventListener("change", on); else mq.removeListener(on); };
+    }, []);
+    var tools = props.tools || [], show = phone ? 7 : 5;
+    var title = props.title || "Daily tool stack";
+    var cut = tools.length > show + 1 ? show : tools.length;
+    return h("section", { className: "cr-pt cr-ptools", "aria-labelledby": "cr-ptools-t" },
+      h("h3", { id: "cr-ptools-t", className: "cr-pt-title" }, props.title || "Daily tool stack"),
+      h("ul", { className: "cr-tools" },
+        tools.slice(0, cut).map(function (t) { return h(ToolTile, { key: t.name, tool: t }); }),
+        cut < tools.length ? h("li", { className: "cr-tool" },
+          h("button", { type: "button", className: "cr-tool cr-tool--more cr-pmore-open", "aria-haspopup": "dialog",
+            onClick: function () { props.onMore({ title: title, body: h("ul", { className: "cr-tools cr-tools--all" }, tools.map(function (t) { return h(ToolTile, { key: t.name, tool: t }); })) }); } },
+            h("span", { className: "cr-tool-tile cr-tool-tile--more", "aria-hidden": "true" }, "+" + (tools.length - cut)),
+            h("span", { className: "cr-tool-name" }, "More tools"))) : null));
+  }
+  function ProfileSkills(props) {
+    var groups = props.groups || [];
+    var all = [];
+    groups.forEach(function (g) { g.items.forEach(function (it) { if (all.indexOf(it) < 0) all.push(it); }); });
+    var order = (props.top || []).filter(function (x) { return all.indexOf(x) >= 0; });
+    all.forEach(function (x) { if (order.indexOf(x) < 0) order.push(x); });
+    var listRef = useRef(null);
+    var _v = useState(order.length), visible = _v[0], setVisible = _v[1];
+    /* keep two lines: lay every chip out, find the first one on line 3, then leave room for "+N more" */
+    useLayoutEffect(function () {
+      var ul = listRef.current; if (!ul) return undefined;
+      function fit() {
+        var kids = Array.prototype.slice.call(ul.querySelectorAll(":scope > li.cr-skill"));
+        kids.forEach(function (k) { k.style.display = ""; });
+        var more = ul.querySelector(".cr-skill-more"); if (more) more.style.display = "none";
+        var tops = [];
+        kids.forEach(function (k) { if (tops.indexOf(k.offsetTop) < 0) tops.push(k.offsetTop); });
+        if (tops.length <= 2) { setVisible(kids.length); return; }
+        var limit = tops[1], n = 0;
+        kids.forEach(function (k, i) { if (k.offsetTop <= limit) n = i + 1; });
+        if (more) more.style.display = "";
+        /* drop chips from the end of line 2 until "+N more" fits there too */
+        while (n > 0) {
+          kids.forEach(function (k, i) { k.style.display = i < n ? "" : "none"; });
+          if (!more || more.offsetTop <= limit) break;
+          n -= 1;
+        }
+        setVisible(n);
+      }
+      fit();
+      var ro = window.ResizeObserver ? new ResizeObserver(fit) : null;
+      if (ro) ro.observe(ul);
+      return function () { if (ro) ro.disconnect(); };
+    }, [order.join("|")]);
+    var hidden = order.length - visible;
+    return h("section", { className: "cr-pt cr-pskills", "aria-labelledby": "cr-pskills-t" },
+      h("h3", { id: "cr-pskills-t", className: "cr-pt-title" }, props.title || "Skills"),
+      h("ul", { className: "cr-skills", ref: listRef },
+        order.map(function (x, i) { return h("li", { key: x, className: "cr-skill", style: i < visible ? null : { display: "none" } }, x); }),
+        h("li", { className: "cr-skill-more", style: hidden > 0 ? null : { display: "none" } },
+          h("button", { type: "button", className: "cr-skill cr-skill--btn cr-pmore-open", "aria-haspopup": "dialog",
+            onClick: function () { props.onMore({ title: props.title || "Skills", body: groups.map(function (g) {
+              return h("div", { key: g.label, className: "cr-skill-group" },
+                h("p", { className: "cr-skill-group-t" }, g.label),
+                h("ul", { className: "cr-skills cr-skills--all" }, g.items.map(function (x) { return h("li", { key: x, className: "cr-skill" }, x); })));
+            }) }); } }, "+" + hidden + " more"))));
+  }
+
   function ProfileSheet(props) {
     var ref = useRef(null);
+    var _pm = useState(null), pmore = _pm[0], setPmore = _pm[1];
     useDialogFocus(ref);
     /* Opened from the Experience card: glide to the Experience timeline once the sheet has opened */
     useEffect(function () {
@@ -1317,8 +1415,11 @@
           })) : null,
           h("div", { className: "cr-profile-facts" },
             (props.facts || []).map(function (f) { return h("div", { key: f.label, className: "cr-fact" }, h("b", null, f.value), h("span", null, f.label)); })),
+          props.tools ? h(ProfileTools, { tools: props.tools, onMore: setPmore }) : null,
+          props.skills ? h(ProfileSkills, { groups: props.skills, top: props.topSkills, onMore: setPmore }) : null,
           h(ProfileTimeline, { id: "cr-pt-exp", title: "Experience", rows: props.experience }),
-          h(ProfileTimeline, { id: "cr-pt-edu", title: "Education", rows: props.education }))));
+          h(ProfileTimeline, { id: "cr-pt-edu", title: "Education", rows: props.education }))),
+      pmore ? h(ProfileMore, { key: pmore.title, title: pmore.title, onClose: function () { setPmore(null); } }, pmore.body) : null);
   }
 
   function FolderOpen(props) {

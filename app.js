@@ -977,6 +977,33 @@
       fallbackHours: "Mon to Fri, 12:00 to 19:00 IST",
       hoursIST: [12, 19],
     };
+    /* Daily tools, from the resume. Order follows what designers use most each week in 2026
+       (UX Tools State of Prototyping, Spring 2026): Figma, then Claude / Claude Code, ChatGPT, Cursor.
+       Logos: simple-icons (CC0). ChatGPT, Slack, Photoshop and Illustrator have no free logo there,
+       so they get a plain icon. */
+    const T = "./assets/craft/tools/";
+    S.profileSheet.tools = [
+      { name: "Figma", logo: T + "figma.svg", tile: "#1e1e1e" },
+      { name: "Claude", logo: T + "claude.svg", tile: "#d97757" },
+      { name: "Cursor", logo: T + "cursor.svg", tile: "#1e1e1e" },
+      { name: "ChatGPT", icon: "chat", tile: "#1e1e1e" },
+      { name: "Framer", logo: T + "framer.svg", tile: "#0055ff" },
+      { name: "GitHub", logo: T + "github.svg", tile: "#1e1e1e" },
+      { name: "Notion", logo: T + "notion.svg", tile: "#1e1e1e" },
+      { name: "Miro", logo: T + "miro.svg", tile: "#050038" },
+      { name: "Slack", icon: "send", tile: "#4a154b" },
+      { name: "Asana", logo: T + "asana.svg", tile: "#1e1e1e" },
+      { name: "Photoshop", icon: "image", tile: "#001e36" },
+      { name: "Illustrator", icon: "pen", tile: "#330000" },
+    ];
+    /* Skills, from the resume's Skills column. The first ones show on the card; the rest open grouped. */
+    S.profileSheet.topSkills = ["UX strategy", "Interaction design", "Design systems", "AI prototyping", "Vibe coding", "User research", "Prototyping", "B2B SaaS"];
+    S.profileSheet.skills = [
+      { label: "Design", items: ["UX strategy", "Interaction design", "Design systems", "User flows", "Prototyping", "Visual design", "Motion design", "Experience mapping", "Concept sketches", "Branding"] },
+      { label: "AI", items: ["AI prototyping", "Vibe coding", "Prompt design", "Human-AI experience design"] },
+      { label: "Research", items: ["User research", "User interviews", "Usability testing", "Information architecture", "Affinity mapping", "AI-assisted research"] },
+      { label: "Domain", items: ["B2B SaaS", "Fintech", "Consumer apps"] },
+    ];
     S.profileSheet.links = [
       { label: "Resume", href: ASSETS.resume, external: true },
       { label: "LinkedIn", href: "https://www.linkedin.com/in/gauravavinash", external: true },

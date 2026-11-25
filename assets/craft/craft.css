@@ -2437,3 +2437,58 @@ html:not(:has(.craft-switch)) .cr-hero[data-cr-fit="flow"] .cr-topbar { right: 2
 .cr-hello-view .cr-hello-icon { transition: scale 240ms cubic-bezier(0.16, 1, 0.3, 1); }
 .cr-hello-view:hover .cr-hello-icon { scale: 1.06; }
 .cr-hello-view:focus-visible .cr-hello-icon { outline: 2px solid #fff; outline-offset: 3px; }
+
+/* ── Profile: daily tool stack + skills (two rows each; "+N more" opens the full list) ── */
+.cr-tools { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 10px; }
+.cr-tool { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.cr-tool-tile {
+  flex: none; width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14), 0 4px 12px rgba(10, 6, 14, 0.18);
+}
+.cr-tool-tile img { width: 14px; height: 14px; display: block; }
+.cr-tool-tile svg { width: 14px; height: 14px; }
+.cr-tool-name { min-width: 0; font-size: 12.5px; line-height: 1.2; letter-spacing: -0.005em; color: rgba(255, 255, 255, 0.92); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+button.cr-tool--more { padding: 0; background: none; border: 0; cursor: pointer; text-align: left; font: inherit; }
+.cr-tool-tile--more { background: rgba(255, 255, 255, 0.14); font-size: 11.5px; font-weight: 500; transition: background 160ms ease; }
+.cr-tool--more .cr-tool-name { color: var(--on-glass-2); }
+.cr-tool--more:hover .cr-tool-tile--more { background: rgba(255, 255, 255, 0.26); }
+.cr-tool--more:hover .cr-tool-name { color: #fff; }
+.cr-tool--more:focus-visible { outline: 2px solid #fff; outline-offset: 4px; border-radius: 10px; }
+
+.cr-skills { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.cr-skill {
+  display: inline-flex; align-items: center; height: 28px; padding: 0 11px; border-radius: 999px;
+  font-size: 12.5px; letter-spacing: -0.005em; color: #fff; white-space: nowrap;
+  background: rgba(255, 255, 255, 0.12); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+.cr-skill-more { display: inline-flex; }
+button.cr-skill--btn { border: 0; cursor: pointer; font: inherit; font-size: 12.5px; background: rgba(255, 255, 255, 0.22); transition: background 160ms ease; }
+button.cr-skill--btn:hover { background: rgba(255, 255, 255, 0.32); }
+button.cr-skill--btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* the "more" panel floats over the profile sheet */
+.cr-pmore {
+  position: absolute; z-index: 5; right: 20px; bottom: 20px;
+  width: calc(100% / 2.05 - 40px); max-height: calc(100% - 40px);
+  display: flex; flex-direction: column; border-radius: 28px; color: #fff;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03) 45%), rgba(36, 28, 40, 0.82);
+  -webkit-backdrop-filter: blur(28px) saturate(1.5); backdrop-filter: blur(28px) saturate(1.5);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24), inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 24px 60px rgba(10, 6, 14, 0.4);
+}
+.cr-pmore-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 18px 6px 24px; }
+.cr-pmore-title { margin: 0; font-size: 15px; font-weight: 500; letter-spacing: -0.01em; }
+.cr-pmore-head .cr-iconbtn { width: 38px; height: 38px; }
+.cr-pmore-body { overflow-y: auto; overscroll-behavior: contain; padding: 10px 24px 24px; scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.3) transparent; }
+.cr-tools--all { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 12px; }
+.cr-skill-group + .cr-skill-group { margin-top: 16px; }
+.cr-skill-group-t { margin: 0 0 8px; font-size: 12px; font-weight: 500; letter-spacing: 0.01em; color: var(--on-glass-3); }
+@media (max-width: 700px) {
+  /* phones: still 4 across (two rows), logo above the name */
+  .cr-tools { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .cr-tools .cr-tool { flex-direction: column; gap: 6px; text-align: center; }
+  .cr-tools .cr-tool-name { max-width: 100%; }
+  .cr-tools .cr-tool-name { font-size: 11.5px; }
+  .cr-tools--all { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .cr-pmore { position: fixed; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); width: auto; max-height: 70vh; }
+}
+.cr-hero[data-cr-cols="2"] .cr-pmore { left: 20px; width: auto; }
