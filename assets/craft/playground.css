@@ -518,3 +518,21 @@ html.ga-pg-open .craft-switch, html.ga-pg-open .ga-brand { opacity: 0; visibilit
   .cr-hero[data-cr-fit="stack"] .cpb-cap { left: 14px; right: 14px; bottom: 12px; }
   .cr-hero[data-cr-fit="stack"] .cpb-cap-title { font-size: 13px; }
 }
+
+/* Phones: a solid strip behind the back button and tabs, so the grid scrolls under it cleanly */
+@media (max-width: 700px) {
+  .cpg-gallery::before {
+    content: ""; position: absolute; left: 0; right: 0; top: 0; z-index: 4; pointer-events: none;
+    height: calc(128px + env(safe-area-inset-top, 0px));
+    background: linear-gradient(to bottom, #1b1c20 0%, #1b1c20 78%, rgba(27, 28, 32, 0) 100%);
+  }
+  .cpg.is-story .cpg-gallery::before, .cpg--up .cpg-gallery::before { display: none; }
+}
+/* Phones: the Home card peeking at the bottom reads as a card you can tap back to: a grab handle and a light shade */
+@media (max-width: 700px) {
+  .cpg:not(.cpg--up) .cpg-homebar { background: linear-gradient(to bottom, rgba(18, 18, 22, 0.05), rgba(18, 18, 22, 0.28)); }
+  .cpg:not(.cpg--up) .cpg-homebar::before {
+    content: ""; position: absolute; left: 50%; top: 8px; width: 40px; height: 5px; margin-left: -20px; border-radius: 3px;
+    background: rgba(255, 255, 255, 0.85); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  }
+}

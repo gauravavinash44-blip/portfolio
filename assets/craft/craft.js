@@ -1374,12 +1374,20 @@
       if (!reduced()) el.animate([{ opacity: 0, transform: "translateY(10px) scale(0.98)" }, { opacity: 1, transform: "none" }], { duration: 320, easing: EASE_ARRIVE });
       return function () { el.removeEventListener("keydown", key); document.removeEventListener("pointerdown", down, true); };
     }, []);
-    return h("div", { className: "cr-pmore", ref: ref, role: "dialog", "aria-label": props.title },
+    var panel = h("div", { className: "cr-pmore", ref: ref, role: "dialog", "aria-label": props.title },
       h("div", { className: "cr-pmore-head" },
         h("p", { className: "cr-pmore-title" }, props.title),
         h(IconButton, { variant: "solid", icon: "close", label: "Close " + props.title, onClick: props.onClose })),
       h("div", { className: "cr-pmore-body" }, props.children));
+    /* Phones: the profile sheet scrolls as a whole and its glass blur would pin this panel to the
+       sheet (it scrolled off screen). Render it at page level instead, as a bottom sheet over a shade. */
+    if (phoneNow()) {
+      return ReactDOM.createPortal(h("div", { className: "cr cr-pmore-layer" },
+        h("div", { className: "cr-pmore-scrim", "aria-hidden": "true" }), panel), document.body);
+    }
+    return panel;
   }
+  function phoneNow() { return !!(window.matchMedia && window.matchMedia("(max-width: 700px)").matches); }
   function ProfileTools(props) {
     /* two rows: 3 across in the sheet's text column on desktop, 4 across (logo above name) on phones */
     var _p = useState(function () { return window.matchMedia && window.matchMedia("(max-width: 700px)").matches; }), phone = _p[0], setPhone = _p[1];
@@ -1470,14 +1478,23 @@
     useLayoutEffect(function () {
       var stage = props.stageRef.current, sheet = ref.current;
       if (!stage || !sheet) return;
-      var orb = stage.querySelector("[data-cr-orb] .cr-orb");
-      var r = (orb || sheet).getBoundingClientRect(), s = sheet.getBoundingClientRect(), k = localScale(sheet) || 1;
+      /* Grow out of what was tapped: the Experience card when opened from it, else the profile orb.
+         On phones the page scrolls, so whichever of those is actually on screen wins; if neither is,
+         the sheet grows from the middle of the screen. */
+      var onScreen = function (n) { if (!n) return null; var q = n.getBoundingClientRect(); return q.width && q.bottom > 0 && q.top < window.innerHeight ? n : null; };
+      var src = (props.focus === "experience" && onScreen(stage.querySelector(".cr-slot--exp .cr-card"))) || onScreen(stage.querySelector("[data-cr-orb] .cr-orb"));
+      var s = sheet.getBoundingClientRect(), k = localScale(sheet) || 1;
+      var r = src ? src.getBoundingClientRect() : { left: s.left + s.width / 2 - 40, top: s.top + s.height / 2 - 40, width: 80, height: 80 };
       var cx0 = (r.left + r.width / 2 - s.left) / k, cy0 = (r.top + r.height / 2 - s.top) / k;
+      /* end radius reaches the farthest corner of the sheet from that point */
+      var W = s.width / k, H = s.height / k, R = Math.hypot(Math.max(cx0, W - cx0), Math.max(cy0, H - cy0)) + 2;
       if (reduced()) { sheet.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160, fill: "both" }); return; }
-      sheet.animate([
-        { clipPath: "circle(" + (r.width / 2 / k) + "px at " + cx0 + "px " + cy0 + "px)" },
-        { clipPath: "circle(" + Math.hypot(s.width, s.height) + "px at " + cx0 + "px " + cy0 + "px)" }
-      ], { duration: 720, easing: EASE_ARRIVE, fill: "both" });
+      var anim = sheet.animate([
+        { clipPath: "circle(" + (Math.min(r.width, r.height) / 2 / k) + "px at " + cx0 + "px " + cy0 + "px)" },
+        { clipPath: "circle(" + R + "px at " + cx0 + "px " + cy0 + "px)" }
+      ], { duration: 720, easing: EASE_ARRIVE, fill: "backwards" });
+      /* don't leave a clip on the open sheet: it would cut content if the sheet is resized later */
+      anim.finished.then(function () { sheet.style.clipPath = ""; }, function () {});
       Array.prototype.slice.call(sheet.querySelectorAll(".cr-profile-head, .cr-profile-scroll > *")).forEach(function (n, i) {
         n.animate([{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }], { duration: 560, delay: 220 + Math.min(i, 7) * 60, easing: EASE_ARRIVE, fill: "backwards" });
       });

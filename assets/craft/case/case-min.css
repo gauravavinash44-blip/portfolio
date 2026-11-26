@@ -370,3 +370,12 @@ body.cm[style*="--pa"] { --blue: var(--pa); --blue-text: var(--pa); --blue-stron
 .cm-embed .cm-bar > a.cm-pill:first-child { visibility: hidden; }
 .cm-embed .cm-bar { padding-right: 72px; }
 .cm-embed .cm-home { display: none; }
+
+/* Phones: a soft strip of the page colour behind the Home pill, so text doesn't scroll under it */
+@media (max-width: 719px) {
+  .cm-bar::before {
+    content: ""; position: absolute; inset: 0 0 auto; height: calc(76px + env(safe-area-inset-top, 0px)); z-index: -1; pointer-events: none;
+    background: linear-gradient(to bottom, var(--page) 0%, var(--page) 55%, rgba(250, 250, 250, 0));
+    background: linear-gradient(to bottom, var(--page) 0%, var(--page) 55%, color-mix(in srgb, var(--page) 0%, transparent));
+  }
+}

@@ -128,7 +128,7 @@
   var root = null, host = null, sceneId = null, scene = null;
   var tex = {}; /* id -> { img, mask, flow, w, h, ready } */
   var raf = 0, lastFrame = 0, simTime = 0, ampTime = 0, running = false;
-  var coverPoll = 0, covered = false, hold = false, stats = { frames: 0, gpuMs: 0, avgMs: 0, fps: 0, w: 0, h: 0 };
+  var coverPoll = 0, covered = false, hold = false, scrolling = false, scrollT = 0, stats = { frames: 0, gpuMs: 0, avgMs: 0, fps: 0, w: 0, h: 0 };
   var mqReduce = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
 
   function reducedMotion() { return !!(mqReduce && mqReduce.matches); }
@@ -354,7 +354,7 @@
   }
 
   function shouldRun() {
-    return !!(host && host.isConnected && gl && tex[sceneId] && tex[sceneId].ready && !document.hidden && !covered && !hold && !reducedMotion());
+    return !!(host && host.isConnected && gl && tex[sceneId] && tex[sceneId].ready && !document.hidden && !covered && !hold && !scrolling && !reducedMotion());
   }
   function start() {
     if (running || !shouldRun()) return;
@@ -418,6 +418,14 @@
   }
 
   document.addEventListener("visibilitychange", update);
+  /* Phones: the page scrolls over this canvas and every glass card re-blurs it each frame.
+     Freeze the water while a finger is scrolling, pick it back up just after. Keeps scrolling smooth. */
+  window.addEventListener("scroll", function () {
+    if (!(Math.min(window.innerWidth, window.innerHeight) < 700 || (window.matchMedia && window.matchMedia("(pointer: coarse)").matches))) return;
+    if (!scrolling) { scrolling = true; update(); }
+    clearTimeout(scrollT);
+    scrollT = setTimeout(function () { scrolling = false; update(); }, 350);
+  }, { passive: true });
   var rz = 0;
   window.addEventListener("resize", function () {
     clearTimeout(rz);
